@@ -1,0 +1,118 @@
+body {
+  font-variant: none;
+}
+
+.navbar-static-top {
+  margin-bottom: 0;
+}
+
+.large {
+  font-size: 125%;
+}
+
+.github-logo {
+  height: 24px;
+}
+
+.page-container {
+  margin-top: 21px;
+  margin-bottom: 21px;
+}
+
+.content-column {
+  padding-left: 45px;
+}
+
+h1, .h1, h2, .h2, h3, .h3 {
+  margin-top: 0;
+  padding-top: 21px;
+}
+
+h4, .h4, h5, .h5, h6, .h6 {
+  margin-top: 14px;
+  margin-bottom: 7px;
+}
+
+a.anchorjs-link:active, a.anchorjs-link:hover {
+  text-decoration: none;
+}
+
+nav.affix[data-toggle='toc'] {
+  margin-top: -60px;
+}
+
+#toc {
+  width: 190px;
+}
+
+@media (max-width: 767px) {
+  #toc {
+    display: none;
+  }
+}
+
+@media (max-width: 479px) {
+  .content-column {
+    padding-left: 15px;
+  }
+
+  .anchorjs-link {
+    display: none;
+  }
+}
+
+/* apply .table, .table-striped, and .table-hover from Flatly to all tables */
+@media print {
+  table {
+    border-collapse: collapse !important;
+  }
+  table td,
+  table th {
+    background-color: #fff !important;
+  }
+}
+table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 21px;
+}
+table > thead > tr > th,
+table > tbody > tr > th,
+table > tfoot > tr > th,
+table > thead > tr > td,
+table > tbody > tr > td,
+table > tfoot > tr > td {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: top;
+  border-top: 1px solid #ecf0f1;
+}
+table > thead > tr > th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #ecf0f1;
+}
+table > caption + thead > tr:first-child > th,
+table > colgroup + thead > tr:first-child > th,
+table > thead:first-child > tr:first-child > th,
+table > caption + thead > tr:first-child > td,
+table > colgroup + thead > tr:first-child > td,
+table > thead:first-child > tr:first-child > td {
+  border-top: 0;
+}
+table > tbody + tbody {
+  border-top: 2px solid #ecf0f1;
+}
+table table {
+  background-color: #ffffff;
+}
+table > tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+table > tbody > tr:hover {
+  background-color: #ecf0f1;
+}
+
+/* undo underlined links in tables */
+table a:not(.btn), .table a:not(.btn) {
+    text-decoration: none;
+}

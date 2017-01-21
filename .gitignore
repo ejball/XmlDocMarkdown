@@ -1,0 +1,13 @@
+.vs/
+bin/
+cake/
+obj/
+packages/
+release/
+
+*.cache
+*.log
+*.ncrunchproject
+*.ncrunchsolution
+*.suo
+*.user
