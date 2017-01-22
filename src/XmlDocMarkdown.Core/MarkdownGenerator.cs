@@ -244,12 +244,13 @@ namespace XmlDocMarkdown.Core
 						writer.WriteLine("| name | value | description |");
 						writer.WriteLine("| --- | --- | --- |");
 
-						foreach (var enumValue in typeInfo.DeclaredMembers.OfType<FieldInfo>().Where(IsPublic).Where(IsStatic).Where(IsVisibleMember))
+						bool isFlags = IsFlagsEnum(typeInfo);
+						foreach (var enumValue in typeInfo.DeclaredMembers.OfType<FieldInfo>().Where(x => x.IsPublic && x.IsLiteral))
 						{
 							object valueObject = enumValue.GetValue(null);
-							string valueText = Enum.GetUnderlyingType(typeInfo.AsType()) == typeof(ulong) ?
-								RenderConstant(Convert.ToUInt64(valueObject)) :
-								RenderConstant(Convert.ToInt64(valueObject));
+							string valueText = isFlags ? "0x" + Convert.ToString(Convert.ToInt64(valueObject), 16).ToUpperInvariant() :
+								Enum.GetUnderlyingType(typeInfo.AsType()) == typeof(ulong) ? Convert.ToString(Convert.ToUInt64(valueObject)) :
+								Convert.ToString(Convert.ToInt64(valueObject));
 							string description = GetShortSummaryMarkdown(xmlDocAssembly, enumValue, context);
 							writer.WriteLine($"| `{enumValue.Name}` | `{valueText}` | {description} |");
 						}
