@@ -3,7 +3,7 @@
 A static event.
 
 ```csharp
-public static EventHandler MaxWeightChanged;
+public static event EventHandler MaxWeightChanged;
 ```
 
 (from class [ExampleClass](../ExampleClass.md) of namespace [ExampleAssembly](../../ExampleAssembly.md))

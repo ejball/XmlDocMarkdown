@@ -1,9 +1,11 @@
-# ExampleTriGenericClass class
+# ExampleTriGenericClass<TOne,TTwo,TThree> class
 
 A generic class with three generic type parameters.
 
 ```csharp
-public class ExampleTriGenericClass
+public class ExampleTriGenericClass<TOne, TTwo, TThree>
+    where TTwo : struct, IEnumerable<string>
+    where TThree : class, TOne, IEnumerable<TTwo?>
 ```
 
 | parameter | description |

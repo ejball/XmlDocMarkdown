@@ -13,7 +13,7 @@ namespace XmlDocMarkdown.Tests
 		{
 			var assembly = typeof(ExampleClass).Assembly;
 			var xmlDocAssembly = NuDoqXmlDocUtility.CreateXmlDocAssembly(assembly);
-			new MarkdownGenerator().GenerateOutput(xmlDocAssembly);
+			new MarkdownGenerator().GenerateOutput(assembly, xmlDocAssembly);
 		}
 	}
 }

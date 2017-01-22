@@ -3,7 +3,7 @@
 A delegate.
 
 ```csharp
-public void delegate ExampleDelegate();
+public delegate void ExampleDelegate();
 ```
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))

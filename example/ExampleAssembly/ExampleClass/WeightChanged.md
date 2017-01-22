@@ -3,7 +3,7 @@
 An event.
 
 ```csharp
-public EventHandler WeightChanged;
+public event EventHandler WeightChanged;
 ```
 
 (from class [ExampleClass](../ExampleClass.md) of namespace [ExampleAssembly](../../ExampleAssembly.md))

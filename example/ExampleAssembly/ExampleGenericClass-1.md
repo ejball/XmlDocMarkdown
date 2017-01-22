@@ -1,9 +1,9 @@
-# ExampleGenericClass class
+# ExampleGenericClass<T> class
 
 A generic class.
 
 ```csharp
-public class ExampleGenericClass
+public class ExampleGenericClass<T>
 ```
 
 | parameter | description |

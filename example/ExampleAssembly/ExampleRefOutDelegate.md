@@ -3,7 +3,7 @@
 A delegate.
 
 ```csharp
-public void delegate ExampleRefOutDelegate(ref bool isRef, out bool isOut, bool isIn = true);
+public delegate void ExampleRefOutDelegate(ref bool isRef, out bool isOut, bool isIn = true);
 ```
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))

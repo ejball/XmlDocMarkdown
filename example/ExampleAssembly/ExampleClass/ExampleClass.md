@@ -1,6 +1,4 @@
-# ExampleClass constructors
-
-# ExampleClass constructor
+# ExampleClass constructor (1 of 2)
 
 The default constructor.
 
@@ -10,7 +8,7 @@ public ExampleClass()
 
 ---
 
-# ExampleClass constructor
+# ExampleClass constructor (2 of 2)
 
 A one-arg constructor.
 

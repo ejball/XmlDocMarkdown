@@ -48,7 +48,7 @@ namespace XmlDocMarkdown
 
 				var assembly = Assembly.LoadFrom(inputPath);
 				var xmlDocAssembly = NuDoqXmlDocUtility.CreateXmlDocAssembly(assembly);
-				var namedTexts = generator.GenerateOutput(xmlDocAssembly);
+				var namedTexts = generator.GenerateOutput(assembly, xmlDocAssembly);
 
 				var namedTextsToWrite = new List<NamedText>();
 				foreach (var namedText in namedTexts)

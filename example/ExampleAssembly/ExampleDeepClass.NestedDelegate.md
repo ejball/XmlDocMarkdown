@@ -3,7 +3,7 @@
 A nested delegate.
 
 ```csharp
-public void delegate NestedDelegate();
+public delegate void NestedDelegate();
 ```
 
 ## Remarks

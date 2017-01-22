@@ -1,9 +1,9 @@
-# ExampleTuple structure
+# ExampleTuple<T1> structure
 
 A 1-tuple.
 
 ```csharp
-public struct ExampleTuple
+public struct ExampleTuple<T1>
 ```
 
 | parameter | description |
