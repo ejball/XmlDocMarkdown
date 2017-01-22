@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.6.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Shouldly, Version=2.8.2.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
@@ -58,6 +58,14 @@
     <ProjectReference Include="..\..\src\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj">
       <Project>{b376bda9-05ea-4e31-9287-000ab92ba4d0}</Project>
       <Name>XmlDocMarkdown.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\XmlDocMarkdown.NuDoqCore\XmlDocMarkdown.NuDoqCore.csproj">
+      <Project>{4cd65742-8bb2-4c52-b169-317a7e5ee5a6}</Project>
+      <Name>XmlDocMarkdown.NuDoqCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ExampleAssembly\ExampleAssembly.csproj">
+      <Project>{56eb3272-5918-42f7-a4df-9088fd04798e}</Project>
+      <Name>ExampleAssembly</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

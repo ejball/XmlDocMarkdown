@@ -1,6 +1,9 @@
-﻿using NUnit.Framework;
-using Shouldly;
+﻿using System.IO;
+using System.Reflection;
+using ExampleAssembly;
+using NUnit.Framework;
 using XmlDocMarkdown.Core;
+using XmlDocMarkdown.NuDoqCore;
 
 namespace XmlDocMarkdown.Tests
 {
@@ -8,9 +11,11 @@ namespace XmlDocMarkdown.Tests
 	public class MarkdownGeneratorTests
 	{
 		[Test]
-		public void ToDo()
+		public void ExampleAssembly()
 		{
-			new MarkdownGenerator().ShouldNotBeNull();
+			var assembly = typeof(ExampleAbstractClass).Assembly;
+			var xmlDocAssembly = NuDoqXmlDocUtility.CreateXmlDocAssembly(assembly);
+			new MarkdownGenerator().GenerateOutput(xmlDocAssembly);
 		}
 	}
 }

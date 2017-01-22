@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{56EB3272-5918-42F7-A4DF-9088FD04798E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ExampleAssembly</RootNamespace>
+    <AssemblyName>ExampleAssembly</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\ExampleAssembly.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\ExampleAssembly.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ExampleAbstractClass.cs" />
+    <Compile Include="ExampleAttribute.cs" />
+    <Compile Include="ExampleClass.cs" />
+    <Compile Include="ExampleDeepClass.cs" />
+    <Compile Include="ExampleDelegate.cs" />
+    <Compile Include="ExampleDerivedClass.cs" />
+    <Compile Include="ExampleEnum.cs" />
+    <Compile Include="ExampleFlagsEnum.cs" />
+    <Compile Include="ExampleGenericClass.cs" />
+    <Compile Include="ExampleGenericDelegate.cs" />
+    <Compile Include="ExampleInternalClass.cs" />
+    <Compile Include="ExampleLongEnum.cs" />
+    <Compile Include="ExampleLongSummary.cs" />
+    <Compile Include="ExampleObsoleteClass.cs" />
+    <Compile Include="ExampleRefOutDelegate.cs" />
+    <Compile Include="ExampleSealedClass.cs" />
+    <Compile Include="ExampleStaticClass.cs" />
+    <Compile Include="ExampleStruct.cs" />
+    <Compile Include="ExampleTriGenericClass.cs" />
+    <Compile Include="ExampleTuple.cs" />
+    <Compile Include="IExampleDerivedInterface.cs" />
+    <Compile Include="IExampleInterface.cs" />
+    <Compile Include="IExampleInternalInterface.cs" />
+    <Compile Include="InnerNamespace\ExampleInnerClass.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

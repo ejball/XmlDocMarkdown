@@ -25,7 +25,8 @@
     <DefineConstants>TRACE;DEBUG;PORTABLE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\XmlDocMarkdown.Core.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -36,7 +37,8 @@
     <DefineConstants>TRACE;PORTABLE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\XmlDocMarkdown.Core.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
@@ -44,7 +46,16 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="MarkdownGenerator.cs" />
+    <Compile Include="MarkdownWriter.cs" />
+    <Compile Include="NamedText.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XmlDocAssembly.cs" />
+    <Compile Include="XmlDocBlock.cs" />
+    <Compile Include="XmlDocException.cs" />
+    <Compile Include="XmlDocInline.cs" />
+    <Compile Include="XmlDocListKind.cs" />
+    <Compile Include="XmlDocMember.cs" />
+    <Compile Include="XmlDocParameter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
 </Project>

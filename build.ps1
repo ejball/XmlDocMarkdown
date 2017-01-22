@@ -9,12 +9,18 @@ Param(
     [string[]]$ScriptArgs
 )
 
-# create cake directory
+# delete cake directory if script changed
 $CakeDirPath = Join-Path $PSScriptRoot "cake"
+$PackagesConfigPath = Join-Path $CakeDirPath "packages.config"
+If ((Test-Path $PackagesConfigPath) -and ((Get-Item(Join-Path $PSScriptRoot "build.cake")).LastWriteTime -gt (Get-Item($PackagesConfigPath)).LastWriteTime)) {
+    Write-Host "Cake script changed; rebuilding cake directory."
+    Remove-Item $CakeDirPath -Force -Recurse
+}
+
+# create cake directory
 New-Item -Path $CakeDirPath -Type Directory -ErrorAction SilentlyContinue | Out-Null
 
 # create packages.config
-$PackagesConfigPath = Join-Path $CakeDirPath "packages.config"
 If (!(Test-Path $PackagesConfigPath)) {
     [System.IO.File]::WriteAllLines($PackagesConfigPath, @(
         "<?xml version=`"1.0`" encoding=`"utf-8`"?>",

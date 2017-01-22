@@ -32,15 +32,6 @@ if (!string.IsNullOrEmpty(githubApiKey))
 string headSha = null;
 string version = null;
 
-string GetSemVerFromFile(string path)
-{
-	var versionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(path);
-	var semver = $"{versionInfo.FileMajorPart}.{versionInfo.FileMinorPart}.{versionInfo.FileBuildPart}";
-	if (prerelease.Length != 0)
-		semver += $"-{prerelease}";
-	return semver;
-}
-
 Task("Clean")
 	.Does(() =>
 	{
@@ -59,8 +50,16 @@ Task("Build")
 		MSBuild(solutionFileName, settings => settings.SetConfiguration(configuration));
 	});
 
-Task("Test")
+Task("Generate")
 	.IsDependentOn("Build")
+	.Does(() => GenerateExample(verify: false));
+
+Task("VerifyGenerate")
+	.IsDependentOn("Build")
+	.Does(() => GenerateExample(verify: true));
+
+Task("Test")
+	.IsDependentOn("VerifyGenerate")
 	.Does(() => NUnit3($"tests/**/bin/**/*.Tests.dll", new NUnit3Settings { NoResults = true }));
 
 Task("SourceIndex")
@@ -171,6 +170,25 @@ Task("CoveragePublish")
 
 Task("Default")
 	.IsDependentOn("Test");
+
+string GetSemVerFromFile(string path)
+{
+	var versionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(path);
+	var semver = $"{versionInfo.FileMajorPart}.{versionInfo.FileMinorPart}.{versionInfo.FileBuildPart}";
+	if (prerelease.Length != 0)
+		semver += $"-{prerelease}";
+	return semver;
+}
+
+void GenerateExample(bool verify)
+{
+	int exitCode = StartProcess($@"src\XmlDocMarkdown\bin\{configuration}\XmlDocMarkdown.exe",
+		$@"tests\ExampleAssembly\bin\{configuration}\ExampleAssembly.dll example\" + (verify ? " --verify" : ""));
+	if (exitCode == 1 && verify)
+		throw new InvalidOperationException("Generated code doesn't match; use -target=CodeGen to regenerate.");
+	else if (exitCode != 0)
+		throw new InvalidOperationException($"Code generation failed with exit code {exitCode}.");
+}
 
 void ExecuteProcess(string exePath, string arguments)
 {
