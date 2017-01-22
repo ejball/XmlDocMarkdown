@@ -1,5 +1,7 @@
 # WeightChanged event
 
+An event.
+
 ```csharp
 public EventHandler WeightChanged;
 ```

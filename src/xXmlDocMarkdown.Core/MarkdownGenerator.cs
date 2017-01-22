@@ -98,16 +98,16 @@ namespace XmlDocMarkdown.Core
 						.DeclaredMembers
 						.Where(IsPublic)
 						.Where(x => !(x is TypeInfo) && IsVisibleMember(x))
-						.GroupBy(GetMemberUriName)
+						.GroupBy(GetShortName)
 						.Select(tg => new
 						{
-							MemberUriName = tg.Key,
+							ShortName = tg.Key,
 							Members = OrderMembers(tg, x => x).ToList(),
 						})
 						.ToList();
 					foreach (var memberGroup in memberGroups)
 					{
-						yield return WriteMemberPage($"{GetNamespaceUriName(publicType.Namespace)}/{GetTypeUriName(publicType.TypeInfo)}/{memberGroup.MemberUriName}.md", memberGroup.Members, xmlDocAssembly, assemblyFileName);
+						yield return WriteMemberPage($"{GetNamespaceUriName(publicType.Namespace)}/{GetTypeUriName(publicType.TypeInfo)}/{GetMemberUriName(memberGroup.Members[0])}.md", memberGroup.Members, xmlDocAssembly, assemblyFileName);
 					}
 				}
 			}
@@ -162,8 +162,7 @@ namespace XmlDocMarkdown.Core
 
 		private static string GetTypeUriName(TypeInfo typeInfo)
 		{
-			int genericTypeCount = typeInfo.GenericTypeParameters.Length;
-			return GetFullTypeName(typeInfo) + (genericTypeCount == 0 ? "" : $"-{genericTypeCount}");
+			return GetFullTypeName(typeInfo) + string.Concat(typeInfo.GenericTypeArguments.Select(x => $"-{x.Name}"));
 		}
 
 		private static string GetMemberUriName(MemberInfo memberInfo)
@@ -265,7 +264,7 @@ namespace XmlDocMarkdown.Core
 							.Select(tg => new
 							{
 								ShortSignature = tg.Key,
-								Members = tg.OrderBy(x => (x as TypeInfo)?.GenericTypeParameters.Length ?? 0).ToList()
+								Members = tg.OrderBy(x => (x as TypeInfo)?.GenericTypeArguments.Length ?? 0).ToList()
 							}), x => x.Members[0]).ToList();
 						if (innerMemberGroups.Count != 0)
 						{
@@ -722,7 +721,7 @@ namespace XmlDocMarkdown.Core
 				foreach (var baseInterface in baseInterfaces)
 				{
 					if (!(typeKind == TypeKind.Class && baseInterface.IsAssignableFrom(typeInfo.BaseType.GetTypeInfo())) &&
-						!baseInterfaces.Any(x => x.MetadataToken != baseInterface.MetadataToken && baseInterface.IsAssignableFrom(x)))
+						!baseInterfaces.Any(x => !Equals(x, baseInterface) && baseInterface.IsAssignableFrom(x)))
 					{
 						yield return isFirstBase ? " : " : ", ";
 						yield return RenderTypeName(baseInterface, seeAlso);
@@ -1307,7 +1306,7 @@ namespace XmlDocMarkdown.Core
 				if (inline.IsParamRef || inline.IsTypeParamRef)
 					text = $"*{text}*";
 
-				if (see != null && context.Assembly == GetMemberAssembly(see) && seeType?.MetadataToken != context.Type?.GetTypeInfo()?.MetadataToken && see?.MetadataToken != context.Member?.MetadataToken)
+				if (see != null && Equals(context.Assembly, GetMemberAssembly(see)) && !Equals(seeType, context.Type?.GetTypeInfo()) && !Equals(see, context.Member))
 				{
 					string path;
 

@@ -2,6 +2,8 @@
 
 # Overloaded method
 
+An overloaded method.
+
 ```csharp
 public void Overloaded()
 ```
@@ -10,51 +12,92 @@ public void Overloaded()
 
 # Overloaded method
 
+An overloaded method.
+
 ```csharp
 public void Overloaded(int x)
 ```
 
+| parameter | description |
+| --- | --- |
+| `x` | The parameter. |
+
 ---
 
 # Overloaded method
+
+An overloaded method.
 
 ```csharp
 public void Overloaded(string x)
 ```
 
+| parameter | description |
+| --- | --- |
+| `x` | The parameter. |
+
 ---
 
 # Overloaded method
+
+An overloaded method.
 
 ```csharp
 public T Overloaded<T>()
 ```
 
+| parameter | description |
+| --- | --- |
+| `T` | The type parameter. |
+
 ---
 
 # Overloaded method
+
+An overloaded method.
 
 ```csharp
 public T Overloaded<T>(string x)
 ```
 
+| parameter | description |
+| --- | --- |
+| `T` | The type parameter. |
+| `x` | The parameter. |
+
 ---
 
 # Overloaded method
+
+An overloaded method.
 
 ```csharp
 public void Overloaded<T>(T x)
 ```
 
+| parameter | description |
+| --- | --- |
+| `T` | The type parameter. |
+| `x` | The parameter. |
+
 ---
 
 # Overloaded method
+
+An overloaded method.
 
 ```csharp
 public void Overloaded<T, U>(T x, U y)
     where T : class
     where U : struct
 ```
+
+| parameter | description |
+| --- | --- |
+| `T` | The type parameter. |
+| `U` | The second type parameter. |
+| `x` | The parameter. |
+| `y` | The second parameter. |
 
 ---
 

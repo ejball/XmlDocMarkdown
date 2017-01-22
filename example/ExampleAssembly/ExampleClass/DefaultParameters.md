@@ -1,5 +1,7 @@
 # DefaultParameters method
 
+A method with default parameters.
+
 ```csharp
 public void DefaultParameters<T>(bool @bool = true, bool? no = false, bool? maybe = null, byte @byte = 255, 
     sbyte @sbyte = 127, char @char = 'ሴ', decimal @decimal = 3.14, double @double = NaNm, 

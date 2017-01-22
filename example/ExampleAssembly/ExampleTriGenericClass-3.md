@@ -16,7 +16,7 @@ public class ExampleTriGenericClass
 
 | name | description |
 | --- | --- |
-| [ExampleTriGenericClass](ExampleTriGenericClass/ExampleTriGenericClass.md)() | The default constructor. |
+| [ExampleTriGenericClass](ExampleTriGenericClass-3/ExampleTriGenericClass.md)() | The default constructor. |
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))
 

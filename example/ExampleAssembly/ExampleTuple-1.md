@@ -1,10 +1,14 @@
-# ExampleTuple class
+# ExampleTuple structure
 
-A helper class for tuples.
+A 1-tuple.
 
 ```csharp
-public static class ExampleTuple
+public struct ExampleTuple
 ```
+
+| parameter | description |
+| --- | --- |
+| `T1` | The first type. |
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))
 

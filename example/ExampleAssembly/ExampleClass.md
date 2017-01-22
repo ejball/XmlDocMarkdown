@@ -16,18 +16,18 @@ public class ExampleClass
 | static readonly [Default](ExampleClass/Default.md) | A static lifetime field. |
 | static [Create](ExampleClass/Create.md)() | A static lifetime method. |
 | static [Create](ExampleClass/Create.md)(…) | Another static lifetime method. |
-| [Id](ExampleClass/Id.md) { get; } |  |
-| [Weight](ExampleClass/Weight.md) { get; set; } |  |
-| [IsBadIdea](ExampleClass/IsBadIdea.md) |  |
-| event [WeightChanged](ExampleClass/WeightChanged.md) |  |
-| [DefaultParameters&lt;T&gt;](ExampleClass/DefaultParameters.md)(…) |  |
-| [Jump](ExampleClass/Jump.md)() |  |
-| [LongMethodNameWithTemplateParametersAndMethodParameters&lt;T&gt;](ExampleClass/LongMethodNameWithTemplateParametersAndMethodParameters.md)(…) |  |
-| [Overloaded](ExampleClass/Overloaded.md)() |  |
-| [Overloaded](ExampleClass/Overloaded.md)(…) |  (2 methods) |
-| [Overloaded&lt;T&gt;](ExampleClass/Overloaded.md)() |  |
-| [Overloaded&lt;T&gt;](ExampleClass/Overloaded.md)(…) |  (2 methods) |
-| [Overloaded&lt;T,U&gt;](ExampleClass/Overloaded.md)(…) |  |
+| [Id](ExampleClass/Id.md) { get; } | A read-only property. |
+| [Weight](ExampleClass/Weight.md) { get; set; } | A read-write property with a much-longer than expected summary to see if there is any word wrapping in the member name. |
+| [IsBadIdea](ExampleClass/IsBadIdea.md) | A public field. |
+| event [WeightChanged](ExampleClass/WeightChanged.md) | An event. |
+| [DefaultParameters&lt;T&gt;](ExampleClass/DefaultParameters.md)(…) | A method with default parameters. |
+| [Jump](ExampleClass/Jump.md)() | A boring method. |
+| [LongMethodNameWithTemplateParametersAndMethodParameters&lt;T&gt;](ExampleClass/LongMethodNameWithTemplateParametersAndMethodParameters.md)(…) | A method with a really long name. |
+| [Overloaded](ExampleClass/Overloaded.md)() | An overloaded method. |
+| [Overloaded](ExampleClass/Overloaded.md)(…) | An overloaded method. (2 methods) |
+| [Overloaded&lt;T&gt;](ExampleClass/Overloaded.md)() | An overloaded method. |
+| [Overloaded&lt;T&gt;](ExampleClass/Overloaded.md)(…) | An overloaded method. (2 methods) |
+| [Overloaded&lt;T,U&gt;](ExampleClass/Overloaded.md)(…) | An overloaded method. |
 | static [MaxWeight](ExampleClass/MaxWeight.md) { get; set; } | A static read-write property. |
 | static [MinWeight](ExampleClass/MinWeight.md) { get; } | A static read-only property. |
 | const [BlankId](ExampleClass/BlankId.md) | A constant field. |

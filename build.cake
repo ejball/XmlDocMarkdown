@@ -40,6 +40,7 @@ Task("Clean")
 		CleanDirectories($"tests/**/bin");
 		CleanDirectories($"tests/**/obj");
 		CleanDirectories("release");
+		CleanDirectories("example");
 	});
 
 Task("Build")

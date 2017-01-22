@@ -1,8 +1,14 @@
 # Id property
 
+A read-only property.
+
 ```csharp
 public string Id { get; }
 ```
+
+## Property Value
+
+The ID.
 
 (from class [ExampleClass](../ExampleClass.md) of namespace [ExampleAssembly](../../ExampleAssembly.md))
 

@@ -12,7 +12,7 @@ namespace XmlDocMarkdown.Core
 
 		public XmlDocMember FindMember(MemberInfo info)
 		{
-			return Members.FirstOrDefault(x => x.Info?.MetadataToken == info.MetadataToken);
+			return Members.FirstOrDefault(x => x.Info.MetadataToken, info.MetadataToken));
 		}
 	}
 }

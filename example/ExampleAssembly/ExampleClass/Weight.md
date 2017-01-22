@@ -1,5 +1,7 @@
 # Weight property
 
+A read-write property with a much-longer than expected summary to see if there is any word wrapping in the member name.
+
 ```csharp
 public double Weight { get; set; }
 ```

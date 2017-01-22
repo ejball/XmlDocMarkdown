@@ -14,7 +14,7 @@ public class ExampleGenericClass
 
 | name | description |
 | --- | --- |
-| [ExampleGenericClass](ExampleGenericClass/ExampleGenericClass.md)() | The default constructor. |
+| [ExampleGenericClass](ExampleGenericClass-1/ExampleGenericClass.md)() | The default constructor. |
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))
 
