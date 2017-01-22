@@ -10,7 +10,7 @@ public class ExampleClass
 
 | name | description |
 | --- | --- |
-| [ExampleClass](ExampleClass/ExampleClass.md)() | The default constructor. |
+| [ExampleClass](ExampleClass/ExampleClass.md)() | A no-arg constructor. |
 | [ExampleClass](ExampleClass/ExampleClass.md)(…) | A one-arg constructor. |
 | static [Instance](ExampleClass/Instance.md) { get; } | A static lifetime property. |
 | static readonly [Default](ExampleClass/Default.md) | A static lifetime field. |

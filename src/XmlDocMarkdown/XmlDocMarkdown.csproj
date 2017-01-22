@@ -70,12 +70,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj">
-      <Project>{e98ef318-94b7-4b61-8207-63a14cf9ecc3}</Project>
+      <Project>{b376bda9-05ea-4e31-9287-000ab92ba4d0}</Project>
       <Name>XmlDocMarkdown.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\XmlDocMarkdown.NuDoqCore\XmlDocMarkdown.NuDoqCore.csproj">
-      <Project>{4cd65742-8bb2-4c52-b169-317a7e5ee5a6}</Project>
-      <Name>XmlDocMarkdown.NuDoqCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

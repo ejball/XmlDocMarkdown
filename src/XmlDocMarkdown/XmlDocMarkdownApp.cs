@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Xml.Linq;
 using ArgsReading;
 using XmlDocMarkdown.Core;
-using XmlDocMarkdown.NuDoqCore;
 
 namespace XmlDocMarkdown
 {
@@ -22,7 +22,7 @@ namespace XmlDocMarkdown
 				var argsReader = new ArgsReader(args);
 				if (argsReader.ReadHelpFlag())
 				{
-					WriteUsage();
+					WriteUsage(Console.Out);
 					return 0;
 				}
 
@@ -47,7 +47,22 @@ namespace XmlDocMarkdown
 				argsReader.VerifyComplete();
 
 				var assembly = Assembly.LoadFrom(inputPath);
-				var xmlDocAssembly = NuDoqXmlDocUtility.CreateXmlDocAssembly(assembly);
+				XmlDocAssembly xmlDocAssembly;
+
+				var xmlDocPath = Path.ChangeExtension(inputPath, ".xml");
+				if (!File.Exists(xmlDocPath))
+					xmlDocPath = Path.ChangeExtension(inputPath, ".XML");
+
+				if (File.Exists(xmlDocPath))
+				{
+					var xDocument = XDocument.Load(xmlDocPath);
+					xmlDocAssembly = new XmlDocAssembly(xDocument);
+				}
+				else
+				{
+					xmlDocAssembly = new XmlDocAssembly();
+				}
+
 				var namedTexts = generator.GenerateOutput(assembly, xmlDocAssembly);
 
 				var namedTextsToWrite = new List<NamedText>();
@@ -96,14 +111,11 @@ namespace XmlDocMarkdown
 			}
 			catch (Exception exception)
 			{
-				if (exception is ApplicationException || exception is ArgsReaderException)
+				if (exception is ArgsReaderException)
 				{
 					Console.Error.WriteLine(exception.Message);
-					if (exception is ArgsReaderException)
-					{
-						Console.Error.WriteLine();
-						WriteUsage();
-					}
+					Console.Error.WriteLine();
+					WriteUsage(Console.Error);
 					return 2;
 				}
 				else
@@ -114,25 +126,25 @@ namespace XmlDocMarkdown
 			}
 		}
 
-		private void WriteUsage()
+		private void WriteUsage(TextWriter textWriter)
 		{
-			Console.WriteLine("Generates Markdown from .NET XML documentation comments.");
-			Console.WriteLine();
-			Console.WriteLine("Usage: XmlDocMarkdown input output [options]");
-			Console.WriteLine();
-			Console.WriteLine("   input");
-			Console.WriteLine("      The path to the input assembly.");
-			Console.WriteLine("   output");
-			Console.WriteLine("      The path to the output directory.");
-			Console.WriteLine();
-			Console.WriteLine("   --newline (auto|lf|crlf)");
-			Console.WriteLine("      The newline used in the output (default auto).");
-			Console.WriteLine("   --dryrun");
-			Console.WriteLine("      Executes the tool without making changes to the file system.");
-			Console.WriteLine("   --verify");
-			Console.WriteLine("      Exits with error code 1 if changes to the file system are needed.");
-			Console.WriteLine("   --quiet");
-			Console.WriteLine("      Suppresses normal console output.");
+			textWriter.WriteLine("Generates Markdown from .NET XML documentation comments.");
+			textWriter.WriteLine();
+			textWriter.WriteLine("Usage: XmlDocMarkdown input output [options]");
+			textWriter.WriteLine();
+			textWriter.WriteLine("   input");
+			textWriter.WriteLine("      The path to the input assembly.");
+			textWriter.WriteLine("   output");
+			textWriter.WriteLine("      The path to the output directory.");
+			textWriter.WriteLine();
+			textWriter.WriteLine("   --newline (auto|lf|crlf)");
+			textWriter.WriteLine("      The newline used in the output (default auto).");
+			textWriter.WriteLine("   --dryrun");
+			textWriter.WriteLine("      Executes the tool without making changes to the file system.");
+			textWriter.WriteLine("   --verify");
+			textWriter.WriteLine("      Exits with error code 1 if changes to the file system are needed.");
+			textWriter.WriteLine("   --quiet");
+			textWriter.WriteLine("      Suppresses normal console output.");
 		}
 	}
 }

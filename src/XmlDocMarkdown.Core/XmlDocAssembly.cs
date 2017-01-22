@@ -1,18 +1,30 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
+using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core
 {
 	public sealed class XmlDocAssembly
 	{
-		public Assembly Info { get; set; }
+		public XmlDocAssembly()
+		{
+		}
+
+		public XmlDocAssembly(XDocument xDocument)
+		{
+			var xElement = xDocument?.Root;
+			if (xElement != null)
+			{
+				foreach (var xMember in xElement.Elements("members").Elements("member").Where(x => x.Attribute("name") != null))
+					Members.Add(new XmlDocMember(xMember));
+			}
+		}
 
 		public Collection<XmlDocMember> Members { get; } = new Collection<XmlDocMember>();
 
-		public XmlDocMember FindMember(MemberInfo info)
+		public XmlDocMember FindMember(string xmlDocName)
 		{
-			return Members.FirstOrDefault(x => x.Info?.MetadataToken == info.MetadataToken);
+			return Members.FirstOrDefault(x => x.XmlDocName == xmlDocName);
 		}
 	}
 }

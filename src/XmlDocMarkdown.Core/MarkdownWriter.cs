@@ -3,7 +3,7 @@ using System.IO;
 
 namespace XmlDocMarkdown.Core
 {
-	public sealed class MarkdownWriter
+	internal sealed class MarkdownWriter
 	{
 		public MarkdownWriter(TextWriter textWriter)
 		{

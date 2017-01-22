@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using ArgsReading;
+﻿using ArgsReading;
 
 namespace XmlDocMarkdown
 {
@@ -23,22 +22,6 @@ namespace XmlDocMarkdown
 		public static bool ReadVerifyFlag(this ArgsReader args)
 		{
 			return args.ReadFlag("verify");
-		}
-
-		public static string ReadIndentOption(this ArgsReader args)
-		{
-			string value = args.ReadOption("indent");
-			if (value == null)
-				return null;
-
-			if (value == "tab")
-				return "\t";
-
-			int spaceCount;
-			if (int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out spaceCount) && spaceCount >= 1 && spaceCount <= 8)
-				return new string(' ', spaceCount);
-
-			throw new ArgsReaderException($"Invalid indent '{value}'. (Should be 'tab' or the number of spaces.)");
 		}
 
 		public static string ReadNewLineOption(this ArgsReader args)

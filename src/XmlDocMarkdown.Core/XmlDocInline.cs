@@ -1,12 +1,10 @@
-﻿using System.Reflection;
-
-namespace XmlDocMarkdown.Core
+﻿namespace XmlDocMarkdown.Core
 {
 	public sealed class XmlDocInline
 	{
 		public string Text { get; set; }
 
-		public MemberInfo See { get; set; }
+		public string SeeRef { get; set; }
 
 		public bool IsCode { get; set; }
 

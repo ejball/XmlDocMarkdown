@@ -1,6 +1,6 @@
 # ExampleClass constructor (1 of 2)
 
-The default constructor.
+A no-arg constructor.
 
 ```csharp
 public ExampleClass()
