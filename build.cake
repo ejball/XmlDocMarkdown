@@ -100,7 +100,7 @@ Task("NuGetPackage")
 	{
 		CreateDirectory("release");
 
-		foreach (var nuspecPath in GetFiles($"src/*.nuspec"))
+		foreach (var nuspecPath in GetFiles($"src/**/*.nuspec"))
 		{
 			NuGetPack(nuspecPath, new NuGetPackSettings
 			{
