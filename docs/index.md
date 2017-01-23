@@ -8,7 +8,7 @@ Use [NuGet](https://www.nuget.org/) to install **XmlDocMarkdown** from its [NuGe
 
 For example, `nuget install XmlDocMarkdown -excludeversion` will download the latest version of `XmlDocMarkdown.exe` into `XmlDocMarkdown/tools`.
 
-On Mac or Linux, use [Mono](http://www.mono-project.com/) to run `NuGet.exe` as well as the Facility command-line tool itself.
+On Mac or Linux, use [Mono](http://www.mono-project.com/) to run `NuGet.exe` as well as the command-line tool itself.
 
 ## Usage
 
