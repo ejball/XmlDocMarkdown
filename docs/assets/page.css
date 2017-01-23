@@ -45,6 +45,16 @@ nav.affix[data-toggle='toc'] {
   width: 190px;
 }
 
+pre {
+  color: inherit;
+}
+
+code {
+  color: inherit;
+  background-color: inherit;
+  padding: 0 1px;
+}
+
 @media (max-width: 767px) {
   #toc {
     display: none;
