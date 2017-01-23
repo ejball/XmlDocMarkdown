@@ -2,12 +2,13 @@
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace XmlDocMarkdown.Core
 {
 	public static class XmlDocUtility
 	{
-		public static string GetXmlDocName(MemberInfo memberInfo)
+		public static string GetXmlDocRef(MemberInfo memberInfo)
 		{
 			if (memberInfo == null)
 				return null;
@@ -38,6 +39,12 @@ namespace XmlDocMarkdown.Core
 				return "F:" + GetXmlDocMemberPart(fieldInfo);
 
 			throw new InvalidOperationException("Unexpected member: " + memberInfo);
+		}
+
+		public static string GetShortNameForXmlDocRef(string xmlDocRef)
+		{
+			var match = Regex.Match(xmlDocRef, @"^[A-Z]:([^\.]+\.)*(?'name'[^\.\(\{`]+)", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
+			return match.Success ? match.Groups["name"].Value : xmlDocRef;
 		}
 
 		private static string GetXmlDocTypePart(TypeInfo typeInfo)

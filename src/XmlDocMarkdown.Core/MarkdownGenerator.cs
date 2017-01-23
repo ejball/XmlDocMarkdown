@@ -36,7 +36,7 @@ namespace XmlDocMarkdown.Core
 				.Where(IsPublic)
 				.Where(x => !(x is TypeInfo) && IsVisibleMember(x))
 				.Concat(visibleTypes)
-				.ToDictionary(XmlDocUtility.GetXmlDocName, x => x);
+				.ToDictionary(XmlDocUtility.GetXmlDocRef, x => x);
 
 			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName);
 
@@ -144,7 +144,7 @@ namespace XmlDocMarkdown.Core
 
 		private static Collection<XmlDocBlock> GetSummary(XmlDocAssembly xmlDocAssembly, MemberInfo member)
 		{
-			return GetSummary(xmlDocAssembly.FindMember(XmlDocUtility.GetXmlDocName(member)), member);
+			return GetSummary(xmlDocAssembly.FindMember(XmlDocUtility.GetXmlDocRef(member)), member);
 		}
 
 		private static Collection<XmlDocBlock> GetSummary(XmlDocMember xmlDocMember, MemberInfo member)
@@ -218,7 +218,7 @@ namespace XmlDocMarkdown.Core
 
 					writer.WriteLine($"# {GetMemberHeading(memberGroup, memberIndex)}");
 
-					var xmlDocMember = context.XmlDocAssembly.FindMember(XmlDocUtility.GetXmlDocName(memberInfo));
+					var xmlDocMember = context.XmlDocAssembly.FindMember(XmlDocUtility.GetXmlDocRef(memberInfo));
 
 					var summary = GetSummary(xmlDocMember, memberInfo);
 					if (summary != null && summary.Count != 0)
@@ -328,6 +328,25 @@ namespace XmlDocMarkdown.Core
 						writer.WriteLine("## Property Value");
 						writer.WriteLine();
 						writer.WriteLines(ToMarkdown(propertyValue, memberContext));
+					}
+
+					var exceptions = xmlDocMember?.Exceptions;
+					if (exceptions != null && exceptions.Count != 0)
+					{
+						writer.WriteLine();
+						writer.WriteLine("## Exceptions");
+						writer.WriteLine();
+						writer.WriteLine("| exception | condition |");
+						writer.WriteLine("| --- | --- |");
+
+						foreach (var exception in exceptions)
+						{
+							MemberInfo exceptionMemberInfo = null;
+							context.MembersByXmlDocName.TryGetValue(exception.ExceptionTypeRef, out exceptionMemberInfo);
+							string text = exceptionMemberInfo != null ? GetShortName(exceptionMemberInfo) : XmlDocUtility.GetShortNameForXmlDocRef(exception.ExceptionTypeRef);
+							string link = WrapMarkdownRefLink(text, exceptionMemberInfo, context);
+							writer.WriteLine($"| {link} | {ToMarkdown(exception.Condition?.FirstOrDefault()?.Inlines, context) ?? ""} |");
+						}
 					}
 
 					var remarks = xmlDocMember?.Remarks;
@@ -734,7 +753,7 @@ namespace XmlDocMarkdown.Core
 				foreach (var baseInterface in baseInterfaces)
 				{
 					if (!(typeKind == TypeKind.Class && baseInterface.IsAssignableFrom(typeInfo.BaseType.GetTypeInfo())) &&
-						!baseInterfaces.Any(x => XmlDocUtility.GetXmlDocName(x) != XmlDocUtility.GetXmlDocName(baseInterface) && baseInterface.IsAssignableFrom(x)))
+						!baseInterfaces.Any(x => XmlDocUtility.GetXmlDocRef(x) != XmlDocUtility.GetXmlDocRef(baseInterface) && baseInterface.IsAssignableFrom(x)))
 					{
 						yield return isFirstBase ? " : " : ", ";
 						yield return RenderTypeName(baseInterface, seeAlso);
@@ -1316,10 +1335,14 @@ namespace XmlDocMarkdown.Core
 			MemberInfo seeMemberInfo = null;
 			if (inline.SeeRef != null)
 				context.MembersByXmlDocName.TryGetValue(inline.SeeRef, out seeMemberInfo);
-			var seeTypeInfo = seeMemberInfo as TypeInfo;
 
-			if (seeMemberInfo != null && text.Length == 0)
-				text = GetShortName(seeMemberInfo);
+			if (text.Length == 0)
+			{
+				if (seeMemberInfo != null)
+					text = GetShortName(seeMemberInfo);
+				else if (inline.SeeRef != null)
+					text = XmlDocUtility.GetShortNameForXmlDocRef(inline.SeeRef);
+			}
 
 			if (text.Length != 0)
 			{
@@ -1329,58 +1352,67 @@ namespace XmlDocMarkdown.Core
 				if (inline.IsParamRef || inline.IsTypeParamRef)
 					text = $"*{text}*";
 
-				if (seeMemberInfo != null &&
-					XmlDocUtility.GetXmlDocName(seeTypeInfo) != XmlDocUtility.GetXmlDocName(context.TypeInfo) &&
-					XmlDocUtility.GetXmlDocName(seeMemberInfo) != XmlDocUtility.GetXmlDocName(context.MemberInfo))
-				{
-					string path;
+				text = WrapMarkdownRefLink(text, seeMemberInfo, context);
+			}
 
-					if (context.MemberInfo != null)
+			return text;
+		}
+
+		private static string WrapMarkdownRefLink(string text, MemberInfo memberInfo, MarkdownContext context)
+		{
+			var typeInfo = memberInfo as TypeInfo;
+
+			if (memberInfo != null &&
+				XmlDocUtility.GetXmlDocRef(typeInfo) != XmlDocUtility.GetXmlDocRef(context.TypeInfo) &&
+				XmlDocUtility.GetXmlDocRef(memberInfo) != XmlDocUtility.GetXmlDocRef(context.MemberInfo))
+			{
+				string path;
+
+				if (context.MemberInfo != null)
+				{
+					if (typeInfo != null)
 					{
-						if (seeTypeInfo != null)
-						{
-							if (seeTypeInfo.Namespace == context.TypeInfo.Namespace)
-								path = $"../{GetTypeUriName(seeTypeInfo)}.md";
-							else
-								path = $"../../{GetNamespaceUriName(seeTypeInfo.Namespace)}/{GetTypeUriName(seeTypeInfo)}.md";
-						}
+						if (typeInfo.Namespace == context.TypeInfo.Namespace)
+							path = $"../{GetTypeUriName(typeInfo)}.md";
 						else
-						{
-							if (seeMemberInfo.DeclaringType == context.TypeInfo.AsType())
-								path = $"{GetMemberUriName(seeMemberInfo)}.md";
-							else if (seeMemberInfo.DeclaringType?.Namespace == context.TypeInfo.Namespace)
-								path = $"../{GetTypeUriName(seeMemberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(seeMemberInfo)}.md";
-							else
-								path = $"../../{GetNamespaceUriName(seeMemberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(seeMemberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(seeMemberInfo)}.md";
-						}
-					}
-					else if (context.TypeInfo != null)
-					{
-						if (seeTypeInfo != null)
-						{
-							if (seeTypeInfo.Namespace == context.TypeInfo.Namespace)
-								path = $"{GetTypeUriName(seeTypeInfo)}.md";
-							else
-								path = $"../{GetNamespaceUriName(seeTypeInfo.Namespace)}/{GetTypeUriName(seeTypeInfo)}.md";
-						}
-						else
-						{
-							if (seeMemberInfo.DeclaringType?.Namespace == context.TypeInfo.Namespace)
-								path = $"{GetTypeUriName(seeMemberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(seeMemberInfo)}.md";
-							else
-								path = $"../{GetNamespaceUriName(seeMemberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(seeMemberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(seeMemberInfo)}.md";
-						}
+							path = $"../../{GetNamespaceUriName(typeInfo.Namespace)}/{GetTypeUriName(typeInfo)}.md";
 					}
 					else
 					{
-						if (seeTypeInfo != null)
-							path = $"{GetNamespaceUriName(seeTypeInfo.Namespace)}/{GetTypeUriName(seeTypeInfo)}.md";
+						if (memberInfo.DeclaringType == context.TypeInfo.AsType())
+							path = $"{GetMemberUriName(memberInfo)}.md";
+						else if (memberInfo.DeclaringType?.Namespace == context.TypeInfo.Namespace)
+							path = $"../{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}.md";
 						else
-							path = $"{GetNamespaceUriName(seeMemberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(seeMemberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(seeMemberInfo)}.md";
+							path = $"../../{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}.md";
 					}
-
-					text = $"[{text}]({path})";
 				}
+				else if (context.TypeInfo != null)
+				{
+					if (typeInfo != null)
+					{
+						if (typeInfo.Namespace == context.TypeInfo.Namespace)
+							path = $"{GetTypeUriName(typeInfo)}.md";
+						else
+							path = $"../{GetNamespaceUriName(typeInfo.Namespace)}/{GetTypeUriName(typeInfo)}.md";
+					}
+					else
+					{
+						if (memberInfo.DeclaringType?.Namespace == context.TypeInfo.Namespace)
+							path = $"{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}.md";
+						else
+							path = $"../{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}.md";
+					}
+				}
+				else
+				{
+					if (typeInfo != null)
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetTypeUriName(typeInfo)}.md";
+					else
+						path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}.md";
+				}
+
+				text = $"[{text}]({path})";
 			}
 
 			return text;

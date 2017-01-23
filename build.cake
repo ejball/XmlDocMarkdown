@@ -50,16 +50,16 @@ Task("Build")
 		MSBuild(solutionFileName, settings => settings.SetConfiguration(configuration));
 	});
 
-Task("Generate")
+Task("GenerateDocs")
 	.IsDependentOn("Build")
 	.Does(() => GenerateExample(verify: false));
 
-Task("VerifyGenerate")
+Task("VerifyGenerateDocs")
 	.IsDependentOn("Build")
 	.Does(() => GenerateExample(verify: true));
 
 Task("Test")
-	.IsDependentOn("VerifyGenerate")
+	.IsDependentOn("VerifyGenerateDocs")
 	.Does(() => NUnit3($"tests/**/bin/**/*.Tests.dll", new NUnit3Settings { NoResults = true }));
 
 Task("SourceIndex")
@@ -188,9 +188,9 @@ void GenerateExample(bool verify)
 	int exitCode = StartProcess($@"src\XmlDocMarkdown\bin\{configuration}\XmlDocMarkdown.exe",
 		$@"tests\ExampleAssembly\bin\{configuration}\ExampleAssembly.dll example\" + (verify ? " --verify" : ""));
 	if (exitCode == 1 && verify)
-		throw new InvalidOperationException("Generated code doesn't match; use -target=CodeGen to regenerate.");
+		throw new InvalidOperationException("Generated docs don't match; use -target=GenerateDocs to regenerate.");
 	else if (exitCode != 0)
-		throw new InvalidOperationException($"Code generation failed with exit code {exitCode}.");
+		throw new InvalidOperationException($"Docs generation failed with exit code {exitCode}.");
 }
 
 void ExecuteProcess(string exePath, string arguments)

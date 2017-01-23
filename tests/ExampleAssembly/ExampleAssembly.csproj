@@ -49,6 +49,7 @@
     <Compile Include="ExampleDelegate.cs" />
     <Compile Include="ExampleDerivedClass.cs" />
     <Compile Include="ExampleEnum.cs" />
+    <Compile Include="ExampleException.cs" />
     <Compile Include="ExampleFlagsEnum.cs" />
     <Compile Include="ExampleGenericClass.cs" />
     <Compile Include="ExampleGenericDelegate.cs" />

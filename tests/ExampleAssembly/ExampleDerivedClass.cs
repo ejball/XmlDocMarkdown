@@ -13,6 +13,8 @@ namespace ExampleAssembly
 		/// The enumerator.
 		/// </summary>
 		/// <returns>The strings.</returns>
+		/// <exception cref="ExampleException">An example error occurred.</exception>
+		/// <exception cref="NotImplementedException">It isn't implemented.</exception>
 		public IEnumerator<string> GetEnumerator()
 		{
 			throw new NotImplementedException();

@@ -1,6 +1,6 @@
 # ExampleAssembly assembly
 
-The assembly `ExampleAssembly.dll` has 25 public types in 2 namespaces.
+The assembly `ExampleAssembly.dll` has 26 public types in 2 namespaces.
 
 ## ExampleAssembly namespace
 
@@ -13,6 +13,7 @@ The assembly `ExampleAssembly.dll` has 25 public types in 2 namespaces.
 | delegate [ExampleDelegate](ExampleAssembly/ExampleDelegate.md) | A delegate. |
 | class [ExampleDerivedClass](ExampleAssembly/ExampleDerivedClass.md) | A class that derives from [`ExampleClass`](ExampleAssembly/ExampleClass.md). |
 | enum [ExampleEnum](ExampleAssembly/ExampleEnum.md) | An enumeration. |
+| class [ExampleException](ExampleAssembly/ExampleException.md) | An example exception. |
 | [Flags] enum [ExampleFlagsEnum](ExampleAssembly/ExampleFlagsEnum.md) | A flags enumeration. |
 | class [ExampleGenericClass&lt;T&gt;](ExampleAssembly/ExampleGenericClass-1.md) | A generic class. |
 | delegate [ExampleGenericDelegate&lt;T1,T2,TResult&gt;](ExampleAssembly/ExampleGenericDelegate-3.md) | A generic delegate. |
