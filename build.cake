@@ -40,7 +40,6 @@ Task("Clean")
 		CleanDirectories($"tests/**/bin");
 		CleanDirectories($"tests/**/obj");
 		CleanDirectories("release");
-		CleanDirectories("example");
 	});
 
 Task("Build")
@@ -183,6 +182,9 @@ string GetSemVerFromFile(string path)
 
 void GenerateExample(bool verify)
 {
+	if (!verify)
+		CleanDirectories("example");
+
 	int exitCode = StartProcess($@"src\XmlDocMarkdown\bin\{configuration}\XmlDocMarkdown.exe",
 		$@"tests\ExampleAssembly\bin\{configuration}\ExampleAssembly.dll example\" + (verify ? " --verify" : ""));
 	if (exitCode == 1 && verify)
