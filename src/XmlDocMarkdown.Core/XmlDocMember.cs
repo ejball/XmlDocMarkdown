@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core
@@ -119,7 +120,7 @@ namespace XmlDocMarkdown.Core
 
 				var xText = xNode as XText;
 				if (xText != null)
-					m_block?.Inlines.Add(new XmlDocInline { Text = TrimText(xText.Value, StringSplitOptions.RemoveEmptyEntries, " ") });
+					m_block?.Inlines.Add(new XmlDocInline { Text = TrimText(xText.Value) });
 			}
 
 			private void AddElement(XElement xElement)
@@ -135,7 +136,7 @@ namespace XmlDocMarkdown.Core
 				case "code":
 					NextBlock();
 					m_block.IsCode = true;
-					m_block.Inlines.Add(new XmlDocInline { Text = TrimText(xElement.Value, StringSplitOptions.None, Environment.NewLine) });
+					m_block.Inlines.Add(new XmlDocInline { Text = TrimText(xElement.Value, isCode: true) });
 					NextBlock();
 					break;
 
@@ -227,10 +228,10 @@ namespace XmlDocMarkdown.Core
 				}
 			}
 
-			private static string TrimText(string text, StringSplitOptions splitOptions, string joinWith)
+			private static string TrimText(string text, bool isCode = false)
 			{
 				// trimming logic adapted from https://github.com/kzu/NuDoq
-				var lines = text.Split(new[] { Environment.NewLine, "\n" }, splitOptions).ToList();
+				var lines = text.Split(new[] { Environment.NewLine, "\n" }, isCode ? StringSplitOptions.None : StringSplitOptions.RemoveEmptyEntries).ToList();
 
 				if (lines.Count != 0 && lines[0].Trim().Length == 0)
 					lines.RemoveAt(0);
@@ -244,7 +245,12 @@ namespace XmlDocMarkdown.Core
 				if (indentLength <= 4 && lines[0].Length != 0 && lines[0][0] != '\t')
 					indentLength = 0;
 
-				return string.Join(joinWith, lines.Select(x => x.Length <= indentLength ? "" : x.Substring(indentLength)));
+				text = string.Join(isCode ? Environment.NewLine : " ", lines.Select(x => x.Length <= indentLength ? "" : x.Substring(indentLength)));
+
+				if (!isCode)
+					text = Regex.Replace(text, @"\s+", " ");
+
+				return text;
 			}
 
 			List<XmlDocBlock> m_blocks;

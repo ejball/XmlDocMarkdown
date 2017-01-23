@@ -16,7 +16,7 @@ public class ExampleDeepClass
 
 ## Remarks
 
-The `ExampleDeepClass` class has a [`NestedDelegate`](ExampleDeepClass.NestedDelegate.md) and a [`NestedClass`](ExampleDeepClass.NestedClass.md)with a [`VeryNestedStruct`](ExampleDeepClass.NestedClass.VeryNestedStruct.md) and a [`VeryVeryNestedInterface`](ExampleDeepClass.NestedClass.VeryNestedStruct.VeryVeryNestedInterface.md).             Another type in this namespace is [`ExampleClass`](ExampleClass.md) with method [`Create`](ExampleClass/Create.md). A type             in an inner namespace is [`ExampleInnerClass`](../ExampleAssembly.InnerNamespace/ExampleInnerClass.md), which has a constructor [`ExampleInnerClass`](../ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md).
+The `ExampleDeepClass` class has a [`NestedDelegate`](ExampleDeepClass.NestedDelegate.md) and a [`NestedClass`](ExampleDeepClass.NestedClass.md)with a [`VeryNestedStruct`](ExampleDeepClass.NestedClass.VeryNestedStruct.md) and a [`VeryVeryNestedInterface`](ExampleDeepClass.NestedClass.VeryNestedStruct.VeryVeryNestedInterface.md). Another type in this namespace is [`ExampleClass`](ExampleClass.md) with method [`Create`](ExampleClass/Create.md). A type in an inner namespace is [`ExampleInnerClass`](../ExampleAssembly.InnerNamespace/ExampleInnerClass.md), which has a constructor [`ExampleInnerClass`](../ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md).
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))
 
