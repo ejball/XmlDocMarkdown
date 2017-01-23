@@ -286,6 +286,7 @@ namespace XmlDocMarkdown.Core
 								ShortSignature = tg.Key,
 								Members = tg.OrderBy(x => (x as TypeInfo)?.GenericTypeParameters.Length ?? 0).ToList()
 							}), x => x.Members[0]).ToList();
+
 						if (innerMemberGroups.Count != 0)
 						{
 							writer.WriteLine();
@@ -1133,19 +1134,27 @@ namespace XmlDocMarkdown.Core
 
 		private bool IsPublic(MemberInfo memberInfo)
 		{
-			var eventInfo = memberInfo as EventInfo;
-			var propertyInfo = memberInfo as PropertyInfo;
-			var fieldInfo = memberInfo as FieldInfo;
-			var methodBase = memberInfo as MethodBase;
+			var typeInfo = memberInfo as TypeInfo;
+			if (typeInfo != null)
+				return typeInfo.IsPublic || typeInfo.IsNestedPublic;
 
-			return fieldInfo?.IsPublic ??
-				methodBase?.IsPublic ??
-				eventInfo?.AddMethod?.IsPublic ??
-				eventInfo?.RemoveMethod?.IsPublic ??
-				eventInfo?.RaiseMethod?.IsPublic ??
-				propertyInfo?.GetMethod?.IsPublic ??
-				propertyInfo?.SetMethod?.IsPublic ??
-				false;
+			var eventInfo = memberInfo as EventInfo;
+			if (eventInfo != null)
+				return (eventInfo.AddMethod?.IsPublic ?? false) || (eventInfo.RemoveMethod?.IsPublic ?? false) || (eventInfo.RaiseMethod?.IsPublic ?? false);
+
+			var propertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo != null)
+				return (propertyInfo.GetMethod?.IsPublic ?? false) || (propertyInfo.SetMethod?.IsPublic ?? false);
+
+			var fieldInfo = memberInfo as FieldInfo;
+			if (fieldInfo != null)
+				return fieldInfo.IsPublic;
+
+			var methodBase = memberInfo as MethodBase;
+			if (methodBase != null)
+				return methodBase.IsPublic;
+
+			return false;
 		}
 
 		private static bool IsObsolete(MemberInfo memberInfo)

@@ -11,6 +11,8 @@ public class ExampleDeepClass
 | name | description |
 | --- | --- |
 | [ExampleDeepClass](ExampleDeepClass/ExampleDeepClass.md)() | The default constructor. |
+| class [NestedClass](ExampleDeepClass.NestedClass.md) | A nested class. |
+| delegate [NestedDelegate](ExampleDeepClass.NestedDelegate.md) | A nested delegate. |
 
 ## Remarks
 

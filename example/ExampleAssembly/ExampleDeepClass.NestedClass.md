@@ -11,6 +11,7 @@ public class NestedClass
 | name | description |
 | --- | --- |
 | [NestedClass](ExampleDeepClass.NestedClass/NestedClass.md)() | The default constructor. |
+| struct [VeryNestedStruct](ExampleDeepClass.NestedClass.VeryNestedStruct.md) | A very nested structure. |
 
 ## Remarks
 
