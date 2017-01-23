@@ -7,7 +7,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A command-line tool that generates Markdown from .NET XML documentation comments.</description>
     <copyright>Copyright 2017 Ed Ball</copyright>
-    <projectUrl>https://github.com/ejball/XmlDocMarkdown</projectUrl>
+    <projectUrl>http://ejball.com/XmlDocMarkdown/</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/ejball/XmlDocMarkdown/master/LICENSE</licenseUrl>
     <tags>.NET XML documentation comments Markdown</tags>
   </metadata>
