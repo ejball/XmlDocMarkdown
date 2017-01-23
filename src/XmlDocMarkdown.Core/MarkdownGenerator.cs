@@ -218,7 +218,7 @@ namespace XmlDocMarkdown.Core
 
 					writer.WriteLine($"# {GetMemberHeading(memberGroup, memberIndex)}");
 
-					var xmlDocMember = context.XmlDocAssembly.FindMember(XmlDocUtility.GetXmlDocRef(memberInfo));
+					var xmlDocMember = memberContext.XmlDocAssembly.FindMember(XmlDocUtility.GetXmlDocRef(memberInfo));
 
 					var summary = GetSummary(xmlDocMember, memberInfo);
 					if (summary != null && summary.Count != 0)
@@ -270,7 +270,7 @@ namespace XmlDocMarkdown.Core
 							string valueText = isFlags ? "0x" + Convert.ToString(Convert.ToInt64(valueObject), 16).ToUpperInvariant() :
 								Enum.GetUnderlyingType(typeInfo.AsType()) == typeof(ulong) ? Convert.ToString(Convert.ToUInt64(valueObject)) :
 								Convert.ToString(Convert.ToInt64(valueObject));
-							string description = GetShortSummaryMarkdown(context.XmlDocAssembly, enumValue, memberContext);
+							string description = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, enumValue, memberContext);
 							writer.WriteLine($"| `{enumValue.Name}` | `{valueText}` | {description} |");
 						}
 					}
@@ -303,7 +303,7 @@ namespace XmlDocMarkdown.Core
 									$"{GetMemberUriName(firstInnerMember)}.md" :
 									$"{GetTypeUriName(typeInfo)}/{GetMemberUriName(firstInnerMember)}.md";
 								string memberText = GetShortSignatureMarkdown(innerMemberGroup.ShortSignature, memberPath);
-								string summaryText = GetShortSummaryMarkdown(context.XmlDocAssembly, firstInnerMember, memberContext);
+								string summaryText = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, firstInnerMember, memberContext);
 								if (innerMembers.Count != 1)
 									summaryText += $" ({innerMembers.Count} {GetMemberGroupNoun(innerMembers)})";
 
@@ -341,11 +341,11 @@ namespace XmlDocMarkdown.Core
 
 						foreach (var exception in exceptions)
 						{
-							MemberInfo exceptionMemberInfo = null;
-							context.MembersByXmlDocName.TryGetValue(exception.ExceptionTypeRef, out exceptionMemberInfo);
+							MemberInfo exceptionMemberInfo;
+							memberContext.MembersByXmlDocName.TryGetValue(exception.ExceptionTypeRef, out exceptionMemberInfo);
 							string text = exceptionMemberInfo != null ? GetShortName(exceptionMemberInfo) : XmlDocUtility.GetShortNameForXmlDocRef(exception.ExceptionTypeRef);
-							string link = WrapMarkdownRefLink(text, exceptionMemberInfo, context);
-							writer.WriteLine($"| {link} | {ToMarkdown(exception.Condition?.FirstOrDefault()?.Inlines, context) ?? ""} |");
+							string link = WrapMarkdownRefLink(text, exceptionMemberInfo, memberContext);
+							writer.WriteLine($"| {link} | {ToMarkdown(exception.Condition?.FirstOrDefault()?.Inlines, memberContext) ?? ""} |");
 						}
 					}
 

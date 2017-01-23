@@ -14,7 +14,7 @@ The strings.
 
 | exception | condition |
 | --- | --- |
-| [ExampleException](ExampleAssembly/ExampleException.md) | An example error occurred. |
+| [ExampleException](../ExampleException.md) | An example error occurred. |
 | NotImplementedException | It isn't implemented. |
 
 (from class [ExampleDerivedClass](../ExampleDerivedClass.md) of namespace [ExampleAssembly](../../ExampleAssembly.md))
