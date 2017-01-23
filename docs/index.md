@@ -18,7 +18,7 @@ The XML documentation file should be in the same directory as the input assembly
 
 The output directory will be created if necessary.
 
-For example, `xmldocmarkdown MyLibrary.dll docs` generates Markdown documentation in the `docs` directory for the `MyLibrary.dll` assembly. The compiler-generated `MyLibrary.xml`file should be in the same directory as `MyLibrary.dll`.
+For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentation in the `docs` directory for the `MyLibrary.dll` assembly. The compiler-generated `MyLibrary.xml`file should be in the same directory as `MyLibrary.dll`.
 
 ## Options
 
