@@ -10,11 +10,11 @@ public delegate TResult ExampleGenericDelegate<in T1, in T2, out TResult>(T1 arg
 
 | parameter | description |
 | --- | --- |
-| `T1` | The first generic type. |
-| `T2` | The second generic type. |
-| `TResult` | The result type. |
-| `arg1` | The first argument. |
-| `arg2` | The second argument. |
+| T1 | The first generic type. |
+| T2 | The second generic type. |
+| TResult | The result type. |
+| arg1 | The first argument. |
+| arg2 | The second argument. |
 
 ## Return Value
 

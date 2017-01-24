@@ -10,11 +10,11 @@ public enum ExampleEnum
 
 | name | value | description |
 | --- | --- | --- |
-| `Zero` | `0` | Zero! |
-| `One` | `1` | One! |
-| `Two` | `2` | Two! |
-| `Min` | `-2147483648` | Very negative! |
-| `Max` | `2147483647` | Very positive! |
+| Zero | `0` | Zero! |
+| One | `1` | One! |
+| Two | `2` | Two! |
+| Min | `-2147483648` | Very negative! |
+| Max | `2147483647` | Very positive! |
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))
 

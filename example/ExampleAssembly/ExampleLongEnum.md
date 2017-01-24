@@ -10,8 +10,8 @@ public enum ExampleLongEnum : ulong
 
 | name | value | description |
 | --- | --- | --- |
-| `Backward` | `0` | Backward. |
-| `Forward` | `18446744073709551615` | Forward. |
+| Backward | `0` | Backward. |
+| Forward | `18446744073709551615` | Forward. |
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))
 

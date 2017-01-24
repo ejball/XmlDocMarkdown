@@ -8,7 +8,7 @@ public class ExampleGenericClass<T>
 
 | parameter | description |
 | --- | --- |
-| `T` | The generic type. |
+| T | The generic type. |
 
 ## Public Members
 

@@ -18,7 +18,7 @@ public ExampleClass(string id)
 
 | parameter | description |
 | --- | --- |
-| `id` | The ID. |
+| id | The ID. |
 
 ---
 

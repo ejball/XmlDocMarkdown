@@ -8,10 +8,10 @@ public struct ExampleTuple<T1, T2, T3, T4>
 
 | parameter | description |
 | --- | --- |
-| `T1` | The first type. |
-| `T2` | The second type. |
-| `T3` | The third type. |
-| `T4` | The fourth type. |
+| T1 | The first type. |
+| T2 | The second type. |
+| T3 | The third type. |
+| T4 | The fourth type. |
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))
 

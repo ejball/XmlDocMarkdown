@@ -8,7 +8,7 @@ public struct ExampleTuple<T1>
 
 | parameter | description |
 | --- | --- |
-| `T1` | The first type. |
+| T1 | The first type. |
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))
 

@@ -8,8 +8,8 @@ public ExampleException(string message, Exception innerException = null)
 
 | parameter | description |
 | --- | --- |
-| `message` | The message. |
-| `innerException` | The inner exception. |
+| message | The message. |
+| innerException | The inner exception. |
 
 (from class [ExampleException](../ExampleException.md) of namespace [ExampleAssembly](../../ExampleAssembly.md))
 

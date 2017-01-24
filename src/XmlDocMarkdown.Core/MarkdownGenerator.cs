@@ -245,12 +245,12 @@ namespace XmlDocMarkdown.Core
 							foreach (var typeParameter in typeParameters)
 							{
 								string description = ToMarkdown(typeParameter.Description.FirstOrDefault()?.Inlines, memberContext) ?? "";
-								writer.WriteLine($"| `{typeParameter.Name}` | {description} |");
+								writer.WriteLine($"| {typeParameter.Name} | {description} |");
 							}
 							foreach (var parameter in parameters)
 							{
 								string description = ToMarkdown(parameter.Description.FirstOrDefault()?.Inlines, memberContext) ?? "";
-								writer.WriteLine($"| `{parameter.Name}` | {description} |");
+								writer.WriteLine($"| {parameter.Name} | {description} |");
 							}
 						}
 					}
@@ -271,7 +271,7 @@ namespace XmlDocMarkdown.Core
 								Enum.GetUnderlyingType(typeInfo.AsType()) == typeof(ulong) ? Convert.ToString(Convert.ToUInt64(valueObject)) :
 								Convert.ToString(Convert.ToInt64(valueObject));
 							string description = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, enumValue, memberContext);
-							writer.WriteLine($"| `{enumValue.Name}` | `{valueText}` | {description} |");
+							writer.WriteLine($"| {enumValue.Name} | `{valueText}` | {description} |");
 						}
 					}
 					else if (typeKind == TypeKind.Class || typeKind == TypeKind.Struct || typeKind == TypeKind.Interface)

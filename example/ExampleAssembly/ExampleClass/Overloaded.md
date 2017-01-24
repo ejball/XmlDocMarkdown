@@ -18,7 +18,7 @@ public void Overloaded(int x)
 
 | parameter | description |
 | --- | --- |
-| `x` | The parameter. |
+| x | The parameter. |
 
 ---
 
@@ -32,7 +32,7 @@ public void Overloaded(string x)
 
 | parameter | description |
 | --- | --- |
-| `x` | The parameter. |
+| x | The parameter. |
 
 ---
 
@@ -46,7 +46,7 @@ public T Overloaded<T>()
 
 | parameter | description |
 | --- | --- |
-| `T` | The type parameter. |
+| T | The type parameter. |
 
 ---
 
@@ -60,8 +60,8 @@ public T Overloaded<T>(string x)
 
 | parameter | description |
 | --- | --- |
-| `T` | The type parameter. |
-| `x` | The parameter. |
+| T | The type parameter. |
+| x | The parameter. |
 
 ---
 
@@ -75,8 +75,8 @@ public void Overloaded<T>(T x)
 
 | parameter | description |
 | --- | --- |
-| `T` | The type parameter. |
-| `x` | The parameter. |
+| T | The type parameter. |
+| x | The parameter. |
 
 ---
 
@@ -92,10 +92,10 @@ public void Overloaded<T, U>(T x, U y)
 
 | parameter | description |
 | --- | --- |
-| `T` | The type parameter. |
-| `U` | The second type parameter. |
-| `x` | The parameter. |
-| `y` | The second parameter. |
+| T | The type parameter. |
+| U | The second type parameter. |
+| x | The parameter. |
+| y | The second parameter. |
 
 ---
 

@@ -8,8 +8,8 @@ public struct ExampleTuple<T1, T2>
 
 | parameter | description |
 | --- | --- |
-| `T1` | The first type. |
-| `T2` | The second type. |
+| T1 | The first type. |
+| T2 | The second type. |
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))
 

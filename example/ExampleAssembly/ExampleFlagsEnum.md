@@ -11,13 +11,13 @@ public enum ExampleFlagsEnum
 
 | name | value | description |
 | --- | --- | --- |
-| `None` | `0x0` | No bits. |
-| `First` | `0x1` | First bit. |
-| `Second` | `0x2` | Second bit. |
-| `Third` | `0x4` | Third bit. |
-| `Fourth` | `0x8` | Fourth bit. |
-| `All` | `0xF` | All bits. |
-| `Insanity` | `0xFFFFFFFFFFFFFFFF` | Insanity. |
+| None | `0x0` | No bits. |
+| First | `0x1` | First bit. |
+| Second | `0x2` | Second bit. |
+| Third | `0x4` | Third bit. |
+| Fourth | `0x8` | Fourth bit. |
+| All | `0xF` | All bits. |
+| Insanity | `0xFFFFFFFFFFFFFFFF` | Insanity. |
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))
 

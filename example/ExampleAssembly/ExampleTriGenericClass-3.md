@@ -10,9 +10,9 @@ public class ExampleTriGenericClass<TOne, TTwo, TThree>
 
 | parameter | description |
 | --- | --- |
-| `TOne` | The first generic type. |
-| `TTwo` | The second generic type. |
-| `TThree` | The third generic type. |
+| TOne | The first generic type. |
+| TTwo | The second generic type. |
+| TThree | The third generic type. |
 
 ## Public Members
 
