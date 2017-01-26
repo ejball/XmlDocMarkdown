@@ -10,6 +10,14 @@ namespace ExampleAssembly
 	public class ExampleDerivedClass : ExampleClass, IExampleInterface, IEnumerable<string>, IExampleInternalInterface
 	{
 		/// <summary>
+		/// An implicitly implemented interface method.
+		/// </summary>
+		public int ExampleMethod(string value)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
 		/// The enumerator.
 		/// </summary>
 		/// <returns>The strings.</returns>

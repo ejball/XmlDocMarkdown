@@ -290,7 +290,7 @@ namespace XmlDocMarkdown.Core
 						if (innerMemberGroups.Count != 0)
 						{
 							writer.WriteLine();
-							writer.WriteLine("## Public Members");
+							writer.WriteLine(typeKind == TypeKind.Interface ? "## Members" : "## Public Members");
 							writer.WriteLine();
 							writer.WriteLine("| name | description |");
 							writer.WriteLine("| --- | --- |");

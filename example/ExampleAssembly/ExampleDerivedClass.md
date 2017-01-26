@@ -11,6 +11,7 @@ public class ExampleDerivedClass : ExampleClass, IExampleInterface, IEnumerable<
 | name | description |
 | --- | --- |
 | [ExampleDerivedClass](ExampleDerivedClass/ExampleDerivedClass.md)() | The default constructor. |
+| [ExampleMethod](ExampleDerivedClass/ExampleMethod.md)(…) | An implicitly implemented interface method. |
 | [GetEnumerator](ExampleDerivedClass/GetEnumerator.md)() | The enumerator. |
 
 (from namespace [ExampleAssembly](../ExampleAssembly.md))
