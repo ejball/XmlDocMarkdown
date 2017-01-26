@@ -193,8 +193,12 @@ namespace XmlDocMarkdown.Core
 
 		private static string GetShortSignatureMarkdown(ShortSignature shortSignature, string path)
 		{
-			return $"{shortSignature.Prefix}[{shortSignature.Name}]({path}){shortSignature.Suffix}"
-				.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
+			return EscapeHtml($"{shortSignature.Prefix}[{shortSignature.Name}]({path}){shortSignature.Suffix}");
+		}
+
+		private static string EscapeHtml(string value)
+		{
+			return value.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
 		}
 
 		private NamedText WriteMemberPage(string path, MemberInfo memberInfo, MarkdownContext context)
@@ -216,7 +220,7 @@ namespace XmlDocMarkdown.Core
 					if (memberIndex != 0)
 						writer.WriteLine();
 
-					writer.WriteLine($"# {GetMemberHeading(memberGroup, memberIndex)}");
+					writer.WriteLine($"# {EscapeHtml(GetMemberHeading(memberGroup, memberIndex))}");
 
 					var xmlDocMember = memberContext.XmlDocAssembly.FindMember(XmlDocUtility.GetXmlDocRef(memberInfo));
 
@@ -227,10 +231,21 @@ namespace XmlDocMarkdown.Core
 						writer.WriteLines(ToMarkdown(summary, memberContext));
 					}
 
+					var seeAlsoMembers = new List<MemberInfo>();
+					if (xmlDocMember != null)
+					{
+						foreach (var seeAlsoInfo in xmlDocMember.SeeAlso)
+						{
+							string xmlDocName = seeAlsoInfo.Ref;
+							MemberInfo seeAlsoMember;
+							if (memberContext.MembersByXmlDocName.TryGetValue(xmlDocName, out seeAlsoMember))
+								seeAlsoMembers.Add(seeAlsoMember);
+						}
+					}
+
 					writer.WriteLine();
-					var seeAlso = new HashSet<MemberInfo>();
 					writer.WriteLine("```csharp");
-					writer.WriteLine(GetFullSignature(memberInfo, seeAlso));
+					writer.WriteLine(GetFullSignature(memberInfo, seeAlsoMembers));
 					writer.WriteLine("```");
 
 					if (xmlDocMember != null)
@@ -269,7 +284,7 @@ namespace XmlDocMarkdown.Core
 							object valueObject = enumValue.GetValue(null);
 							string valueText = isFlags ? "0x" + Convert.ToString(Convert.ToInt64(valueObject), 16).ToUpperInvariant() :
 								Enum.GetUnderlyingType(typeInfo.AsType()) == typeof(ulong) ? Convert.ToString(Convert.ToUInt64(valueObject)) :
-								Convert.ToString(Convert.ToInt64(valueObject));
+									Convert.ToString(Convert.ToInt64(valueObject));
 							string description = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, enumValue, memberContext);
 							writer.WriteLine($"| {enumValue.Name} | `{valueText}` | {description} |");
 						}
@@ -280,7 +295,7 @@ namespace XmlDocMarkdown.Core
 							.DeclaredMembers
 							.Where(IsPublic)
 							.Where(IsVisibleMember)
-							.GroupBy(GetShortSignature)
+							.GroupBy(x => GetShortSignature(x))
 							.Select(tg => new
 							{
 								ShortSignature = tg.Key,
@@ -367,27 +382,33 @@ namespace XmlDocMarkdown.Core
 						writer.WriteLines(ToMarkdown(examples, memberContext));
 					}
 
+					writer.WriteLine();
+					writer.WriteLine("## See Also");
+					writer.WriteLine();
+
+					var declaringType = memberInfo.DeclaringType?.GetTypeInfo();
+					string declaringTypeXmlDocName = declaringType == null ? null : XmlDocUtility.GetXmlDocRef(declaringType);
+					if (declaringType != null)
+						seeAlsoMembers.Add(declaringType);
+
+					foreach (var seeAlso in seeAlsoMembers
+						.GroupBy(XmlDocUtility.GetXmlDocRef)
+						.Select(x => new { Member = x.First(), XmlDocName = x.Key })
+						.OrderBy(x => x.XmlDocName == declaringTypeXmlDocName)
+						.Where(x => memberContext.MembersByXmlDocName.ContainsKey(x.XmlDocName)))
+					{
+						var shortSignature = GetShortSignature(seeAlso.Member, forSeeAlso: true);
+						writer.WriteLine("* " + shortSignature.Prefix +
+							WrapMarkdownRefLink(shortSignature.Name, seeAlso.Member, memberContext) + shortSignature.Suffix);
+					}
+
+					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}](../{(typeInfo != null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo).Assembly)}.md)");
+
 					if (memberGroup.Count != 1)
 					{
 						writer.WriteLine();
 						writer.WriteLine("---");
 					}
-				}
-
-				writer.WriteLine();
-				var declaringType = memberGroup[0].DeclaringType?.GetTypeInfo();
-				var firstType = memberGroup[0] as TypeInfo;
-				if (declaringType != null)
-				{
-					string relativePath = firstType != null ? "" : "../";
-					string typeLink = GetShortSignatureMarkdown(GetShortSignature(declaringType), $"{relativePath}{GetTypeUriName(declaringType)}.md");
-					string namespaceLink = $"namespace\u00A0[{GetNamespaceName(declaringType)}](../{relativePath}{GetAssemblyUriName(declaringType.Assembly)}.md)";
-					writer.WriteLine($"(from {typeLink} of {namespaceLink})");
-				}
-				else
-				{
-					string namespaceLink = $"namespace\u00A0[{GetNamespaceName(firstType)}](../{GetAssemblyUriName(firstType.Assembly)}.md)";
-					writer.WriteLine($"(from {namespaceLink})");
 				}
 
 				writer.WriteLine();
@@ -519,7 +540,7 @@ namespace XmlDocMarkdown.Core
 			}
 		}
 
-		private static ShortSignature GetShortSignature(MemberInfo memberInfo)
+		private static ShortSignature GetShortSignature(MemberInfo memberInfo, bool forSeeAlso = false)
 		{
 			string name = GetShortName(memberInfo);
 			string prefix = "";
@@ -549,10 +570,10 @@ namespace XmlDocMarkdown.Core
 					break;
 				}
 
-				if (IsStatic(typeInfo))
+				if (!forSeeAlso && IsStatic(typeInfo))
 					prefix = "static " + prefix;
 
-				if (IsFlagsEnum(typeInfo))
+				if (!forSeeAlso && IsFlagsEnum(typeInfo))
 					prefix = "[Flags] " + prefix;
 			}
 			else
@@ -565,33 +586,46 @@ namespace XmlDocMarkdown.Core
 				if (eventInfo != null)
 				{
 					prefix = "event ";
-					if (IsStatic(eventInfo))
+					if (!forSeeAlso && IsStatic(eventInfo))
 						prefix = "static " + prefix;
 				}
 				else if (propertyInfo != null)
 				{
-					suffix = GetPropertyGetSet(propertyInfo);
+					if (!forSeeAlso)
+						suffix = GetPropertyGetSet(propertyInfo);
 
-					if (IsStatic(propertyInfo))
+					if (forSeeAlso)
+						prefix = "property ";
+					else if (IsStatic(propertyInfo))
 						prefix = "static ";
 				}
 				else if (fieldInfo != null)
 				{
-					if (IsConst(fieldInfo))
-						prefix += "const ";
-					if (IsStatic(fieldInfo))
-						prefix = "static ";
-					if (IsReadOnly(fieldInfo))
-						prefix += "readonly ";
+					if (forSeeAlso)
+					{
+						prefix = "field ";
+					}
+					else
+					{
+						if (IsConst(fieldInfo))
+							prefix += "const ";
+						if (IsStatic(fieldInfo))
+							prefix = "static ";
+						if (IsReadOnly(fieldInfo))
+							prefix += "readonly ";
+					}
 				}
 				else if (methodBase != null)
 				{
 					if (methodBase is MethodInfo)
 						name += RenderShortGenericParameters(methodBase.GetGenericArguments());
 
-					suffix += methodBase.GetParameters().Length == 0 ? "()" : "(…)";
+					if (!forSeeAlso)
+						suffix += methodBase.GetParameters().Length == 0 ? "()" : "(…)";
 
-					if (IsStatic(methodBase))
+					if (forSeeAlso)
+						prefix = "method ";
+					else if (IsStatic(methodBase))
 						prefix = "static " + prefix;
 				}
 			}
@@ -606,14 +640,14 @@ namespace XmlDocMarkdown.Core
 			return hasGet && hasSet ? " { get; set; }" : hasGet ? " { get; }" : hasSet ? " { set; }" : "";
 		}
 
-		private static string GetFullSignature(MemberInfo memberInfo, HashSet<MemberInfo> seeAlso)
+		private static string GetFullSignature(MemberInfo memberInfo, ICollection<MemberInfo> seeAlsoMembers)
 		{
 			var stringBuilder = new StringBuilder();
 			var lineBuilder = new StringBuilder();
 			var segmentBuilder = new StringBuilder();
 			const int maxLineLength = 112;
 
-			foreach (string part in GetFullSignatureParts(memberInfo, seeAlso))
+			foreach (string part in GetFullSignatureParts(memberInfo, seeAlsoMembers))
 			{
 				if (part == Environment.NewLine)
 				{
@@ -658,7 +692,7 @@ namespace XmlDocMarkdown.Core
 			return stringBuilder.ToString();
 		}
 
-		private static IEnumerable<string> GetFullSignatureParts(MemberInfo memberInfo, HashSet<MemberInfo> seeAlso)
+		private static IEnumerable<string> GetFullSignatureParts(MemberInfo memberInfo, ICollection<MemberInfo> seeAlsoMembers)
 		{
 			var typeInfo = memberInfo as TypeInfo;
 			var typeKind = typeInfo == null ? default(TypeKind?) : GetTypeKind(typeInfo);
@@ -730,7 +764,7 @@ namespace XmlDocMarkdown.Core
 			var valueType = GetValueType(memberInfo)?.GetTypeInfo();
 			if (valueType != null)
 			{
-				yield return RenderTypeName(valueType, seeAlso);
+				yield return RenderTypeName(valueType, seeAlsoMembers);
 				yield return " ";
 			}
 
@@ -745,7 +779,7 @@ namespace XmlDocMarkdown.Core
 				if (typeKind == TypeKind.Class && typeInfo.BaseType != typeof(object))
 				{
 					yield return " : ";
-					yield return RenderTypeName(typeInfo.BaseType.GetTypeInfo(), seeAlso);
+					yield return RenderTypeName(typeInfo.BaseType.GetTypeInfo(), seeAlsoMembers);
 					isFirstBase = false;
 				}
 
@@ -756,7 +790,7 @@ namespace XmlDocMarkdown.Core
 						!baseInterfaces.Any(x => XmlDocUtility.GetXmlDocRef(x) != XmlDocUtility.GetXmlDocRef(baseInterface) && baseInterface.IsAssignableFrom(x)))
 					{
 						yield return isFirstBase ? " : " : ", ";
-						yield return RenderTypeName(baseInterface, seeAlso);
+						yield return RenderTypeName(baseInterface, seeAlsoMembers);
 						isFirstBase = false;
 					}
 				}
@@ -765,7 +799,7 @@ namespace XmlDocMarkdown.Core
 			if (typeKind == TypeKind.Enum && Enum.GetUnderlyingType(typeInfo.AsType()) != typeof(int))
 			{
 				yield return " : ";
-				yield return RenderTypeName(Enum.GetUnderlyingType(typeInfo.AsType()).GetTypeInfo(), seeAlso);
+				yield return RenderTypeName(Enum.GetUnderlyingType(typeInfo.AsType()).GetTypeInfo(), seeAlsoMembers);
 			}
 
 			var propertyInfo = memberInfo as PropertyInfo;
@@ -793,7 +827,7 @@ namespace XmlDocMarkdown.Core
 					if (parameterInfo.ParameterType.IsByRef)
 						yield return parameterInfo.IsOut ? "out " : "ref ";
 
-					yield return RenderTypeName(parameterInfo.ParameterType.GetTypeInfo(), seeAlso);
+					yield return RenderTypeName(parameterInfo.ParameterType.GetTypeInfo(), seeAlsoMembers);
 
 					yield return " ";
 					if (IsKeyword(parameterInfo.Name))
@@ -860,7 +894,7 @@ namespace XmlDocMarkdown.Core
 							yield return ", ";
 						}
 
-						yield return RenderTypeName(genericConstraint.GetTypeInfo(), seeAlso);
+						yield return RenderTypeName(genericConstraint.GetTypeInfo(), seeAlsoMembers);
 						isFirstPart = false;
 					}
 
@@ -1034,7 +1068,7 @@ namespace XmlDocMarkdown.Core
 			return stringBuilder.ToString();
 		}
 
-		private static string RenderTypeName(TypeInfo typeInfo, HashSet<MemberInfo> seeAlso = null)
+		private static string RenderTypeName(TypeInfo typeInfo, ICollection<MemberInfo> seeAlso = null)
 		{
 			if (typeInfo.IsArray)
 				return $"{RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso)}[]";
@@ -1055,7 +1089,7 @@ namespace XmlDocMarkdown.Core
 			return GetShortName(typeInfo) + RenderGenericArguments(typeInfo.GenericTypeArguments, seeAlso);
 		}
 
-		private static string RenderGenericArguments(Type[] genericArguments, HashSet<MemberInfo> seeAlso)
+		private static string RenderGenericArguments(Type[] genericArguments, ICollection<MemberInfo> seeAlso)
 		{
 			if (genericArguments == null)
 				return "";
@@ -1360,14 +1394,12 @@ namespace XmlDocMarkdown.Core
 
 		private static string WrapMarkdownRefLink(string text, MemberInfo memberInfo, MarkdownContext context)
 		{
-			var typeInfo = memberInfo as TypeInfo;
-
 			if (memberInfo != null &&
-				XmlDocUtility.GetXmlDocRef(typeInfo) != XmlDocUtility.GetXmlDocRef(context.TypeInfo) &&
 				XmlDocUtility.GetXmlDocRef(memberInfo) != XmlDocUtility.GetXmlDocRef(context.MemberInfo))
 			{
 				string path;
 
+				var typeInfo = memberInfo as TypeInfo;
 				if (context.MemberInfo != null)
 				{
 					if (typeInfo != null)
@@ -1415,7 +1447,7 @@ namespace XmlDocMarkdown.Core
 				text = $"[{text}]({path})";
 			}
 
-			return text;
+			return EscapeHtml(text);
 		}
 
 		private static string ToMarkdown(IEnumerable<XmlDocInline> inlines, MarkdownContext context)

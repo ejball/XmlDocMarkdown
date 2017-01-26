@@ -41,6 +41,9 @@ namespace XmlDocMarkdown.Core
 				case "example":
 					AddBlocks(xElement, Examples);
 					break;
+				case "seealso":
+					AddSeeAlso(xElement, SeeAlso);
+					break;
 				}
 			}
 		}
@@ -62,6 +65,8 @@ namespace XmlDocMarkdown.Core
 		public Collection<XmlDocBlock> Remarks { get; } = new Collection<XmlDocBlock>();
 
 		public Collection<XmlDocBlock> Examples { get; } = new Collection<XmlDocBlock>();
+
+		public Collection<XmlDocSeeAlso> SeeAlso { get; } = new Collection<XmlDocSeeAlso>();
 
 		public override string ToString() => XmlDocName;
 
@@ -85,6 +90,11 @@ namespace XmlDocMarkdown.Core
 			var exception = new XmlDocException { ExceptionTypeRef = xElement.Attribute("cref")?.Value };
 			AddBlocks(xElement, exception.Condition);
 			exceptions.Add(exception);
+		}
+
+		private void AddSeeAlso(XElement xElement, Collection<XmlDocSeeAlso> seeAlso)
+		{
+			seeAlso.Add(new XmlDocSeeAlso { Ref = xElement.Attribute("cref")?.Value });
 		}
 
 		private sealed class BlockGenerator

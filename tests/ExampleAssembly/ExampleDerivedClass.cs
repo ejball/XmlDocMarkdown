@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using ExampleAssembly.InnerNamespace;
 
 namespace ExampleAssembly
 {
@@ -9,6 +10,24 @@ namespace ExampleAssembly
 	/// </summary>
 	public class ExampleDerivedClass : ExampleClass, IExampleInterface, IEnumerable<string>, IExampleInternalInterface
 	{
+		/// <summary>
+		/// A method with lots of see alsos.
+		/// </summary>
+		/// <seealso cref="ExampleTuple{T1}"/>
+		/// <seealso cref="ExampleTuple&lt;T1, T2&gt;"/>
+		/// <seealso cref="ExampleClass(string)"/>
+		/// <seealso cref="ExampleClass.Default"/>
+		/// <seealso cref="ExampleClass.Instance"/>
+		/// <seealso cref="ExampleClass.Create(string)"/>
+		/// <seealso cref="ExampleClass.Overloaded{T}(T)"/>
+		/// <seealso cref="ExampleClass.WeightChanged"/>
+		/// <seealso cref="ExampleInnerClass"/>
+		/// <seealso cref="ExampleDeepClass.NestedDelegate"/>
+		/// <seealso cref="ExampleDeepClass.NestedClass.VeryNestedStruct"/>
+		public void SeeAlso()
+		{
+		}
+
 		/// <summary>
 		/// An implicitly implemented interface method.
 		/// </summary>

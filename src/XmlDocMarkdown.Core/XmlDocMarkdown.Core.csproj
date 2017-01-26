@@ -55,6 +55,7 @@
     <Compile Include="XmlDocInline.cs" />
     <Compile Include="XmlDocListKind.cs" />
     <Compile Include="XmlDocMember.cs" />
+    <Compile Include="XmlDocSeeAlso.cs" />
     <Compile Include="XmlDocParameter.cs" />
     <Compile Include="XmlDocUtility.cs" />
   </ItemGroup>
