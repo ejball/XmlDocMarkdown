@@ -1,4 +1,4 @@
-# DefaultParameters method
+# DefaultParameters<T> method
 
 A method with default parameters.
 

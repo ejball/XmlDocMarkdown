@@ -36,7 +36,7 @@ public void Overloaded(string x)
 
 ---
 
-# Overloaded method (4 of 7)
+# Overloaded<T> method (4 of 7)
 
 An overloaded method.
 
@@ -50,7 +50,7 @@ public T Overloaded<T>()
 
 ---
 
-# Overloaded method (5 of 7)
+# Overloaded<T> method (5 of 7)
 
 An overloaded method.
 
@@ -65,7 +65,7 @@ public T Overloaded<T>(string x)
 
 ---
 
-# Overloaded method (6 of 7)
+# Overloaded<T> method (6 of 7)
 
 An overloaded method.
 
@@ -80,7 +80,7 @@ public void Overloaded<T>(T x)
 
 ---
 
-# Overloaded method (7 of 7)
+# Overloaded<T,U> method (7 of 7)
 
 An overloaded method.
 
