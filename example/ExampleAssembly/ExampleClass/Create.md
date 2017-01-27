@@ -1,4 +1,4 @@
-# Create method (1 of 2)
+# ExampleClass.Create method (1 of 2)
 
 A static lifetime method.
 
@@ -13,7 +13,7 @@ public static ExampleClass Create()
 
 ---
 
-# Create method (2 of 2)
+# ExampleClass.Create method (2 of 2)
 
 Another static lifetime method.
 

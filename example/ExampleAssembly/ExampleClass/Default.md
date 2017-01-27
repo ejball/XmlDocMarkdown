@@ -1,4 +1,4 @@
-# Default field
+# ExampleClass.Default field
 
 A static lifetime field.
 

@@ -1,4 +1,4 @@
-# SeeAlso method
+# ExampleDerivedClass.SeeAlso method
 
 A method with lots of see alsos.
 

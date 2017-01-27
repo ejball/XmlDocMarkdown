@@ -1,4 +1,4 @@
-# DefaultParameters&lt;T&gt; method
+# ExampleClass.DefaultParameters&lt;T&gt; method
 
 A method with default parameters.
 

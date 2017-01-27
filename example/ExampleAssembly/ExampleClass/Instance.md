@@ -1,4 +1,4 @@
-# Instance property
+# ExampleClass.Instance property
 
 A static lifetime property.
 

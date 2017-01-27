@@ -1,4 +1,4 @@
-# IsBadIdea field
+# ExampleClass.IsBadIdea field
 
 A public field.
 

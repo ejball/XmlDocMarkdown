@@ -1,4 +1,4 @@
-# ExampleTriGenericClass constructor
+# ExampleTriGenericClass&lt;TOne,TTwo,TThree&gt; constructor
 
 The default constructor.
 

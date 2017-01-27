@@ -1,4 +1,4 @@
-# DefaultWeight field
+# ExampleClass.DefaultWeight field
 
 A static read-only field.
 

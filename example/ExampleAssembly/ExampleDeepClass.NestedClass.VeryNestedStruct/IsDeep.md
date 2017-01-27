@@ -1,4 +1,4 @@
-# IsDeep property
+# ExampleDeepClass.NestedClass.VeryNestedStruct.IsDeep property
 
 A very nested property.
 

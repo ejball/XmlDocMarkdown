@@ -493,7 +493,11 @@ namespace XmlDocMarkdown.Core
 			if (type != null)
 				return GetFullTypeName(type, t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters));
 
-			return GetShortName(memberInfo) + RenderShortGenericParameters(GetGenericArguments(memberInfo));
+			if (memberInfo is ConstructorInfo)
+				return GetFullTypeName(memberInfo.DeclaringType.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters));
+
+			return GetFullTypeName(memberInfo.DeclaringType.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters)) + "." +
+				GetShortName(memberInfo) + RenderShortGenericParameters(GetGenericArguments(memberInfo));
 		}
 
 		private static string GetFullTypeName(TypeInfo typeInfo, Func<TypeInfo, string> render)

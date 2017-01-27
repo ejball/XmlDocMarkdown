@@ -1,4 +1,4 @@
-# MinWeight property
+# ExampleClass.MinWeight property
 
 A static read-only property.
 

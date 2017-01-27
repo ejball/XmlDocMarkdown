@@ -1,4 +1,4 @@
-# Jump method
+# ExampleClass.Jump method
 
 A boring method.
 

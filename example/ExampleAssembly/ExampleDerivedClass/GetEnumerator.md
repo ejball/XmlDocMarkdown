@@ -1,4 +1,4 @@
-# GetEnumerator method
+# ExampleDerivedClass.GetEnumerator method
 
 The enumerator.
 

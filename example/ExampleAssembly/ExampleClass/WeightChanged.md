@@ -1,4 +1,4 @@
-# WeightChanged event
+# ExampleClass.WeightChanged event
 
 An event.
 

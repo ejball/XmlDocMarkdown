@@ -1,4 +1,4 @@
-# MaxWeight property
+# ExampleClass.MaxWeight property
 
 A static read-write property.
 

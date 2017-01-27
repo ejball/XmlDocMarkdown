@@ -1,4 +1,4 @@
-# JumpAll method
+# ExampleClass.JumpAll method
 
 A boring static method. It has a really long summary because things get interesting when table cells have to wrap. Also, we should probably cut the summary off at some point, since some documenters tend to put way more in the summary than would generally be expected.
 

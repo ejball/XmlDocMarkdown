@@ -1,4 +1,4 @@
-# ExampleGenericClass constructor
+# ExampleGenericClass&lt;T&gt; constructor
 
 The default constructor.
 

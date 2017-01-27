@@ -1,4 +1,4 @@
-# GlobalVariable field
+# ExampleClass.GlobalVariable field
 
 A static field.
 

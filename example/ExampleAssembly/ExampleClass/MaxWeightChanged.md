@@ -1,4 +1,4 @@
-# MaxWeightChanged event
+# ExampleClass.MaxWeightChanged event
 
 A static event.
 

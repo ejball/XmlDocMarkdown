@@ -1,4 +1,4 @@
-# ExampleMethod method
+# ExampleDerivedClass.ExampleMethod method
 
 An implicitly implemented interface method.
 

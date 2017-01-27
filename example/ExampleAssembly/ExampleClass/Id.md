@@ -1,4 +1,4 @@
-# Id property
+# ExampleClass.Id property
 
 A read-only property.
 

@@ -1,4 +1,4 @@
-# LongMethodNameWithTemplateParametersAndMethodParameters&lt;T&gt; method
+# ExampleClass.LongMethodNameWithTemplateParametersAndMethodParameters&lt;T&gt; method
 
 A method with a really long name.
 

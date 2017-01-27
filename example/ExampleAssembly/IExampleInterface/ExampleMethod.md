@@ -1,4 +1,4 @@
-# ExampleMethod method
+# IExampleInterface.ExampleMethod method
 
 An interface method.
 
