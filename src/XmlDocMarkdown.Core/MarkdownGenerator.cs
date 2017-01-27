@@ -404,7 +404,7 @@ namespace XmlDocMarkdown.Core
 
 					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}](../{(typeInfo != null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo).Assembly)}.md)");
 
-					if (memberGroup.Count != 1)
+					if (memberIndex < memberGroup.Count - 1)
 					{
 						writer.WriteLine();
 						writer.WriteLine("---");
