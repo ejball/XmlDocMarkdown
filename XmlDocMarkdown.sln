@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlDocMarkdown", "src\XmlDocMarkdown\XmlDocMarkdown.csproj", "{0CBCC17C-03F7-4744-AA20-243B671DBBF5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{56EB3272-5918-42F7-A4DF-9088FD04798E} = {56EB3272-5918-42F7-A4DF-9088FD04798E}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{68EEB72A-6D49-4B06-87C1-B54D028F897F}"
 	ProjectSection(SolutionItems) = preProject

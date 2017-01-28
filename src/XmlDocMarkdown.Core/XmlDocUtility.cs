@@ -72,11 +72,19 @@ namespace XmlDocMarkdown.Core
 			}
 			else if (typeInfo.DeclaringMethod != null)
 			{
-				stringBuilder.Append("``" + typeInfo.DeclaringMethod.GetGenericArguments().ToList().IndexOf(typeInfo.AsType()));
+				int genericTypeIndex = typeInfo.DeclaringMethod.GetGenericArguments().ToList().IndexOf(typeInfo.AsType());
+				if (genericTypeIndex == -1)
+					throw new InvalidOperationException("Unexpected type: " + typeInfo);
+
+				stringBuilder.Append("``" + genericTypeIndex);
 			}
 			else
 			{
-				stringBuilder.Append("`" + typeInfo.DeclaringType.GetTypeInfo().GenericTypeArguments.ToList().IndexOf(typeInfo.AsType()));
+				int genericTypeIndex = typeInfo.DeclaringType.GetTypeInfo().GenericTypeParameters.ToList().IndexOf(typeInfo.AsType());
+				if (genericTypeIndex == -1)
+					throw new InvalidOperationException("Unexpected type: " + typeInfo);
+
+				stringBuilder.Append("`" + genericTypeIndex);
 			}
 
 			if (stringBuilder.Length == 0)

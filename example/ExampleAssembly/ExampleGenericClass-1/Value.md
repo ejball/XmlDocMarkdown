@@ -1,9 +1,9 @@
-# ExampleGenericClass&lt;T&gt; constructor
+# ExampleGenericClass&lt;T&gt;.Value property
 
-Creates an instance.
+The value.
 
 ```csharp
-public ExampleGenericClass(T value)
+public IEnumerable<T> Value { get; set; }
 ```
 
 ## See Also

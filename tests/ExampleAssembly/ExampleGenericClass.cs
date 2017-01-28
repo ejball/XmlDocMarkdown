@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ExampleAssembly
 {
@@ -9,9 +10,29 @@ namespace ExampleAssembly
 	public class ExampleGenericClass<T>
 	{
 		/// <summary>
+		/// Creates an instance.
+		/// </summary>
+		public ExampleGenericClass(T value)
+		{
+		}
+
+		/// <summary>
+		/// The value.
+		/// </summary>
+		public IEnumerable<T> Value { get; set; }
+
+		/// <summary>
 		/// Gets an example tuple.
 		/// </summary>
 		public ExampleTuple<T> GetTuple()
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Adds values.
+		/// </summary>
+		public void AddValues(IEnumerable<T> values)
 		{
 			throw new NotImplementedException();
 		}

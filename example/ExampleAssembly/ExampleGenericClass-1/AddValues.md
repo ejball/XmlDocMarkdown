@@ -1,9 +1,9 @@
-# ExampleGenericClass&lt;T&gt; constructor
+# ExampleGenericClass&lt;T&gt;.AddValues method
 
-Creates an instance.
+Adds values.
 
 ```csharp
-public ExampleGenericClass(T value)
+public void AddValues(IEnumerable<T> values)
 ```
 
 ## See Also
