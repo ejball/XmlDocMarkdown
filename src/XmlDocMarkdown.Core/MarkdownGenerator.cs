@@ -392,6 +392,7 @@ namespace XmlDocMarkdown.Core
 						seeAlsoMembers.Add(declaringType);
 
 					foreach (var seeAlso in seeAlsoMembers
+						.Select(GetGenericDefinition)
 						.GroupBy(XmlDocUtility.GetXmlDocRef)
 						.Select(x => new { Member = x.First(), XmlDocName = x.Key })
 						.OrderBy(x => x.XmlDocName == declaringTypeXmlDocName)
@@ -414,6 +415,19 @@ namespace XmlDocMarkdown.Core
 				writer.WriteLine();
 				writer.WriteLine(GetCodeGenComment(context.AssemblyFileName));
 			});
+		}
+
+		private MemberInfo GetGenericDefinition(MemberInfo memberInfo)
+		{
+			var typeInfo = memberInfo as TypeInfo;
+			if (typeInfo != null)
+				return typeInfo.IsGenericType ? typeInfo.GetGenericTypeDefinition().GetTypeInfo() : typeInfo;
+
+			var methodInfo = memberInfo as MethodInfo;
+			if (methodInfo != null)
+				return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+
+			return memberInfo;
 		}
 
 		private static bool IsVisibleMember(MemberInfo memberInfo)

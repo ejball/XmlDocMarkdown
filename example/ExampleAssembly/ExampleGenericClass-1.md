@@ -15,6 +15,7 @@ public class ExampleGenericClass<T>
 | name | description |
 | --- | --- |
 | [ExampleGenericClass](ExampleGenericClass-1/ExampleGenericClass.md)() | The default constructor. |
+| [GetTuple](ExampleGenericClass-1/GetTuple.md)() | Gets an example tuple. |
 
 ## See Also
 
