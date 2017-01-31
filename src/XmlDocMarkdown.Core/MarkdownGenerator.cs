@@ -418,7 +418,7 @@ namespace XmlDocMarkdown.Core
 						{
 							string directoryPath = SourceCodePath.Trim('/') + namespaceName.Substring(RootNamespace.Length).Replace('.', '/');
 							string fileName = GetShortName(typeInfo) + ".cs";
-							writer.WriteLine($"* [source code](../{directoryPath}/{fileName})");
+							writer.WriteLine($"* [{fileName}](../{directoryPath}/{fileName})");
 						}
 					}
 
