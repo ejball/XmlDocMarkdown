@@ -1,5 +1,7 @@
 # ExampleStruct.GetHashCode method
 
+Check for equality.
+
 ```csharp
 public int GetHashCode()
 ```

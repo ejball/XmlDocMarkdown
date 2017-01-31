@@ -247,13 +247,17 @@ namespace ExampleAssembly
 			throw new NotImplementedException();
 		}
 
-		/// <inheritdoc />
+		/// <summary>
+		/// Check for equality.
+		/// </summary>
 		public override bool Equals(object obj)
 		{
 			throw new NotImplementedException();
 		}
 
-		/// <inheritdoc />
+		/// <summary>
+		/// Check for equality.
+		/// </summary>
 		public override int GetHashCode()
 		{
 			throw new NotImplementedException();
