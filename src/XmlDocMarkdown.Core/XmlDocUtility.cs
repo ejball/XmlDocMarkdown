@@ -20,15 +20,22 @@ namespace XmlDocMarkdown.Core
 			var methodBase = memberInfo as MethodBase;
 			if (methodBase != null)
 			{
+				var methodInfo = methodBase as MethodInfo;
+
 				return "M:" +
 					GetXmlDocMemberPart(methodBase) +
 					(methodBase.IsGenericMethodDefinition ? $"``{methodBase.GetGenericArguments().Length}" : "") +
-					GetXmlDocParameters(methodBase.GetParameters());
+					GetXmlDocParameters(methodBase.GetParameters()) +
+					(methodInfo?.Name == "op_Implicit" || methodInfo?.Name == "op_Explicit" ? $"~{GetXmlDocTypePart(methodInfo.ReturnType.GetTypeInfo())}" : "");
 			}
 
 			var propertyInfo = memberInfo as PropertyInfo;
 			if (propertyInfo != null)
-				return "P:" + GetXmlDocMemberPart(propertyInfo);
+			{
+				return "P:" +
+					GetXmlDocMemberPart(propertyInfo) +
+					(propertyInfo.GetIndexParameters().Length == 0 ? "" : GetXmlDocParameters(propertyInfo.GetIndexParameters()));
+			}
 
 			var eventInfo = memberInfo as EventInfo;
 			if (eventInfo != null)

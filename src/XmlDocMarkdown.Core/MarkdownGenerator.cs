@@ -30,13 +30,14 @@ namespace XmlDocMarkdown.Core
 				.Where(x => !IsObsolete(x))
 				.ToList();
 
-			var membersByXmlDocName = visibleTypes
+			var memberGroupsByXmlDocName = visibleTypes
 				.Where(x => new[] { TypeKind.Class, TypeKind.Struct, TypeKind.Interface }.Contains(GetTypeKind(x)))
 				.SelectMany(x => x.DeclaredMembers)
 				.Where(IsPublic)
 				.Where(x => !(x is TypeInfo) && IsVisibleMember(x))
 				.Concat(visibleTypes)
-				.ToDictionary(XmlDocUtility.GetXmlDocRef, x => x);
+				.GroupBy(XmlDocUtility.GetXmlDocRef);
+			var membersByXmlDocName = memberGroupsByXmlDocName.ToDictionary(x => x.Key, x => x.Single());
 
 			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName);
 
@@ -432,7 +433,20 @@ namespace XmlDocMarkdown.Core
 
 		private static bool IsVisibleMember(MemberInfo memberInfo)
 		{
-			return !(memberInfo is MethodBase) || memberInfo is ConstructorInfo || !((MethodBase) memberInfo).IsSpecialName;
+			var methodBase = memberInfo as MethodBase;
+			if (methodBase == null)
+				return true;
+
+			if (memberInfo is ConstructorInfo)
+				return true;
+
+			if (!methodBase.IsSpecialName)
+				return true;
+
+			if (methodBase.Name.StartsWith("op_", StringComparison.Ordinal))
+				return true;
+
+			return false;
 		}
 
 		private static string GetMemberHeading(IReadOnlyList<MemberInfo> membersInfos, int index)
@@ -449,8 +463,12 @@ namespace XmlDocMarkdown.Core
 
 			if (memberInfos.All(x => x is ConstructorInfo))
 				return plural ? "constructors" : "constructor";
+			else if (memberInfos.All(x => (x as PropertyInfo)?.GetIndexParameters().Length > 0))
+				return plural ? "indexers" : "indexer";
 			else if (memberInfos.All(x => x is PropertyInfo))
 				return plural ? "properties" : "property";
+			else if (memberInfos.All(x => (x as MethodInfo)?.Name.StartsWith("op_", StringComparison.Ordinal) == true))
+				return plural ? "operators" : "operator";
 			else if (memberInfos.All(x => x is MethodInfo))
 				return plural ? "methods" : "method";
 			else if (memberInfos.All(x => x is EventInfo))
@@ -497,8 +515,73 @@ namespace XmlDocMarkdown.Core
 
 			if (name == ".ctor")
 				name = GetShortName(memberInfo.DeclaringType.GetTypeInfo());
+			else if (name == "op_UnaryPlus")
+				name = "op_Addition";
+			else if (name == "op_UnaryNegation")
+				name = "op_Subtraction";
 
 			return name;
+		}
+
+		private static string GetOperatorKeywordName(string name)
+		{
+			switch (name)
+			{
+			case "op_Addition":
+				return "operator +";
+			case "op_BitwiseAnd":
+				return "operator &";
+			case "op_BitwiseOr":
+				return "operator |";
+			case "op_Decrement":
+				return "operator --";
+			case "op_Division":
+				return "operator /";
+			case "op_Equality":
+				return "operator ==";
+			case "op_ExclusiveOr":
+				return "operator ^";
+			case "op_Explicit":
+				return "explicit operator";
+			case "op_False":
+				return "operator false";
+			case "op_GreaterThan":
+				return "operator >";
+			case "op_GreaterThanOrEqual":
+				return "operator >=";
+			case "op_Implicit":
+				return "implicit operator";
+			case "op_Increment":
+				return "operator ++";
+			case "op_Inequality":
+				return "operator !=";
+			case "op_LeftShift":
+				return "operator <<";
+			case "op_LessThan":
+				return "operator <";
+			case "op_LessThanOrEqual":
+				return "operator <=";
+			case "op_LogicalNot":
+				return "operator !";
+			case "op_Modulus":
+				return "operator %";
+			case "op_Multiply":
+				return "operator *";
+			case "op_OnesComplement":
+				return "operator ~";
+			case "op_RightShift":
+				return "operator >>";
+			case "op_Subtraction":
+				return "operator -";
+			case "op_True":
+				return "operator true";
+			case "op_UnaryNegation":
+				return "operator -";
+			case "op_UnaryPlus":
+				return "operator +";
+			default:
+				return name;
+			}
 		}
 
 		private static string GetFullMemberName(MemberInfo memberInfo)
@@ -507,8 +590,12 @@ namespace XmlDocMarkdown.Core
 			if (type != null)
 				return GetFullTypeName(type, t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters));
 
-			if (memberInfo is ConstructorInfo)
+			if (memberInfo is ConstructorInfo || (memberInfo as PropertyInfo)?.GetIndexParameters().Length > 0)
 				return GetFullTypeName(memberInfo.DeclaringType.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters));
+
+			string methodName = (memberInfo as MethodInfo)?.Name;
+			if (methodName?.StartsWith("op_", StringComparison.Ordinal) == true)
+				return GetFullTypeName(memberInfo.DeclaringType.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters)) + " " + methodName.Substring(3);
 
 			return GetFullTypeName(memberInfo.DeclaringType.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters)) + "." +
 				GetShortName(memberInfo) + RenderShortGenericParameters(GetGenericArguments(memberInfo));
@@ -560,7 +647,7 @@ namespace XmlDocMarkdown.Core
 
 		private static ShortSignature GetShortSignature(MemberInfo memberInfo, bool forSeeAlso = false)
 		{
-			string name = GetShortName(memberInfo);
+			string name = GetOperatorKeywordName(GetShortName(memberInfo));
 			string prefix = "";
 			string suffix = "";
 
@@ -779,14 +866,26 @@ namespace XmlDocMarkdown.Core
 				break;
 			}
 
+			string shortName = GetOperatorKeywordName(GetShortName(memberInfo));
+			if (shortName == "Item" && memberInfo is PropertyInfo)
+				shortName = "this";
+
+			bool isConversion = shortName == "explicit operator" || shortName == "implicit operator";
+
 			var valueType = GetValueType(memberInfo)?.GetTypeInfo();
-			if (valueType != null)
+			if (valueType != null && !isConversion)
 			{
 				yield return RenderTypeName(valueType, seeAlsoMembers);
 				yield return " ";
 			}
 
-			yield return GetShortName(memberInfo);
+			yield return shortName;
+
+			if (valueType != null && isConversion)
+			{
+				yield return " ";
+				yield return RenderTypeName(valueType, seeAlsoMembers);
+			}
 
 			var genericParameters = GetGenericArguments(memberInfo);
 			yield return RenderGenericParameters(genericParameters);
@@ -820,17 +919,26 @@ namespace XmlDocMarkdown.Core
 				yield return RenderTypeName(Enum.GetUnderlyingType(typeInfo.AsType()).GetTypeInfo(), seeAlsoMembers);
 			}
 
+			ParameterInfo[] parameterInfos = null;
+
 			var propertyInfo = memberInfo as PropertyInfo;
 			if (propertyInfo != null)
-				yield return GetPropertyGetSet(propertyInfo);
+			{
+				parameterInfos = GetParameters(propertyInfo);
+				if (parameterInfos.Length == 0)
+					parameterInfos = null;
+			}
 
 			var methodInfo = memberInfo as MethodBase ?? TryGetDelegateInvoke(memberInfo);
 			if (methodInfo != null)
+				parameterInfos = GetParameters(methodInfo);
+
+			if (parameterInfos != null)
 			{
-				yield return "(";
+				yield return propertyInfo != null ? "[" : "(";
 
 				bool isFirstParameter = true;
-				foreach (var parameterInfo in methodInfo.GetParameters())
+				foreach (var parameterInfo in parameterInfos)
 				{
 					if (isFirstParameter)
 					{
@@ -864,8 +972,11 @@ namespace XmlDocMarkdown.Core
 					}
 				}
 
-				yield return ")";
+				yield return propertyInfo != null ? "]" : ")";
 			}
+
+			if (propertyInfo != null)
+				yield return GetPropertyGetSet(propertyInfo);
 
 			if (genericParameters != null)
 			{
@@ -1273,6 +1384,7 @@ namespace XmlDocMarkdown.Core
 			StaticField,
 			StaticEvent,
 			StaticMethod,
+			Operator,
 			Type,
 			Unknown,
 		}
@@ -1317,7 +1429,9 @@ namespace XmlDocMarkdown.Core
 
 		private static MemberOrder GetMethodOrder(MethodInfo methodInfo)
 		{
-			if (!methodInfo.IsStatic)
+			if (methodInfo.Name.StartsWith("op_", StringComparison.Ordinal))
+				return MemberOrder.Operator;
+			else if (!methodInfo.IsStatic)
 				return MemberOrder.InstanceMethod;
 			else if (methodInfo.ReturnType == methodInfo.DeclaringType)
 				return MemberOrder.LifetimeMethod;
@@ -1366,6 +1480,10 @@ namespace XmlDocMarkdown.Core
 			if (delegateInvoke != null)
 				return GetParameters(delegateInvoke);
 
+			var propertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo != null)
+				return propertyInfo.GetIndexParameters();
+
 			var method = memberInfo as MethodBase;
 			return method?.GetParameters() ?? new ParameterInfo[0];
 		}
@@ -1391,7 +1509,7 @@ namespace XmlDocMarkdown.Core
 			if (text.Length == 0)
 			{
 				if (seeMemberInfo != null)
-					text = GetShortName(seeMemberInfo);
+					text = GetOperatorKeywordName(GetShortName(seeMemberInfo));
 				else if (inline.SeeRef != null)
 					text = XmlDocUtility.GetShortNameForXmlDocRef(inline.SeeRef);
 			}
