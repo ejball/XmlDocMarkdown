@@ -32,6 +32,9 @@ namespace XmlDocMarkdown
 				if (newLine != null)
 					generator.NewLine = newLine;
 
+				generator.SourceCodePath = argsReader.ReadSourceOption();
+				generator.RootNamespace = argsReader.ReadNamespaceOption();
+
 				bool isQuiet = argsReader.ReadQuietFlag();
 				bool isVerify = argsReader.ReadVerifyFlag();
 				bool isDryRun = argsReader.ReadDryRunFlag();

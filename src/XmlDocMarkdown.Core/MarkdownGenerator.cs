@@ -14,6 +14,10 @@ namespace XmlDocMarkdown.Core
 	{
 		public string NewLine { get; set; }
 
+		public string SourceCodePath { get; set; }
+
+		public string RootNamespace { get; set; }
+
 		public IReadOnlyList<NamedText> GenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 		{
 			return DoGenerateOutput(assembly, xmlDocAssembly).ToList();
@@ -406,6 +410,17 @@ namespace XmlDocMarkdown.Core
 					}
 
 					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}](../{(typeInfo != null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo).Assembly)}.md)");
+
+					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(SourceCodePath) && !string.IsNullOrEmpty(RootNamespace))
+					{
+						string namespaceName = GetNamespaceName(typeInfo);
+						if (namespaceName.StartsWith(RootNamespace, StringComparison.Ordinal))
+						{
+							string directoryPath = SourceCodePath.Trim('/') + namespaceName.Substring(RootNamespace.Length).Replace('.', '/');
+							string fileName = GetShortName(typeInfo) + ".cs";
+							writer.WriteLine($"* [source code](../{directoryPath}/{fileName})");
+						}
+					}
 
 					if (memberIndex < memberGroup.Count - 1)
 					{

@@ -4,6 +4,16 @@ namespace XmlDocMarkdown
 {
 	internal static class CommonArgs
 	{
+		public static string ReadSourceOption(this ArgsReader args)
+		{
+			return args.ReadOption("source");
+		}
+
+		public static string ReadNamespaceOption(this ArgsReader args)
+		{
+			return args.ReadOption("namespace");
+		}
+
 		public static bool ReadDryRunFlag(this ArgsReader args)
 		{
 			return args.ReadFlag("dryrun");
