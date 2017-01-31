@@ -20,7 +20,7 @@ The output directory will be created if necessary.
 
 For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentation in the `docs` directory for the `MyLibrary.dll` assembly. The compiler-generated `MyLibrary.xml`file should be in the same directory as `MyLibrary.dll`.
 
-## Options
+### Options
 
 * `--newlines (auto|lf|crlf)`: Indicates the newline used in the output. Defaults to `auto`, which uses CRLF or LF, depending on the platform.
 * `--dryrun`: Executes the tool without making changes to the file system.
