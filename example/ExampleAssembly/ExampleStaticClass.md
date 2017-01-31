@@ -6,6 +6,12 @@ A static class.
 public static class ExampleStaticClass
 ```
 
+## Public Members
+
+| name | description |
+| --- | --- |
+| static [GetNext](ExampleStaticClass/GetNext.md)(…) | Gets the next enumerated value. |
+
 ## See Also
 
 * namespace [ExampleAssembly](../ExampleAssembly.md)

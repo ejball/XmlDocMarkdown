@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace XmlDocMarkdown.Core
@@ -944,6 +945,9 @@ namespace XmlDocMarkdown.Core
 				{
 					if (isFirstParameter)
 					{
+						if (IsStatic(memberInfo) && memberInfo.GetCustomAttributes<ExtensionAttribute>().Any())
+							yield return "this ";
+
 						isFirstParameter = false;
 					}
 					else
