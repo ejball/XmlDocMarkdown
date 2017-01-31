@@ -15,7 +15,7 @@ public struct ExampleStruct
 | [GetHashCode](ExampleStruct/GetHashCode.md)() |  |
 | [operator +](ExampleStruct/op_Addition.md) | Unary plus. (2 operators) |
 | [operator &amp;](ExampleStruct/op_BitwiseAnd.md) | And. |
-| [operator |](ExampleStruct/op_BitwiseOr.md) | Or. |
+| [operator &#x7C;](ExampleStruct/op_BitwiseOr.md) | Or. |
 | [operator --](ExampleStruct/op_Decrement.md) | Decrement. |
 | [operator /](ExampleStruct/op_Division.md) | Divide. |
 | [operator ==](ExampleStruct/op_Equality.md) | Equal. |

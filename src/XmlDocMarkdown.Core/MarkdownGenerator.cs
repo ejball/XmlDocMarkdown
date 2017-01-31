@@ -199,7 +199,7 @@ namespace XmlDocMarkdown.Core
 
 		private static string EscapeHtml(string value)
 		{
-			return value.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
+			return value.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("|", "&#x7C;");
 		}
 
 		private NamedText WriteMemberPage(string path, MemberInfo memberInfo, MarkdownContext context)
