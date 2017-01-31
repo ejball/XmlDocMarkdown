@@ -13,30 +13,30 @@ public struct ExampleStruct
 | [Item](ExampleStruct/Item.md) { get; } | Integer indexer. (2 indexers) |
 | [Equals](ExampleStruct/Equals.md)(…) |  |
 | [GetHashCode](ExampleStruct/GetHashCode.md)() |  |
-| static [operator +](ExampleStruct/op_Addition.md)(…) | Unary plus. (2 operators) |
-| static [operator &amp;](ExampleStruct/op_BitwiseAnd.md)(…) | And. |
-| static [operator |](ExampleStruct/op_BitwiseOr.md)(…) | Or. |
-| static [operator --](ExampleStruct/op_Decrement.md)(…) | Decrement. |
-| static [operator /](ExampleStruct/op_Division.md)(…) | Divide. |
-| static [operator ==](ExampleStruct/op_Equality.md)(…) | Equal. |
-| static [operator ^](ExampleStruct/op_ExclusiveOr.md)(…) | Exclusive or. |
-| static [explicit operator](ExampleStruct/op_Explicit.md)(…) | Explicit cast from integer. (2 operators) |
-| static [operator false](ExampleStruct/op_False.md)(…) | False. |
-| static [operator &gt;](ExampleStruct/op_GreaterThan.md)(…) | Greater than. |
-| static [operator &gt;=](ExampleStruct/op_GreaterThanOrEqual.md)(…) | Greater than or equal to. |
-| static [implicit operator](ExampleStruct/op_Implicit.md)(…) | Implicit cast from string. (2 operators) |
-| static [operator ++](ExampleStruct/op_Increment.md)(…) | Increment. |
-| static [operator !=](ExampleStruct/op_Inequality.md)(…) | Not equal. |
-| static [operator &lt;&lt;](ExampleStruct/op_LeftShift.md)(…) | Left shift. |
-| static [operator &lt;](ExampleStruct/op_LessThan.md)(…) | Less than. |
-| static [operator &lt;=](ExampleStruct/op_LessThanOrEqual.md)(…) | Less than or equal to. |
-| static [operator !](ExampleStruct/op_LogicalNot.md)(…) | Not. |
-| static [operator %](ExampleStruct/op_Modulus.md)(…) | Modulus. |
-| static [operator *](ExampleStruct/op_Multiply.md)(…) | Multiply. |
-| static [operator ~](ExampleStruct/op_OnesComplement.md)(…) | Bitwise complement. |
-| static [operator &gt;&gt;](ExampleStruct/op_RightShift.md)(…) | Right shift. |
-| static [operator -](ExampleStruct/op_Subtraction.md)(…) | Unary minus. (2 operators) |
-| static [operator true](ExampleStruct/op_True.md)(…) | True. |
+| [operator +](ExampleStruct/op_Addition.md) | Unary plus. (2 operators) |
+| [operator &amp;](ExampleStruct/op_BitwiseAnd.md) | And. |
+| [operator |](ExampleStruct/op_BitwiseOr.md) | Or. |
+| [operator --](ExampleStruct/op_Decrement.md) | Decrement. |
+| [operator /](ExampleStruct/op_Division.md) | Divide. |
+| [operator ==](ExampleStruct/op_Equality.md) | Equal. |
+| [operator ^](ExampleStruct/op_ExclusiveOr.md) | Exclusive or. |
+| [explicit operator](ExampleStruct/op_Explicit.md) | Explicit cast from integer. (2 operators) |
+| [operator false](ExampleStruct/op_False.md) | False. |
+| [operator &gt;](ExampleStruct/op_GreaterThan.md) | Greater than. |
+| [operator &gt;=](ExampleStruct/op_GreaterThanOrEqual.md) | Greater than or equal to. |
+| [implicit operator](ExampleStruct/op_Implicit.md) | Implicit cast from string. (2 operators) |
+| [operator ++](ExampleStruct/op_Increment.md) | Increment. |
+| [operator !=](ExampleStruct/op_Inequality.md) | Not equal. |
+| [operator &lt;&lt;](ExampleStruct/op_LeftShift.md) | Left shift. |
+| [operator &lt;](ExampleStruct/op_LessThan.md) | Less than. |
+| [operator &lt;=](ExampleStruct/op_LessThanOrEqual.md) | Less than or equal to. |
+| [operator !](ExampleStruct/op_LogicalNot.md) | Not. |
+| [operator %](ExampleStruct/op_Modulus.md) | Modulus. |
+| [operator *](ExampleStruct/op_Multiply.md) | Multiply. |
+| [operator ~](ExampleStruct/op_OnesComplement.md) | Bitwise complement. |
+| [operator &gt;&gt;](ExampleStruct/op_RightShift.md) | Right shift. |
+| [operator -](ExampleStruct/op_Subtraction.md) | Unary minus. (2 operators) |
+| [operator true](ExampleStruct/op_True.md) | True. |
 
 ## See Also
 

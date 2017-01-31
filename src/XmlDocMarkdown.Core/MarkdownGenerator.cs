@@ -722,15 +722,17 @@ namespace XmlDocMarkdown.Core
 				}
 				else if (methodBase != null)
 				{
+					bool isOperator = methodBase.Name.StartsWith("op_", StringComparison.Ordinal);
+
 					if (methodBase is MethodInfo)
 						name += RenderShortGenericParameters(methodBase.GetGenericArguments());
 
-					if (!forSeeAlso)
+					if (!forSeeAlso && !isOperator)
 						suffix += methodBase.GetParameters().Length == 0 ? "()" : "(…)";
 
 					if (forSeeAlso)
 						prefix = "method ";
-					else if (IsStatic(methodBase))
+					else if (IsStatic(methodBase) && !isOperator)
 						prefix = "static " + prefix;
 				}
 			}
