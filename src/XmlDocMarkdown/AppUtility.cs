@@ -14,6 +14,11 @@ namespace XmlDocMarkdown
 			return args.ReadOption("namespace");
 		}
 
+		public static bool ReadCleanFlag(this ArgsReader args)
+		{
+			return args.ReadFlag("clean");
+		}
+
 		public static bool ReadDryRunFlag(this ArgsReader args)
 		{
 			return args.ReadFlag("dryrun");
