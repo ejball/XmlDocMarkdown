@@ -186,7 +186,7 @@ void GenerateExample(bool verify)
 		CleanDirectories("example");
 
 	int exitCode = StartProcess($@"src\XmlDocMarkdown\bin\{configuration}\XmlDocMarkdown.exe",
-		$@"tests\ExampleAssembly\bin\{configuration}\ExampleAssembly.dll example\ --source ../tests/ExampleAssembly --namespace ExampleAssembly" + (verify ? " --verify" : ""));
+		$@"tests\ExampleAssembly\bin\{configuration}\ExampleAssembly.dll docs\ --source ../tests/ExampleAssembly --namespace ExampleAssembly" + (verify ? " --verify" : ""));
 	if (exitCode == 1 && verify)
 		throw new InvalidOperationException("Generated docs don't match; use -target=GenerateDocs to regenerate.");
 	else if (exitCode != 0)
