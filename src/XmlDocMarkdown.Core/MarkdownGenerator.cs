@@ -417,8 +417,11 @@ namespace XmlDocMarkdown.Core
 						if (namespaceName.StartsWith(RootNamespace, StringComparison.Ordinal))
 						{
 							string directoryPath = SourceCodePath.Trim('/') + namespaceName.Substring(RootNamespace.Length).Replace('.', '/');
+							Uri directoryUri;
+							if (!Uri.TryCreate(directoryPath, UriKind.Absolute, out directoryUri))
+								directoryPath = "../" + directoryPath;
 							string fileName = GetShortName(typeInfo) + ".cs";
-							writer.WriteLine($"* [{fileName}](../{directoryPath}/{fileName})");
+							writer.WriteLine($"* [{fileName}]({directoryPath}/{fileName})");
 						}
 					}
 
