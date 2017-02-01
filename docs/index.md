@@ -2,7 +2,7 @@
 
 **XmlDocMarkdown** is a command-line tool that generates Markdown from [.NET XML documentation comments](https://msdn.microsoft.com/en-us/library/b2s063f7.aspx).
 
-See the [example documentation](docs/ExampleAssembly.md) for the [ExampleAssembly](tests/ExampleAssembly).
+See the [example documentation](ExampleAssembly.md) for the [ExampleAssembly](../tests/ExampleAssembly).
 
 ## Installation
 
