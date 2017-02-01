@@ -145,14 +145,14 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      code of the assembly, e.g. at GitHub. (optional)");
 			textWriter.WriteLine("   --namespace <ns>");
 			textWriter.WriteLine("      The root namespace of the input assembly. (optional)");
-			textWriter.WriteLine("   --newline (auto|lf|crlf)");
-			textWriter.WriteLine("      The newline used in the output (default auto).");
-			textWriter.WriteLine("   --dryrun");
-			textWriter.WriteLine("      Executes the tool without making changes to the file system.");
 			textWriter.WriteLine("   --verify");
 			textWriter.WriteLine("      Exits with error code 1 if changes to the file system are needed.");
+			textWriter.WriteLine("   --dryrun");
+			textWriter.WriteLine("      Executes the tool without making changes to the file system.");
 			textWriter.WriteLine("   --quiet");
 			textWriter.WriteLine("      Suppresses normal console output.");
+			textWriter.WriteLine("   --newline (auto|lf|crlf)");
+			textWriter.WriteLine("      The newline used in the output (default auto).");
 		}
 	}
 }
