@@ -140,6 +140,11 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("   output");
 			textWriter.WriteLine("      The path to the output directory.");
 			textWriter.WriteLine();
+			textWriter.WriteLine("   --source <url>");
+			textWriter.WriteLine("      The URL (absolute or relative) of the folder containing the source");
+			textWriter.WriteLine("      code of the assembly, e.g. at GitHub. (optional)");
+			textWriter.WriteLine("   --namespace <ns>");
+			textWriter.WriteLine("      The root namespace of the input assembly. (optional)");
 			textWriter.WriteLine("   --newline (auto|lf|crlf)");
 			textWriter.WriteLine("      The newline used in the output (default auto).");
 			textWriter.WriteLine("   --dryrun");

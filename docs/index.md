@@ -22,7 +22,9 @@ For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentatio
 
 ### Options
 
-* `--newlines (auto|lf|crlf)`: Indicates the newline used in the output. Defaults to `auto`, which uses CRLF or LF, depending on the platform.
-* `--dryrun`: Executes the tool without making changes to the file system.
+* `--source <url>`: The URL (absolute or relative) of the folder containing the source code of the assembly, e.g. at GitHub. Required to generate source code links in the See Also sections for types.
+* `--namespace <ns>`: The root namespace of the input assembly. Required to generate source code links in the See Also sections for types.
 * `--verify`: Executes the tool without making changes to the file system, but exits with error code 1 if changes would be made. Typically used in build scripts to ensure that any changes have been reflected in the generated code.
+* `--dryrun`: Executes the tool without making changes to the file system.
 * `--quiet`: Suppresses normal console output.
+* `--newlines (auto|lf|crlf)`: Indicates the newline used in the output. Defaults to `auto`, which uses CRLF or LF, depending on the platform.
