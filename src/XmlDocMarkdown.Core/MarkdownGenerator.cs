@@ -27,24 +27,22 @@ namespace XmlDocMarkdown.Core
 
 		private IEnumerable<NamedText> DoGenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 		{
-			var assemblyName = assembly.GetName().Name;
-			var assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
-			var assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
+			string assemblyName = assembly.GetName().Name;
+			string assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
+			string assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
 
 			var visibleTypes = assembly
-				.ExportedTypes
-				.Select(x => x.GetTypeInfo())
-				.Where(x => !IsObsolete(x))
+				.DefinedTypes
+				.Where(IsVisible)
 				.ToList();
 
-			var memberGroupsByXmlDocName = visibleTypes
+			var membersByXmlDocName = visibleTypes
 				.Where(x => new[] { TypeKind.Class, TypeKind.Struct, TypeKind.Interface }.Contains(GetTypeKind(x)))
 				.SelectMany(x => x.DeclaredMembers)
-				.Where(IsPublic)
-				.Where(x => !(x is TypeInfo) && IsVisibleMember(x))
+				.Where(x => !(x is TypeInfo) && IsVisible(x))
 				.Concat(visibleTypes)
-				.GroupBy(XmlDocUtility.GetXmlDocRef);
-			var membersByXmlDocName = memberGroupsByXmlDocName.ToDictionary(x => x.Key, x => x.Single());
+				.GroupBy(XmlDocUtility.GetXmlDocRef)
+				.ToDictionary(x => x.Key, x => x.Single());
 
 			var visibleTypeRecords = visibleTypes
 				.Select(typeInfo => new
@@ -119,8 +117,7 @@ namespace XmlDocMarkdown.Core
 				{
 					var memberGroups = visibleTypeRecord.TypeInfo
 						.DeclaredMembers
-						.Where(IsPublic)
-						.Where(x => !(x is TypeInfo) && IsVisibleMember(x))
+						.Where(x => !(x is TypeInfo) && IsVisible(x))
 						.GroupBy(GetMemberUriName)
 						.Select(tg => new
 						{
@@ -304,8 +301,7 @@ namespace XmlDocMarkdown.Core
 					{
 						var innerMemberGroups = OrderMembers(typeInfo
 							.DeclaredMembers
-							.Where(IsPublic)
-							.Where(IsVisibleMember)
+							.Where(IsVisible)
 							.GroupBy(x => GetShortSignature(x))
 							.Select(tg => new
 							{
@@ -455,8 +451,17 @@ namespace XmlDocMarkdown.Core
 			return memberInfo;
 		}
 
-		private static bool IsVisibleMember(MemberInfo memberInfo)
+		private bool IsVisible(MemberInfo memberInfo)
 		{
+			if (!IsPublic(memberInfo))
+				return false;
+
+			if (memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any())
+				return false;
+
+			if (memberInfo is TypeInfo)
+				return true;
+
 			var methodBase = memberInfo as MethodBase;
 			if (methodBase == null)
 				return true;
@@ -1366,11 +1371,6 @@ namespace XmlDocMarkdown.Core
 				return methodBase.IsPublic;
 
 			return false;
-		}
-
-		private static bool IsObsolete(MemberInfo memberInfo)
-		{
-			return memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any();
 		}
 
 		private enum TypeKind

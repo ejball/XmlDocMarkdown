@@ -203,5 +203,13 @@ namespace ExampleAssembly
 		public void LongMethodNameWithTemplateParametersAndMethodParameters<T>(T t)
 		{
 		}
+
+		/// <summary>
+		/// An obsolete method.
+		/// </summary>
+		[Obsolete("This method is old and busted.")]
+		public void OldAndBusted()
+		{
+		}
 	}
 }
