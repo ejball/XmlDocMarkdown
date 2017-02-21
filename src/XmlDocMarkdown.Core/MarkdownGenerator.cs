@@ -18,6 +18,8 @@ namespace XmlDocMarkdown.Core
 
 		public string RootNamespace { get; set; }
 
+		public bool IncludeObsolete { get; set; }
+
 		public IReadOnlyList<NamedText> GenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 		{
 			return DoGenerateOutput(assembly, xmlDocAssembly).ToList();
@@ -456,7 +458,7 @@ namespace XmlDocMarkdown.Core
 			if (!IsPublic(memberInfo))
 				return false;
 
-			if (memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any())
+			if (!IncludeObsolete && memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any())
 				return false;
 
 			if (memberInfo is TypeInfo)
@@ -832,6 +834,23 @@ namespace XmlDocMarkdown.Core
 		{
 			var typeInfo = memberInfo as TypeInfo;
 			var typeKind = typeInfo == null ? default(TypeKind?) : GetTypeKind(typeInfo);
+
+			var obsoleteAttribute = memberInfo.GetCustomAttribute<ObsoleteAttribute>();
+			if (obsoleteAttribute != null)
+			{
+				string message = obsoleteAttribute.Message;
+				if (string.IsNullOrWhiteSpace(message))
+				{
+					yield return "[Obsolete]";
+				}
+				else
+				{
+					yield return "[Obsolete(";
+					yield return RenderConstant(message);
+					yield return ")]";
+				}
+				yield return Environment.NewLine;
+			}
 
 			var attributeUsage = memberInfo.GetCustomAttribute<AttributeUsageAttribute>();
 			if (attributeUsage != null)

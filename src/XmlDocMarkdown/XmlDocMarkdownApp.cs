@@ -35,6 +35,7 @@ namespace XmlDocMarkdown
 
 				generator.SourceCodePath = argsReader.ReadSourceOption();
 				generator.RootNamespace = argsReader.ReadNamespaceOption();
+				generator.IncludeObsolete = argsReader.ReadObsoleteFlag();
 
 				bool shouldClean = argsReader.ReadCleanFlag();
 				bool isQuiet = argsReader.ReadQuietFlag();
@@ -208,6 +209,8 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      code of the assembly, e.g. at GitHub. (optional)");
 			textWriter.WriteLine("   --namespace <ns>");
 			textWriter.WriteLine("      The root namespace of the input assembly. (optional)");
+			textWriter.WriteLine("   --obsolete");
+			textWriter.WriteLine("      Generates documentation for obsolete types and members.");
 			textWriter.WriteLine("   --clean");
 			textWriter.WriteLine("      Deletes previously generated files that are no longer used.");
 			textWriter.WriteLine("   --verify");
