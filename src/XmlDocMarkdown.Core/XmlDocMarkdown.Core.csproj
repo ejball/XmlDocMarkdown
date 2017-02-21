@@ -49,6 +49,7 @@
     <Compile Include="MarkdownWriter.cs" />
     <Compile Include="NamedText.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VisibilityLevel.cs" />
     <Compile Include="XmlDocAssembly.cs" />
     <Compile Include="XmlDocBlock.cs" />
     <Compile Include="XmlDocException.cs" />

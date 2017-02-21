@@ -6,6 +6,12 @@ An abstract class.
 public abstract class ExampleAbstractClass
 ```
 
+## Protected Members
+
+| name | description |
+| --- | --- |
+| [ExampleAbstractClass](ExampleAbstractClass/ExampleAbstractClass.md)() | The default constructor. |
+
 ## See Also
 
 * namespace [ExampleAssembly](../ExampleAssembly.md)

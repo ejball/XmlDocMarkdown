@@ -20,6 +20,8 @@ namespace XmlDocMarkdown.Core
 
 		public bool IncludeObsolete { get; set; }
 
+		public int Visibility { get; set; }
+
 		public IReadOnlyList<NamedText> GenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 		{
 			return DoGenerateOutput(assembly, xmlDocAssembly).ToList();
@@ -301,37 +303,64 @@ namespace XmlDocMarkdown.Core
 					}
 					else if (typeKind == TypeKind.Class || typeKind == TypeKind.Struct || typeKind == TypeKind.Interface)
 					{
-						var innerMemberGroups = OrderMembers(typeInfo
+						var innerMemberVisibilityGroups = typeInfo
 							.DeclaredMembers
 							.Where(IsVisible)
-							.GroupBy(x => GetShortSignature(x))
+							.GroupBy(GetVisibility)
 							.Select(tg => new
 							{
-								ShortSignature = tg.Key,
-								Members = tg.OrderBy(x => (x as TypeInfo)?.GenericTypeParameters.Length ?? 0).ToList()
-							}), x => x.Members[0]).ToList();
-
-						if (innerMemberGroups.Count != 0)
+								Visibility = tg.Key,
+								Members = tg.ToList(),
+							});
+						foreach (var innerMemberVisibilityGroup in innerMemberVisibilityGroups)
 						{
-							writer.WriteLine();
-							writer.WriteLine(typeKind == TypeKind.Interface ? "## Members" : "## Public Members");
-							writer.WriteLine();
-							writer.WriteLine("| name | description |");
-							writer.WriteLine("| --- | --- |");
+							var innerMemberSignatureGroups = OrderMembers(innerMemberVisibilityGroup
+								.Members
+								.GroupBy(x => GetShortSignature(x))
+								.Select(tg => new
+								{
+									ShortSignature = tg.Key,
+									Members = tg.OrderBy(x => (x as TypeInfo)?.GenericTypeParameters.Length ?? 0).ToList()
+								}), x => x.Members[0]).ToList();
 
-							foreach (var innerMemberGroup in innerMemberGroups)
+							if (innerMemberSignatureGroups.Count != 0)
 							{
-								var innerMembers = innerMemberGroup.Members;
-								var firstInnerMember = innerMembers[0];
-								string memberPath = firstInnerMember is TypeInfo ?
-									$"{GetMemberUriName(firstInnerMember)}.md" :
-									$"{GetTypeUriName(typeInfo)}/{GetMemberUriName(firstInnerMember)}.md";
-								string memberText = GetShortSignatureMarkdown(innerMemberGroup.ShortSignature, memberPath);
-								string summaryText = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, firstInnerMember, memberContext);
-								if (innerMembers.Count != 1)
-									summaryText += $" ({innerMembers.Count} {GetMemberGroupNoun(innerMembers)})";
+								writer.WriteLine();
+								switch (innerMemberVisibilityGroup.Visibility)
+								{
+								case VisibilityLevel.Public:
+									writer.WriteLine(typeKind == TypeKind.Interface ? "## Members" : "## Public Members");
+									break;
+								case VisibilityLevel.Protected:
+									writer.WriteLine("## Protected Members");
+									break;
+								case VisibilityLevel.Internal:
+									writer.WriteLine("## Internal Members");
+									break;
+								case VisibilityLevel.Private:
+									writer.WriteLine("## Private Members");
+									break;
+								default:
+									throw new InvalidOperationException();
+								}
+								writer.WriteLine();
+								writer.WriteLine("| name | description |");
+								writer.WriteLine("| --- | --- |");
 
-								writer.WriteLine($"| {memberText} | {summaryText} |");
+								foreach (var innerMemberGroup in innerMemberSignatureGroups)
+								{
+									var innerMembers = innerMemberGroup.Members;
+									var firstInnerMember = innerMembers[0];
+									string memberPath = firstInnerMember is TypeInfo ?
+										$"{GetMemberUriName(firstInnerMember)}.md" :
+										$"{GetTypeUriName(typeInfo)}/{GetMemberUriName(firstInnerMember)}.md";
+									string memberText = GetShortSignatureMarkdown(innerMemberGroup.ShortSignature, memberPath);
+									string summaryText = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, firstInnerMember, memberContext);
+									if (innerMembers.Count != 1)
+										summaryText += $" ({innerMembers.Count} {GetMemberGroupNoun(innerMembers)})";
+
+									writer.WriteLine($"| {memberText} | {summaryText} |");
+								}
 							}
 						}
 					}
@@ -455,7 +484,8 @@ namespace XmlDocMarkdown.Core
 
 		private bool IsVisible(MemberInfo memberInfo)
 		{
-			if (!IsPublic(memberInfo))
+			int visibility = GetVisibility(memberInfo);
+			if (visibility < Visibility)
 				return false;
 
 			if (!IncludeObsolete && memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any())
@@ -778,7 +808,7 @@ namespace XmlDocMarkdown.Core
 			return hasGet && hasSet ? " { get; set; }" : hasGet ? " { get; }" : hasSet ? " { set; }" : "";
 		}
 
-		private static string GetFullSignature(MemberInfo memberInfo, ICollection<MemberInfo> seeAlsoMembers)
+		private string GetFullSignature(MemberInfo memberInfo, ICollection<MemberInfo> seeAlsoMembers)
 		{
 			var stringBuilder = new StringBuilder();
 			var lineBuilder = new StringBuilder();
@@ -830,7 +860,7 @@ namespace XmlDocMarkdown.Core
 			return stringBuilder.ToString();
 		}
 
-		private static IEnumerable<string> GetFullSignatureParts(MemberInfo memberInfo, ICollection<MemberInfo> seeAlsoMembers)
+		private IEnumerable<string> GetFullSignatureParts(MemberInfo memberInfo, ICollection<MemberInfo> seeAlsoMembers)
 		{
 			var typeInfo = memberInfo as TypeInfo;
 			var typeKind = typeInfo == null ? default(TypeKind?) : GetTypeKind(typeInfo);
@@ -875,7 +905,23 @@ namespace XmlDocMarkdown.Core
 				yield return Environment.NewLine;
 			}
 
-			yield return "public ";
+			int visibility = GetVisibility(memberInfo);
+			switch (visibility)
+			{
+			case VisibilityLevel.Public:
+				yield return "public ";
+				break;
+			case VisibilityLevel.Protected:
+				// TODO: support "protected internal"
+				yield return "protected ";
+				break;
+			case VisibilityLevel.Internal:
+				yield return "internal ";
+				break;
+			case VisibilityLevel.Private:
+				yield return "private ";
+				break;
+			}
 
 			if (IsStatic(memberInfo))
 			{
@@ -1367,29 +1413,70 @@ namespace XmlDocMarkdown.Core
 			return type != null && type.IsEnum && type.GetCustomAttributes<FlagsAttribute>().Any();
 		}
 
-		private bool IsPublic(MemberInfo memberInfo)
+		private static int GetVisibility(MemberInfo memberInfo)
 		{
 			var typeInfo = memberInfo as TypeInfo;
 			if (typeInfo != null)
-				return typeInfo.IsPublic || typeInfo.IsNestedPublic;
+			{
+				int visibility = GetTypeVisibility(typeInfo);
+				return typeInfo.IsNested ? Math.Min(visibility, GetTypeVisibility(typeInfo.DeclaringType.GetTypeInfo())) : visibility;
+			}
 
 			var eventInfo = memberInfo as EventInfo;
 			if (eventInfo != null)
-				return (eventInfo.AddMethod?.IsPublic ?? false) || (eventInfo.RemoveMethod?.IsPublic ?? false) || (eventInfo.RaiseMethod?.IsPublic ?? false);
+				return Math.Max(Math.Max(GetMethodVisibility(eventInfo.AddMethod), GetMethodVisibility(eventInfo.RemoveMethod)), GetMethodVisibility(eventInfo.RaiseMethod));
 
 			var propertyInfo = memberInfo as PropertyInfo;
 			if (propertyInfo != null)
-				return (propertyInfo.GetMethod?.IsPublic ?? false) || (propertyInfo.SetMethod?.IsPublic ?? false);
+				return Math.Max(GetMethodVisibility(propertyInfo.GetMethod), GetMethodVisibility(propertyInfo.SetMethod));
 
 			var fieldInfo = memberInfo as FieldInfo;
 			if (fieldInfo != null)
-				return fieldInfo.IsPublic;
+				return GetFieldVisibility(fieldInfo);
 
 			var methodBase = memberInfo as MethodBase;
 			if (methodBase != null)
-				return methodBase.IsPublic;
+				return GetMethodVisibility(methodBase);
 
-			return false;
+			return VisibilityLevel.Private;
+		}
+
+		private static int GetTypeVisibility(TypeInfo typeInfo)
+		{
+			if (typeInfo.IsPublic || typeInfo.IsNestedPublic)
+				return VisibilityLevel.Public;
+			else if (typeInfo.IsNestedFamily || typeInfo.IsNestedFamORAssem)
+				return VisibilityLevel.Protected;
+			else if (typeInfo.IsNestedAssembly || typeInfo.IsNestedFamANDAssem)
+				return VisibilityLevel.Internal;
+			else
+				return VisibilityLevel.Private;
+		}
+
+		private static int GetMethodVisibility(MethodBase methodBase)
+		{
+			if (methodBase == null)
+				return VisibilityLevel.Private;
+			else if (methodBase.IsPublic)
+				return VisibilityLevel.Public;
+			else if (methodBase.IsFamily || methodBase.IsFamilyOrAssembly)
+				return VisibilityLevel.Protected;
+			else if (methodBase.IsAssembly || methodBase.IsFamilyAndAssembly)
+				return VisibilityLevel.Internal;
+			else
+				return VisibilityLevel.Private;
+		}
+
+		private static int GetFieldVisibility(FieldInfo fieldInfo)
+		{
+			if (fieldInfo.IsPublic)
+				return VisibilityLevel.Public;
+			else if (fieldInfo.IsFamily || fieldInfo.IsFamilyOrAssembly)
+				return VisibilityLevel.Protected;
+			else if (fieldInfo.IsAssembly || fieldInfo.IsFamilyAndAssembly)
+				return VisibilityLevel.Internal;
+			else
+				return VisibilityLevel.Private;
 		}
 
 		private enum TypeKind

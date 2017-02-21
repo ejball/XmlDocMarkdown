@@ -36,6 +36,7 @@ namespace XmlDocMarkdown
 				generator.SourceCodePath = argsReader.ReadSourceOption();
 				generator.RootNamespace = argsReader.ReadNamespaceOption();
 				generator.IncludeObsolete = argsReader.ReadObsoleteFlag();
+				generator.Visibility = argsReader.ReadVisibilityOption() ?? VisibilityLevel.Protected;
 
 				bool shouldClean = argsReader.ReadCleanFlag();
 				bool isQuiet = argsReader.ReadQuietFlag();
