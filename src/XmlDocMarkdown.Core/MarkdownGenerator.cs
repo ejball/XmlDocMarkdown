@@ -46,8 +46,6 @@ namespace XmlDocMarkdown.Core
 				.GroupBy(XmlDocUtility.GetXmlDocRef);
 			var membersByXmlDocName = memberGroupsByXmlDocName.ToDictionary(x => x.Key, x => x.Single());
 
-			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName);
-
 			var visibleTypeRecords = visibleTypes
 				.Select(typeInfo => new
 				{
@@ -72,6 +70,11 @@ namespace XmlDocMarkdown.Core
 				})
 				.OrderBy(x => x.Namespace, StringComparer.OrdinalIgnoreCase)
 				.ToList();
+
+			string sourceCodePath = SourceCodePath?.Trim('/');
+			string rootNamespace = RootNamespace ??
+				visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0);
+			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace);
 
 			yield return CreateNamedText(GetAssemblyUriName(assembly) + ".md", writer =>
 			{
@@ -413,12 +416,12 @@ namespace XmlDocMarkdown.Core
 
 					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}](../{(typeInfo != null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo).Assembly)}.md)");
 
-					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(SourceCodePath) && !string.IsNullOrEmpty(RootNamespace))
+					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))
 					{
 						string namespaceName = GetNamespaceName(typeInfo);
-						if (namespaceName.StartsWith(RootNamespace, StringComparison.Ordinal))
+						if (namespaceName.StartsWith(context.RootNamespace, StringComparison.Ordinal))
 						{
-							string directoryPath = SourceCodePath.Trim('/') + namespaceName.Substring(RootNamespace.Length).Replace('.', '/');
+							string directoryPath = context.SourceCodePath + namespaceName.Substring(context.RootNamespace.Length).Replace('.', '/');
 							Uri directoryUri;
 							if (!Uri.TryCreate(directoryPath, UriKind.Absolute, out directoryUri))
 								directoryPath = "../" + directoryPath;
@@ -1678,11 +1681,13 @@ namespace XmlDocMarkdown.Core
 
 		private class MarkdownContext
 		{
-			public MarkdownContext(XmlDocAssembly xmlDocAssembly, IReadOnlyDictionary<string, MemberInfo> membersByXmlDocName, string assemblyFileName)
+			public MarkdownContext(XmlDocAssembly xmlDocAssembly, IReadOnlyDictionary<string, MemberInfo> membersByXmlDocName, string assemblyFileName, string sourceCodePath, string rootNamespace)
 			{
 				XmlDocAssembly = xmlDocAssembly;
 				MembersByXmlDocName = membersByXmlDocName;
 				AssemblyFileName = assemblyFileName;
+				SourceCodePath = sourceCodePath;
+				RootNamespace = rootNamespace;
 			}
 
 			public MarkdownContext(MarkdownContext context, MemberInfo memberInfo)
@@ -1690,6 +1695,8 @@ namespace XmlDocMarkdown.Core
 				XmlDocAssembly = context.XmlDocAssembly;
 				MembersByXmlDocName = context.MembersByXmlDocName;
 				AssemblyFileName = context.AssemblyFileName;
+				SourceCodePath = context.SourceCodePath;
+				RootNamespace = context.RootNamespace;
 
 				var typeInfo = memberInfo as TypeInfo;
 				if (typeInfo != null)
@@ -1712,6 +1719,10 @@ namespace XmlDocMarkdown.Core
 			public IReadOnlyDictionary<string, MemberInfo> MembersByXmlDocName { get; }
 
 			public string AssemblyFileName { get; }
+
+			public string SourceCodePath { get; }
+
+			public string RootNamespace { get; }
 		}
 
 		static readonly HashSet<string> s_keywords = new HashSet<string>
