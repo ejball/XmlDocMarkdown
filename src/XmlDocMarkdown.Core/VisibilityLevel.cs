@@ -1,13 +1,13 @@
 ﻿namespace XmlDocMarkdown.Core
 {
-	public static class VisibilityLevel
+	public enum VisibilityLevel
 	{
-		public const int Private = 0;
+		Private,
 
-		public const int Internal = 1;
+		Internal,
 
-		public const int Protected = 2;
+		Protected,
 
-		public const int Public = 3;
+		Public,
 	}
 }

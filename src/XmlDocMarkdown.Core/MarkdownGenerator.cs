@@ -20,7 +20,7 @@ namespace XmlDocMarkdown.Core
 
 		public bool IncludeObsolete { get; set; }
 
-		public int Visibility { get; set; }
+		public VisibilityLevel Visibility { get; set; }
 
 		public IReadOnlyList<NamedText> GenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 		{
@@ -484,8 +484,8 @@ namespace XmlDocMarkdown.Core
 
 		private bool IsVisible(MemberInfo memberInfo)
 		{
-			int visibility = GetVisibility(memberInfo);
-			if (visibility < Visibility)
+			var visibility = GetVisibility(memberInfo);
+			if (IsMorePrivateThan(visibility, Visibility))
 				return false;
 
 			if (!IncludeObsolete && memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any())
@@ -508,6 +508,21 @@ namespace XmlDocMarkdown.Core
 				return true;
 
 			return false;
+		}
+
+		private static bool IsMorePrivateThan(VisibilityLevel visibility1, VisibilityLevel visibility2)
+		{
+			return (int) visibility1 < (int) visibility2;
+		}
+
+		public static VisibilityLevel GetMostPublic(params VisibilityLevel[] visibilityLevels)
+		{
+			return (VisibilityLevel) visibilityLevels.Max(x => (int) x);
+		}
+
+		public static VisibilityLevel GetMostPrivate(params VisibilityLevel[] visibilityLevels)
+		{
+			return (VisibilityLevel) visibilityLevels.Min(x => (int) x);
 		}
 
 		private static string GetMemberHeading(IReadOnlyList<MemberInfo> membersInfos, int index)
@@ -905,7 +920,7 @@ namespace XmlDocMarkdown.Core
 				yield return Environment.NewLine;
 			}
 
-			int visibility = GetVisibility(memberInfo);
+			var visibility = GetVisibility(memberInfo);
 			switch (visibility)
 			{
 			case VisibilityLevel.Public:
@@ -1413,22 +1428,22 @@ namespace XmlDocMarkdown.Core
 			return type != null && type.IsEnum && type.GetCustomAttributes<FlagsAttribute>().Any();
 		}
 
-		private static int GetVisibility(MemberInfo memberInfo)
+		private static VisibilityLevel GetVisibility(MemberInfo memberInfo)
 		{
 			var typeInfo = memberInfo as TypeInfo;
 			if (typeInfo != null)
 			{
-				int visibility = GetTypeVisibility(typeInfo);
-				return typeInfo.IsNested ? Math.Min(visibility, GetTypeVisibility(typeInfo.DeclaringType.GetTypeInfo())) : visibility;
+				var visibility = GetTypeVisibility(typeInfo);
+				return typeInfo.IsNested ? GetMostPrivate(visibility, GetTypeVisibility(typeInfo.DeclaringType.GetTypeInfo())) : visibility;
 			}
 
 			var eventInfo = memberInfo as EventInfo;
 			if (eventInfo != null)
-				return Math.Max(Math.Max(GetMethodVisibility(eventInfo.AddMethod), GetMethodVisibility(eventInfo.RemoveMethod)), GetMethodVisibility(eventInfo.RaiseMethod));
+				return GetMostPublic(GetMethodVisibility(eventInfo.AddMethod), GetMethodVisibility(eventInfo.RemoveMethod), GetMethodVisibility(eventInfo.RaiseMethod));
 
 			var propertyInfo = memberInfo as PropertyInfo;
 			if (propertyInfo != null)
-				return Math.Max(GetMethodVisibility(propertyInfo.GetMethod), GetMethodVisibility(propertyInfo.SetMethod));
+				return GetMostPublic(GetMethodVisibility(propertyInfo.GetMethod), GetMethodVisibility(propertyInfo.SetMethod));
 
 			var fieldInfo = memberInfo as FieldInfo;
 			if (fieldInfo != null)
@@ -1441,7 +1456,7 @@ namespace XmlDocMarkdown.Core
 			return VisibilityLevel.Private;
 		}
 
-		private static int GetTypeVisibility(TypeInfo typeInfo)
+		private static VisibilityLevel GetTypeVisibility(TypeInfo typeInfo)
 		{
 			if (typeInfo.IsPublic || typeInfo.IsNestedPublic)
 				return VisibilityLevel.Public;
@@ -1453,7 +1468,7 @@ namespace XmlDocMarkdown.Core
 				return VisibilityLevel.Private;
 		}
 
-		private static int GetMethodVisibility(MethodBase methodBase)
+		private static VisibilityLevel GetMethodVisibility(MethodBase methodBase)
 		{
 			if (methodBase == null)
 				return VisibilityLevel.Private;
@@ -1467,7 +1482,7 @@ namespace XmlDocMarkdown.Core
 				return VisibilityLevel.Private;
 		}
 
-		private static int GetFieldVisibility(FieldInfo fieldInfo)
+		private static VisibilityLevel GetFieldVisibility(FieldInfo fieldInfo)
 		{
 			if (fieldInfo.IsPublic)
 				return VisibilityLevel.Public;

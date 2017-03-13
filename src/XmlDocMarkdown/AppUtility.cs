@@ -15,7 +15,7 @@ namespace XmlDocMarkdown
 			return args.ReadOption("namespace");
 		}
 
-		public static int? ReadVisibilityOption(this ArgsReader args)
+		public static VisibilityLevel? ReadVisibilityOption(this ArgsReader args)
 		{
 			string visibility = args.ReadOption("visibility");
 			switch (visibility)
