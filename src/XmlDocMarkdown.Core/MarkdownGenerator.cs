@@ -317,7 +317,8 @@ namespace XmlDocMarkdown.Core
 							{
 								Visibility = tg.Key,
 								Members = tg.ToList(),
-							});
+							})
+							.OrderByDescending(x => (int) x.Visibility);
 						foreach (var innerMemberVisibilityGroup in innerMemberVisibilityGroups)
 						{
 							var innerMemberSignatureGroups = OrderMembers(innerMemberVisibilityGroup
