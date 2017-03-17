@@ -56,6 +56,7 @@ namespace XmlDocMarkdown.Core
 					ShortName = GetShortName(typeInfo),
 					ShortSignature = GetShortSignature(typeInfo),
 					Namespace = GetNamespaceName(typeInfo),
+					Visibility = GetTypeVisibility(typeInfo),
 				})
 				.ToList();
 
@@ -84,7 +85,9 @@ namespace XmlDocMarkdown.Core
 
 				string namespaceCountText = visibleNamespaceRecords.Count == 1 ? "1 namespace" : $"{visibleNamespaceRecords.Count} namespaces";
 				int typeCount = visibleNamespaceRecords.SelectMany(x => x.Types).Count();
-				string typeCountText = typeCount == 1 ? "1 public type" : $"{typeCount} public types";
+				string typeCountText = IsMorePrivateThan(Visibility, VisibilityLevel.Protected) ?
+					(typeCount == 1 ? "1 type" : $"{typeCount} types") :
+					(typeCount == 1 ? "1 public type" : $"{typeCount} public types");
 
 				writer.WriteLine();
 				writer.WriteLine($"The assembly `{assemblyFileName}` has {typeCountText} in {namespaceCountText}.");
@@ -94,14 +97,17 @@ namespace XmlDocMarkdown.Core
 					writer.WriteLine();
 					writer.WriteLine($"## {group.Namespace} namespace");
 
-					writer.WriteLine();
-					writer.WriteLine("| public type | description |");
-					writer.WriteLine("| --- | --- |");
-					foreach (var typeInfo in group.Types)
+					foreach (var typeGroup in group.Types.GroupBy(x => x.Visibility))
 					{
-						string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, $"{GetNamespaceUriName(group.Namespace)}/{typeInfo.Path}");
-						string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
-						writer.WriteLine($"| {typeText} | {summaryText} |");
+						writer.WriteLine();
+						writer.WriteLine($"| {(typeGroup.Key == VisibilityLevel.Public ? "public" : "internal")} type | description |");
+						writer.WriteLine("| --- | --- |");
+						foreach (var typeInfo in typeGroup)
+						{
+							string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, $"{GetNamespaceUriName(group.Namespace)}/{typeInfo.Path}");
+							string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
+							writer.WriteLine($"| {typeText} | {summaryText} |");
+						}
 					}
 				}
 
