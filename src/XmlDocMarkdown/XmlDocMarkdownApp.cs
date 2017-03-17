@@ -210,6 +210,8 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      code of the assembly, e.g. at GitHub. (optional)");
 			textWriter.WriteLine("   --namespace <ns>");
 			textWriter.WriteLine("      The root namespace of the input assembly. (optional)");
+			textWriter.WriteLine("   --visibility (public|protected|internal|private)");
+			textWriter.WriteLine("      The minimum visibility of documented members. (default 'protected')");
 			textWriter.WriteLine("   --obsolete");
 			textWriter.WriteLine("      Generates documentation for obsolete types and members.");
 			textWriter.WriteLine("   --clean");

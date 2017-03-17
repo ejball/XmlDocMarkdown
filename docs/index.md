@@ -25,7 +25,9 @@ For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentatio
 ### Options
 
 * `--source <url>`: The URL (absolute or relative) of the folder containing the source code of the assembly, e.g. at GitHub. Required to generate source code links in the See Also sections for types.
-* `--namespace <ns>`: The root namespace of the input assembly. Required to generate source code links in the See Also sections for types.
+* `--namespace <ns>`: The root namespace of the input assembly. Used to generate source code links in the See Also sections for types. If omitted, the tool guesses the root namespace from the exported types.
+* `--visibility (public|protected|internal|private)`: The minimum visibility for documented types and members. If `public`, only public types and members are documented. If `protected`, only public and protected types and members are documented. Similarly for `internal` and `private`. Defaults to `protected`.
+* `--obsolete`: Generates documentation for obsolete types and members, which are not documented by default.
 * `--clean`: Delete previously generated files that are no longer used.
 * `--verify`: Executes the tool without making changes to the file system, but exits with error code 1 if changes would be made. Typically used in build scripts to ensure that any changes have been reflected in the generated code.
 * `--dryrun`: Executes the tool without making changes to the file system.
