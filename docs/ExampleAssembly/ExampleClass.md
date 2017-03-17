@@ -21,7 +21,7 @@ public class ExampleClass
 | [IsBadIdea](ExampleClass/IsBadIdea.md) | A public field. |
 | event [WeightChanged](ExampleClass/WeightChanged.md) | An event. |
 | [DefaultParameters&lt;T&gt;](ExampleClass/DefaultParameters.md)(…) | A method with default parameters. |
-| [Jump](ExampleClass/Jump.md)() | A boring method. |
+| virtual [Jump](ExampleClass/Jump.md)() | A virtual method. |
 | [LongMethodNameWithTemplateParametersAndMethodParameters&lt;T&gt;](ExampleClass/LongMethodNameWithTemplateParametersAndMethodParameters.md)(…) | A method with a really long name. |
 | [Overloaded](ExampleClass/Overloaded.md)() | An overloaded method. |
 | [Overloaded](ExampleClass/Overloaded.md)(…) | An overloaded method. (2 methods) |

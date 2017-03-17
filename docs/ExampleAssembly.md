@@ -6,7 +6,7 @@ The assembly `ExampleAssembly.dll` has 26 public types in 2 namespaces.
 
 | public type | description |
 | --- | --- |
-| class [ExampleAbstractClass](ExampleAssembly/ExampleAbstractClass.md) | An abstract class. |
+| abstract class [ExampleAbstractClass](ExampleAssembly/ExampleAbstractClass.md) | An abstract class. |
 | class [ExampleAttribute](ExampleAssembly/ExampleAttribute.md) | An attribute. |
 | class [ExampleClass](ExampleAssembly/ExampleClass.md) | A class. |
 | class [ExampleDeepClass](ExampleAssembly/ExampleDeepClass.md) | A class with nested types. |

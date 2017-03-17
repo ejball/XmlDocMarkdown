@@ -59,5 +59,33 @@ namespace ExampleAssembly
 				}
 			}
 		}
+
+		/// <summary>
+		/// A protected nested class.
+		/// </summary>
+		protected class ProtectedNestedClass
+		{
+		}
+
+		/// <summary>
+		/// An internal nested class.
+		/// </summary>
+		internal class InternalNestedClass
+		{
+		}
+
+		/// <summary>
+		/// A protected internal nested class.
+		/// </summary>
+		protected internal class ProtectedInternalNestedClass
+		{
+		}
+
+		/// <summary>
+		/// A private nested class.
+		/// </summary>
+		private class PrivateNestedClass
+		{
+		}
 	}
 }

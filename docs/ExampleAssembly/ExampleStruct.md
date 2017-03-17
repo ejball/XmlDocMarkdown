@@ -11,8 +11,8 @@ public struct ExampleStruct
 | name | description |
 | --- | --- |
 | [Item](ExampleStruct/Item.md) { get; } | Integer indexer. (2 indexers) |
-| [Equals](ExampleStruct/Equals.md)(…) | Check for equality. |
-| [GetHashCode](ExampleStruct/GetHashCode.md)() | Check for equality. |
+| override [Equals](ExampleStruct/Equals.md)(…) | Check for equality. |
+| override [GetHashCode](ExampleStruct/GetHashCode.md)() | Check for equality. |
 | [operator +](ExampleStruct/op_Addition.md) | Unary plus. (2 operators) |
 | [operator &amp;](ExampleStruct/op_BitwiseAnd.md) | And. |
 | [operator &#x7C;](ExampleStruct/op_BitwiseOr.md) | Or. |

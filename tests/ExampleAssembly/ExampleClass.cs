@@ -98,9 +98,9 @@ namespace ExampleAssembly
 		public static event EventHandler MaxWeightChanged;
 
 		/// <summary>
-		/// A boring method.
+		/// A virtual method.
 		/// </summary>
-		public void Jump()
+		public virtual void Jump()
 		{
 		}
 
@@ -201,6 +201,14 @@ namespace ExampleAssembly
 		/// A method with a really long name.
 		/// </summary>
 		public void LongMethodNameWithTemplateParametersAndMethodParameters<T>(T t)
+		{
+		}
+
+		/// <summary>
+		/// An obsolete method.
+		/// </summary>
+		[Obsolete("This method is old and busted.")]
+		public void OldAndBusted()
 		{
 		}
 	}

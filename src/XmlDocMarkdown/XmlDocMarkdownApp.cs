@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using ArgsReading;
@@ -34,7 +35,10 @@ namespace XmlDocMarkdown
 
 				generator.SourceCodePath = argsReader.ReadSourceOption();
 				generator.RootNamespace = argsReader.ReadNamespaceOption();
+				generator.IncludeObsolete = argsReader.ReadObsoleteFlag();
+				generator.Visibility = argsReader.ReadVisibilityOption() ?? VisibilityLevel.Protected;
 
+				bool shouldClean = argsReader.ReadCleanFlag();
 				bool isQuiet = argsReader.ReadQuietFlag();
 				bool isVerify = argsReader.ReadVerifyFlag();
 				bool isDryRun = argsReader.ReadDryRunFlag();
@@ -90,8 +94,33 @@ namespace XmlDocMarkdown
 					}
 				}
 
+				var namesToDelete = new List<string>();
+				if (shouldClean)
+				{
+					var directoryInfo = new DirectoryInfo(outputPath);
+					if (directoryInfo.Exists)
+					{
+						string assemblyName = assembly.GetName().Name;
+						string assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
+						string assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
+						string assemblyFolder = Path.GetFileNameWithoutExtension(assemblyFileName);
+						var patterns = new[] { $"{assemblyFolder}/*.md", $"{assemblyFolder}/*/*.md" };
+						string codeGenComment = MarkdownGenerator.GetCodeGenComment(assemblyFileName);
+
+						foreach (string nameMatchingPattern in FindNamesMatchingPatterns(directoryInfo, patterns, codeGenComment))
+						{
+							if (namedTexts.All(x => x.Name != nameMatchingPattern))
+							{
+								namesToDelete.Add(nameMatchingPattern);
+								if (!isQuiet)
+									Console.WriteLine("removed " + nameMatchingPattern);
+							}
+						}
+					}
+				}
+
 				if (isVerify)
-					return namedTextsToWrite.Count != 0 ? 1 : 0;
+					return namedTextsToWrite.Count != 0 || namesToDelete.Count != 0 ? 1 : 0;
 
 				if (!isDryRun)
 				{
@@ -108,6 +137,9 @@ namespace XmlDocMarkdown
 
 						File.WriteAllText(outputFilePath, namedText.Text);
 					}
+
+					foreach (string nameToDelete in namesToDelete)
+						File.Delete(Path.Combine(outputPath, nameToDelete));
 				}
 
 				return 0;
@@ -129,6 +161,39 @@ namespace XmlDocMarkdown
 			}
 		}
 
+		private IEnumerable<string> FindNamesMatchingPatterns(DirectoryInfo directoryInfo, IReadOnlyList<string> namePatterns, string requiredSubstring)
+		{
+			foreach (var namePattern in namePatterns)
+			{
+				foreach (string name in FindNamesMatchingPattern(directoryInfo, namePattern, requiredSubstring))
+					yield return name;
+			}
+		}
+
+		private IEnumerable<string> FindNamesMatchingPattern(DirectoryInfo directoryInfo, string namePattern, string requiredSubstring)
+		{
+			var parts = namePattern.Split(new[] { '/' }, 2);
+			if (parts[0].Length == 0)
+				throw new InvalidOperationException("Invalid name pattern.");
+
+			if (parts.Length == 1)
+			{
+				foreach (var fileInfo in directoryInfo.GetFiles(parts[0]))
+				{
+					if (File.ReadAllText(fileInfo.FullName).Contains(requiredSubstring))
+						yield return fileInfo.Name;
+				}
+			}
+			else
+			{
+				foreach (var subdirectoryInfo in directoryInfo.GetDirectories(parts[0]))
+				{
+					foreach (string name in FindNamesMatchingPattern(subdirectoryInfo, parts[1], requiredSubstring))
+						yield return subdirectoryInfo.Name + '/' + name;
+				}
+			}
+		}
+
 		private void WriteUsage(TextWriter textWriter)
 		{
 			textWriter.WriteLine("Generates Markdown from .NET XML documentation comments.");
@@ -145,6 +210,10 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      code of the assembly, e.g. at GitHub. (optional)");
 			textWriter.WriteLine("   --namespace <ns>");
 			textWriter.WriteLine("      The root namespace of the input assembly. (optional)");
+			textWriter.WriteLine("   --obsolete");
+			textWriter.WriteLine("      Generates documentation for obsolete types and members.");
+			textWriter.WriteLine("   --clean");
+			textWriter.WriteLine("      Deletes previously generated files that are no longer used.");
 			textWriter.WriteLine("   --verify");
 			textWriter.WriteLine("      Exits with error code 1 if changes to the file system are needed.");
 			textWriter.WriteLine("   --dryrun");

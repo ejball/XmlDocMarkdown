@@ -1,4 +1,5 @@
 ﻿using ArgsReading;
+using XmlDocMarkdown.Core;
 
 namespace XmlDocMarkdown
 {
@@ -12,6 +13,36 @@ namespace XmlDocMarkdown
 		public static string ReadNamespaceOption(this ArgsReader args)
 		{
 			return args.ReadOption("namespace");
+		}
+
+		public static VisibilityLevel? ReadVisibilityOption(this ArgsReader args)
+		{
+			string visibility = args.ReadOption("visibility");
+			switch (visibility)
+			{
+			case "public":
+				return VisibilityLevel.Public;
+			case "protected":
+				return VisibilityLevel.Protected;
+			case "internal":
+				return VisibilityLevel.Internal;
+			case "private":
+				return VisibilityLevel.Private;
+			case null:
+				return null;
+			default:
+				throw new ArgsReaderException($"Unknown visibility option: {visibility}");
+			}
+		}
+
+		public static bool ReadObsoleteFlag(this ArgsReader args)
+		{
+			return args.ReadFlag("obsolete");
+		}
+
+		public static bool ReadCleanFlag(this ArgsReader args)
+		{
+			return args.ReadFlag("clean");
 		}
 
 		public static bool ReadDryRunFlag(this ArgsReader args)

@@ -3,7 +3,7 @@
 Check for equality.
 
 ```csharp
-public int GetHashCode()
+public override int GetHashCode()
 ```
 
 ## See Also

@@ -13,6 +13,7 @@ public class ExampleDerivedClass : ExampleClass, IExampleInterface, IEnumerable<
 | [ExampleDerivedClass](ExampleDerivedClass/ExampleDerivedClass.md)() | The default constructor. |
 | [ExampleMethod](ExampleDerivedClass/ExampleMethod.md)(…) | An implicitly implemented interface method. |
 | [GetEnumerator](ExampleDerivedClass/GetEnumerator.md)() | The enumerator. |
+| override [Jump](ExampleDerivedClass/Jump.md)() | An overridden method. |
 | [SeeAlso](ExampleDerivedClass/SeeAlso.md)() | A method with lots of see alsos. |
 
 ## See Also

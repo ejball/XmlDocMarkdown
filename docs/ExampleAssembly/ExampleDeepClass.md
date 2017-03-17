@@ -14,6 +14,13 @@ public class ExampleDeepClass
 | class [NestedClass](ExampleDeepClass.NestedClass.md) | A nested class. |
 | delegate [NestedDelegate](ExampleDeepClass.NestedDelegate.md) | A nested delegate. |
 
+## Protected Members
+
+| name | description |
+| --- | --- |
+| class [ProtectedInternalNestedClass](ExampleDeepClass.ProtectedInternalNestedClass.md) | A protected internal nested class. |
+| class [ProtectedNestedClass](ExampleDeepClass.ProtectedNestedClass.md) | A protected nested class. |
+
 ## Remarks
 
 The [`ExampleDeepClass`](ExampleDeepClass.md) class has a [`NestedDelegate`](ExampleDeepClass.NestedDelegate.md) and a [`NestedClass`](ExampleDeepClass.NestedClass.md)with a [`VeryNestedStruct`](ExampleDeepClass.NestedClass.VeryNestedStruct.md) and a [`VeryVeryNestedInterface`](ExampleDeepClass.NestedClass.VeryNestedStruct.VeryVeryNestedInterface.md). Another type in this namespace is [`ExampleClass`](ExampleClass.md) with method [`Create`](ExampleClass/Create.md). A type in an inner namespace is [`ExampleInnerClass`](../ExampleAssembly.InnerNamespace/ExampleInnerClass.md), which has a constructor [`ExampleInnerClass`](../ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md).
