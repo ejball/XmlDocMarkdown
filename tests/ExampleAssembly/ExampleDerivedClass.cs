@@ -37,6 +37,13 @@ namespace ExampleAssembly
 		}
 
 		/// <summary>
+		/// An overridden method.
+		/// </summary>
+		public override void Jump()
+		{
+		}
+
+		/// <summary>
 		/// The enumerator.
 		/// </summary>
 		/// <returns>The strings.</returns>

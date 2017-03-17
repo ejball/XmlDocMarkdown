@@ -98,9 +98,9 @@ namespace ExampleAssembly
 		public static event EventHandler MaxWeightChanged;
 
 		/// <summary>
-		/// A boring method.
+		/// A virtual method.
 		/// </summary>
-		public void Jump()
+		public virtual void Jump()
 		{
 		}
 

@@ -765,6 +765,8 @@ namespace XmlDocMarkdown.Core
 						prefix = "abstract " + prefix;
 					else if (IsVirtual(typeInfo))
 						prefix = "virtual " + prefix;
+					else if (IsOverride(typeInfo))
+						prefix = "override " + prefix;
 				}
 			}
 			else
@@ -785,6 +787,8 @@ namespace XmlDocMarkdown.Core
 							prefix = "abstract " + prefix;
 						else if (IsVirtual(eventInfo))
 							prefix = "virtual " + prefix;
+						else if (IsOverride(eventInfo))
+							prefix = "override " + prefix;
 					}
 				}
 				else if (propertyInfo != null)
@@ -800,6 +804,8 @@ namespace XmlDocMarkdown.Core
 						prefix = "abstract ";
 					else if (IsVirtual(propertyInfo))
 						prefix = "virtual ";
+					else if (IsOverride(propertyInfo))
+						prefix = "override ";
 				}
 				else if (fieldInfo != null)
 				{
@@ -835,6 +841,8 @@ namespace XmlDocMarkdown.Core
 						prefix = "abstract " + prefix;
 					else if (IsVirtual(methodBase))
 						prefix = "virtual " + prefix;
+					else if (IsOverride(methodBase))
+						prefix = "override " + prefix;
 				}
 			}
 
@@ -971,6 +979,8 @@ namespace XmlDocMarkdown.Core
 				yield return "abstract ";
 			else if (IsVirtual(memberInfo))
 				yield return "virtual ";
+			else if (IsOverride(memberInfo))
+				yield return "override ";
 
 			if (IsConst(memberInfo))
 				yield return "const ";
@@ -1480,6 +1490,29 @@ namespace XmlDocMarkdown.Core
 			var methodInfo = memberInfo as MethodInfo;
 			if (methodInfo != null)
 				return methodInfo.IsVirtual && !methodInfo.IsFinal && methodInfo.GetRuntimeBaseDefinition().DeclaringType == methodInfo.DeclaringType;
+
+			return false;
+		}
+
+		private static bool IsOverride(MemberInfo memberInfo)
+		{
+			if (memberInfo.DeclaringType?.GetTypeInfo().IsInterface == true)
+				return false;
+
+			var eventInfo = memberInfo as EventInfo;
+			if (eventInfo != null)
+				return eventInfo.AddMethod != null && IsOverride(eventInfo.AddMethod);
+
+			var propertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo != null)
+			{
+				return (propertyInfo.GetMethod != null && IsOverride(propertyInfo.GetMethod)) ||
+					(propertyInfo.SetMethod != null && IsOverride(propertyInfo.SetMethod));
+			}
+
+			var methodInfo = memberInfo as MethodInfo;
+			if (methodInfo != null)
+				return methodInfo.IsVirtual && !methodInfo.IsFinal && methodInfo.GetRuntimeBaseDefinition().DeclaringType != methodInfo.DeclaringType;
 
 			return false;
 		}

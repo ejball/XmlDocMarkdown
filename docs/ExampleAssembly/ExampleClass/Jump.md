@@ -1,9 +1,9 @@
 # ExampleClass.Jump method
 
-A boring method.
+A virtual method.
 
 ```csharp
-public void Jump()
+public virtual void Jump()
 ```
 
 ## See Also
