@@ -491,6 +491,10 @@ namespace XmlDocMarkdown.Core
 			if (!IncludeObsolete && memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any())
 				return false;
 
+			string name = memberInfo.Name;
+			if (name.Length == 0 || name[0] == '<')
+				return false;
+
 			if (memberInfo is TypeInfo)
 				return true;
 
@@ -589,7 +593,7 @@ namespace XmlDocMarkdown.Core
 			if (tickIndex != -1)
 				name = name.Substring(0, tickIndex);
 
-			if (name == ".ctor")
+			if (name == ".ctor" || name == ".cctor")
 				name = GetShortName(memberInfo.DeclaringType.GetTypeInfo());
 			else if (name == "op_UnaryPlus")
 				name = "op_Addition";
@@ -721,7 +725,7 @@ namespace XmlDocMarkdown.Core
 			}
 		}
 
-		private static ShortSignature GetShortSignature(MemberInfo memberInfo, bool forSeeAlso = false)
+		private ShortSignature GetShortSignature(MemberInfo memberInfo, bool forSeeAlso = false)
 		{
 			string name = GetOperatorKeywordName(GetShortName(memberInfo));
 			string prefix = "";
@@ -751,11 +755,17 @@ namespace XmlDocMarkdown.Core
 					break;
 				}
 
-				if (!forSeeAlso && IsStatic(typeInfo))
-					prefix = "static " + prefix;
-
-				if (!forSeeAlso && IsFlagsEnum(typeInfo))
-					prefix = "[Flags] " + prefix;
+				if (!forSeeAlso)
+				{
+					if (IsFlagsEnum(typeInfo))
+						prefix = "[Flags] " + prefix;
+					if (IsStatic(typeInfo))
+						prefix = "static " + prefix;
+					else if (IsAbstract(typeInfo))
+						prefix = "abstract " + prefix;
+					else if (IsVirtual(typeInfo))
+						prefix = "virtual " + prefix;
+				}
 			}
 			else
 			{
@@ -767,8 +777,15 @@ namespace XmlDocMarkdown.Core
 				if (eventInfo != null)
 				{
 					prefix = "event ";
-					if (!forSeeAlso && IsStatic(eventInfo))
-						prefix = "static " + prefix;
+					if (!forSeeAlso)
+					{
+						if (IsStatic(eventInfo))
+							prefix = "static " + prefix;
+						else if (IsAbstract(eventInfo))
+							prefix = "abstract " + prefix;
+						else if (IsVirtual(eventInfo))
+							prefix = "virtual " + prefix;
+					}
 				}
 				else if (propertyInfo != null)
 				{
@@ -779,6 +796,10 @@ namespace XmlDocMarkdown.Core
 						prefix = "property ";
 					else if (IsStatic(propertyInfo))
 						prefix = "static ";
+					else if (IsAbstract(propertyInfo))
+						prefix = "abstract ";
+					else if (IsVirtual(propertyInfo))
+						prefix = "virtual ";
 				}
 				else if (fieldInfo != null)
 				{
@@ -810,17 +831,37 @@ namespace XmlDocMarkdown.Core
 						prefix = "method ";
 					else if (IsStatic(methodBase) && !isOperator)
 						prefix = "static " + prefix;
+					else if (IsAbstract(methodBase))
+						prefix = "abstract " + prefix;
+					else if (IsVirtual(methodBase))
+						prefix = "virtual " + prefix;
 				}
 			}
 
 			return new ShortSignature(prefix: prefix.Replace(' ', '\u00A0'), name: name, suffix: suffix.Replace(' ', '\u00A0'));
 		}
 
-		private static string GetPropertyGetSet(PropertyInfo propertyInfo)
+		private string GetPropertyGetSet(PropertyInfo propertyInfo)
 		{
-			bool hasGet = propertyInfo.GetMethod?.IsPublic ?? false;
-			bool hasSet = propertyInfo.SetMethod?.IsPublic ?? false;
-			return hasGet && hasSet ? " { get; set; }" : hasGet ? " { get; }" : hasSet ? " { set; }" : "";
+			var getMethod = propertyInfo.GetMethod;
+			var setMethod = propertyInfo.SetMethod;
+			if (getMethod == null && setMethod == null)
+				throw new InvalidOperationException();
+
+			var getVisibility = getMethod == null ? VisibilityLevel.Private : GetMethodVisibility(getMethod);
+			var setVisibility = setMethod == null ? VisibilityLevel.Private : GetMethodVisibility(setMethod);
+
+			if (getMethod != null && (setMethod == null || IsMorePrivateThan(setVisibility, Visibility)))
+				return " { get; }";
+			if (getMethod == null || IsMorePrivateThan(getVisibility, Visibility))
+				return " { set; }";
+
+			if (getVisibility == setVisibility)
+				return " { get; set; }";
+			else if (IsMorePrivateThan(getVisibility, setVisibility))
+				return $" {{ {GetAccessModifier(getMethod)} get; set; }}";
+			else
+				return $" {{ get; {GetAccessModifier(setMethod)} set; }}";
 		}
 
 		private string GetFullSignature(MemberInfo memberInfo, ICollection<MemberInfo> seeAlsoMembers)
@@ -920,35 +961,16 @@ namespace XmlDocMarkdown.Core
 				yield return Environment.NewLine;
 			}
 
-			var visibility = GetVisibility(memberInfo);
-			switch (visibility)
-			{
-			case VisibilityLevel.Public:
-				yield return "public ";
-				break;
-			case VisibilityLevel.Protected:
-				// TODO: support "protected internal"
-				yield return "protected ";
-				break;
-			case VisibilityLevel.Internal:
-				yield return "internal ";
-				break;
-			case VisibilityLevel.Private:
-				yield return "private ";
-				break;
-			}
+			yield return $"{GetAccessModifier(memberInfo)} ";
 
 			if (IsStatic(memberInfo))
-			{
 				yield return "static ";
-			}
-			else if (typeKind == TypeKind.Class)
-			{
-				if (typeInfo.IsAbstract)
-					yield return "abstract ";
-				if (typeInfo.IsSealed)
-					yield return "sealed ";
-			}
+			else if (typeKind == TypeKind.Class && typeInfo.IsSealed)
+				yield return "sealed ";
+			else if (IsAbstract(memberInfo))
+				yield return "abstract ";
+			else if (IsVirtual(memberInfo))
+				yield return "virtual ";
 
 			if (IsConst(memberInfo))
 				yield return "const ";
@@ -1412,6 +1434,56 @@ namespace XmlDocMarkdown.Core
 			return false;
 		}
 
+		private static bool IsAbstract(MemberInfo memberInfo)
+		{
+			var typeInfo = memberInfo as TypeInfo;
+			if (typeInfo != null && !typeInfo.IsInterface)
+				return typeInfo.IsAbstract;
+
+			if (memberInfo.DeclaringType?.GetTypeInfo().IsInterface == true)
+				return false;
+
+			var eventInfo = memberInfo as EventInfo;
+			if (eventInfo != null)
+				return eventInfo.AddMethod != null && IsAbstract(eventInfo.AddMethod);
+
+			var propertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo != null)
+			{
+				return (propertyInfo.GetMethod != null && IsAbstract(propertyInfo.GetMethod)) ||
+					(propertyInfo.SetMethod != null && IsAbstract(propertyInfo.SetMethod));
+			}
+
+			var methodBase = memberInfo as MethodBase;
+			if (methodBase != null)
+				return methodBase.IsAbstract;
+
+			return false;
+		}
+
+		private static bool IsVirtual(MemberInfo memberInfo)
+		{
+			if (memberInfo.DeclaringType?.GetTypeInfo().IsInterface == true)
+				return false;
+
+			var eventInfo = memberInfo as EventInfo;
+			if (eventInfo != null)
+				return eventInfo.AddMethod != null && IsVirtual(eventInfo.AddMethod);
+
+			var propertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo != null)
+			{
+				return (propertyInfo.GetMethod != null && IsVirtual(propertyInfo.GetMethod)) ||
+					(propertyInfo.SetMethod != null && IsVirtual(propertyInfo.SetMethod));
+			}
+
+			var methodInfo = memberInfo as MethodInfo;
+			if (methodInfo != null)
+				return methodInfo.IsVirtual && !methodInfo.IsFinal && methodInfo.GetRuntimeBaseDefinition().DeclaringType == methodInfo.DeclaringType;
+
+			return false;
+		}
+
 		private static bool IsConst(MemberInfo memberInfo)
 		{
 			return (memberInfo as FieldInfo)?.IsLiteral ?? false;
@@ -1430,37 +1502,44 @@ namespace XmlDocMarkdown.Core
 
 		private static VisibilityLevel GetVisibility(MemberInfo memberInfo)
 		{
+			return GetVisibility(memberInfo, VisibilityLevel.Protected);
+		}
+
+		private static VisibilityLevel GetVisibility(MemberInfo memberInfo, VisibilityLevel protectedInternal)
+		{
 			var typeInfo = memberInfo as TypeInfo;
 			if (typeInfo != null)
 			{
 				var visibility = GetTypeVisibility(typeInfo);
-				return typeInfo.IsNested ? GetMostPrivate(visibility, GetTypeVisibility(typeInfo.DeclaringType.GetTypeInfo())) : visibility;
+				return typeInfo.IsNested ? GetMostPrivate(visibility, GetTypeVisibility(typeInfo.DeclaringType.GetTypeInfo(), protectedInternal)) : visibility;
 			}
 
 			var eventInfo = memberInfo as EventInfo;
 			if (eventInfo != null)
-				return GetMostPublic(GetMethodVisibility(eventInfo.AddMethod), GetMethodVisibility(eventInfo.RemoveMethod), GetMethodVisibility(eventInfo.RaiseMethod));
+				return GetMethodVisibility(eventInfo.AddMethod, protectedInternal);
 
 			var propertyInfo = memberInfo as PropertyInfo;
 			if (propertyInfo != null)
-				return GetMostPublic(GetMethodVisibility(propertyInfo.GetMethod), GetMethodVisibility(propertyInfo.SetMethod));
+				return GetPropertyVisibility(propertyInfo, protectedInternal);
 
 			var fieldInfo = memberInfo as FieldInfo;
 			if (fieldInfo != null)
-				return GetFieldVisibility(fieldInfo);
+				return GetFieldVisibility(fieldInfo, protectedInternal);
 
 			var methodBase = memberInfo as MethodBase;
 			if (methodBase != null)
-				return GetMethodVisibility(methodBase);
+				return GetMethodVisibility(methodBase, protectedInternal);
 
 			return VisibilityLevel.Private;
 		}
 
-		private static VisibilityLevel GetTypeVisibility(TypeInfo typeInfo)
+		private static VisibilityLevel GetTypeVisibility(TypeInfo typeInfo, VisibilityLevel protectedInternal = VisibilityLevel.Protected)
 		{
 			if (typeInfo.IsPublic || typeInfo.IsNestedPublic)
 				return VisibilityLevel.Public;
-			else if (typeInfo.IsNestedFamily || typeInfo.IsNestedFamORAssem)
+			else if (typeInfo.IsNestedFamORAssem)
+				return protectedInternal;
+			else if (typeInfo.IsNestedFamily)
 				return VisibilityLevel.Protected;
 			else if (typeInfo.IsNestedAssembly || typeInfo.IsNestedFamANDAssem)
 				return VisibilityLevel.Internal;
@@ -1468,13 +1547,13 @@ namespace XmlDocMarkdown.Core
 				return VisibilityLevel.Private;
 		}
 
-		private static VisibilityLevel GetMethodVisibility(MethodBase methodBase)
+		private static VisibilityLevel GetMethodVisibility(MethodBase methodBase, VisibilityLevel protectedInternal = VisibilityLevel.Protected)
 		{
-			if (methodBase == null)
-				return VisibilityLevel.Private;
-			else if (methodBase.IsPublic)
+			if (methodBase.IsPublic)
 				return VisibilityLevel.Public;
-			else if (methodBase.IsFamily || methodBase.IsFamilyOrAssembly)
+			else if (methodBase.IsFamilyOrAssembly)
+				return protectedInternal;
+			else if (methodBase.IsFamily)
 				return VisibilityLevel.Protected;
 			else if (methodBase.IsAssembly || methodBase.IsFamilyAndAssembly)
 				return VisibilityLevel.Internal;
@@ -1482,16 +1561,55 @@ namespace XmlDocMarkdown.Core
 				return VisibilityLevel.Private;
 		}
 
-		private static VisibilityLevel GetFieldVisibility(FieldInfo fieldInfo)
+		private static VisibilityLevel GetPropertyVisibility(PropertyInfo propertyInfo, VisibilityLevel protectedInternal = VisibilityLevel.Protected)
+		{
+			var getMethod = propertyInfo.GetMethod;
+			var setMethod = propertyInfo.SetMethod;
+			if (getMethod == null && setMethod == null)
+				throw new InvalidOperationException();
+
+			if (getMethod != null && setMethod == null)
+				return GetMethodVisibility(getMethod);
+			if (getMethod == null)
+				return GetMethodVisibility(setMethod);
+
+			return GetMostPublic(
+				GetMethodVisibility(propertyInfo.GetMethod, protectedInternal),
+				GetMethodVisibility(propertyInfo.SetMethod, protectedInternal));
+		}
+
+		private static VisibilityLevel GetFieldVisibility(FieldInfo fieldInfo, VisibilityLevel protectedInternal = VisibilityLevel.Protected)
 		{
 			if (fieldInfo.IsPublic)
 				return VisibilityLevel.Public;
-			else if (fieldInfo.IsFamily || fieldInfo.IsFamilyOrAssembly)
+			else if (fieldInfo.IsFamilyOrAssembly)
+				return protectedInternal;
+			else if (fieldInfo.IsFamily)
 				return VisibilityLevel.Protected;
 			else if (fieldInfo.IsAssembly || fieldInfo.IsFamilyAndAssembly)
 				return VisibilityLevel.Internal;
 			else
 				return VisibilityLevel.Private;
+		}
+
+		private static string GetAccessModifier(MemberInfo memberInfo)
+		{
+			var visibility = GetVisibility(memberInfo, VisibilityLevel.ProtectedInternal);
+			switch (visibility)
+			{
+			case VisibilityLevel.Public:
+				return "public";
+			case VisibilityLevel.ProtectedInternal:
+				return "protected internal";
+			case VisibilityLevel.Protected:
+				return "protected";
+			case VisibilityLevel.Internal:
+				return "internal";
+			case VisibilityLevel.Private:
+				return "private";
+			default:
+				throw new InvalidOperationException();
+			}
 		}
 
 		private enum TypeKind

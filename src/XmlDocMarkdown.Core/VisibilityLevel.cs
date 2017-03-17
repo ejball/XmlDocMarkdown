@@ -8,6 +8,8 @@
 
 		Protected,
 
+		ProtectedInternal,
+
 		Public,
 	}
 }
