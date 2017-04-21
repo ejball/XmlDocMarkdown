@@ -1,13 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlDocMarkdown", "src\XmlDocMarkdown\XmlDocMarkdown.csproj", "{0CBCC17C-03F7-4744-AA20-243B671DBBF5}"
-	ProjectSection(ProjectDependencies) = postProject
-		{56EB3272-5918-42F7-A4DF-9088FD04798E} = {56EB3272-5918-42F7-A4DF-9088FD04798E}
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{68EEB72A-6D49-4B06-87C1-B54D028F897F}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -18,14 +13,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{68EEB72A-6
 		build.ps1 = build.ps1
 		LICENSE = LICENSE
 		README.md = README.md
-		SolutionInfo.cs = SolutionInfo.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlDocMarkdown.Tests", "tests\XmlDocMarkdown.Tests\XmlDocMarkdown.Tests.csproj", "{16EF7074-670D-4E88-8E79-5E9AFFB5693F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocMarkdown.Core", "src\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj", "{AB8545BC-43CD-4E55-BCA5-6FF239D08047}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleAssembly", "tests\ExampleAssembly\ExampleAssembly.csproj", "{56EB3272-5918-42F7-A4DF-9088FD04798E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocMarkdown", "src\XmlDocMarkdown\XmlDocMarkdown.csproj", "{D1ED4B64-41E6-47DC-9CA6-86D0EE303323}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlDocMarkdown.Core", "src\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj", "{B376BDA9-05EA-4E31-9287-000AB92BA4D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleAssembly", "tests\ExampleAssembly\ExampleAssembly.csproj", "{A2A20621-33DB-41CE-95E7-37480968F3B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocMarkdown.Tests", "tests\XmlDocMarkdown.Tests\XmlDocMarkdown.Tests.csproj", "{62914CA9-ECF5-455A-9E59-0F7128CAE7BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,22 +29,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0CBCC17C-03F7-4744-AA20-243B671DBBF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CBCC17C-03F7-4744-AA20-243B671DBBF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CBCC17C-03F7-4744-AA20-243B671DBBF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CBCC17C-03F7-4744-AA20-243B671DBBF5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16EF7074-670D-4E88-8E79-5E9AFFB5693F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16EF7074-670D-4E88-8E79-5E9AFFB5693F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16EF7074-670D-4E88-8E79-5E9AFFB5693F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16EF7074-670D-4E88-8E79-5E9AFFB5693F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56EB3272-5918-42F7-A4DF-9088FD04798E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56EB3272-5918-42F7-A4DF-9088FD04798E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56EB3272-5918-42F7-A4DF-9088FD04798E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56EB3272-5918-42F7-A4DF-9088FD04798E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B376BDA9-05EA-4E31-9287-000AB92BA4D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B376BDA9-05EA-4E31-9287-000AB92BA4D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B376BDA9-05EA-4E31-9287-000AB92BA4D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B376BDA9-05EA-4E31-9287-000AB92BA4D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB8545BC-43CD-4E55-BCA5-6FF239D08047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB8545BC-43CD-4E55-BCA5-6FF239D08047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB8545BC-43CD-4E55-BCA5-6FF239D08047}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB8545BC-43CD-4E55-BCA5-6FF239D08047}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1ED4B64-41E6-47DC-9CA6-86D0EE303323}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1ED4B64-41E6-47DC-9CA6-86D0EE303323}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1ED4B64-41E6-47DC-9CA6-86D0EE303323}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1ED4B64-41E6-47DC-9CA6-86D0EE303323}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2A20621-33DB-41CE-95E7-37480968F3B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2A20621-33DB-41CE-95E7-37480968F3B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2A20621-33DB-41CE-95E7-37480968F3B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2A20621-33DB-41CE-95E7-37480968F3B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62914CA9-ECF5-455A-9E59-0F7128CAE7BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62914CA9-ECF5-455A-9E59-0F7128CAE7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62914CA9-ECF5-455A-9E59-0F7128CAE7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62914CA9-ECF5-455A-9E59-0F7128CAE7BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,12 +2,14 @@
 bin/
 cake/
 obj/
-packages/
 release/
 
 *.cache
 *.log
 *.ncrunchproject
 *.ncrunchsolution
+*.nuspec
 *.suo
 *.user
+
+launchSettings.json

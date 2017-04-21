@@ -1,44 +1,26 @@
-#addin "nuget:?package=Cake.Git&version=0.10.0"
-#addin "nuget:?package=Octokit&version=0.23.0"
-#tool "nuget:?package=coveralls.io&version=1.3.4"
-#tool "nuget:?package=NUnit.ConsoleRunner&version=3.5.0"
-#tool "nuget:?package=PdbGit&version=3.0.32"
-#tool "nuget:?package=OpenCover&version=4.6.519"
-#tool "nuget:?package=ReportGenerator&version=2.5.0"
+#tool "nuget:?package=NuGetToolsPackager&version=0.1.1"
+#tool "nuget:?package=xunit.runner.console&version=2.2.0"
 
-using LibGit2Sharp;
+using System.Text.RegularExpressions;
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 var nugetApiKey = Argument("nugetApiKey", "");
-var githubApiKey = Argument("githubApiKey", "");
-var coverallsApiKey = Argument("coverallsApiKey", "");
-var prerelease = Argument("prerelease", "");
+var trigger = Argument("trigger", "");
 
 var solutionFileName = "XmlDocMarkdown.sln";
-var githubOwner = "ejball";
-var githubRepo = "XmlDocMarkdown";
-var githubRawUri = "http://raw.githubusercontent.com";
-var nugetSource = "https://www.nuget.org/api/v2/package";
-var coverageAssemblies = new[] { "XmlDocMarkdown.Core" };
-
-var rootPath = MakeAbsolute(Directory(".")).FullPath;
-var gitRepository = LibGit2Sharp.Repository.IsValid(rootPath) ? new LibGit2Sharp.Repository(rootPath) : null;
-
-var githubClient = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("build.cake"));
-if (!string.IsNullOrEmpty(githubApiKey))
-	githubClient.Credentials = new Octokit.Credentials(githubApiKey);
-
-string headSha = null;
-string version = null;
+var nugetSource = "https://api.nuget.org/v3/index.json";
+var nugetToolsPackageProjects = new[] { @"src\XmlDocMarkdown\XmlDocMarkdown.csproj" };
+var docsAssembly = $@"tests\ExampleAssembly\bin\{configuration}\netstandard1.1\ExampleAssembly.dll";
+var docsSourceUri = "../tests/ExampleAssembly";
 
 Task("Clean")
 	.Does(() =>
 	{
-		CleanDirectories($"src/**/bin");
-		CleanDirectories($"src/**/obj");
-		CleanDirectories($"tests/**/bin");
-		CleanDirectories($"tests/**/obj");
+		CleanDirectories("src/**/bin");
+		CleanDirectories("src/**/obj");
+		CleanDirectories("tests/**/bin");
+		CleanDirectories("tests/**/obj");
 		CleanDirectories("release");
 	});
 
@@ -46,144 +28,76 @@ Task("Build")
 	.IsDependentOn("Clean")
 	.Does(() =>
 	{
-		NuGetRestore(solutionFileName);
-		MSBuild(solutionFileName, settings => settings.SetConfiguration(configuration));
+		DotNetCoreRestore(solutionFileName);
+		DotNetCoreBuild(solutionFileName, new DotNetCoreBuildSettings { Configuration = configuration, ArgumentCustomization = args => args.Append("--verbosity normal") });
 	});
 
 Task("GenerateDocs")
 	.IsDependentOn("Build")
-	.Does(() => GenerateExample(verify: false));
+	.Does(() => GenerateDocs(verify: false));
 
 Task("VerifyGenerateDocs")
 	.IsDependentOn("Build")
-	.Does(() => GenerateExample(verify: true));
+	.Does(() => GenerateDocs(verify: true));
 
 Task("Test")
 	.IsDependentOn("VerifyGenerateDocs")
-	.Does(() => NUnit3($"tests/**/bin/**/*.Tests.dll", new NUnit3Settings { NoResults = true }));
-
-Task("SourceIndex")
-	.IsDependentOn("Test")
-	.WithCriteria(() => configuration == "Release" && gitRepository != null)
 	.Does(() =>
 	{
-		if (prerelease.Length == 0)
-		{
-			var dirtyEntry = gitRepository.RetrieveStatus().FirstOrDefault(x => x.State != FileStatus.Unaltered && x.State != FileStatus.Ignored);
-			if (dirtyEntry != null)
-				throw new InvalidOperationException($"The git working directory must be clean, but '{dirtyEntry.FilePath}' is dirty.");
-
-			headSha = gitRepository.Head.Tip.Sha;
-			try
-			{
-				githubClient.Repository.Commit.GetSha1(githubOwner, githubRepo, headSha).GetAwaiter().GetResult();
-			}
-			catch (Octokit.NotFoundException exception)
-			{
-				throw new InvalidOperationException($"The current commit '{headSha}' must be pushed to GitHub.", exception);
-			}
-
-			foreach (var pdbPath in GetFiles($"src/**/bin/**/*.pdb"))
-				ExecuteProcess(@"cake\PdbGit\tools\PdbGit.exe", $@"""{pdbPath}"" -u {githubRawUri}/{githubOwner}/{githubRepo}");
-		}
-		else
-		{
-			Warning("Skipping source index for prerelease.");
-		}
-
-		version = GetSemVerFromFile(GetFiles($"src/**/bin/**/{coverageAssemblies[0]}.dll").First().ToString());
+		foreach (var projectPath in GetFiles("tests/**/*Tests.csproj").Select(x => x.FullPath))
+			DotNetCoreTest(projectPath, new DotNetCoreTestSettings { Configuration = configuration });
 	});
 
 Task("NuGetPackage")
-	.IsDependentOn("SourceIndex")
+	.IsDependentOn("Test")
 	.Does(() =>
 	{
-		CreateDirectory("release");
-
-		foreach (var nuspecPath in GetFiles($"src/**/*.nuspec"))
+		foreach (string nugetToolsPackageProject in nugetToolsPackageProjects)
 		{
-			NuGetPack(nuspecPath, new NuGetPackSettings
-			{
-				Version = version,
-				OutputDirectory = "release",
-			});
+			ExecuteProcess($@"cake\NuGetToolsPackager\tools\NuGetToolsPackager.exe", $@"{nugetToolsPackageProject} --platform net46");
+			NuGetPack(System.IO.Path.ChangeExtension(nugetToolsPackageProject, ".nuspec"), new NuGetPackSettings { OutputDirectory = "release" });
 		}
 	});
 
 Task("NuGetPublish")
 	.IsDependentOn("NuGetPackage")
-	.WithCriteria(() => !string.IsNullOrEmpty(nugetApiKey) && !string.IsNullOrEmpty(githubApiKey))
+	.WithCriteria(() => !string.IsNullOrEmpty(nugetApiKey))
 	.Does(() =>
 	{
-		foreach (var nupkgPath in GetFiles($"release/*.nupkg"))
+		var nupkgPaths = GetFiles("release/*.nupkg").Select(x => x.FullPath).ToList();
+
+		string version = null;
+		foreach (var nupkgPath in nupkgPaths)
 		{
-			NuGetPush(nupkgPath, new NuGetPushSettings
-			{
-				ApiKey = nugetApiKey,
-				Source = nugetSource,
-			});
+			string nupkgVersion = Regex.Match(nupkgPath, @"\.([^\.]+\.[^\.]+\.[^\.]+)\.nupkg$").Groups[1].ToString();
+			if (version == null)
+				version = nupkgVersion;
+			else if (version != nupkgVersion)
+				throw new InvalidOperationException($"Mismatched package versions '{version}' and '{nupkgVersion}'.");
 		}
 
-		if (headSha != null)
+		if (trigger == null || Regex.IsMatch(trigger, "^v[0-9]"))
 		{
-			var tagName = $"nuget-{version}";
-			Information($"Creating git tag '{tagName}'...");
-			githubClient.Git.Reference.Create(githubOwner, githubRepo,
-				new Octokit.NewReference($"refs/tags/{tagName}", headSha)).GetAwaiter().GetResult();
+			if (trigger != null && trigger != $"v{version}")
+				throw new InvalidOperationException($"Trigger '{trigger}' doesn't match package version '{version}'.");
+
+			var pushSettings = new NuGetPushSettings { ApiKey = nugetApiKey, Source = nugetSource };
+			foreach (var nupkgPath in nupkgPaths)
+				NuGetPush(nupkgPath, pushSettings);
 		}
 		else
 		{
-			Warning("Skipping git tag for prerelease.");
+			Information("To publish this package, push this git tag: v" + version);
 		}
-	});
-
-Task("Coverage")
-	.IsDependentOn("Build")
-	.Does(() =>
-	{
-		CreateDirectory("release");
-		if (FileExists("release/coverage.xml"))
-			DeleteFile("release/coverage.xml");
-
-		string filter = string.Concat(coverageAssemblies.Select(x => $@" ""-filter:+[{x}]*"""));
-
-		foreach (var testDllPath in GetFiles($"tests/**/bin/**/*.Tests.dll"))
-		{
-			ExecuteProcess(@"cake\OpenCover\tools\OpenCover.Console.exe",
-				$@"-register:user -mergeoutput ""-target:cake\NUnit.ConsoleRunner\tools\nunit3-console.exe"" ""-targetargs:{testDllPath} --noresult"" ""-output:release\coverage.xml"" -skipautoprops -returntargetcode" + filter);
-		}
-	});
-
-Task("CoverageReport")
-	.IsDependentOn("Coverage")
-	.Does(() =>
-	{
-		ExecuteProcess(@"cake\ReportGenerator\tools\ReportGenerator.exe", $@"""-reports:release\coverage.xml"" ""-targetdir:release\coverage""");
-	});
-
-Task("CoveragePublish")
-	.IsDependentOn("Coverage")
-	.Does(() =>
-	{
-		ExecuteProcess(@"cake\coveralls.io\tools\coveralls.net.exe", $@"--opencover ""release\coverage.xml"" --full-sources --repo-token {coverallsApiKey}");
 	});
 
 Task("Default")
-	.IsDependentOn("Test");
+	.IsDependentOn("Build");
 
-string GetSemVerFromFile(string path)
+void GenerateDocs(bool verify)
 {
-	var versionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(path);
-	var semver = $"{versionInfo.FileMajorPart}.{versionInfo.FileMinorPart}.{versionInfo.FileBuildPart}";
-	if (prerelease.Length != 0)
-		semver += $"-{prerelease}";
-	return semver;
-}
-
-void GenerateExample(bool verify)
-{
-	int exitCode = StartProcess($@"src\XmlDocMarkdown\bin\{configuration}\XmlDocMarkdown.exe",
-		$@"tests\ExampleAssembly\bin\{configuration}\ExampleAssembly.dll docs\ --clean --source ../tests/ExampleAssembly" + (verify ? " --verify" : ""));
+	int exitCode = StartProcess($@"src\XmlDocMarkdown\bin\{configuration}\net46\XmlDocMarkdown.exe",
+		$@"{docsAssembly} docs\ --source ""{docsSourceUri}"" --newline lf --clean" + (verify ? " --verify" : ""));
 	if (exitCode == 1 && verify)
 		throw new InvalidOperationException("Generated docs don't match; use -target=GenerateDocs to regenerate.");
 	else if (exitCode != 0)

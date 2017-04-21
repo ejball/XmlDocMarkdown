@@ -1,7 +1,8 @@
 version: '{build}'
+image: Visual Studio 2017
 environment:
-  COVERALLSAPIKEY:
-    secure: hpY/hRt3Qq8aowHS8nC1ulEZztGGpv6Yww56OS3eiAwB9tUFcbUbisT3S0PrfFpU
+  NUGETAPIKEY:
+    secure: eBKIUm4YxcrbL3oVC/ZCBUA/inEu+7OMbKpgftpOc18ievKNwH8UAUB2t4w+89Xv
 build_script:
-- ps: .\build.ps1 -target=CoveragePublish -configuration=Debug "-coverallsApiKey=$env:COVERALLSAPIKEY"
+- ps: .\build.ps1 --target=NuGetPublish """--trigger=$env:APPVEYOR_REPO_TAG_NAME""" "--nugetApiKey=$env:NUGETAPIKEY"
 test: off

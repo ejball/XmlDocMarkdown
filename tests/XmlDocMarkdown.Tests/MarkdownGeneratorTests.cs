@@ -1,18 +1,18 @@
 ﻿using System.IO;
+using System.Reflection;
 using System.Xml.Linq;
 using ExampleAssembly;
-using NUnit.Framework;
 using XmlDocMarkdown.Core;
+using Xunit;
 
 namespace XmlDocMarkdown.Tests
 {
-	[TestFixture]
 	public class MarkdownGeneratorTests
 	{
-		[Test]
+		[Fact]
 		public void ExampleAssembly()
 		{
-			var assembly = typeof(ExampleClass).Assembly;
+			var assembly = typeof(ExampleClass).GetTypeInfo().Assembly;
 			var xDocument = XDocument.Load(Path.ChangeExtension(assembly.Location, ".xml"));
 			var xmlDocAssembly = new XmlDocAssembly(xDocument);
 			new MarkdownGenerator().GenerateOutput(assembly, xmlDocAssembly);
