@@ -28,6 +28,8 @@ public class ExampleClass
 | [Overloaded&lt;T&gt;](ExampleClass/Overloaded.md)() | An overloaded method. |
 | [Overloaded&lt;T&gt;](ExampleClass/Overloaded.md)(…) | An overloaded method. (2 methods) |
 | [Overloaded&lt;T,U&gt;](ExampleClass/Overloaded.md)(…) | An overloaded method. |
+| [ParameterReference](ExampleClass/ParameterReference.md)(…) | A method whose summary references *value*. |
+| [TypeParameterReference&lt;T&gt;](ExampleClass/TypeParameterReference.md)(…) | A method whose summary references *T*. |
 | static [MaxWeight](ExampleClass/MaxWeight.md) { get; set; } | A static read-write property. |
 | static [MinWeight](ExampleClass/MinWeight.md) { get; } | A static read-only property. |
 | const [BlankId](ExampleClass/BlankId.md) | A constant field. |
