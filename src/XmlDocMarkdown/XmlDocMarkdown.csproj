@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net46</TargetFramework>
-    <Version>0.5.0</Version>
+    <Version>0.5.1</Version>
     <Authors>Ed Ball</Authors>
     <Company />
     <Product />
