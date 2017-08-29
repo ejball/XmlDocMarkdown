@@ -894,7 +894,7 @@ namespace XmlDocMarkdown.Core
 				{
 					if (lineBuilder.Length != 0 && segmentBuilder.Length != 0 && lineBuilder.Length + segmentBuilder.Length > maxLineLength)
 					{
-						lineBuilder.AppendLine();
+						lineBuilder.Append(ActualNewLine);
 						stringBuilder.Append(lineBuilder);
 						lineBuilder.Clear();
 
@@ -904,7 +904,7 @@ namespace XmlDocMarkdown.Core
 					lineBuilder.Append(segmentBuilder);
 					segmentBuilder.Clear();
 
-					lineBuilder.AppendLine();
+					lineBuilder.Append(ActualNewLine);
 					stringBuilder.Append(lineBuilder);
 					lineBuilder.Clear();
 				}
@@ -912,7 +912,7 @@ namespace XmlDocMarkdown.Core
 				{
 					if (lineBuilder.Length != 0 && segmentBuilder.Length != 0 && lineBuilder.Length + segmentBuilder.Length > maxLineLength)
 					{
-						lineBuilder.AppendLine();
+						lineBuilder.Append(ActualNewLine);
 						stringBuilder.Append(lineBuilder);
 						lineBuilder.Clear();
 
