@@ -205,6 +205,22 @@ namespace ExampleAssembly
 		}
 
 		/// <summary>
+		/// A method whose summary references <paramref name="value"/>.
+		/// </summary>
+		/// <param name="value">The value</param>
+		public void ParameterReference(int value)
+		{
+		}
+
+		/// <summary>
+		/// A method whose summary references <typeparamref name="T"/>.
+		/// </summary>
+		/// <param name="value">The value of type <typeparamref name="T"/>.</param>
+		public void TypeParameterReference<T>(T value)
+		{
+		}
+
+		/// <summary>
 		/// An obsolete method.
 		/// </summary>
 		[Obsolete("This method is old and busted.")]
