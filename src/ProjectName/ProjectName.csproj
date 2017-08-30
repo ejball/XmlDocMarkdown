@@ -11,7 +11,7 @@
     <DebugSymbols>True</DebugSymbols>
     <PackageLicenseUrl>https://raw.githubusercontent.com/Faithlife/RepoName/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Faithlife/RepoName</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/Faithlife/RepoName/VersionHistory.md</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/Faithlife/RepoName/blob/master/VersionHistory.md#released</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/Faithlife/RepoName.git</RepositoryUrl>
     <Authors>Faithlife Corporation</Authors>
     <Copyright>Copyright 2017 Faithlife Corporation</Copyright>
