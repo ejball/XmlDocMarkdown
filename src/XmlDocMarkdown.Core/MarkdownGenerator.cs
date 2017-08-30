@@ -1052,7 +1052,8 @@ namespace XmlDocMarkdown.Core
 					isFirstBase = false;
 				}
 
-				var baseInterfaces = typeInfo.ImplementedInterfaces.Select(x => x.GetTypeInfo()).Where(x => x.IsPublic).ToList();
+				var baseInterfaces = typeInfo.ImplementedInterfaces.Select(x => x.GetTypeInfo()).Where(x => x.IsPublic)
+					.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
 				foreach (var baseInterface in baseInterfaces)
 				{
 					if (!(typeKind == TypeKind.Class && baseInterface.IsAssignableFrom(typeInfo.BaseType.GetTypeInfo())) &&
