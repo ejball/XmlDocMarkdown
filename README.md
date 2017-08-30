@@ -10,7 +10,7 @@ Ubuntu | Windows | NuGet
 
 ## Documentation
 
-http://faithlife.github.io/RepoName/
+https://faithlife.github.io/RepoName/
 
 ## License
 
