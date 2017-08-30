@@ -9,7 +9,7 @@ var trigger = Argument("trigger", "");
 
 var nugetSource = "https://api.nuget.org/v3/index.json";
 var solutionFileName = "ProjectName.sln";
-var docsAssembly = $@"src\ProjectName\bin\{configuration}\netstandard1.4\ProjectName.dll";
+var docsAssembly = $@"src\ProjectName\bin\{configuration}\net46\ProjectName.dll";
 var docsSourceUri = "https://github.com/Faithlife/RepoName/tree/master/src/ProjectName";
 
 Task("Clean")
