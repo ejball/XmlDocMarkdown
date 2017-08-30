@@ -3,6 +3,7 @@
   <PropertyGroup>
     <Version>0.1.0</Version>
     <TargetFrameworks>netstandard1.4;netstandard2.0;net46</TargetFrameworks>
+    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net46' and '$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.6-api/</FrameworkPathOverride>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
