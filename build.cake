@@ -54,7 +54,7 @@ Task("NuGetPackage")
 	{
 		foreach (string nugetToolsPackageProject in nugetToolsPackageProjects)
 		{
-			ExecuteProcess($@"cake\NuGetToolsPackager\tools\NuGetToolsPackager.exe", $@"{nugetToolsPackageProject} --platform net46");
+			ExecuteProcess(@"cake\NuGetToolsPackager\tools\NuGetToolsPackager.exe", $@"{nugetToolsPackageProject} --platform net46");
 			NuGetPack(System.IO.Path.ChangeExtension(nugetToolsPackageProject, ".nuspec"), new NuGetPackSettings { OutputDirectory = "release" });
 		}
 	});
