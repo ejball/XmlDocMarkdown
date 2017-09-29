@@ -1,7 +1,5 @@
 # ExampleAssembly assembly
 
-The assembly `ExampleAssembly.dll` has 26 public types in 2 namespaces.
-
 ## ExampleAssembly namespace
 
 | public type | description |

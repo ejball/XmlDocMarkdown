@@ -85,15 +85,6 @@ namespace XmlDocMarkdown.Core
 			{
 				writer.WriteLine($"# {assemblyName} assembly");
 
-				string namespaceCountText = visibleNamespaceRecords.Count == 1 ? "1 namespace" : $"{visibleNamespaceRecords.Count} namespaces";
-				int typeCount = visibleNamespaceRecords.SelectMany(x => x.Types).Count();
-				string typeCountText = IsMorePrivateThan(Visibility, VisibilityLevel.Protected) ?
-					(typeCount == 1 ? "1 type" : $"{typeCount} types") :
-					(typeCount == 1 ? "1 public type" : $"{typeCount} public types");
-
-				writer.WriteLine();
-				writer.WriteLine($"The assembly `{assemblyFileName}` has {typeCountText} in {namespaceCountText}.");
-
 				foreach (var group in visibleNamespaceRecords)
 				{
 					writer.WriteLine();
