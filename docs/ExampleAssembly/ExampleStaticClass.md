@@ -10,6 +10,7 @@ public static class ExampleStaticClass
 
 | name | description |
 | --- | --- |
+| static [Clone&lt;T&gt;](ExampleStaticClass/Clone.md)(…) | Clones the specified array. |
 | static [GetNext](ExampleStaticClass/GetNext.md)(…) | Gets the next enumerated value. |
 
 ## See Also

@@ -58,7 +58,12 @@ namespace XmlDocMarkdown.Core
 		{
 			var stringBuilder = new StringBuilder();
 
-			if (!typeInfo.IsGenericParameter)
+			if (typeInfo.IsArray)
+			{
+				stringBuilder.Append(GetXmlDocTypePart(typeInfo.GetElementType().GetTypeInfo()));
+				stringBuilder.Append("[]");
+			}
+			else if (!typeInfo.IsGenericParameter)
 			{
 				if (typeInfo.DeclaringType != null)
 					stringBuilder.Append(GetXmlDocTypePart(typeInfo.DeclaringType.GetTypeInfo()) + ".");
