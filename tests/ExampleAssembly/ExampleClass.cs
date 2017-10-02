@@ -20,6 +20,9 @@ namespace ExampleAssembly
 		/// A one-arg constructor.
 		/// </summary>
 		/// <param name="id">The ID.</param>
+		/// <remarks><para>These remarks reference parameter <paramref name="id"/>
+		/// at the end of a line.</para><para>These remarks reference parameter
+		/// <paramref name="id"/> at the start of a line.</para></remarks>
 		public ExampleClass(string id)
 		{
 		}

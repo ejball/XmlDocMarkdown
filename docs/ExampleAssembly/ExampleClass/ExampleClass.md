@@ -25,6 +25,12 @@ public ExampleClass(string id)
 | --- | --- |
 | id | The ID. |
 
+## Remarks
+
+These remarks reference parameter *id* at the end of a line.
+
+These remarks reference parameter *id* at the start of a line.
+
 ## See Also
 
 * class [ExampleClass](../ExampleClass.md)

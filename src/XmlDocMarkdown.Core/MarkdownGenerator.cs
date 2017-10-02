@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace XmlDocMarkdown.Core
 {
@@ -1827,6 +1828,8 @@ namespace XmlDocMarkdown.Core
 				text = WrapMarkdownRefLink(text, seeMemberInfo, context);
 			}
 
+			text = Regex.Replace(text, @"\s+", " ");
+
 			return text;
 		}
 
@@ -1890,7 +1893,7 @@ namespace XmlDocMarkdown.Core
 
 		private static string ToMarkdown(IEnumerable<XmlDocInline> inlines, MarkdownContext context)
 		{
-			return inlines == null ? null : string.Concat(inlines.Select(x => ToMarkdown(x, context)));
+			return inlines == null ? null : string.Concat(inlines.Select(x => ToMarkdown(x, context))).Trim();
 		}
 
 		private IEnumerable<string> ToMarkdown(IReadOnlyList<XmlDocBlock> blocks, MarkdownContext context)
