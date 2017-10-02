@@ -130,7 +130,7 @@ namespace XmlDocMarkdown.Core
 
 				var xText = xNode as XText;
 				if (xText != null)
-					m_block?.Inlines.Add(new XmlDocInline { Text = TrimText(xText.Value) });
+					m_block?.Inlines.Add(new XmlDocInline { Text = xText.Value });
 			}
 
 			private void AddElement(XElement xElement)
@@ -146,7 +146,7 @@ namespace XmlDocMarkdown.Core
 				case "code":
 					NextBlock();
 					m_block.IsCode = true;
-					m_block.Inlines.Add(new XmlDocInline { Text = TrimText(xElement.Value, isCode: true) });
+					m_block.Inlines.Add(new XmlDocInline { Text = TrimCode(xElement.Value) });
 					NextBlock();
 					break;
 
@@ -238,10 +238,10 @@ namespace XmlDocMarkdown.Core
 				}
 			}
 
-			private static string TrimText(string text, bool isCode = false)
+			private static string TrimCode(string text)
 			{
 				// trimming logic adapted from https://github.com/kzu/NuDoq
-				var lines = text.Split(new[] { Environment.NewLine, "\n" }, isCode ? StringSplitOptions.None : StringSplitOptions.RemoveEmptyEntries).ToList();
+				var lines = text.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.None).ToList();
 
 				if (lines.Count != 0 && lines[0].Trim().Length == 0)
 					lines.RemoveAt(0);
@@ -255,10 +255,7 @@ namespace XmlDocMarkdown.Core
 				if (indentLength <= 4 && lines[0].Length != 0 && lines[0][0] != '\t')
 					indentLength = 0;
 
-				text = string.Join(isCode ? Environment.NewLine : " ", lines.Select(x => x.Length <= indentLength ? "" : x.Substring(indentLength)));
-
-				if (!isCode)
-					text = Regex.Replace(text, @"\s+", " ");
+				text = string.Join(Environment.NewLine, lines.Select(x => x.Length <= indentLength ? "" : x.Substring(indentLength)));
 
 				return text;
 			}
