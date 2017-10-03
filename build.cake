@@ -1,4 +1,4 @@
-#tool "nuget:?package=XmlDocMarkdown&version=0.5.4"
+#tool "nuget:?package=XmlDocMarkdown&version=0.5.6"
 
 using System.Text.RegularExpressions;
 
@@ -97,7 +97,7 @@ Task("Default")
 
 void GenerateDocs(bool verify)
 {
-	var exePath = File("cake/xmldocmarkdown.0.5.4/XmlDocMarkdown/tools/XmlDocMarkdown.exe").ToString();
+	var exePath = File("cake/xmldocmarkdown.0.5.6/XmlDocMarkdown/tools/XmlDocMarkdown.exe").ToString();
 	var arguments = $@"{docsAssembly} docs{System.IO.Path.DirectorySeparatorChar} --source ""{docsSourceUri}"" --newline lf --clean" + (verify ? " --verify" : "");
 	if (Context.Environment.Platform.IsUnix())
 	{
