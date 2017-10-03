@@ -9,7 +9,7 @@ var trigger = Argument("trigger", "");
 
 var nugetSource = "https://api.nuget.org/v3/index.json";
 var solutionFileName = "ProjectName.sln";
-var docsAssembly = File("src/ProjectName/bin/" + configuration + "/net46/ProjectName.dll").ToString();
+var docsAssembly = File($"src/ProjectName/bin/{configuration}/net46/ProjectName.dll").ToString();
 var docsSourceUri = "https://github.com/Faithlife/RepoName/tree/master/src/ProjectName";
 
 Task("Clean")
@@ -35,11 +35,11 @@ Task("Rebuild")
 
 Task("GenerateDocs")
 	.IsDependentOn("Build")
-	.Does(() => GenerateDocs(docsAssembly, docsSourceUri, verify: false));
+	.Does(() => GenerateDocs(verify: false));
 
 Task("VerifyGenerateDocs")
 	.IsDependentOn("Build")
-	.Does(() => GenerateDocs(docsAssembly, docsSourceUri, verify: true));
+	.Does(() => GenerateDocs(verify: true));
 
 Task("Test")
 	.IsDependentOn("VerifyGenerateDocs")
@@ -71,13 +71,13 @@ Task("NuGetPublish")
 			if (version == null)
 				version = nupkgVersion;
 			else if (version != nupkgVersion)
-				throw new InvalidOperationException("Mismatched package versions '" + version + "' and '" + nupkgVersion + "'.");
+				throw new InvalidOperationException($"Mismatched package versions '{version}' and '{nupkgVersion}'.");
 		}
 
 		if (!string.IsNullOrEmpty(nugetApiKey) && (trigger == null || Regex.IsMatch(trigger, "^v[0-9]")))
 		{
-			if (trigger != null && trigger != "v" + version)
-				throw new InvalidOperationException("Trigger '" + trigger + "' doesn't match package version '" + version + "'.");
+			if (trigger != null && trigger != $"v{version}")
+				throw new InvalidOperationException($"Trigger '{trigger}' doesn't match package version '{version}'.");
 
 			var pushSettings = new NuGetPushSettings { ApiKey = nugetApiKey, Source = nugetSource };
 			foreach (var nupkgPath in nupkgPaths)
@@ -92,10 +92,10 @@ Task("NuGetPublish")
 Task("Default")
 	.IsDependentOn("Test");
 
-void GenerateDocs(string docsAssembly, string docsSourceUri, bool verify)
+void GenerateDocs(bool verify)
 {
-	var exePath = File("cake/XmlDocMarkdown/tools/XmlDocMarkdown.exe").ToString();
-	var arguments = docsAssembly + " docs" + System.IO.Path.DirectorySeparatorChar + @" --source """ + docsSourceUri + @""" --newline lf --clean" + (verify ? " --verify" : "");
+	var exePath = File("cake/xmldocmarkdown.0.5.4/XmlDocMarkdown/tools/XmlDocMarkdown.exe").ToString();
+	var arguments = $@"{docsAssembly} docs{System.IO.Path.DirectorySeparatorChar} --source ""{docsSourceUri}"" --newline lf --clean" + (verify ? " --verify" : "");
 	if (Context.Environment.Platform.IsUnix())
 	{
 		arguments = exePath + " " + arguments;
@@ -105,14 +105,14 @@ void GenerateDocs(string docsAssembly, string docsSourceUri, bool verify)
 	if (exitCode == 1 && verify)
 		throw new InvalidOperationException("Generated docs don't match; use -target=GenerateDocs to regenerate.");
 	else if (exitCode != 0)
-		throw new InvalidOperationException(string.Format("Docs generation failed with exit code {0}.", exitCode));
+		throw new InvalidOperationException($"Docs generation failed with exit code {exitCode}.");
 }
 
 void ExecuteProcess(string exePath, string arguments)
 {
 	int exitCode = StartProcess(exePath, arguments);
 	if (exitCode != 0)
-		throw new InvalidOperationException(string.Format("{0} failed with exit code {1}.", exePath, exitCode));
+		throw new InvalidOperationException($"{exePath} failed with exit code {exitCode}.");
 }
 
 RunTarget(target);
