@@ -10,7 +10,7 @@ var versionSuffix = Argument("versionSuffix", "");
 
 var nugetSource = "https://api.nuget.org/v3/index.json";
 var solutionFileName = "ProjectName.sln";
-var docsAssembly = File($"src/ProjectName/bin/{configuration}/net46/ProjectName.dll").ToString();
+var docsAssembly = File($"src/ProjectName/bin/{configuration}/net461/ProjectName.dll").ToString();
 var docsSourceUri = "https://github.com/Faithlife/RepoName/tree/master/src/ProjectName";
 
 Task("Clean")
