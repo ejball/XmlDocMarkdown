@@ -1,3 +1,4 @@
+#addin "Cake.Git"
 #tool "nuget:?package=XmlDocMarkdown&version=0.5.6"
 
 using System.Text.RegularExpressions;
@@ -8,9 +9,13 @@ var nugetApiKey = Argument("nugetApiKey", "");
 var trigger = Argument("trigger", "");
 var versionSuffix = Argument("versionSuffix", "");
 
+var buildBotUserName = "faithlifebuildbot";
+var buildBotPassword = EnvironmentVariable("BUILD_BOT_PASSWORD");
+
 var nugetSource = "https://api.nuget.org/v3/index.json";
 var solutionFileName = "ProjectName.sln";
 var docsAssembly = File($"src/ProjectName/bin/{configuration}/net461/ProjectName.dll").ToString();
+var docsRepoUri = "https://github.com/Faithlife/RepoName.git";
 var docsSourceUri = "https://github.com/Faithlife/RepoName/tree/master/src/ProjectName";
 
 Task("Clean")
@@ -34,16 +39,35 @@ Task("Rebuild")
 	.IsDependentOn("Clean")
 	.IsDependentOn("Build");
 
-Task("GenerateDocs")
+Task("UpdateDocs")
+	.WithCriteria(!string.IsNullOrEmpty(buildBotPassword))
+	.WithCriteria(EnvironmentVariable("APPVEYOR_REPO_BRANCH") == "master")
 	.IsDependentOn("Build")
-	.Does(() => GenerateDocs(verify: false));
-
-Task("VerifyGenerateDocs")
-	.IsDependentOn("Build")
-	.Does(() => GenerateDocs(verify: true));
+	.Does(() =>
+	{
+		var branchName = "gh-pages";
+		var docsDirectory = new DirectoryPath(branchName);
+		GitClone(docsRepoUri, docsDirectory, new GitCloneSettings { BranchName = branchName });
+		var exePath = File("cake/xmldocmarkdown.0.5.6/XmlDocMarkdown/tools/XmlDocMarkdown.exe").ToString();
+		var arguments = $@"{docsAssembly} {branchName}{System.IO.Path.DirectorySeparatorChar} --source ""{docsSourceUri}"" --newline lf --clean";
+		int exitCode = StartProcess(exePath, arguments);
+		if (exitCode != 0)
+			throw new InvalidOperationException($"Docs generation failed with exit code {exitCode}.");
+		if (GitHasUncommitedChanges(docsDirectory))
+		{
+			Information("Committing all documentation changes.");
+			GitAddAll(docsDirectory);
+			GitCommit(docsDirectory, "Faithlife Build Bot", "faithlifebuildbot@users.noreply.github.com", "Automatic documentation update.");
+			Information("Pushing updated documentation to GitHub.");
+			GitPush(docsDirectory, buildBotUserName, buildBotPassword, branchName);
+		}
+		else
+		{
+			Information("No documentation changes detected.");
+		}
+	});
 
 Task("Test")
-	.IsDependentOn("VerifyGenerateDocs")
 	.Does(() =>
 	{
 		foreach (var projectPath in GetFiles("tests/**/*.csproj").Select(x => x.FullPath))
@@ -53,6 +77,7 @@ Task("Test")
 Task("NuGetPackage")
 	.IsDependentOn("Rebuild")
 	.IsDependentOn("Test")
+	.IsDependentOn("UpdateDocs")
 	.Does(() =>
 	{
 		if (string.IsNullOrEmpty(versionSuffix) && !string.IsNullOrEmpty(trigger))
@@ -94,22 +119,6 @@ Task("NuGetPublish")
 
 Task("Default")
 	.IsDependentOn("Test");
-
-void GenerateDocs(bool verify)
-{
-	var exePath = File("cake/xmldocmarkdown.0.5.6/XmlDocMarkdown/tools/XmlDocMarkdown.exe").ToString();
-	var arguments = $@"{docsAssembly} docs{System.IO.Path.DirectorySeparatorChar} --source ""{docsSourceUri}"" --newline lf --clean" + (verify ? " --verify" : "");
-	if (Context.Environment.Platform.IsUnix())
-	{
-		arguments = exePath + " " + arguments;
-		exePath = "mono";
-	}
-	int exitCode = StartProcess(exePath, arguments);
-	if (exitCode == 1 && verify)
-		throw new InvalidOperationException("Generated docs don't match; use -target=GenerateDocs to regenerate.");
-	else if (exitCode != 0)
-		throw new InvalidOperationException($"Docs generation failed with exit code {exitCode}.");
-}
 
 void ExecuteProcess(string exePath, string arguments)
 {
