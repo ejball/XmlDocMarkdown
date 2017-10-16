@@ -68,6 +68,7 @@ Task("UpdateDocs")
 	});
 
 Task("Test")
+	.IsDependentOn("Build")
 	.Does(() =>
 	{
 		foreach (var projectPath in GetFiles("tests/**/*.csproj").Select(x => x.FullPath))
