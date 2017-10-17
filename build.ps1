@@ -41,7 +41,7 @@ Else {
 Push-Location $CakeDirPath
 Invoke-Expression "&`"$NuGetExePath`" install -ExcludeVersion -OutputDirectory ."
 If ($LASTEXITCODE -ne 0) {
-    Throw "An error occured while restoring NuGet tools."
+    Throw "An error occurred while restoring NuGet tools."
 }
 Pop-Location
 
