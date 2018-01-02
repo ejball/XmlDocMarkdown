@@ -15,3 +15,7 @@ https://faithlife.github.io/RepoName/
 ## License
 
 [MIT](LICENSE)
+
+## Contributing
+
+See [contributing guidelines](CONTRIBUTING.md).
