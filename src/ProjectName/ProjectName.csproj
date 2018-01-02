@@ -22,10 +22,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SourceLink.Create.GitHub" Version="2.1.0" PrivateAssets="all" />
-    <PackageReference Include="SourceLink.Test" Version="2.1.0" PrivateAssets="all" />
-    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.1.0" />
-    <DotNetCliToolReference Include="dotnet-sourcelink-git" Version="2.1.0" />
+    <PackageReference Include="SourceLink.Create.GitHub" Version="2.7.3" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Test" Version="2.7.3" PrivateAssets="all" />
+    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.7.3" />
+    <DotNetCliToolReference Include="dotnet-sourcelink-git" Version="2.7.3" />
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="System.ValueTuple" Version="4.3.0" />
   </ItemGroup>
