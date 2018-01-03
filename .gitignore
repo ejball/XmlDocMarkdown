@@ -7,10 +7,6 @@ ipch/
 release/
 tools/
 
-# ignore output files
-OurMessages*.resources
-OurResources*.resources
-
 # ignore user-specific options/cache files
 .vs/
 Thumbs.db
