@@ -9,14 +9,14 @@ var nugetApiKey = Argument("nugetApiKey", "");
 var trigger = Argument("trigger", "");
 var versionSuffix = Argument("versionSuffix", "");
 
-var buildBotUserName = "faithlifebuildbot";
-var buildBotPassword = EnvironmentVariable("BUILD_BOT_PASSWORD");
-
-var nugetSource = "https://api.nuget.org/v3/index.json";
 var solutionFileName = "ProjectName.sln";
 var docsAssembly = File($"src/ProjectName/bin/{configuration}/net461/ProjectName.dll").ToString();
 var docsRepoUri = "https://github.com/Faithlife/RepoName.git";
 var docsSourceUri = "https://github.com/Faithlife/RepoName/tree/master/src/ProjectName";
+
+var nugetSource = "https://api.nuget.org/v3/index.json";
+var buildBotUserName = "faithlifebuildbot";
+var buildBotPassword = EnvironmentVariable("BUILD_BOT_PASSWORD");
 
 Task("Clean")
 	.Does(() =>
