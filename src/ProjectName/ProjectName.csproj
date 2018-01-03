@@ -14,7 +14,7 @@
     <PackageReleaseNotes>https://github.com/Faithlife/RepoName/blob/master/VersionHistory.md#released</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/Faithlife/RepoName.git</RepositoryUrl>
     <Authors>Faithlife Corporation</Authors>
-    <Copyright>Copyright 2017 Faithlife Corporation</Copyright>
+    <Copyright>Copyright 2018 Faithlife Corporation</Copyright>
     <SourceLinkUrl>https://raw.githubusercontent.com/Faithlife/RepoName/{commit}/*</SourceLinkUrl>
     <SourceLinkOriginUrl>https://github.com/Faithlife/RepoName.git</SourceLinkOriginUrl>
   </PropertyGroup>
