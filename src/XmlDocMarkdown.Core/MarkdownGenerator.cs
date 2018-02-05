@@ -1806,7 +1806,12 @@ namespace XmlDocMarkdown.Core
 				var parameters = a.GetGenericTypeDefinition().GetTypeInfo().GenericTypeParameters;
 				for (int i = 0; i < parameters.Length; i++)
 				{
-					if (!a.GenericTypeArguments[i].GetTypeInfo().IsAssignableFrom(b.GenericTypeArguments[i].GetTypeInfo()))
+					var paramAttributes = parameters[i].GetTypeInfo().GenericParameterAttributes;
+					var aArgInfo = a.GenericTypeArguments[i].GetTypeInfo();
+					var bArgInfo = b.GenericTypeArguments[i].GetTypeInfo();
+					if (paramAttributes.HasFlag(GenericParameterAttributes.Contravariant) && !aArgInfo.IsAssignableFrom(bArgInfo))
+						return false;
+					if (paramAttributes.HasFlag(GenericParameterAttributes.Covariant) && aArgInfo.IsAssignableFrom(bArgInfo))
 						return false;
 				}
 			}

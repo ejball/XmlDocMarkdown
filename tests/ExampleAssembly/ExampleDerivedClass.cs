@@ -8,7 +8,13 @@ namespace ExampleAssembly
 	/// <summary>
 	/// A class that derives from <see cref="ExampleClass"/>.
 	/// </summary>
-	public class ExampleDerivedClass : ExampleClass, IExampleInterface, IEnumerable<object>, IEnumerable<string>, IExampleInternalInterface, IExampleContravariantInterface<ExampleDerivedClass>
+	public class ExampleDerivedClass : ExampleClass,
+		IExampleInterface,
+		IEnumerable<object>,
+		IEnumerable<string>,
+		IExampleInternalInterface,
+		IExampleContravariantInterface<ExampleDerivedClass>,
+		IExampleCovariantInterface<object>
 	{
 		/// <summary>
 		/// A method with lots of see alsos.

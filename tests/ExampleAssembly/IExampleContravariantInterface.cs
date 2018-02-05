@@ -1,7 +1,7 @@
 ﻿namespace ExampleAssembly
 {
 	/// <summary>
-	/// An interface.
+	/// An interface with contravariant generic parameters.
 	/// </summary>
 	public interface IExampleContravariantInterface<in T>
 	{

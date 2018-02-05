@@ -1,6 +1,6 @@
 # IExampleContravariantInterface&lt;T&gt; interface
 
-An interface.
+An interface with contravariant generic parameters.
 
 ```csharp
 public interface IExampleContravariantInterface<in T>
