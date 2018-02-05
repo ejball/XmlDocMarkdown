@@ -10,8 +10,8 @@ var trigger = Argument("trigger", "");
 
 var solutionFileName = "XmlDocMarkdown.sln";
 var nugetSource = "https://api.nuget.org/v3/index.json";
-var nugetToolsPackageProjects = new[] { @"src\XmlDocMarkdown\XmlDocMarkdown.csproj" };
-var docsAssembly = $@"tests\ExampleAssembly\bin\{configuration}\netstandard1.1\ExampleAssembly.dll";
+var nugetToolsPackageProjects = new[] { File("src/XmlDocMarkdown/XmlDocMarkdown.csproj").ToString() };
+var docsAssembly = File($"tests/ExampleAssembly/bin/{configuration}/netstandard1.1/ExampleAssembly.dll").ToString();
 var docsSourceUri = "../tests/ExampleAssembly";
 
 Task("Clean")
@@ -54,7 +54,7 @@ Task("NuGetPackage")
 	{
 		foreach (string nugetToolsPackageProject in nugetToolsPackageProjects)
 		{
-			ExecuteProcess(@"cake\NuGetToolsPackager\tools\NuGetToolsPackager.exe", $@"{nugetToolsPackageProject} --platform net46");
+			ExecuteProcess(Context.Tools.Resolve("NuGetToolsPackager.exe").ToString(), $@"{nugetToolsPackageProject} --platform net461");
 			NuGetPack(System.IO.Path.ChangeExtension(nugetToolsPackageProject, ".nuspec"), new NuGetPackSettings { OutputDirectory = "release" });
 		}
 	});
@@ -95,8 +95,14 @@ Task("Default")
 
 void GenerateDocs(bool verify)
 {
-	int exitCode = StartProcess($@"src\XmlDocMarkdown\bin\{configuration}\net46\XmlDocMarkdown.exe",
-		$@"{docsAssembly} docs\ --source ""{docsSourceUri}"" --newline lf --clean" + (verify ? " --verify" : ""));
+	string exePath = File($"src/XmlDocMarkdown/bin/{configuration}/net461/XmlDocMarkdown.exe").ToString();
+	string arguments = $@"{docsAssembly} docs --source ""{docsSourceUri}"" --newline lf --clean" + (verify ? " --verify" : "");
+	if (Context.Environment.Platform.IsUnix())
+	{
+		arguments = exePath + " " + arguments;
+		exePath = "mono";
+	}
+	int exitCode = StartProcess(exePath, arguments);
 	if (exitCode == 1 && verify)
 		throw new InvalidOperationException("Generated docs don't match; use -target=GenerateDocs to regenerate.");
 	else if (exitCode != 0)
@@ -105,6 +111,11 @@ void GenerateDocs(bool verify)
 
 void ExecuteProcess(string exePath, string arguments)
 {
+	if (Context.Environment.Platform.IsUnix())
+	{
+		arguments = exePath + " " + arguments;
+		exePath = "mono";
+	}
 	int exitCode = StartProcess(exePath, arguments);
 	if (exitCode != 0)
 		throw new InvalidOperationException($"{exePath} failed with exit code {exitCode}.");
