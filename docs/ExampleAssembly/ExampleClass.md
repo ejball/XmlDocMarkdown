@@ -41,7 +41,6 @@ public class ExampleClass : IExampleContravariantInterface<ExampleClass>, IExamp
 ## See Also
 
 * interface [IExampleContravariantInterface&lt;T&gt;](IExampleContravariantInterface-1.md)
-* class [ExampleClass](ExampleClass.md)
 * interface [IExampleCovariantInterface&lt;T&gt;](IExampleCovariantInterface-1.md)
 * namespace [ExampleAssembly](../ExampleAssembly.md)
 * [ExampleClass.cs](../../tests/ExampleAssembly/ExampleClass.cs)
