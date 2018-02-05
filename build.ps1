@@ -25,7 +25,7 @@ If (!(Test-Path $PackagesConfigPath)) {
     [System.IO.File]::WriteAllLines($PackagesConfigPath, @(
         "<?xml version=`"1.0`" encoding=`"utf-8`"?>",
         "<packages>",
-        "`t<package id=`"Cake`" version=`"0.19.4`" />",
+        "`t<package id=`"Cake`" version=`"0.25.0`" />",
         "</packages>"))
 }
 
