@@ -3,7 +3,7 @@
 A class.
 
 ```csharp
-public class ExampleClass
+public class ExampleClass : IExampleContravariantInterface<ExampleClass>
 ```
 
 ## Public Members
@@ -40,6 +40,7 @@ public class ExampleClass
 
 ## See Also
 
+* interface [IExampleContravariantInterface&lt;T&gt;](IExampleContravariantInterface-1.md)
 * namespace [ExampleAssembly](../ExampleAssembly.md)
 * [ExampleClass.cs](../../tests/ExampleAssembly/ExampleClass.cs)
 
