@@ -431,6 +431,7 @@ namespace XmlDocMarkdown.Core
 						seeAlsoMembers.Add(declaringType);
 
 					foreach (var seeAlso in seeAlsoMembers
+						.Where(x => XmlDocUtility.GetXmlDocRef(x) != XmlDocUtility.GetXmlDocRef(memberInfo))
 						.Select(GetGenericDefinition)
 						.GroupBy(XmlDocUtility.GetXmlDocRef)
 						.Select(x => new { Member = x.First(), XmlDocName = x.Key })
