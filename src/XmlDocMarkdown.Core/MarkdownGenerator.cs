@@ -1044,8 +1044,12 @@ namespace XmlDocMarkdown.Core
 					isFirstBase = false;
 				}
 
-				var baseInterfaces = typeInfo.ImplementedInterfaces.Select(x => x.GetTypeInfo()).Where(x => x.IsPublic)
-					.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
+				var baseInterfaces = typeInfo.ImplementedInterfaces.Select(x => x.GetTypeInfo())
+					.Where(x => x.IsPublic)
+					.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+					.ThenBy(x => x.IsGenericType ? x.GenericTypeArguments.Length : 0)
+					.ThenBy(x => x.IsGenericType ? RenderGenericArguments(x.GenericTypeArguments) : "", StringComparer.OrdinalIgnoreCase)
+					.ToList();
 				var baseTypeInterfaces = typeInfo.BaseType?.GetTypeInfo().ImplementedInterfaces.Select(x => x.GetTypeInfo()).ToList();
 				foreach (var baseInterface in baseInterfaces)
 				{
@@ -1367,7 +1371,7 @@ namespace XmlDocMarkdown.Core
 			return GetShortName(typeInfo) + RenderGenericArguments(typeInfo.GenericTypeArguments, seeAlso);
 		}
 
-		private static string RenderGenericArguments(Type[] genericArguments, ICollection<MemberInfo> seeAlso)
+		private static string RenderGenericArguments(Type[] genericArguments, ICollection<MemberInfo> seeAlso = null)
 		{
 			if (genericArguments == null)
 				return "";

@@ -3,7 +3,7 @@
 A class that derives from [`ExampleClass`](ExampleClass.md).
 
 ```csharp
-public class ExampleDerivedClass : ExampleClass, IEnumerable<string>, IEnumerable<object>, IExampleContravariantInterface<ExampleDerivedClass>, IExampleCovariantInterface<object>, IExampleInterface
+public class ExampleDerivedClass : ExampleClass, IEnumerable<object>, IEnumerable<string>, IExampleContravariantInterface<ExampleDerivedClass>, IExampleCovariantInterface<object>, IExampleInterface
 ```
 
 ## Public Members
