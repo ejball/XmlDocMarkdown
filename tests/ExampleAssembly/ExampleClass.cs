@@ -7,7 +7,7 @@ namespace ExampleAssembly
 	/// <summary>
 	/// A class.
 	/// </summary>
-	public class ExampleClass
+	public class ExampleClass : IExampleContravariantInterface<ExampleClass>, IExampleCovariantInterface<string>
 	{
 		/// <summary>
 		/// A no-arg constructor.

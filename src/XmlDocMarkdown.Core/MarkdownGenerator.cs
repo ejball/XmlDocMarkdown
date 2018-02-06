@@ -1044,12 +1044,17 @@ namespace XmlDocMarkdown.Core
 					isFirstBase = false;
 				}
 
-				var baseInterfaces = typeInfo.ImplementedInterfaces.Select(x => x.GetTypeInfo()).Where(x => x.IsPublic)
-					.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
+				var baseInterfaces = typeInfo.ImplementedInterfaces.Select(x => x.GetTypeInfo())
+					.Where(x => x.IsPublic)
+					.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+					.ThenBy(x => x.IsGenericType ? x.GenericTypeArguments.Length : 0)
+					.ThenBy(x => x.IsGenericType ? RenderGenericArguments(x.GenericTypeArguments) : "", StringComparer.OrdinalIgnoreCase)
+					.ToList();
+				var baseTypeInterfaces = typeInfo.BaseType?.GetTypeInfo().ImplementedInterfaces.Select(x => x.GetTypeInfo()).ToList();
 				foreach (var baseInterface in baseInterfaces)
 				{
-					if (!(typeKind == TypeKind.Class && baseInterface.IsAssignableFrom(typeInfo.BaseType.GetTypeInfo())) &&
-						!baseInterfaces.Any(x => XmlDocUtility.GetXmlDocRef(x) != XmlDocUtility.GetXmlDocRef(baseInterface) && baseInterface.IsAssignableFrom(x)))
+					if (!(typeKind == TypeKind.Class && baseTypeInterfaces.Contains(baseInterface)) &&
+						!baseInterfaces.Any(x => XmlDocUtility.GetXmlDocRef(x) != XmlDocUtility.GetXmlDocRef(baseInterface) && IsLessDerived(baseInterface, x)))
 					{
 						yield return isFirstBase ? " : " : ", ";
 						yield return RenderTypeName(baseInterface, seeAlsoMembers);
@@ -1366,7 +1371,7 @@ namespace XmlDocMarkdown.Core
 			return GetShortName(typeInfo) + RenderGenericArguments(typeInfo.GenericTypeArguments, seeAlso);
 		}
 
-		private static string RenderGenericArguments(Type[] genericArguments, ICollection<MemberInfo> seeAlso)
+		private static string RenderGenericArguments(Type[] genericArguments, ICollection<MemberInfo> seeAlso = null)
 		{
 			if (genericArguments == null)
 				return "";
@@ -1794,6 +1799,27 @@ namespace XmlDocMarkdown.Core
 		private static string GetParameterShortNames(MemberInfo memberInfo)
 		{
 			return string.Join(", ", GetParameters(memberInfo).Select(x => RenderTypeName(x.ParameterType.GetTypeInfo())));
+		}
+
+		private static bool IsLessDerived(TypeInfo a, TypeInfo b)
+		{
+			if (!a.IsAssignableFrom(b))
+				return false;
+			if (a.IsGenericType && b.IsGenericType && a.GetGenericTypeDefinition().GetTypeInfo() == b.GetGenericTypeDefinition().GetTypeInfo())
+			{
+				var parameters = a.GetGenericTypeDefinition().GetTypeInfo().GenericTypeParameters;
+				for (int i = 0; i < parameters.Length; i++)
+				{
+					var paramAttributes = parameters[i].GetTypeInfo().GenericParameterAttributes;
+					var aArgInfo = a.GenericTypeArguments[i].GetTypeInfo();
+					var bArgInfo = b.GenericTypeArguments[i].GetTypeInfo();
+					if (paramAttributes.HasFlag(GenericParameterAttributes.Contravariant) && !aArgInfo.IsAssignableFrom(bArgInfo))
+						return false;
+					if (paramAttributes.HasFlag(GenericParameterAttributes.Covariant) && aArgInfo.IsAssignableFrom(bArgInfo))
+						return false;
+				}
+			}
+			return true;
 		}
 
 		private static bool IsKeyword(string value)

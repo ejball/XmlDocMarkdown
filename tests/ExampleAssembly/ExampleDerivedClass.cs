@@ -8,7 +8,13 @@ namespace ExampleAssembly
 	/// <summary>
 	/// A class that derives from <see cref="ExampleClass"/>.
 	/// </summary>
-	public class ExampleDerivedClass : ExampleClass, IExampleInterface, IEnumerable<string>, IExampleInternalInterface
+	public class ExampleDerivedClass : ExampleClass,
+		IExampleInterface,
+		IEnumerable<object>,
+		IEnumerable<string>,
+		IExampleInternalInterface,
+		IExampleContravariantInterface<ExampleDerivedClass>,
+		IExampleCovariantInterface<object>
 	{
 		/// <summary>
 		/// A method with lots of see alsos.
@@ -50,6 +56,17 @@ namespace ExampleAssembly
 		/// <exception cref="ExampleException">An example error occurred.</exception>
 		/// <exception cref="NotImplementedException">It isn't implemented.</exception>
 		public IEnumerator<string> GetEnumerator()
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// The enumerator for a less derived type.
+		/// </summary>
+		/// <returns>The strings.</returns>
+		/// <exception cref="ExampleException">An example error occurred.</exception>
+		/// <exception cref="NotImplementedException">It isn't implemented.</exception>
+		IEnumerator<object> IEnumerable<object>.GetEnumerator()
 		{
 			throw new NotImplementedException();
 		}
