@@ -11,11 +11,11 @@ var versionSuffix = Argument("versionSuffix", "");
 
 var solutionFileName = "ProjectName.sln";
 var docsAssembly = File($"src/ProjectName/bin/{configuration}/net461/ProjectName.dll").ToString();
-var docsRepoUri = "https://github.com/Faithlife/RepoName.git";
-var docsSourceUri = "https://github.com/Faithlife/RepoName/tree/master/src/ProjectName";
+var docsRepoUri = "https://github.com/ejball/RepoName.git";
+var docsSourceUri = "https://github.com/ejball/RepoName/tree/master/src/ProjectName";
 
 var nugetSource = "https://api.nuget.org/v3/index.json";
-var buildBotUserName = "faithlifebuildbot";
+var buildBotUserName = "ejball";
 var buildBotPassword = EnvironmentVariable("BUILD_BOT_PASSWORD");
 
 Task("Clean")
@@ -57,7 +57,7 @@ Task("UpdateDocs")
 		{
 			Information("Committing all documentation changes.");
 			GitAddAll(docsDirectory);
-			GitCommit(docsDirectory, "Faithlife Build Bot", "faithlifebuildbot@users.noreply.github.com", "Automatic documentation update.");
+			GitCommit(docsDirectory, "ejball", "ejball@gmail.com", "Automatic documentation update.");
 			Information("Pushing updated documentation to GitHub.");
 			GitPush(docsDirectory, buildBotUserName, buildBotPassword, branchName);
 		}

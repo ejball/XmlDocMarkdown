@@ -2,9 +2,9 @@ version: '{build}'
 image: Visual Studio 2017
 environment:
   NUGETAPIKEY:
-    secure: kU8Nrdjnh6k58FzkmCIcyY0InF2YOSoef9u7ot1Uo3jABM6/Xd3VXaCU7/Rfnktn
+    secure: eBKIUm4YxcrbL3oVC/ZCBUA/inEu+7OMbKpgftpOc18ievKNwH8UAUB2t4w+89Xv
   BUILD_BOT_PASSWORD:
-    secure: wJ9JVS5hSAp9ItYlHKxTPg==
+    secure: U2EQbBdxNIC2FL8YeOP3bVixlZ4xLBdN71Szraw+ATqAhYZwEd6JCjCJZLJPu9kN
 build_script:
 - ps: .\build.ps1 --target=NuGetPublish """--trigger=$env:APPVEYOR_REPO_TAG_NAME""" "--nugetApiKey=$env:NUGETAPIKEY"
 test: off

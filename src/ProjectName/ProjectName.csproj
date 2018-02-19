@@ -10,16 +10,16 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
     <DebugType>portable</DebugType>
     <DebugSymbols>True</DebugSymbols>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/Faithlife/RepoName/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/Faithlife/RepoName</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/Faithlife/RepoName/blob/master/VersionHistory.md#released</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/Faithlife/RepoName.git</RepositoryUrl>
-    <Authors>Faithlife Corporation</Authors>
-    <Copyright>Copyright 2018 Faithlife Corporation</Copyright>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/ejball/RepoName/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>http://ejball.com/RepoName</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/ejball/RepoName/blob/master/VersionHistory.md#released</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/ejball/RepoName.git</RepositoryUrl>
+    <Authors>Ed Ball</Authors>
+    <Copyright>Copyright 2018 Ed Ball</Copyright>
     <Description></Description>
     <PackageTags></PackageTags>
-    <SourceLinkUrl>https://raw.githubusercontent.com/Faithlife/RepoName/{commit}/*</SourceLinkUrl>
-    <SourceLinkOriginUrl>https://github.com/Faithlife/RepoName.git</SourceLinkOriginUrl>
+    <SourceLinkUrl>https://raw.githubusercontent.com/ejball/RepoName/{commit}/*</SourceLinkUrl>
+    <SourceLinkOriginUrl>https://github.com/ejball/RepoName.git</SourceLinkOriginUrl>
   </PropertyGroup>
 
   <ItemGroup>
