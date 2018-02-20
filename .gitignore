@@ -6,6 +6,7 @@ obj/
 ipch/
 release/
 tools/
+*.nuspec
 
 # ignore user-specific options/cache files
 .vs/

@@ -44,17 +44,16 @@ Task("VerifyGenerateDocs")
 	.Does(() => GenerateDocs(verify: true));
 
 Task("Test")
-	.IsDependentOn("Build")
+	.IsDependentOn("VerifyGenerateDocs")
 	.Does(() =>
 	{
-		foreach (var projectPath in GetFiles("tests/**/*.csproj").Select(x => x.FullPath))
+		foreach (var projectPath in GetFiles("tests/**/*.Tests.csproj").Select(x => x.FullPath))
 			DotNetCoreTest(projectPath, new DotNetCoreTestSettings { Configuration = configuration });
 	});
 
 Task("NuGetPackage")
 	.IsDependentOn("Rebuild")
 	.IsDependentOn("Test")
-	.IsDependentOn("UpdateDocs")
 	.Does(() =>
 	{
 		foreach (string nugetToolsPackageProject in nugetToolsPackageProjects)
