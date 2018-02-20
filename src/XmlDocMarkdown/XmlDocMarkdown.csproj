@@ -1,24 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Version>1.0.0</Version>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461</TargetFrameworks>
     <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net461' and '$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.6.1-api/</FrameworkPathOverride>
-    <Version>0.5.6</Version>
-    <Authors>Ed Ball</Authors>
-    <Company />
-    <Product />
-    <Description>A command-line tool that generates Markdown from .NET XML documentation comments.</Description>
-    <Copyright>Copyright 2017 Ed Ball</Copyright>
-    <PackageProjectUrl>http://ejball.com/XmlDocMarkdown/</PackageProjectUrl>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>True</DebugSymbols>
     <PackageLicenseUrl>https://raw.githubusercontent.com/ejball/XmlDocMarkdown/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>http://ejball.com/XmlDocMarkdown/</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/ejball/XmlDocMarkdown/blob/master/VersionHistory.md#released</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/ejball/XmlDocMarkdown.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
+    <Authors>Ed Ball</Authors>
+    <Copyright>Copyright 2018 Ed Ball</Copyright>
+    <Description>A command-line tool that generates Markdown from .NET XML documentation comments.</Description>
     <PackageTags>.NET XML documentation comments Markdown</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ArgsReading" Version="1.1.3" />
+    <PackageReference Include="ArgsReading" Version="1.1.4" />
     <PackageReference Include="System.ValueTuple" Version="4.3.0" />
   </ItemGroup>
 

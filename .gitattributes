@@ -1,2 +1,5 @@
 * text=auto eol=lf
-*.png binary
+
+*.cs text diff=csharp
+*.csproj text merge=union
+*.sln text eol=crlf merge=union

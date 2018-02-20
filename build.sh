@@ -30,7 +30,7 @@ if [ ! -f "$NUGET_EXE" ]; then
     echo "Downloading NuGet..."
     curl -Lsfo "$NUGET_EXE" $NUGET_URL
     if [ $? -ne 0 ]; then
-        echo "An error occured while downloading nuget.exe."
+        echo "An error occurred while downloading nuget.exe."
         exit 1
     fi
 fi
@@ -42,7 +42,7 @@ fi
 if [ ! -f "$CAKE_EXE" ]; then
     mono "$NUGET_EXE" install Cake -Version $CAKE_VERSION -OutputDirectory "$TOOLS_DIR"
     if [ $? -ne 0 ]; then
-        echo "An error occured while installing Cake."
+        echo "An error occurred while installing Cake."
         exit 1
     fi
 fi

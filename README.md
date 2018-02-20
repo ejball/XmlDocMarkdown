@@ -2,6 +2,15 @@
 
 **XmlDocMarkdown** is a command-line tool that generates Markdown from .NET XML documentation comments.
 
-[![NuGet](https://img.shields.io/nuget/v/XmlDocMarkdown.svg)](https://www.nuget.org/packages/XmlDocMarkdown) [![Build status](https://ci.appveyor.com/api/projects/status/c6cu9ec8hsquya5n?svg=true)](https://ci.appveyor.com/project/ejball/xmldocmarkdown)
+## Build Status
 
-**Documentation:** http://ejball.com/XmlDocMarkdown/
+Ubuntu | Windows | NuGet
+--- | --- | ---
+[![Travis CI](https://img.shields.io/travis/ejball/XmlDocMarkdown/master.svg)](https://travis-ci.org/ejball/XmlDocMarkdown) | [![AppVeyor](https://img.shields.io/appveyor/ci/ejball/xmldocmarkdown/master.svg)](https://ci.appveyor.com/project/ejball/xmldocmarkdown) | [![NuGet](https://img.shields.io/nuget/v/XmlDocMarkdown.svg)](https://www.nuget.org/packages/XmlDocMarkdown)
+
+## Documentation
+
+* http://ejball.com/XmlDocMarkdown/
+* License: [MIT](LICENSE)
+* [Version History](VersionHistory.md)
+* [Contributing Guidelines](CONTRIBUTING.md)

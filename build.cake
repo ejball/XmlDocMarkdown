@@ -1,4 +1,4 @@
-#tool "nuget:?package=NuGetToolsPackager&version=0.1.1"
+#tool "nuget:?package=NuGetToolsPackager&version=1.0.1"
 #tool "nuget:?package=xunit.runner.console&version=2.2.0"
 
 using System.Text.RegularExpressions;
@@ -25,12 +25,15 @@ Task("Clean")
 	});
 
 Task("Build")
-	.IsDependentOn("Clean")
 	.Does(() =>
 	{
 		DotNetCoreRestore(solutionFileName);
 		DotNetCoreBuild(solutionFileName, new DotNetCoreBuildSettings { Configuration = configuration, ArgumentCustomization = args => args.Append("--verbosity normal") });
 	});
+
+Task("Rebuild")
+	.IsDependentOn("Clean")
+	.IsDependentOn("Build");
 
 Task("GenerateDocs")
 	.IsDependentOn("Build")
@@ -41,15 +44,17 @@ Task("VerifyGenerateDocs")
 	.Does(() => GenerateDocs(verify: true));
 
 Task("Test")
-	.IsDependentOn("VerifyGenerateDocs")
+	.IsDependentOn("Build")
 	.Does(() =>
 	{
-		foreach (var projectPath in GetFiles("tests/**/*Tests.csproj").Select(x => x.FullPath))
+		foreach (var projectPath in GetFiles("tests/**/*.csproj").Select(x => x.FullPath))
 			DotNetCoreTest(projectPath, new DotNetCoreTestSettings { Configuration = configuration });
 	});
 
 Task("NuGetPackage")
+	.IsDependentOn("Rebuild")
 	.IsDependentOn("Test")
+	.IsDependentOn("UpdateDocs")
 	.Does(() =>
 	{
 		foreach (string nugetToolsPackageProject in nugetToolsPackageProjects)
