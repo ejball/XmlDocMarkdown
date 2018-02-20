@@ -10,12 +10,7 @@ Ubuntu | Windows | NuGet
 
 ## Documentation
 
-http://ejball.com/RepoName/
-
-## License
-
-[MIT](LICENSE)
-
-## Contributing
-
-See [contributing guidelines](CONTRIBUTING.md).
+* http://ejball.com/RepoName/
+* License: [MIT](LICENSE)
+* [Version History](VersionHistory.md)
+* [Contributing Guidelines](CONTRIBUTING.md)
