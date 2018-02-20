@@ -108,7 +108,7 @@ void GenerateDocs(bool verify)
 	}
 	int exitCode = StartProcess(exePath, arguments);
 	if (exitCode == 1 && verify)
-		throw new InvalidOperationException("Generated docs don't match; use -target=GenerateDocs to regenerate.");
+		throw new InvalidOperationException("Generated docs don't match; use --target=GenerateDocs to regenerate.");
 	else if (exitCode != 0)
 		throw new InvalidOperationException($"Docs generation failed with exit code {exitCode}.");
 }
