@@ -3,7 +3,8 @@
 A class.
 
 ```csharp
-public class ExampleClass : IExampleContravariantInterface<ExampleClass>, IExampleCovariantInterface<string>
+public class ExampleClass : IExampleContravariantInterface<ExampleClass>, 
+    IExampleCovariantInterface<string>
 ```
 
 ## Public Members

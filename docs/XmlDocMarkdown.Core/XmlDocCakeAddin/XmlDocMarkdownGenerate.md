@@ -3,8 +3,8 @@
 Generates Markdown from .NET XML documentation comments.
 
 ```csharp
-public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, FilePath inputPath, 
-    DirectoryPath outputPath, XmlDocMarkdownSettings settings = null)
+public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, 
+    FilePath inputPath, DirectoryPath outputPath, XmlDocMarkdownSettings settings = null)
 ```
 
 | parameter | description |
@@ -32,8 +32,8 @@ The names of files that were added, changed, or removed.
 Generates Markdown from .NET XML documentation comments.
 
 ```csharp
-public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, string inputPath, 
-    string outputPath, XmlDocMarkdownSettings settings = null)
+public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, 
+    string inputPath, string outputPath, XmlDocMarkdownSettings settings = null)
 ```
 
 | parameter | description |

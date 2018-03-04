@@ -885,47 +885,41 @@ namespace XmlDocMarkdown.Core
 			var stringBuilder = new StringBuilder();
 			var lineBuilder = new StringBuilder();
 			var segmentBuilder = new StringBuilder();
-			const int maxLineLength = 112;
+			const int maxLineLength = 100;
 
-			foreach (string part in GetFullSignatureParts(memberInfo, seeAlsoMembers))
+			void wrapLineIfNecessary(bool hard)
 			{
-				if (part == ActualNewLine)
+				const string indent = "    ";
+
+				if (lineBuilder.Length > indent.Length && (hard || lineBuilder.Length + segmentBuilder.Length > maxLineLength))
 				{
-					if (lineBuilder.Length != 0 && segmentBuilder.Length != 0 && lineBuilder.Length + segmentBuilder.Length > maxLineLength)
-					{
-						lineBuilder.Append(ActualNewLine);
-						stringBuilder.Append(lineBuilder);
-						lineBuilder.Clear();
-
-						lineBuilder.Append("    ");
-					}
-
-					lineBuilder.Append(segmentBuilder);
-					segmentBuilder.Clear();
-
 					lineBuilder.Append(ActualNewLine);
 					stringBuilder.Append(lineBuilder);
 					lineBuilder.Clear();
-				}
-				else if (part.Length == 0)
-				{
-					if (lineBuilder.Length != 0 && segmentBuilder.Length != 0 && lineBuilder.Length + segmentBuilder.Length > maxLineLength)
-					{
-						lineBuilder.Append(ActualNewLine);
-						stringBuilder.Append(lineBuilder);
-						lineBuilder.Clear();
 
-						lineBuilder.Append("    ");
-					}
+					if (!hard)
+						lineBuilder.Append(indent);
+				}
+			}
+
+			foreach (string part in GetFullSignatureParts(memberInfo, seeAlsoMembers))
+			{
+				if (part.Length == 0 || part == ActualNewLine)
+				{
+					wrapLineIfNecessary(false);
 
 					lineBuilder.Append(segmentBuilder);
 					segmentBuilder.Clear();
+
+					wrapLineIfNecessary(part == ActualNewLine);
 				}
 				else
 				{
 					segmentBuilder.Append(part);
 				}
 			}
+
+			wrapLineIfNecessary(false);
 
 			lineBuilder.Append(segmentBuilder);
 			stringBuilder.Append(lineBuilder);
@@ -962,10 +956,18 @@ namespace XmlDocMarkdown.Core
 				yield return RenderConstant(attributeUsage.ValidOn);
 
 				if (!attributeUsage.Inherited)
-					yield return ", Inherited = false";
+				{
+					yield return ", ";
+					yield return "";
+					yield return "Inherited = false";
+				}
 
 				if (attributeUsage.AllowMultiple)
-					yield return ", AllowMultiple = true";
+				{
+					yield return ", ";
+					yield return "";
+					yield return "AllowMultiple = true";
+				}
 
 				yield return ")]";
 				yield return ActualNewLine;
@@ -1030,16 +1032,21 @@ namespace XmlDocMarkdown.Core
 				yield return " ";
 			}
 
-			yield return shortName;
-
 			if (valueType != null && isConversion)
 			{
+				yield return shortName;
 				yield return " ";
 				yield return RenderTypeName(valueType, seeAlsoMembers);
 			}
+			else
+			{
+				yield return "";
+				yield return shortName;
+			}
 
 			var genericParameters = GetGenericArguments(memberInfo);
-			yield return RenderGenericParameters(genericParameters);
+			if (genericParameters.Length != 0)
+				yield return RenderGenericParameters(genericParameters);
 
 			if (typeKind == TypeKind.Class || typeKind == TypeKind.Struct || typeKind == TypeKind.Interface)
 			{
@@ -1047,6 +1054,7 @@ namespace XmlDocMarkdown.Core
 				if (typeKind == TypeKind.Class && typeInfo.BaseType != typeof(object))
 				{
 					yield return " : ";
+					yield return "";
 					yield return RenderTypeName(typeInfo.BaseType.GetTypeInfo(), seeAlsoMembers);
 					isFirstBase = false;
 				}
@@ -1064,6 +1072,7 @@ namespace XmlDocMarkdown.Core
 						!baseInterfaces.Any(x => XmlDocUtility.GetXmlDocRef(x) != XmlDocUtility.GetXmlDocRef(baseInterface) && IsLessDerived(baseInterface, x)))
 					{
 						yield return isFirstBase ? " : " : ", ";
+						yield return "";
 						yield return RenderTypeName(baseInterface, seeAlsoMembers);
 						isFirstBase = false;
 					}
@@ -1093,6 +1102,7 @@ namespace XmlDocMarkdown.Core
 			if (parameterInfos != null)
 			{
 				yield return propertyInfo != null ? "[" : "(";
+				yield return "";
 
 				bool isFirstParameter = true;
 				foreach (var parameterInfo in parameterInfos)
@@ -1138,69 +1148,66 @@ namespace XmlDocMarkdown.Core
 			if (propertyInfo != null)
 				yield return GetPropertyGetSet(propertyInfo);
 
-			if (genericParameters != null)
+			foreach (var genericParameter in genericParameters)
 			{
-				foreach (var genericParameter in genericParameters)
-				{
-					bool isFirstPart = true;
+				bool isFirstPart = true;
 
-					if (genericParameter.GetTypeInfo().GenericParameterAttributes.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
+				if (genericParameter.GetTypeInfo().GenericParameterAttributes.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
+				{
+					yield return ActualNewLine;
+					yield return $"    where {genericParameter.Name} : ";
+
+					yield return "class";
+					isFirstPart = false;
+				}
+
+				bool isStruct = genericParameter.GetTypeInfo().GenericParameterAttributes.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint);
+				if (isStruct)
+				{
+					if (isFirstPart)
 					{
 						yield return ActualNewLine;
 						yield return $"    where {genericParameter.Name} : ";
-
-						yield return "class";
-						isFirstPart = false;
 					}
-
-					bool isStruct = genericParameter.GetTypeInfo().GenericParameterAttributes.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint);
-					if (isStruct)
+					else
 					{
-						if (isFirstPart)
-						{
-							yield return ActualNewLine;
-							yield return $"    where {genericParameter.Name} : ";
-						}
-						else
-						{
-							yield return ", ";
-						}
-
-						yield return "struct";
-						isFirstPart = false;
+						yield return ", ";
 					}
 
-					var genericConstraints = genericParameter.GetTypeInfo().GetGenericParameterConstraints();
-					foreach (var genericConstraint in genericConstraints.Where(x => x != typeof(ValueType)))
+					yield return "struct";
+					isFirstPart = false;
+				}
+
+				var genericConstraints = genericParameter.GetTypeInfo().GetGenericParameterConstraints();
+				foreach (var genericConstraint in genericConstraints.Where(x => x != typeof(ValueType)))
+				{
+					if (isFirstPart)
 					{
-						if (isFirstPart)
-						{
-							yield return ActualNewLine;
-							yield return $"    where {genericParameter.Name} : ";
-						}
-						else
-						{
-							yield return ", ";
-						}
-
-						yield return RenderTypeName(genericConstraint.GetTypeInfo(), seeAlsoMembers);
-						isFirstPart = false;
+						yield return ActualNewLine;
+						yield return $"    where {genericParameter.Name} : ";
 					}
-
-					if (!isStruct && genericParameter.GetTypeInfo().GenericParameterAttributes.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint))
+					else
 					{
-						if (isFirstPart)
-						{
-							yield return ActualNewLine;
-							yield return $"    where {genericParameter.Name} : ";
-						}
-						else
-						{
-							yield return ", ";
-						}
-
-						yield return "new()";
+						yield return ", ";
 					}
+
+					yield return RenderTypeName(genericConstraint.GetTypeInfo(), seeAlsoMembers);
+					isFirstPart = false;
+				}
+
+				if (!isStruct && genericParameter.GetTypeInfo().GenericParameterAttributes.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint))
+				{
+					if (isFirstPart)
+					{
+						yield return ActualNewLine;
+						yield return $"    where {genericParameter.Name} : ";
+					}
+					else
+					{
+						yield return ", ";
+					}
+
+					yield return "new()";
 				}
 			}
 
@@ -1323,9 +1330,6 @@ namespace XmlDocMarkdown.Core
 
 		private static string RenderGenericParameters(Type[] genericParameters)
 		{
-			if (genericParameters == null)
-				return "";
-
 			var stringBuilder = new StringBuilder();
 			for (int index = 0; index < genericParameters.Length; index++)
 			{

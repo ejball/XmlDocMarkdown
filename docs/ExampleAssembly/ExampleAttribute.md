@@ -3,7 +3,8 @@
 An attribute.
 
 ```csharp
-[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
+[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class, Inherited = false, 
+    AllowMultiple = true)]
 public sealed class ExampleAttribute : Attribute
 ```
 

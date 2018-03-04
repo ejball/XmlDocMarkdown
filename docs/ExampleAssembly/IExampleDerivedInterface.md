@@ -3,7 +3,8 @@
 A derived interface.
 
 ```csharp
-public interface IExampleDerivedInterface : IDictionary<string, IExampleInterface>, IReadOnlyDictionary<string, IExampleInterface>
+public interface IExampleDerivedInterface : IDictionary<string, IExampleInterface>, 
+    IReadOnlyDictionary<string, IExampleInterface>
 ```
 
 ## See Also

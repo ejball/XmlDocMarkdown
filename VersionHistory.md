@@ -12,6 +12,7 @@ Prefix the description of the change with `[major]`, `[minor]` or `[patch]` in a
 ### 1.1.0
 
 * Publish Cake addin and class library `XmlDocMarkdown.Core`.
+* Improve full signature line wrapping.
 
 ### 1.0.1
 

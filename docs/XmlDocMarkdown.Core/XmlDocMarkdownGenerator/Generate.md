@@ -3,7 +3,8 @@
 Generates Markdown from .NET XML documentation comments.
 
 ```csharp
-public static XmlDocMarkdownResult Generate(string inputPath, string outputPath, XmlDocMarkdownSettings settings)
+public static XmlDocMarkdownResult Generate(string inputPath, string outputPath, 
+    XmlDocMarkdownSettings settings)
 ```
 
 | parameter | description |

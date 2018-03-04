@@ -3,12 +3,14 @@
 A method with default parameters.
 
 ```csharp
-public void DefaultParameters<T>(bool @bool = true, bool? no = false, bool? maybe = null, byte @byte = 255, 
-    sbyte @sbyte = 127, char @char = 'ሴ', decimal @decimal = 3.14, double @double = NaNm, 
-    float @float = -Infinity, int @int = -42, uint @uint = 42, long @long = -9223372036854775808, 
-    ulong @ulong = 9223372036854775807, object @object = null, short @short = -32768, ushort @ushort = 65535, 
+public void DefaultParameters<T>(bool @bool = true, bool? no = false, bool? maybe = null, 
+    byte @byte = 255, sbyte @sbyte = 127, char @char = 'ሴ', decimal @decimal = 3.14, 
+    double @double = NaNm, float @float = -Infinity, int @int = -42, uint @uint = 42, 
+    long @long = -9223372036854775808, ulong @ulong = 9223372036854775807, object @object = null, 
+    short @short = -32768, ushort @ushort = 65535, 
     string @string = "hi\u0000'\"\\\a\b\f\n\r\t\v\u0001ꯍ", T t = default(T), 
-    DateTime @virtual = default(DateTime), ExampleEnum @enum = ExampleEnum.One, ExampleFlagsEnum flags = ExampleFlagsEnum.Second | ExampleFlagsEnum.Third)
+    DateTime @virtual = default(DateTime), ExampleEnum @enum = ExampleEnum.One, 
+    ExampleFlagsEnum flags = ExampleFlagsEnum.Second | ExampleFlagsEnum.Third)
 ```
 
 ## See Also
