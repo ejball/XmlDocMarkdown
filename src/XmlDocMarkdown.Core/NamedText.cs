@@ -6,13 +6,8 @@ namespace XmlDocMarkdown.Core
 	{
 		public NamedText(string name, string text)
 		{
-			if (name == null)
-				throw new ArgumentNullException(nameof(name));
-			if (text == null)
-				throw new ArgumentNullException(nameof(text));
-
-			Name = name;
-			Text = text;
+			Name = name ?? throw new ArgumentNullException(nameof(name));
+			Text = text ?? throw new ArgumentNullException(nameof(text));
 		}
 
 		public string Name { get; }

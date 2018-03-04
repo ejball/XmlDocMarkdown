@@ -10,7 +10,7 @@ namespace XmlDocMarkdown.Core
 	{
 		public XmlDocMember(XElement xMember)
 		{
-			XmlDocName = xMember.Attribute("name").Value;
+			XmlDocName = xMember.Attribute("name")?.Value;
 
 			foreach (var xElement in xMember.Elements())
 			{
@@ -123,12 +123,10 @@ namespace XmlDocMarkdown.Core
 
 			private void AddNode(XNode xNode)
 			{
-				var xElement = xNode as XElement;
-				if (xElement != null)
+				if (xNode is XElement xElement)
 					AddElement(xElement);
 
-				var xText = xNode as XText;
-				if (xText != null)
+				if (xNode is XText xText)
 					m_block?.Inlines.Add(new XmlDocInline { Text = xText.Value });
 			}
 
@@ -224,7 +222,7 @@ namespace XmlDocMarkdown.Core
 
 			private static XmlDocListKind GetListKind(XElement xElement)
 			{
-				switch (xElement.Attribute("type")?.Value?.ToLowerInvariant())
+				switch (xElement.Attribute("type")?.Value.ToLowerInvariant())
 				{
 				case "bullet":
 					return XmlDocListKind.Bullet;
