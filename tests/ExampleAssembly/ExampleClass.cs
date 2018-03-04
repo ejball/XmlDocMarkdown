@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 #pragma warning disable 67
 
@@ -126,6 +126,8 @@ namespace ExampleAssembly
 		/// </summary>
 		/// <typeparam name="T">The type parameter.</typeparam>
 		/// <param name="x">The parameter.</param>
+		/// <remarks>We can put special characters in <c>&lt;c&gt;</c> elements,
+		/// <c>like | and ` and &amp;#x21;</c>.</remarks>
 		public T Overloaded<T>(string x)
 		{
 			return default(T);

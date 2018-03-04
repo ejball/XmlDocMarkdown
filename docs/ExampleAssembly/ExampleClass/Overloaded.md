@@ -83,6 +83,10 @@ public T Overloaded<T>(string x)
 | T | The type parameter. |
 | x | The parameter. |
 
+## Remarks
+
+We can put special characters in `<c>` elements, ``like | and ` and &#x21;``.
+
 ## See Also
 
 * class [ExampleClass](../ExampleClass.md)

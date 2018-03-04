@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -213,6 +213,12 @@ namespace XmlDocMarkdown.Core
 			return value.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("|", "&#x7C;");
 		}
 
+		private static string SurroundCode(string value)
+		{
+			string backticks = new string('`', Regex.Matches(value, @"`+").Cast<Match>().Select(x => x.Length).Concat(new[] { 0 }).Max() + 1);
+			return backticks + value + backticks;
+		}
+
 		private NamedText WriteMemberPage(string path, MemberInfo memberInfo, MarkdownContext context)
 		{
 			return WriteMemberPage(path, new[] { memberInfo }, context);
@@ -298,7 +304,7 @@ namespace XmlDocMarkdown.Core
 								Enum.GetUnderlyingType(typeInfo.AsType()) == typeof(ulong) ? Convert.ToString(Convert.ToUInt64(valueObject)) :
 									Convert.ToString(Convert.ToInt64(valueObject));
 							string description = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, enumValue, memberContext);
-							writer.WriteLine($"| {enumValue.Name} | `{valueText}` | {description} |");
+							writer.WriteLine($"| {enumValue.Name} | {SurroundCode(valueText)} | {description} |");
 						}
 					}
 					else if (typeKind == TypeKind.Class || typeKind == TypeKind.Struct || typeKind == TypeKind.Interface)
@@ -1846,13 +1852,14 @@ namespace XmlDocMarkdown.Core
 
 			if (text.Length != 0)
 			{
-				if (inline.IsCode || seeMemberInfo != null)
-					text = $"`{text}`";
+				bool isCode = inline.IsCode || seeMemberInfo != null;
+				if (isCode)
+					text = SurroundCode(text);
 
 				if (inline.IsParamRef || inline.IsTypeParamRef)
 					text = $"*{text}*";
 
-				text = WrapMarkdownRefLink(text, seeMemberInfo, context);
+				text = WrapMarkdownRefLink(text, seeMemberInfo, context, isCode: inline.IsCode);
 			}
 
 			text = Regex.Replace(text, @"\s+", " ");
@@ -1860,7 +1867,7 @@ namespace XmlDocMarkdown.Core
 			return text;
 		}
 
-		private static string WrapMarkdownRefLink(string text, MemberInfo memberInfo, MarkdownContext context)
+		private static string WrapMarkdownRefLink(string text, MemberInfo memberInfo, MarkdownContext context, bool isCode = false)
 		{
 			if (memberInfo != null &&
 				XmlDocUtility.GetXmlDocRef(memberInfo) != XmlDocUtility.GetXmlDocRef(context.MemberInfo))
@@ -1915,7 +1922,7 @@ namespace XmlDocMarkdown.Core
 				text = $"[{text}]({path})";
 			}
 
-			return EscapeHtml(text);
+			return isCode ? text : EscapeHtml(text);
 		}
 
 		private static string ToMarkdown(IEnumerable<XmlDocInline> inlines, MarkdownContext context)
