@@ -14,7 +14,7 @@ A Cake addin and class library that generates Markdown from .NET XML documentati
 
 ## XmlDocMarkdown
 
-A command-line tool that generates Markdown from .NET XML documentation comments. [![NuGet](https://img.shields.io/nuget/v/XmlDocMarkdown.svg)](https://www.nuget.org/packages/XmlDocMarkdown)
+A console app that generates Markdown from .NET XML documentation comments. [![NuGet](https://img.shields.io/nuget/v/XmlDocMarkdown.svg)](https://www.nuget.org/packages/XmlDocMarkdown)
 
 ## Documentation
 
