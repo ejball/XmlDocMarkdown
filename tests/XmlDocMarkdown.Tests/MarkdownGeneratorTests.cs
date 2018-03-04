@@ -11,7 +11,7 @@ namespace XmlDocMarkdown.Tests
 		[Fact]
 		public void ExampleAssembly()
 		{
-			XmlDocGenerator.Generate(
+			XmlDocMarkdownGenerator.Generate(
 				typeof(ExampleClass).GetTypeInfo().Assembly.Location,
 				Path.Combine(Path.GetTempPath(), "MarkdownGeneratorTests"),
 				new XmlDocMarkdownSettings { IsDryRun = true });

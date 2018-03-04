@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 
 namespace XmlDocMarkdown.Core
 {
-	public sealed class XmlDocGeneratorResult
+	public sealed class XmlDocMarkdownResult
 	{
 		public Collection<string> Added { get; } = new Collection<string>();
 

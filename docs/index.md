@@ -12,7 +12,7 @@ To use the addin, include it at the top of your Cake script:
 #addin "XmlDocMarkdown.Core"
 ```
 
-Then call `XmlDocMarkdownGenerate()` with the desired input path, output path, and `XmlDocMarkdownSettings`.
+Then call [`XmlDocMarkdownGenerate()`](XmlDocMarkdown.Core/XmlDocCakeAddin/XmlDocMarkdownGenerate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
 
 ## Console App: XmlDocMarkdown
 
@@ -46,4 +46,4 @@ For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentatio
 
 ## Class Library: XmlDocMarkdown.Core
 
-`XmlDocMarkdown.Core` can also be used as a class library. Call `XmlDocGenerator.Generate` with the desired input path, output path, and `XmlDocMarkdownSettings`.
+[`XmlDocMarkdown.Core`](XmlDocMarkdown.Core) can also be used as a class library. Call [`XmlDocMarkdownGenerator.Generate`](XmlDocMarkdown.Core/XmlDocMarkdownGenerator/Generate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).

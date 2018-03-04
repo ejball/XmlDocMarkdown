@@ -7,16 +7,16 @@ using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core
 {
-	public static class XmlDocGenerator
+	public static class XmlDocMarkdownGenerator
 	{
-		public static XmlDocGeneratorResult Generate(string inputPath, string outputPath, XmlDocMarkdownSettings settings)
+		public static XmlDocMarkdownResult Generate(string inputPath, string outputPath, XmlDocMarkdownSettings settings)
 		{
 			if (inputPath == null)
 				throw new ArgumentNullException(nameof(inputPath));
 			if (outputPath == null)
 				throw new ArgumentNullException(nameof(outputPath));
 
-			var result = new XmlDocGeneratorResult();
+			var result = new XmlDocMarkdownResult();
 
 			settings = settings ?? new XmlDocMarkdownSettings();
 

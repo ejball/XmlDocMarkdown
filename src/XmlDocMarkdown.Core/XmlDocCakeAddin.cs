@@ -9,13 +9,13 @@ namespace XmlDocMarkdown.Core
 	public static class XmlDocCakeAddin
 	{
 		[CakeMethodAlias]
-		public static XmlDocGeneratorResult XmlDocMarkdownGenerate(this ICakeContext context, FilePath inputPath, DirectoryPath outputPath, XmlDocMarkdownSettings settings = null)
+		public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, FilePath inputPath, DirectoryPath outputPath, XmlDocMarkdownSettings settings = null)
 			=> context.XmlDocMarkdownGenerate(inputPath.FullPath, outputPath.FullPath, settings);
 
 		[CakeMethodAlias]
-		public static XmlDocGeneratorResult XmlDocMarkdownGenerate(this ICakeContext context, string inputPath, string outputPath, XmlDocMarkdownSettings settings = null)
+		public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, string inputPath, string outputPath, XmlDocMarkdownSettings settings = null)
 		{
-			var result = XmlDocGenerator.Generate(inputPath, outputPath, settings);
+			var result = XmlDocMarkdownGenerator.Generate(inputPath, outputPath, settings);
 			foreach (string message in result.Messages)
 				context?.Log.Write(Verbosity.Normal, LogLevel.Information, message);
 			return result;

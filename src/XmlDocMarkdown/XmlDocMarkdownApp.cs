@@ -48,7 +48,7 @@ namespace XmlDocMarkdown
 
 				argsReader.VerifyComplete();
 
-				var result = XmlDocGenerator.Generate(inputPath, outputPath, settings);
+				var result = XmlDocMarkdownGenerator.Generate(inputPath, outputPath, settings);
 
 				foreach (string message in result.Messages)
 					Console.WriteLine(message);
