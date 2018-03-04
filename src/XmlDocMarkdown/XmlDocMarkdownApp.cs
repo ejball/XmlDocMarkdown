@@ -1,9 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Xml.Linq;
 using ArgsReading;
 using XmlDocMarkdown.Core;
 
@@ -27,21 +24,19 @@ namespace XmlDocMarkdown
 					return 0;
 				}
 
-				var generator = new MarkdownGenerator();
-
-				string newLine = argsReader.ReadNewLineOption();
-				if (newLine != null)
-					generator.NewLine = newLine;
-
-				generator.SourceCodePath = argsReader.ReadSourceOption();
-				generator.RootNamespace = argsReader.ReadNamespaceOption();
-				generator.IncludeObsolete = argsReader.ReadObsoleteFlag();
-				generator.Visibility = argsReader.ReadVisibilityOption() ?? VisibilityLevel.Protected;
-
-				bool shouldClean = argsReader.ReadCleanFlag();
-				bool isQuiet = argsReader.ReadQuietFlag();
 				bool isVerify = argsReader.ReadVerifyFlag();
-				bool isDryRun = argsReader.ReadDryRunFlag();
+
+				var settings = new XmlDocMarkdownSettings
+				{
+					NewLine = argsReader.ReadNewLineOption(),
+					SourceCodePath = argsReader.ReadSourceOption(),
+					RootNamespace = argsReader.ReadNamespaceOption(),
+					IncludeObsolete = argsReader.ReadObsoleteFlag(),
+					VisibilityLevel = argsReader.ReadVisibilityOption(),
+					ShouldClean = argsReader.ReadCleanFlag(),
+					IsQuiet = argsReader.ReadQuietFlag(),
+					IsDryRun = isVerify || argsReader.ReadDryRunFlag(),
+				};
 
 				string inputPath = argsReader.ReadArgument();
 				if (inputPath == null)
@@ -53,96 +48,12 @@ namespace XmlDocMarkdown
 
 				argsReader.VerifyComplete();
 
-				var assembly = Assembly.LoadFrom(inputPath);
-				XmlDocAssembly xmlDocAssembly;
+				var result = XmlDocGenerator.Generate(inputPath, outputPath, settings);
 
-				var xmlDocPath = Path.ChangeExtension(inputPath, ".xml");
-				if (!File.Exists(xmlDocPath))
-					xmlDocPath = Path.ChangeExtension(inputPath, ".XML");
+				foreach (string message in result.Messages)
+					Console.WriteLine(message);
 
-				if (File.Exists(xmlDocPath))
-				{
-					var xDocument = XDocument.Load(xmlDocPath);
-					xmlDocAssembly = new XmlDocAssembly(xDocument);
-				}
-				else
-				{
-					xmlDocAssembly = new XmlDocAssembly();
-				}
-
-				var namedTexts = generator.GenerateOutput(assembly, xmlDocAssembly);
-
-				var namedTextsToWrite = new List<NamedText>();
-				foreach (var namedText in namedTexts)
-				{
-					string existingFilePath = Path.Combine(outputPath, namedText.Name);
-					if (File.Exists(existingFilePath))
-					{
-						// ignore CR when comparing files
-						if (namedText.Text.Replace("\r", "") != File.ReadAllText(existingFilePath).Replace("\r", ""))
-						{
-							namedTextsToWrite.Add(namedText);
-							if (!isQuiet)
-								Console.WriteLine("changed " + namedText.Name);
-						}
-					}
-					else
-					{
-						namedTextsToWrite.Add(namedText);
-						if (!isQuiet)
-							Console.WriteLine("added " + namedText.Name);
-					}
-				}
-
-				var namesToDelete = new List<string>();
-				if (shouldClean)
-				{
-					var directoryInfo = new DirectoryInfo(outputPath);
-					if (directoryInfo.Exists)
-					{
-						string assemblyName = assembly.GetName().Name;
-						string assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
-						string assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
-						string assemblyFolder = Path.GetFileNameWithoutExtension(assemblyFileName);
-						var patterns = new[] { $"{assemblyFolder}/*.md", $"{assemblyFolder}/*/*.md" };
-						string codeGenComment = MarkdownGenerator.GetCodeGenComment(assemblyFileName);
-
-						foreach (string nameMatchingPattern in FindNamesMatchingPatterns(directoryInfo, patterns, codeGenComment))
-						{
-							if (namedTexts.All(x => x.Name != nameMatchingPattern))
-							{
-								namesToDelete.Add(nameMatchingPattern);
-								if (!isQuiet)
-									Console.WriteLine("removed " + nameMatchingPattern);
-							}
-						}
-					}
-				}
-
-				if (isVerify)
-					return namedTextsToWrite.Count != 0 || namesToDelete.Count != 0 ? 1 : 0;
-
-				if (!isDryRun)
-				{
-					if (!Directory.Exists(outputPath))
-						Directory.CreateDirectory(outputPath);
-
-					foreach (var namedText in namedTextsToWrite)
-					{
-						string outputFilePath = Path.Combine(outputPath, namedText.Name);
-
-						string outputFileDirectoryPath = Path.GetDirectoryName(outputFilePath);
-						if (outputFileDirectoryPath != null && outputFileDirectoryPath != outputPath && !Directory.Exists(outputFileDirectoryPath))
-							Directory.CreateDirectory(outputFileDirectoryPath);
-
-						File.WriteAllText(outputFilePath, namedText.Text);
-					}
-
-					foreach (string nameToDelete in namesToDelete)
-						File.Delete(Path.Combine(outputPath, nameToDelete));
-				}
-
-				return 0;
+				return isVerify && result.Added.Count + result.Changed.Count + result.Removed.Count != 0 ? 1 : 0;
 			}
 			catch (Exception exception)
 			{
@@ -157,39 +68,6 @@ namespace XmlDocMarkdown
 				{
 					Console.Error.WriteLine(exception.ToString());
 					return 3;
-				}
-			}
-		}
-
-		private IEnumerable<string> FindNamesMatchingPatterns(DirectoryInfo directoryInfo, IReadOnlyList<string> namePatterns, string requiredSubstring)
-		{
-			foreach (var namePattern in namePatterns)
-			{
-				foreach (string name in FindNamesMatchingPattern(directoryInfo, namePattern, requiredSubstring))
-					yield return name;
-			}
-		}
-
-		private IEnumerable<string> FindNamesMatchingPattern(DirectoryInfo directoryInfo, string namePattern, string requiredSubstring)
-		{
-			var parts = namePattern.Split(new[] { '/' }, 2);
-			if (parts[0].Length == 0)
-				throw new InvalidOperationException("Invalid name pattern.");
-
-			if (parts.Length == 1)
-			{
-				foreach (var fileInfo in directoryInfo.GetFiles(parts[0]))
-				{
-					if (File.ReadAllText(fileInfo.FullName).Contains(requiredSubstring))
-						yield return fileInfo.Name;
-				}
-			}
-			else
-			{
-				foreach (var subdirectoryInfo in directoryInfo.GetDirectories(parts[0]))
-				{
-					foreach (string name in FindNamesMatchingPattern(subdirectoryInfo, parts[1], requiredSubstring))
-						yield return subdirectoryInfo.Name + '/' + name;
 				}
 			}
 		}

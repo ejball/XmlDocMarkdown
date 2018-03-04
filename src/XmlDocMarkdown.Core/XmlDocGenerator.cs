@@ -1,0 +1,158 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Xml.Linq;
+
+namespace XmlDocMarkdown.Core
+{
+	public static class XmlDocGenerator
+	{
+		public static XmlDocGeneratorResult Generate(string inputPath, string outputPath, XmlDocMarkdownSettings settings)
+		{
+			if (inputPath == null)
+				throw new ArgumentNullException(nameof(inputPath));
+			if (outputPath == null)
+				throw new ArgumentNullException(nameof(outputPath));
+
+			var result = new XmlDocGeneratorResult();
+
+			settings = settings ?? new XmlDocMarkdownSettings();
+
+			var generator = new MarkdownGenerator
+			{
+				SourceCodePath = settings.SourceCodePath,
+				RootNamespace = settings.RootNamespace,
+				IncludeObsolete = settings.IncludeObsolete,
+				Visibility = settings.VisibilityLevel ?? VisibilityLevel.Protected,
+			};
+			if (settings.NewLine != null)
+				generator.NewLine = settings.NewLine;
+
+			var assembly = Assembly.LoadFrom(inputPath);
+			XmlDocAssembly xmlDocAssembly;
+
+			var xmlDocPath = Path.ChangeExtension(inputPath, ".xml");
+			if (!File.Exists(xmlDocPath))
+				xmlDocPath = Path.ChangeExtension(inputPath, ".XML");
+
+			if (File.Exists(xmlDocPath))
+			{
+				var xDocument = XDocument.Load(xmlDocPath);
+				xmlDocAssembly = new XmlDocAssembly(xDocument);
+			}
+			else
+			{
+				xmlDocAssembly = new XmlDocAssembly();
+			}
+
+			var namedTexts = generator.GenerateOutput(assembly, xmlDocAssembly);
+
+			var namedTextsToWrite = new List<NamedText>();
+			foreach (var namedText in namedTexts)
+			{
+				string existingFilePath = Path.Combine(outputPath, namedText.Name);
+				if (File.Exists(existingFilePath))
+				{
+					// ignore CR when comparing files
+					if (namedText.Text.Replace("\r", "") != File.ReadAllText(existingFilePath).Replace("\r", ""))
+					{
+						namedTextsToWrite.Add(namedText);
+						result.Changed.Add(namedText.Name);
+						if (!settings.IsQuiet)
+							result.Messages.Add("changed " + namedText.Name);
+					}
+				}
+				else
+				{
+					namedTextsToWrite.Add(namedText);
+					result.Added.Add(namedText.Name);
+					if (!settings.IsQuiet)
+						result.Messages.Add("added " + namedText.Name);
+				}
+			}
+
+			var namesToDelete = new List<string>();
+			if (settings.ShouldClean)
+			{
+				var directoryInfo = new DirectoryInfo(outputPath);
+				if (directoryInfo.Exists)
+				{
+					string assemblyName = assembly.GetName().Name;
+					string assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
+					string assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
+					string assemblyFolder = Path.GetFileNameWithoutExtension(assemblyFileName);
+					var patterns = new[] { $"{assemblyFolder}/*.md", $"{assemblyFolder}/*/*.md" };
+					string codeGenComment = MarkdownGenerator.GetCodeGenComment(assemblyFileName);
+
+					foreach (string nameMatchingPattern in FindNamesMatchingPatterns(directoryInfo, patterns, codeGenComment))
+					{
+						if (namedTexts.All(x => x.Name != nameMatchingPattern))
+						{
+							namesToDelete.Add(nameMatchingPattern);
+							result.Removed.Add(nameMatchingPattern);
+							if (!settings.IsQuiet)
+								result.Messages.Add("removed " + nameMatchingPattern);
+						}
+					}
+				}
+			}
+
+			if (!settings.IsDryRun)
+			{
+				if (!Directory.Exists(outputPath))
+					Directory.CreateDirectory(outputPath);
+
+				foreach (var namedText in namedTextsToWrite)
+				{
+					string outputFilePath = Path.Combine(outputPath, namedText.Name);
+
+					string outputFileDirectoryPath = Path.GetDirectoryName(outputFilePath);
+					if (outputFileDirectoryPath != null && outputFileDirectoryPath != outputPath && !Directory.Exists(outputFileDirectoryPath))
+						Directory.CreateDirectory(outputFileDirectoryPath);
+
+					File.WriteAllText(outputFilePath, namedText.Text);
+				}
+
+				foreach (string nameToDelete in namesToDelete)
+					File.Delete(Path.Combine(outputPath, nameToDelete));
+			}
+
+			return result;
+		}
+
+		private static IEnumerable<string> FindNamesMatchingPatterns(DirectoryInfo directoryInfo, IReadOnlyList<string> namePatterns, string requiredSubstring)
+		{
+			foreach (var namePattern in namePatterns)
+			{
+				foreach (string name in FindNamesMatchingPattern(directoryInfo, namePattern, requiredSubstring))
+					yield return name;
+			}
+		}
+
+		private static IEnumerable<string> FindNamesMatchingPattern(DirectoryInfo directoryInfo, string namePattern, string requiredSubstring)
+		{
+			var parts = namePattern.Split(new[] { '/' }, 2);
+			if (parts[0].Length == 0)
+				throw new InvalidOperationException("Invalid name pattern.");
+
+			if (parts.Length == 1)
+			{
+				foreach (var fileInfo in directoryInfo.GetFiles(parts[0]))
+				{
+					if (File.ReadAllText(fileInfo.FullName).Contains(requiredSubstring))
+						yield return fileInfo.Name;
+				}
+			}
+			else
+			{
+				foreach (var subdirectoryInfo in directoryInfo.GetDirectories(parts[0]))
+				{
+					foreach (string name in FindNamesMatchingPattern(subdirectoryInfo, parts[1], requiredSubstring))
+						yield return subdirectoryInfo.Name + '/' + name;
+				}
+			}
+		}
+	}
+}
