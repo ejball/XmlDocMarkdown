@@ -7,8 +7,18 @@ using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core
 {
+	/// <summary>
+	/// Generates Markdown from .NET XML documentation comments.
+	/// </summary>
 	public static class XmlDocMarkdownGenerator
 	{
+		/// <summary>
+		/// Generates Markdown from .NET XML documentation comments.
+		/// </summary>
+		/// <param name="inputPath">The input assembly.</param>
+		/// <param name="outputPath">The output directory.</param>
+		/// <param name="settings">The settings.</param>
+		/// <returns>The names of files that were added, changed, or removed.</returns>
 		public static XmlDocMarkdownResult Generate(string inputPath, string outputPath, XmlDocMarkdownSettings settings)
 		{
 			if (inputPath == null)
@@ -25,7 +35,7 @@ namespace XmlDocMarkdown.Core
 				SourceCodePath = settings.SourceCodePath,
 				RootNamespace = settings.RootNamespace,
 				IncludeObsolete = settings.IncludeObsolete,
-				Visibility = settings.VisibilityLevel ?? VisibilityLevel.Protected,
+				Visibility = settings.VisibilityLevel ?? XmlDocVisibilityLevel.Protected,
 			};
 			if (settings.NewLine != null)
 				generator.NewLine = settings.NewLine;

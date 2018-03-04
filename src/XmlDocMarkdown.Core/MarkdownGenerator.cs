@@ -21,7 +21,7 @@ namespace XmlDocMarkdown.Core
 
 		public bool IncludeObsolete { get; set; }
 
-		public VisibilityLevel Visibility { get; set; }
+		public XmlDocVisibilityLevel Visibility { get; set; }
 
 		public IReadOnlyList<NamedText> GenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 		{
@@ -94,7 +94,7 @@ namespace XmlDocMarkdown.Core
 					foreach (var typeGroup in group.Types.GroupBy(x => x.Visibility))
 					{
 						writer.WriteLine();
-						writer.WriteLine($"| {(typeGroup.Key == VisibilityLevel.Public ? "public" : "internal")} type | description |");
+						writer.WriteLine($"| {(typeGroup.Key == XmlDocVisibilityLevel.Public ? "public" : "internal")} type | description |");
 						writer.WriteLine("| --- | --- |");
 						foreach (var typeInfo in typeGroup)
 						{
@@ -335,16 +335,16 @@ namespace XmlDocMarkdown.Core
 								writer.WriteLine();
 								switch (innerMemberVisibilityGroup.Visibility)
 								{
-								case VisibilityLevel.Public:
+								case XmlDocVisibilityLevel.Public:
 									writer.WriteLine(typeKind == TypeKind.Interface ? "## Members" : "## Public Members");
 									break;
-								case VisibilityLevel.Protected:
+								case XmlDocVisibilityLevel.Protected:
 									writer.WriteLine("## Protected Members");
 									break;
-								case VisibilityLevel.Internal:
+								case XmlDocVisibilityLevel.Internal:
 									writer.WriteLine("## Internal Members");
 									break;
-								case VisibilityLevel.Private:
+								case XmlDocVisibilityLevel.Private:
 									writer.WriteLine("## Private Members");
 									break;
 								default:
@@ -522,19 +522,19 @@ namespace XmlDocMarkdown.Core
 			return false;
 		}
 
-		private static bool IsMorePrivateThan(VisibilityLevel visibility1, VisibilityLevel visibility2)
+		private static bool IsMorePrivateThan(XmlDocVisibilityLevel visibility1, XmlDocVisibilityLevel visibility2)
 		{
 			return (int) visibility1 < (int) visibility2;
 		}
 
-		public static VisibilityLevel GetMostPublic(params VisibilityLevel[] visibilityLevels)
+		public static XmlDocVisibilityLevel GetMostPublic(params XmlDocVisibilityLevel[] visibilityLevels)
 		{
-			return (VisibilityLevel) visibilityLevels.Max(x => (int) x);
+			return (XmlDocVisibilityLevel) visibilityLevels.Max(x => (int) x);
 		}
 
-		public static VisibilityLevel GetMostPrivate(params VisibilityLevel[] visibilityLevels)
+		public static XmlDocVisibilityLevel GetMostPrivate(params XmlDocVisibilityLevel[] visibilityLevels)
 		{
-			return (VisibilityLevel) visibilityLevels.Min(x => (int) x);
+			return (XmlDocVisibilityLevel) visibilityLevels.Min(x => (int) x);
 		}
 
 		private static string GetMemberHeading(IReadOnlyList<MemberInfo> membersInfos, int index)
@@ -864,8 +864,8 @@ namespace XmlDocMarkdown.Core
 			if (getMethod == null && setMethod == null)
 				throw new InvalidOperationException();
 
-			var getVisibility = getMethod == null ? VisibilityLevel.Private : GetMethodVisibility(getMethod);
-			var setVisibility = setMethod == null ? VisibilityLevel.Private : GetMethodVisibility(setMethod);
+			var getVisibility = getMethod == null ? XmlDocVisibilityLevel.Private : GetMethodVisibility(getMethod);
+			var setVisibility = setMethod == null ? XmlDocVisibilityLevel.Private : GetMethodVisibility(setMethod);
 
 			if (getMethod != null && (setMethod == null || IsMorePrivateThan(setVisibility, Visibility)))
 				return " { get; }";
@@ -1547,12 +1547,12 @@ namespace XmlDocMarkdown.Core
 			return type != null && type.IsEnum && type.GetCustomAttributes<FlagsAttribute>().Any();
 		}
 
-		private static VisibilityLevel GetVisibility(MemberInfo memberInfo)
+		private static XmlDocVisibilityLevel GetVisibility(MemberInfo memberInfo)
 		{
-			return GetVisibility(memberInfo, VisibilityLevel.Protected);
+			return GetVisibility(memberInfo, XmlDocVisibilityLevel.Protected);
 		}
 
-		private static VisibilityLevel GetVisibility(MemberInfo memberInfo, VisibilityLevel protectedInternal)
+		private static XmlDocVisibilityLevel GetVisibility(MemberInfo memberInfo, XmlDocVisibilityLevel protectedInternal)
 		{
 			var typeInfo = memberInfo as TypeInfo;
 			if (typeInfo != null)
@@ -1577,38 +1577,38 @@ namespace XmlDocMarkdown.Core
 			if (methodBase != null)
 				return GetMethodVisibility(methodBase, protectedInternal);
 
-			return VisibilityLevel.Private;
+			return XmlDocVisibilityLevel.Private;
 		}
 
-		private static VisibilityLevel GetTypeVisibility(TypeInfo typeInfo, VisibilityLevel protectedInternal = VisibilityLevel.Protected)
+		private static XmlDocVisibilityLevel GetTypeVisibility(TypeInfo typeInfo, XmlDocVisibilityLevel protectedInternal = XmlDocVisibilityLevel.Protected)
 		{
 			if (typeInfo.IsPublic || typeInfo.IsNestedPublic)
-				return VisibilityLevel.Public;
+				return XmlDocVisibilityLevel.Public;
 			else if (typeInfo.IsNestedFamORAssem)
 				return protectedInternal;
 			else if (typeInfo.IsNestedFamily)
-				return VisibilityLevel.Protected;
+				return XmlDocVisibilityLevel.Protected;
 			else if (typeInfo.IsNestedAssembly || typeInfo.IsNestedFamANDAssem)
-				return VisibilityLevel.Internal;
+				return XmlDocVisibilityLevel.Internal;
 			else
-				return VisibilityLevel.Private;
+				return XmlDocVisibilityLevel.Private;
 		}
 
-		private static VisibilityLevel GetMethodVisibility(MethodBase methodBase, VisibilityLevel protectedInternal = VisibilityLevel.Protected)
+		private static XmlDocVisibilityLevel GetMethodVisibility(MethodBase methodBase, XmlDocVisibilityLevel protectedInternal = XmlDocVisibilityLevel.Protected)
 		{
 			if (methodBase.IsPublic)
-				return VisibilityLevel.Public;
+				return XmlDocVisibilityLevel.Public;
 			else if (methodBase.IsFamilyOrAssembly)
 				return protectedInternal;
 			else if (methodBase.IsFamily)
-				return VisibilityLevel.Protected;
+				return XmlDocVisibilityLevel.Protected;
 			else if (methodBase.IsAssembly || methodBase.IsFamilyAndAssembly)
-				return VisibilityLevel.Internal;
+				return XmlDocVisibilityLevel.Internal;
 			else
-				return VisibilityLevel.Private;
+				return XmlDocVisibilityLevel.Private;
 		}
 
-		private static VisibilityLevel GetPropertyVisibility(PropertyInfo propertyInfo, VisibilityLevel protectedInternal = VisibilityLevel.Protected)
+		private static XmlDocVisibilityLevel GetPropertyVisibility(PropertyInfo propertyInfo, XmlDocVisibilityLevel protectedInternal = XmlDocVisibilityLevel.Protected)
 		{
 			var getMethod = propertyInfo.GetMethod;
 			var setMethod = propertyInfo.SetMethod;
@@ -1625,34 +1625,34 @@ namespace XmlDocMarkdown.Core
 				GetMethodVisibility(propertyInfo.SetMethod, protectedInternal));
 		}
 
-		private static VisibilityLevel GetFieldVisibility(FieldInfo fieldInfo, VisibilityLevel protectedInternal = VisibilityLevel.Protected)
+		private static XmlDocVisibilityLevel GetFieldVisibility(FieldInfo fieldInfo, XmlDocVisibilityLevel protectedInternal = XmlDocVisibilityLevel.Protected)
 		{
 			if (fieldInfo.IsPublic)
-				return VisibilityLevel.Public;
+				return XmlDocVisibilityLevel.Public;
 			else if (fieldInfo.IsFamilyOrAssembly)
 				return protectedInternal;
 			else if (fieldInfo.IsFamily)
-				return VisibilityLevel.Protected;
+				return XmlDocVisibilityLevel.Protected;
 			else if (fieldInfo.IsAssembly || fieldInfo.IsFamilyAndAssembly)
-				return VisibilityLevel.Internal;
+				return XmlDocVisibilityLevel.Internal;
 			else
-				return VisibilityLevel.Private;
+				return XmlDocVisibilityLevel.Private;
 		}
 
 		private static string GetAccessModifier(MemberInfo memberInfo)
 		{
-			var visibility = GetVisibility(memberInfo, VisibilityLevel.ProtectedInternal);
+			var visibility = GetVisibility(memberInfo, XmlDocVisibilityLevel.ProtectedInternal);
 			switch (visibility)
 			{
-			case VisibilityLevel.Public:
+			case XmlDocVisibilityLevel.Public:
 				return "public";
-			case VisibilityLevel.ProtectedInternal:
+			case XmlDocVisibilityLevel.ProtectedInternal:
 				return "protected internal";
-			case VisibilityLevel.Protected:
+			case XmlDocVisibilityLevel.Protected:
 				return "protected";
-			case VisibilityLevel.Internal:
+			case XmlDocVisibilityLevel.Internal:
 				return "internal";
-			case VisibilityLevel.Private:
+			case XmlDocVisibilityLevel.Private:
 				return "private";
 			default:
 				throw new InvalidOperationException();

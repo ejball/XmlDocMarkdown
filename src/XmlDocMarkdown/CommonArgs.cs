@@ -15,19 +15,19 @@ namespace XmlDocMarkdown
 			return args.ReadOption("namespace");
 		}
 
-		public static VisibilityLevel? ReadVisibilityOption(this ArgsReader args)
+		public static XmlDocVisibilityLevel? ReadVisibilityOption(this ArgsReader args)
 		{
 			string visibility = args.ReadOption("visibility");
 			switch (visibility)
 			{
 				case "public":
-					return VisibilityLevel.Public;
+					return XmlDocVisibilityLevel.Public;
 				case "protected":
-					return VisibilityLevel.Protected;
+					return XmlDocVisibilityLevel.Protected;
 				case "internal":
-					return VisibilityLevel.Internal;
+					return XmlDocVisibilityLevel.Internal;
 				case "private":
-					return VisibilityLevel.Private;
+					return XmlDocVisibilityLevel.Private;
 				case null:
 					return null;
 				default:
