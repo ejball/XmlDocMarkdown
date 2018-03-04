@@ -1,5 +1,7 @@
 # XmlDocCakeAddin class
 
+The Cake addin.
+
 ```csharp
 public static class XmlDocCakeAddin
 ```
@@ -8,7 +10,7 @@ public static class XmlDocCakeAddin
 
 | name | description |
 | --- | --- |
-| static [XmlDocMarkdownGenerate](XmlDocCakeAddin/XmlDocMarkdownGenerate.md)(…) |  (2 methods) |
+| static [XmlDocMarkdownGenerate](XmlDocCakeAddin/XmlDocMarkdownGenerate.md)(…) | Generates Markdown from .NET XML documentation comments. (2 methods) |
 
 ## See Also
 

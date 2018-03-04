@@ -1,8 +1,14 @@
 # XmlDocMarkdownSettings.NewLine property
 
+Indicates the newline used in the output.
+
 ```csharp
 public string NewLine { get; set; }
 ```
+
+## Remarks
+
+Defaults to `"\r\n"` or `"\n"`, depending on the platform.
 
 ## See Also
 

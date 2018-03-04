@@ -1,13 +1,26 @@
 # XmlDocCakeAddin.XmlDocMarkdownGenerate method (1 of 2)
 
+Generates Markdown from .NET XML documentation comments.
+
 ```csharp
-public static XmlDocGeneratorResult XmlDocMarkdownGenerate(this ICakeContext context, FilePath inputPath, 
+public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, FilePath inputPath, 
     DirectoryPath outputPath, XmlDocMarkdownSettings settings = null)
 ```
 
+| parameter | description |
+| --- | --- |
+| context | The Cake context. |
+| inputPath | The input assembly. |
+| outputPath | The output directory. |
+| settings | The settings. |
+
+## Return Value
+
+The names of files that were added, changed, or removed.
+
 ## See Also
 
-* class [XmlDocGeneratorResult](../XmlDocGeneratorResult.md)
+* class [XmlDocMarkdownResult](../XmlDocMarkdownResult.md)
 * class [XmlDocMarkdownSettings](../XmlDocMarkdownSettings.md)
 * class [XmlDocCakeAddin](../XmlDocCakeAddin.md)
 * namespace [XmlDocMarkdown.Core](../../XmlDocMarkdown.Core.md)
@@ -16,14 +29,27 @@ public static XmlDocGeneratorResult XmlDocMarkdownGenerate(this ICakeContext con
 
 # XmlDocCakeAddin.XmlDocMarkdownGenerate method (2 of 2)
 
+Generates Markdown from .NET XML documentation comments.
+
 ```csharp
-public static XmlDocGeneratorResult XmlDocMarkdownGenerate(this ICakeContext context, string inputPath, 
+public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, string inputPath, 
     string outputPath, XmlDocMarkdownSettings settings = null)
 ```
 
+| parameter | description |
+| --- | --- |
+| context | The Cake context. |
+| inputPath | The input assembly. |
+| outputPath | The output directory. |
+| settings | The settings. |
+
+## Return Value
+
+The names of files that were added, changed, or removed.
+
 ## See Also
 
-* class [XmlDocGeneratorResult](../XmlDocGeneratorResult.md)
+* class [XmlDocMarkdownResult](../XmlDocMarkdownResult.md)
 * class [XmlDocMarkdownSettings](../XmlDocMarkdownSettings.md)
 * class [XmlDocCakeAddin](../XmlDocCakeAddin.md)
 * namespace [XmlDocMarkdown.Core](../../XmlDocMarkdown.Core.md)

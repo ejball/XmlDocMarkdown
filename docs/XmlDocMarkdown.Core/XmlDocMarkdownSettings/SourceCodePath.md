@@ -1,8 +1,14 @@
 # XmlDocMarkdownSettings.SourceCodePath property
 
+The URL of the folder containing the source code of the assembly, e.g. at GitHub.
+
 ```csharp
 public string SourceCodePath { get; set; }
 ```
+
+## Remarks
+
+The URL may be absolute or relative. Required to generate source code links in the See Also sections for types.
 
 ## See Also
 

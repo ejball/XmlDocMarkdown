@@ -1,5 +1,7 @@
 # XmlDocMarkdownSettings.IncludeObsolete property
 
+If true, generates documentation for obsolete types and members. (Default false.)
+
 ```csharp
 public bool IncludeObsolete { get; set; }
 ```

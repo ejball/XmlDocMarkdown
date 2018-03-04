@@ -1,12 +1,18 @@
 # XmlDocMarkdownSettings.VisibilityLevel property
 
+The minimum visibility for documented types and members.
+
 ```csharp
-public VisibilityLevel? VisibilityLevel { get; set; }
+public XmlDocVisibilityLevel? VisibilityLevel { get; set; }
 ```
+
+## Remarks
+
+Defaults to `Protected`.
 
 ## See Also
 
-* enum [VisibilityLevel](../VisibilityLevel.md)
+* enum [XmlDocVisibilityLevel](../XmlDocVisibilityLevel.md)
 * class [XmlDocMarkdownSettings](../XmlDocMarkdownSettings.md)
 * namespace [XmlDocMarkdown.Core](../../XmlDocMarkdown.Core.md)
 

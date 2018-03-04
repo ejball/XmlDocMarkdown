@@ -1,5 +1,7 @@
 # XmlDocMarkdownSettings class
 
+Settings for markdown generation.
+
 ```csharp
 public class XmlDocMarkdownSettings
 ```
@@ -9,14 +11,14 @@ public class XmlDocMarkdownSettings
 | name | description |
 | --- | --- |
 | [XmlDocMarkdownSettings](XmlDocMarkdownSettings/XmlDocMarkdownSettings.md)() | The default constructor. |
-| [IncludeObsolete](XmlDocMarkdownSettings/IncludeObsolete.md) { get; set; } |  |
-| [IsDryRun](XmlDocMarkdownSettings/IsDryRun.md) { get; set; } |  |
-| [IsQuiet](XmlDocMarkdownSettings/IsQuiet.md) { get; set; } |  |
-| [NewLine](XmlDocMarkdownSettings/NewLine.md) { get; set; } |  |
-| [RootNamespace](XmlDocMarkdownSettings/RootNamespace.md) { get; set; } |  |
-| [ShouldClean](XmlDocMarkdownSettings/ShouldClean.md) { get; set; } |  |
-| [SourceCodePath](XmlDocMarkdownSettings/SourceCodePath.md) { get; set; } |  |
-| [VisibilityLevel](XmlDocMarkdownSettings/VisibilityLevel.md) { get; set; } |  |
+| [IncludeObsolete](XmlDocMarkdownSettings/IncludeObsolete.md) { get; set; } | If true, generates documentation for obsolete types and members. (Default false.) |
+| [IsDryRun](XmlDocMarkdownSettings/IsDryRun.md) { get; set; } | If true, executes without making changes to the file system. |
+| [IsQuiet](XmlDocMarkdownSettings/IsQuiet.md) { get; set; } | If true, suppresses normal console output. |
+| [NewLine](XmlDocMarkdownSettings/NewLine.md) { get; set; } | Indicates the newline used in the output. |
+| [RootNamespace](XmlDocMarkdownSettings/RootNamespace.md) { get; set; } | The root namespace of the input assembly. |
+| [ShouldClean](XmlDocMarkdownSettings/ShouldClean.md) { get; set; } | If true, deletes previously generated files that are no longer used. |
+| [SourceCodePath](XmlDocMarkdownSettings/SourceCodePath.md) { get; set; } | The URL of the folder containing the source code of the assembly, e.g. at GitHub. |
+| [VisibilityLevel](XmlDocMarkdownSettings/VisibilityLevel.md) { get; set; } | The minimum visibility for documented types and members. |
 
 ## See Also
 

@@ -1,5 +1,7 @@
 # XmlDocMarkdownSettings.ShouldClean property
 
+If true, deletes previously generated files that are no longer used.
+
 ```csharp
 public bool ShouldClean { get; set; }
 ```

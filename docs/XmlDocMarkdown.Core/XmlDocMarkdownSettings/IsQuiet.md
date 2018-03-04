@@ -1,5 +1,7 @@
 # XmlDocMarkdownSettings.IsQuiet property
 
+If true, suppresses normal console output.
+
 ```csharp
 public bool IsQuiet { get; set; }
 ```

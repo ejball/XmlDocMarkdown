@@ -1,5 +1,7 @@
 # XmlDocMarkdownSettings.IsDryRun property
 
+If true, executes without making changes to the file system.
+
 ```csharp
 public bool IsDryRun { get; set; }
 ```
