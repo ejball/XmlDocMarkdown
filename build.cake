@@ -107,8 +107,8 @@ Task("Default")
 
 void GenerateDocs(bool verify)
 {
-	GenerateDocs(File($"src/XmlDocMarkdown.Core/bin/{configuration}/net461/XmlDocMarkdown.Core.dll").ToString(), "../src/XmlDocMarkdown.Core");
-	GenerateDocs(File($"tests/ExampleAssembly/bin/{configuration}/netstandard1.1/ExampleAssembly.dll").ToString(), "../tests/ExampleAssembly");
+	GenerateDocs(verify, File($"src/XmlDocMarkdown.Core/bin/{configuration}/net461/XmlDocMarkdown.Core.dll").ToString(), "../src/XmlDocMarkdown.Core");
+	GenerateDocs(verify, File($"tests/ExampleAssembly/bin/{configuration}/netstandard1.1/ExampleAssembly.dll").ToString(), "../tests/ExampleAssembly");
 }
 
 void GenerateDocs(bool verify, string docsAssembly, string docsSourceUri)
