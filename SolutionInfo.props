@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <VersionPrefix>1.0.2</VersionPrefix>
+    <VersionPrefix>1.0.3</VersionPrefix>
     <Copyright>Copyright 2018 Ed Ball</Copyright>
     <Authors>Ed Ball</Authors>
     <PackageLicenseUrl>https://raw.githubusercontent.com/ejball/XmlDocMarkdown/master/LICENSE</PackageLicenseUrl>

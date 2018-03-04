@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace XmlDocMarkdown.Core
 {
-	public sealed class MarkdownGenerator
+	internal sealed class MarkdownGenerator
 	{
 		public string NewLine { get; set; }
 

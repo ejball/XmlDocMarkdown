@@ -1,10 +1,10 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core
 {
-	public sealed class XmlDocAssembly
+	internal sealed class XmlDocAssembly
 	{
 		public XmlDocAssembly()
 		{

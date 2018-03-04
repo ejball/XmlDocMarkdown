@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
 namespace XmlDocMarkdown.Core
 {
-	public sealed class NamedText
+	internal sealed class NamedText
 	{
 		public NamedText(string name, string text)
 		{

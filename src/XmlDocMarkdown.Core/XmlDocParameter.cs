@@ -1,8 +1,8 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 
 namespace XmlDocMarkdown.Core
 {
-	public sealed class XmlDocParameter
+	internal sealed class XmlDocParameter
 	{
 		public string Name { get; set; }
 

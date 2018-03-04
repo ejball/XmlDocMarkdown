@@ -1,6 +1,6 @@
-﻿namespace XmlDocMarkdown.Core
+namespace XmlDocMarkdown.Core
 {
-	public sealed class XmlDocInline
+	internal sealed class XmlDocInline
 	{
 		public string Text { get; set; }
 

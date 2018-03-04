@@ -1,13 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core
 {
-	public sealed class XmlDocMember
+	internal sealed class XmlDocMember
 	{
 		public XmlDocMember(XElement xMember)
 		{

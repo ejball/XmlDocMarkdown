@@ -1,8 +1,8 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 
 namespace XmlDocMarkdown.Core
 {
-	public sealed class XmlDocException
+	internal sealed class XmlDocException
 	{
 		public string ExceptionTypeRef { get; set; }
 

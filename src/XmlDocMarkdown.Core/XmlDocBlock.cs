@@ -1,8 +1,8 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 
 namespace XmlDocMarkdown.Core
 {
-	public sealed class XmlDocBlock
+	internal sealed class XmlDocBlock
 	{
 		public Collection<XmlDocInline> Inlines { get; } = new Collection<XmlDocInline>();
 

@@ -1,6 +1,6 @@
-﻿namespace XmlDocMarkdown.Core
+namespace XmlDocMarkdown.Core
 {
-	public sealed class XmlDocSeeAlso
+	internal sealed class XmlDocSeeAlso
 	{
 		public string Ref { get; set; }
 	}

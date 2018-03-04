@@ -1,6 +1,6 @@
-﻿namespace XmlDocMarkdown.Core
+namespace XmlDocMarkdown.Core
 {
-	public enum XmlDocListKind
+	internal enum XmlDocListKind
 	{
 		Bullet,
 		Number,

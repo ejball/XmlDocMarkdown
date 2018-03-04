@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace XmlDocMarkdown.Core
 {
-	public static class XmlDocUtility
+	internal static class XmlDocUtility
 	{
 		public static string GetXmlDocRef(MemberInfo memberInfo)
 		{
