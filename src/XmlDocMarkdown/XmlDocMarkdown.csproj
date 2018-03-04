@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net461</TargetFrameworks>
     <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net461' and '$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.6.1-api/</FrameworkPathOverride>

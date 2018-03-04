@@ -9,6 +9,10 @@ Prefix the description of the change with `[major]`, `[minor]` or `[patch]` in a
 
 ## Released
 
+### 1.0.2
+
+* Publish Cake addin in `XmlDocMarkdown.Core`.
+
 ### 1.0.1
 
 * Escapes code within backticks properly.

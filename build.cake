@@ -10,7 +10,8 @@ var trigger = Argument("trigger", "");
 
 var solutionFileName = "XmlDocMarkdown.sln";
 var nugetSource = "https://api.nuget.org/v3/index.json";
-var nugetToolsPackageProjects = new[] { File("src/XmlDocMarkdown/XmlDocMarkdown.csproj").ToString() };
+var nugetLibraryProjects = new[] { File("src/XmlDocMarkdown.Core/XmlDocMarkdown.Core.csproj").ToString() };
+var nugetToolsProjects = new[] { File("src/XmlDocMarkdown/XmlDocMarkdown.csproj").ToString() };
 var docsAssembly = File($"tests/ExampleAssembly/bin/{configuration}/netstandard1.1/ExampleAssembly.dll").ToString();
 var docsSourceUri = "../tests/ExampleAssembly";
 
@@ -56,10 +57,13 @@ Task("NuGetPackage")
 	.IsDependentOn("Test")
 	.Does(() =>
 	{
-		foreach (string nugetToolsPackageProject in nugetToolsPackageProjects)
+		foreach (var nugetLibraryProject in nugetLibraryProjects)
+			DotNetCorePack(nugetLibraryProject, new DotNetCorePackSettings { Configuration = configuration, OutputDirectory = "release" });
+
+		foreach (string nugetPackageProject in nugetToolsProjects)
 		{
-			ExecuteProcess(Context.Tools.Resolve("NuGetToolsPackager.exe").ToString(), $@"{nugetToolsPackageProject} --platform net461");
-			NuGetPack(System.IO.Path.ChangeExtension(nugetToolsPackageProject, ".nuspec"), new NuGetPackSettings { OutputDirectory = "release" });
+			ExecuteProcess(Context.Tools.Resolve("NuGetToolsPackager.exe").ToString(), $@"{nugetPackageProject} --platform net461");
+			NuGetPack(System.IO.Path.ChangeExtension(nugetPackageProject, ".nuspec"), new NuGetPackSettings { OutputDirectory = "release" });
 		}
 	});
 
@@ -90,7 +94,7 @@ Task("NuGetPublish")
 		}
 		else
 		{
-			Information("To publish this package, push this git tag: v" + version);
+			Information("To publish NuGet packages, push this git tag: v" + version);
 		}
 	});
 
