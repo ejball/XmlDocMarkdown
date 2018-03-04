@@ -13,8 +13,6 @@ var solutionFileName = "XmlDocMarkdown.sln";
 var nugetSource = "https://api.nuget.org/v3/index.json";
 var nugetLibraryProjects = new[] { File("src/XmlDocMarkdown.Core/XmlDocMarkdown.Core.csproj").ToString() };
 var nugetToolsProjects = new[] { File("src/XmlDocMarkdown/XmlDocMarkdown.csproj").ToString() };
-var docsAssembly = File($"tests/ExampleAssembly/bin/{configuration}/netstandard1.1/ExampleAssembly.dll").ToString();
-var docsSourceUri = "../tests/ExampleAssembly";
 
 Task("Clean")
 	.Does(() =>
@@ -108,6 +106,12 @@ Task("Default")
 	.IsDependentOn("Build");
 
 void GenerateDocs(bool verify)
+{
+	GenerateDocs(File($"src/XmlDocMarkdown.Core/bin/{configuration}/net461/XmlDocMarkdown.Core.dll").ToString(), "../src/XmlDocMarkdown.Core");
+	GenerateDocs(File($"tests/ExampleAssembly/bin/{configuration}/netstandard1.1/ExampleAssembly.dll").ToString(), "../tests/ExampleAssembly");
+}
+
+void GenerateDocs(bool verify, string docsAssembly, string docsSourceUri)
 {
 	string exePath = File($"src/XmlDocMarkdown/bin/{configuration}/net461/XmlDocMarkdown.exe").ToString();
 	string arguments = $@"{docsAssembly} docs --source ""{docsSourceUri}"" --newline lf --clean" + (verify ? " --verify" : "");
