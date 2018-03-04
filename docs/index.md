@@ -1,10 +1,20 @@
 # XmlDocMarkdown
 
-**XmlDocMarkdown** is a command-line tool that generates Markdown from [.NET XML documentation comments](https://msdn.microsoft.com/en-us/library/b2s063f7.aspx).
+**XmlDocMarkdown** is a console app, Cake addin, and class library that generates Markdown from [.NET XML documentation comments](https://msdn.microsoft.com/en-us/library/b2s063f7.aspx).
 
 See the [example documentation](ExampleAssembly.md) for the [ExampleAssembly](https://github.com/ejball/XmlDocMarkdown/tree/master/tests/ExampleAssembly).
 
-## Installation
+## Cake Addin: XmlDocMarkdown.Core
+
+To use the addin, include it at the top of your Cake script:
+
+```
+#addin "XmlDocMarkdown.Core"
+```
+
+Then call `XmlDocMarkdownGenerate()` with the desired input path, output path, and `XmlDocMarkdownSettings`.
+
+## Console App: XmlDocMarkdown
 
 Use [NuGet](https://www.nuget.org/) to install **XmlDocMarkdown** from its [NuGet package](https://www.nuget.org/packages/XmlDocMarkdown).
 
@@ -12,7 +22,7 @@ For example, `nuget install XmlDocMarkdown -excludeversion` will download the la
 
 On Mac or Linux, use [Mono](http://www.mono-project.com/) to run `NuGet.exe` as well as the command-line tool itself.
 
-## Usage
+### Usage
 
 The `XmlDocMarkdown` command-line tool accepts the path to the input assembly, the path to the output directory, and a number of options.
 
@@ -33,3 +43,7 @@ For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentatio
 * `--dryrun`: Executes the tool without making changes to the file system.
 * `--quiet`: Suppresses normal console output.
 * `--newlines (auto|lf|crlf)`: Indicates the newline used in the output. Defaults to `auto`, which uses CRLF or LF, depending on the platform.
+
+## Class Library: XmlDocMarkdown.Core
+
+`XmlDocMarkdown.Core` can also be used as a class library. Call `XmlDocGenerator.Generate` with the desired input path, output path, and `XmlDocMarkdownSettings`.
