@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>1.0.2</Version>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net461' and '$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.6.1-api/</FrameworkPathOverride>
     <LangVersion>latest</LangVersion>
@@ -10,17 +9,11 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
     <DebugType>portable</DebugType>
     <DebugSymbols>True</DebugSymbols>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/ejball/XmlDocMarkdown/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>http://ejball.com/XmlDocMarkdown/</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/ejball/XmlDocMarkdown/blob/master/VersionHistory.md#released</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/ejball/XmlDocMarkdown.git</RepositoryUrl>
-    <Authors>Ed Ball</Authors>
-    <Copyright>Copyright 2018 Ed Ball</Copyright>
     <Description>A Cake addin and class library that generates Markdown from .NET XML documentation comments.</Description>
     <PackageTags>.NET XML documentation comments Markdown Cake</PackageTags>
-    <SourceLinkUrl>https://raw.githubusercontent.com/ejball/XmlDocMarkdown/{commit}/*</SourceLinkUrl>
-    <SourceLinkOriginUrl>https://github.com/ejball/XmlDocMarkdown.git</SourceLinkOriginUrl>
   </PropertyGroup>
+
+  <Import Project="..\..\SolutionInfo.props" />
 
   <ItemGroup>
     <PackageReference Include="Cake.Core" Version="0.26.1" />

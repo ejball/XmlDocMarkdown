@@ -1,4 +1,4 @@
-#tool "nuget:?package=NuGetToolsPackager&version=1.0.1"
+#tool "nuget:?package=NuGetToolsPackager&version=1.1.0"
 #tool "nuget:?package=xunit.runner.console&version=2.2.0"
 
 using System.Text.RegularExpressions;
@@ -7,6 +7,7 @@ var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 var nugetApiKey = Argument("nugetApiKey", "");
 var trigger = Argument("trigger", "");
+var versionSuffix = Argument("versionSuffix", "");
 
 var solutionFileName = "XmlDocMarkdown.sln";
 var nugetSource = "https://api.nuget.org/v3/index.json";
@@ -57,13 +58,18 @@ Task("NuGetPackage")
 	.IsDependentOn("Test")
 	.Does(() =>
 	{
-		foreach (var nugetLibraryProject in nugetLibraryProjects)
-			DotNetCorePack(nugetLibraryProject, new DotNetCorePackSettings { Configuration = configuration, OutputDirectory = "release" });
+		if (string.IsNullOrEmpty(versionSuffix) && !string.IsNullOrEmpty(trigger))
+			versionSuffix = Regex.Match(trigger, @"^v[^\.]+\.[^\.]+\.[^\.]+-(.+)").Groups[1].ToString();
 
-		foreach (string nugetPackageProject in nugetToolsProjects)
+		foreach (var nugetLibraryProject in nugetLibraryProjects)
+			DotNetCorePack(nugetLibraryProject, new DotNetCorePackSettings { Configuration = configuration, OutputDirectory = "release", VersionSuffix = versionSuffix });
+
+		foreach (string nugetToolsProject in nugetToolsProjects)
 		{
-			ExecuteProcess(Context.Tools.Resolve("NuGetToolsPackager.exe").ToString(), $@"{nugetPackageProject} --platform net461");
-			NuGetPack(System.IO.Path.ChangeExtension(nugetPackageProject, ".nuspec"), new NuGetPackSettings { OutputDirectory = "release" });
+			ExecuteProcess(Context.Tools.Resolve("NuGetToolsPackager.exe").ToString(), $@"{nugetToolsProject} --platform net461" +
+				(string.IsNullOrEmpty(versionSuffix) ? "" : $@" --versionSuffix ""{versionSuffix}"""));
+
+			NuGetPack(System.IO.Path.ChangeExtension(nugetToolsProject, ".nuspec"), new NuGetPackSettings { OutputDirectory = "release" });
 		}
 	});
 

@@ -1,0 +1,15 @@
+<Project>
+
+  <PropertyGroup>
+    <VersionPrefix>1.0.2</VersionPrefix>
+    <Copyright>Copyright 2018 Ed Ball</Copyright>
+    <Authors>Ed Ball</Authors>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/ejball/XmlDocMarkdown/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>http://ejball.com/XmlDocMarkdown/</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/ejball/XmlDocMarkdown/blob/master/VersionHistory.md#released</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/ejball/XmlDocMarkdown.git</RepositoryUrl>
+    <SourceLinkUrl>https://raw.githubusercontent.com/ejball/XmlDocMarkdown/{commit}/*</SourceLinkUrl>
+    <SourceLinkOriginUrl>https://github.com/ejball/XmlDocMarkdown.git</SourceLinkOriginUrl>
+  </PropertyGroup>
+
+</Project>
