@@ -1,18 +1,8 @@
 # XmlDocMarkdown
 
-**XmlDocMarkdown** is a Cake addin, console app, and class library that generates Markdown from [.NET XML documentation comments](https://msdn.microsoft.com/en-us/library/b2s063f7.aspx).
+**XmlDocMarkdown** is a console app, Cake addin, and class library that generates Markdown from [.NET XML documentation comments](https://msdn.microsoft.com/en-us/library/b2s063f7.aspx).
 
 See the [example documentation](ExampleAssembly.md) for the [ExampleAssembly](https://github.com/ejball/XmlDocMarkdown/tree/master/tests/ExampleAssembly).
-
-## Cake Addin: Cake.XmlDocMarkdown
-
-To use the addin, include it at the top of your Cake script:
-
-```
-#addin nuget:?package=Cake.XmlDocMarkdown
-```
-
-Then call [`XmlDocMarkdownGenerate()`](Cake.XmlDocMarkdown/XmlDocCakeAddin/XmlDocMarkdownGenerate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
 
 ## Console App: XmlDocMarkdown
 
@@ -43,6 +33,16 @@ For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentatio
 * `--dryrun`: Executes the tool without making changes to the file system.
 * `--quiet`: Suppresses normal console output.
 * `--newline (auto|lf|crlf)`: Indicates the newline used in the output. Defaults to `auto`, which uses CRLF or LF, depending on the platform.
+
+## Cake Addin: Cake.XmlDocMarkdown
+
+To use the addin, include it at the top of your Cake script:
+
+```
+#addin nuget:?package=Cake.XmlDocMarkdown
+```
+
+Then call [`XmlDocMarkdownGenerate()`](Cake.XmlDocMarkdown/XmlDocCakeAddin/XmlDocMarkdownGenerate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
 
 ## Class Library: XmlDocMarkdown.Core
 
