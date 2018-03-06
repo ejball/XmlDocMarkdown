@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 
 namespace XmlDocMarkdown.Core
@@ -12,15 +12,9 @@ namespace XmlDocMarkdown.Core
 
 		public TextWriter TextWriter { get; }
 
-		public void Write(string text)
-		{
-			TextWriter.Write(text);
-		}
+		public void Write(string text) => TextWriter.Write(text);
 
-		public void WriteLine()
-		{
-			TextWriter.WriteLine();
-		}
+		public void WriteLine() => TextWriter.WriteLine();
 
 		public void WriteLine(string text)
 		{

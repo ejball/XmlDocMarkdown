@@ -22,9 +22,6 @@ namespace XmlDocMarkdown.Core
 
 		public Collection<XmlDocMember> Members { get; } = new Collection<XmlDocMember>();
 
-		public XmlDocMember FindMember(string xmlDocName)
-		{
-			return Members.FirstOrDefault(x => x.XmlDocName == xmlDocName);
-		}
+		public XmlDocMember FindMember(string xmlDocName) => Members.FirstOrDefault(x => x.XmlDocName == xmlDocName);
 	}
 }
