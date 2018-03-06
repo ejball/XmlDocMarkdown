@@ -1,5 +1,5 @@
-#tool "nuget:?package=NuGetToolsPackager&version=1.1.0"
-#tool "nuget:?package=xunit.runner.console&version=2.2.0"
+#tool nuget:?package=NuGetToolsPackager&version=1.1.0
+#tool nuget:?package=xunit.runner.console&version=2.2.0
 
 using System.Text.RegularExpressions;
 
@@ -11,8 +11,8 @@ var versionSuffix = Argument("versionSuffix", "");
 
 var solutionFileName = "XmlDocMarkdown.sln";
 var nugetSource = "https://api.nuget.org/v3/index.json";
-var nugetLibraryProjects = new[] { File("src/XmlDocMarkdown.Core/XmlDocMarkdown.Core.csproj").ToString() };
-var nugetToolsProjects = new[] { File("src/XmlDocMarkdown/XmlDocMarkdown.csproj").ToString() };
+var nugetLibraryProjects = new[] { "XmlDocMarkdown.Core", "Cake.XmlDocMarkdown" };
+var nugetToolsProjects = new[] { "XmlDocMarkdown" };
 
 Task("Clean")
 	.Does(() =>
@@ -59,10 +59,10 @@ Task("NuGetPackage")
 		if (string.IsNullOrEmpty(versionSuffix) && !string.IsNullOrEmpty(trigger))
 			versionSuffix = Regex.Match(trigger, @"^v[^\.]+\.[^\.]+\.[^\.]+-(.+)").Groups[1].ToString();
 
-		foreach (var nugetLibraryProject in nugetLibraryProjects)
+		foreach (var nugetLibraryProject in nugetLibraryProjects.Select(x => File($"src/{x}/{x}.csproj").ToString()))
 			DotNetCorePack(nugetLibraryProject, new DotNetCorePackSettings { Configuration = configuration, OutputDirectory = "release", VersionSuffix = versionSuffix });
 
-		foreach (string nugetToolsProject in nugetToolsProjects)
+		foreach (string nugetToolsProject in nugetToolsProjects.Select(x => File($"src/{x}/{x}.csproj").ToString()))
 		{
 			ExecuteProcess(Context.Tools.Resolve("NuGetToolsPackager.exe").ToString(), $@"{nugetToolsProject} --platform net461" +
 				(string.IsNullOrEmpty(versionSuffix) ? "" : $@" --versionSuffix ""{versionSuffix}"""));
@@ -108,6 +108,7 @@ Task("Default")
 void GenerateDocs(bool verify)
 {
 	GenerateDocs(verify, File($"src/XmlDocMarkdown.Core/bin/{configuration}/net461/XmlDocMarkdown.Core.dll").ToString(), "../src/XmlDocMarkdown.Core");
+	GenerateDocs(verify, File($"src/Cake.XmlDocMarkdown/bin/{configuration}/net461/Cake.XmlDocMarkdown.dll").ToString(), "../src/Cake.XmlDocMarkdown");
 	GenerateDocs(verify, File($"tests/ExampleAssembly/bin/{configuration}/netstandard1.1/ExampleAssembly.dll").ToString(), "../tests/ExampleAssembly");
 }
 

@@ -9,6 +9,10 @@ Prefix the description of the change with `[major]`, `[minor]` or `[patch]` in a
 
 ## Released
 
+### 1.2.0
+
+* Move Cake addin into `Cake.XmlDocMarkdown`.
+
 ### 1.1.0
 
 * Publish Cake addin and class library `XmlDocMarkdown.Core`.

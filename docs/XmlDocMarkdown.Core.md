@@ -4,7 +4,6 @@
 
 | public type | description |
 | --- | --- |
-| static class [XmlDocCakeAddin](XmlDocMarkdown.Core/XmlDocCakeAddin.md) | The Cake addin. |
 | static class [XmlDocMarkdownGenerator](XmlDocMarkdown.Core/XmlDocMarkdownGenerator.md) | Generates Markdown from .NET XML documentation comments. |
 | class [XmlDocMarkdownResult](XmlDocMarkdown.Core/XmlDocMarkdownResult.md) | The names of files that were added, changed, or removed. |
 | class [XmlDocMarkdownSettings](XmlDocMarkdown.Core/XmlDocMarkdownSettings.md) | Settings for markdown generation. |

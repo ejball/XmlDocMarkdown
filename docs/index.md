@@ -1,18 +1,18 @@
 # XmlDocMarkdown
 
-**XmlDocMarkdown** is a console app, Cake addin, and class library that generates Markdown from [.NET XML documentation comments](https://msdn.microsoft.com/en-us/library/b2s063f7.aspx).
+**XmlDocMarkdown** is a Cake addin, console app, and class library that generates Markdown from [.NET XML documentation comments](https://msdn.microsoft.com/en-us/library/b2s063f7.aspx).
 
 See the [example documentation](ExampleAssembly.md) for the [ExampleAssembly](https://github.com/ejball/XmlDocMarkdown/tree/master/tests/ExampleAssembly).
 
-## Cake Addin: XmlDocMarkdown.Core
+## Cake Addin: Cake.XmlDocMarkdown
 
 To use the addin, include it at the top of your Cake script:
 
 ```
-#addin "XmlDocMarkdown.Core"
+#addin nuget:?package=Cake.XmlDocMarkdown
 ```
 
-Then call [`XmlDocMarkdownGenerate()`](XmlDocMarkdown.Core/XmlDocCakeAddin/XmlDocMarkdownGenerate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
+Then call [`XmlDocMarkdownGenerate()`](Cake.XmlDocMarkdown/XmlDocCakeAddin/XmlDocMarkdownGenerate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
 
 ## Console App: XmlDocMarkdown
 
@@ -46,4 +46,4 @@ For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentatio
 
 ## Class Library: XmlDocMarkdown.Core
 
-[`XmlDocMarkdown.Core`](XmlDocMarkdown.Core) can also be used as a class library. Call [`XmlDocMarkdownGenerator.Generate`](XmlDocMarkdown.Core/XmlDocMarkdownGenerator/Generate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
+[`XmlDocMarkdown.Core`](XmlDocMarkdown.Core) is a class library. Call [`XmlDocMarkdownGenerator.Generate`](XmlDocMarkdown.Core/XmlDocMarkdownGenerator/Generate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).

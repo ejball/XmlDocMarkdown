@@ -1,14 +1,16 @@
 using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.IO;
+using XmlDocMarkdown.Core;
 using LogLevel = Cake.Core.Diagnostics.LogLevel;
 using Verbosity = Cake.Core.Diagnostics.Verbosity;
 
-namespace XmlDocMarkdown.Core
+namespace Cake.XmlDocMarkdown
 {
 	/// <summary>
 	/// The Cake addin.
 	/// </summary>
+	[CakeNamespaceImport("XmlDocMarkdown.Core")]
 	public static class XmlDocCakeAddin
 	{
 		/// <summary>
