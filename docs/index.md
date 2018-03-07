@@ -39,10 +39,12 @@ For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentatio
 To use the addin, include it at the top of your Cake script:
 
 ```
-#addin nuget:?package=Cake.XmlDocMarkdown
+#addin nuget:?package=Cake.XmlDocMarkdown&loaddependencies=true
 ```
 
-Then call [`XmlDocMarkdownGenerate()`](Cake.XmlDocMarkdown/XmlDocCakeAddin/XmlDocMarkdownGenerate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
+Use Cake 0.26.1 or newer. You can drop `&loaddependencies=true` if you run Cake with `--nuget_loaddependencies=true`.
+
+From your script, call [`XmlDocMarkdownGenerate`](Cake.XmlDocMarkdown/XmlDocCakeAddin/XmlDocMarkdownGenerate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
 
 ## Class Library: XmlDocMarkdown.Core
 
