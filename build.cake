@@ -1,4 +1,3 @@
-#tool nuget:?package=NuGetToolsPackager&version=1.1.0
 #tool nuget:?package=xunit.runner.console&version=2.2.0
 
 using System.Text.RegularExpressions;
@@ -11,8 +10,6 @@ var versionSuffix = Argument("versionSuffix", "");
 
 var solutionFileName = "XmlDocMarkdown.sln";
 var nugetSource = "https://api.nuget.org/v3/index.json";
-var nugetLibraryProjects = new[] { "XmlDocMarkdown.Core", "Cake.XmlDocMarkdown" };
-var nugetToolsProjects = new[] { "XmlDocMarkdown" };
 
 Task("Clean")
 	.Does(() =>
@@ -59,16 +56,8 @@ Task("NuGetPackage")
 		if (string.IsNullOrEmpty(versionSuffix) && !string.IsNullOrEmpty(trigger))
 			versionSuffix = Regex.Match(trigger, @"^v[^\.]+\.[^\.]+\.[^\.]+-(.+)").Groups[1].ToString();
 
-		foreach (var nugetLibraryProject in nugetLibraryProjects.Select(x => File($"src/{x}/{x}.csproj").ToString()))
-			DotNetCorePack(nugetLibraryProject, new DotNetCorePackSettings { Configuration = configuration, OutputDirectory = "release", VersionSuffix = versionSuffix });
-
-		foreach (string nugetToolsProject in nugetToolsProjects.Select(x => File($"src/{x}/{x}.csproj").ToString()))
-		{
-			ExecuteProcess(Context.Tools.Resolve("NuGetToolsPackager.exe").ToString(), $@"{nugetToolsProject} --platform net461" +
-				(string.IsNullOrEmpty(versionSuffix) ? "" : $@" --versionSuffix ""{versionSuffix}"""));
-
-			NuGetPack(System.IO.Path.ChangeExtension(nugetToolsProject, ".nuspec"), new NuGetPackSettings { OutputDirectory = "release" });
-		}
+		foreach (var projectPath in GetFiles("src/**/*.csproj").Select(x => x.FullPath))
+			DotNetCorePack(projectPath, new DotNetCorePackSettings { Configuration = configuration, OutputDirectory = "release", VersionSuffix = versionSuffix });
 	});
 
 Task("NuGetPublish")
@@ -114,7 +103,7 @@ void GenerateDocs(bool verify)
 
 void GenerateDocs(bool verify, string docsAssembly, string docsSourceUri)
 {
-	string exePath = File($"src/XmlDocMarkdown/bin/{configuration}/net461/XmlDocMarkdown.exe").ToString();
+	string exePath = File($"src/XmlDocMarkdown/bin/{configuration}/XmlDocMarkdown.exe").ToString();
 	string arguments = $@"{docsAssembly} docs --source ""{docsSourceUri}"" --newline lf --clean" + (verify ? " --verify" : "");
 	if (Context.Environment.Platform.IsUnix())
 	{
