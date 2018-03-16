@@ -96,15 +96,15 @@ Task("Default")
 
 void GenerateDocs(bool verify)
 {
-	GenerateDocs(verify, File($"src/XmlDocMarkdown.Core/bin/{configuration}/net461/XmlDocMarkdown.Core.dll").ToString(), "../src/XmlDocMarkdown.Core");
-	GenerateDocs(verify, File($"src/Cake.XmlDocMarkdown/bin/{configuration}/net461/Cake.XmlDocMarkdown.dll").ToString(), "../src/Cake.XmlDocMarkdown");
-	GenerateDocs(verify, File($"tests/ExampleAssembly/bin/{configuration}/netstandard1.1/ExampleAssembly.dll").ToString(), "../tests/ExampleAssembly");
+	GenerateDocs(verify, File($"src/XmlDocMarkdown.Core/bin/{configuration}/net461/XmlDocMarkdown.Core.dll").ToString(), File("src/XmlDocMarkdown.Core/XmlDocSettings.json").ToString());
+	GenerateDocs(verify, File($"src/Cake.XmlDocMarkdown/bin/{configuration}/net461/Cake.XmlDocMarkdown.dll").ToString(), File("src/Cake.XmlDocMarkdown/XmlDocSettings.json").ToString());
+	GenerateDocs(verify, File($"tests/ExampleAssembly/bin/{configuration}/netstandard1.1/ExampleAssembly.dll").ToString(), File("tests/ExampleAssembly/XmlDocSettings.json").ToString());
 }
 
-void GenerateDocs(bool verify, string docsAssembly, string docsSourceUri)
+void GenerateDocs(bool verify, string docsAssembly, string settingsPath)
 {
 	string exePath = File($"src/XmlDocMarkdown/bin/{configuration}/XmlDocMarkdown.exe").ToString();
-	string arguments = $@"{docsAssembly} docs --source ""{docsSourceUri}"" --newline lf --clean" + (verify ? " --verify" : "");
+	string arguments = $@"{docsAssembly} docs --settings ""{settingsPath}""" + (verify ? " --verify" : "");
 	if (Context.Environment.Platform.IsUnix())
 	{
 		arguments = exePath + " " + arguments;

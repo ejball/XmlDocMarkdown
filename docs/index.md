@@ -24,6 +24,7 @@ For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentatio
 
 ### Options
 
+* `--settings <file>`: Specifies the settings via JSON file; see [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings) for details. Additional command-line options override those settings.
 * `--source <url>`: The URL (absolute or relative) of the folder containing the source code of the assembly, e.g. at GitHub. Required to generate source code links in the See Also sections for types.
 * `--namespace <ns>`: The root namespace of the input assembly. Used to generate source code links in the See Also sections for types. If omitted, the tool guesses the root namespace from the exported types.
 * `--visibility (public|protected|internal|private)`: The minimum visibility for documented types and members. If `public`, only public types and members are documented. If `protected`, only public and protected types and members are documented. Similarly for `internal` and `private`. Defaults to `protected`.

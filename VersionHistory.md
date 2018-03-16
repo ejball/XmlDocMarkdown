@@ -7,6 +7,8 @@ is updated in preparation for publishing an updated NuGet package.
 
 Prefix the description of the change with `[major]`, `[minor]` or `[patch]` in accordance with [SemVer](http://semver.org).
 
+* [minor] Add `--settings` command-line option.
+
 ## Released
 
 ### 1.2.1

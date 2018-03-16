@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="ArgsReading" Version="1.1.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
     <PackageReference Include="System.ValueTuple" Version="4.3.0" />
   </ItemGroup>
 
