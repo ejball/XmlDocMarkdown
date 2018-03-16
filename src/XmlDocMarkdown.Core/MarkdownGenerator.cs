@@ -23,6 +23,8 @@ namespace XmlDocMarkdown.Core
 
 		public XmlDocVisibilityLevel Visibility { get; set; }
 
+		public IReadOnlyList<ExternalDocumentation> ExternalDocs { get; set; }
+
 		public IReadOnlyList<NamedText> GenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 			=> DoGenerateOutput(assembly, xmlDocAssembly).ToList();
 
@@ -169,7 +171,7 @@ namespace XmlDocMarkdown.Core
 			return summary;
 		}
 
-		private static string GetShortSummaryMarkdown(XmlDocAssembly xmlDocAssembly, MemberInfo member, MarkdownContext context)
+		private string GetShortSummaryMarkdown(XmlDocAssembly xmlDocAssembly, MemberInfo member, MarkdownContext context)
 			=> ToMarkdown(GetSummary(xmlDocAssembly, member)?.FirstOrDefault()?.Inlines, context) ?? "";
 
 		private static string GetAssemblyUriName(Assembly assembly) => $"{assembly.GetName().Name}";
@@ -421,12 +423,15 @@ namespace XmlDocMarkdown.Core
 						.Select(GetGenericDefinition)
 						.GroupBy(XmlDocUtility.GetXmlDocRef)
 						.Select(x => new { Member = x.First(), XmlDocName = x.Key })
-						.OrderBy(x => x.XmlDocName == declaringTypeXmlDocName)
-						.Where(x => memberContext.MembersByXmlDocName.ContainsKey(x.XmlDocName)))
+						.OrderBy(x => x.XmlDocName == declaringTypeXmlDocName))
 					{
-						var shortSignature = GetShortSignature(seeAlso.Member, forSeeAlso: true);
-						writer.WriteLine("* " + shortSignature.Prefix +
-							WrapMarkdownRefLink(shortSignature.Name, seeAlso.Member, memberContext) + shortSignature.Suffix);
+						if (memberContext.MembersByXmlDocName.ContainsKey(seeAlso.XmlDocName) ||
+							FindExternalDocumentation(seeAlso.Member) != null)
+						{
+							var shortSignature = GetShortSignature(seeAlso.Member, forSeeAlso: true);
+							writer.WriteLine("* " + shortSignature.Prefix +
+								WrapMarkdownRefLink(shortSignature.Name, seeAlso.Member, memberContext) + shortSignature.Suffix);
+						}
 					}
 
 					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}](../{(typeInfo != null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo).Assembly)}.md)");
@@ -454,6 +459,12 @@ namespace XmlDocMarkdown.Core
 				writer.WriteLine();
 				writer.WriteLine(GetCodeGenComment(context.AssemblyFileName));
 			});
+		}
+
+		private ExternalDocumentation FindExternalDocumentation(MemberInfo memberInfo)
+		{
+			string namespaceName = (memberInfo as TypeInfo ?? memberInfo.DeclaringType.GetTypeInfo()).Namespace;
+			return ExternalDocs?.FirstOrDefault(x => x.Namespace == namespaceName);
 		}
 
 		private MemberInfo GetGenericDefinition(MemberInfo memberInfo)
@@ -559,6 +570,8 @@ namespace XmlDocMarkdown.Core
 		}
 
 		private static string GetNamespaceName(TypeInfo typeInfo) => typeInfo.Namespace ?? "global";
+
+		private static string GetMemberNamespaceName(MemberInfo memberInfo) => GetNamespaceName(memberInfo as TypeInfo ?? memberInfo.DeclaringType.GetTypeInfo());
 
 		private static string GetShortName(MemberInfo memberInfo)
 		{
@@ -1785,7 +1798,7 @@ namespace XmlDocMarkdown.Core
 
 		private static bool IsKeyword(string value) => s_keywords.Contains(value);
 
-		private static string ToMarkdown(XmlDocInline inline, MarkdownContext context)
+		private string ToMarkdown(XmlDocInline inline, MarkdownContext context)
 		{
 			string text = inline.Text ?? "";
 
@@ -1818,10 +1831,12 @@ namespace XmlDocMarkdown.Core
 			return text;
 		}
 
-		private static string WrapMarkdownRefLink(string text, MemberInfo memberInfo, MarkdownContext context, bool isCode = false)
+		private string WrapMarkdownRefLink(string text, MemberInfo memberInfo, MarkdownContext context, bool isCode = false)
 		{
-			if (memberInfo != null &&
-				XmlDocUtility.GetXmlDocRef(memberInfo) != XmlDocUtility.GetXmlDocRef(context.MemberInfo))
+			string xmlDocRef = memberInfo == null ? null : XmlDocUtility.GetXmlDocRef(memberInfo);
+			bool isLocal = xmlDocRef != null && context.MembersByXmlDocName.ContainsKey(xmlDocRef);
+			var externalDoc = isLocal || xmlDocRef == null ? null : FindExternalDocumentation(memberInfo);
+			if (memberInfo != null && xmlDocRef != XmlDocUtility.GetXmlDocRef(context.MemberInfo) && (isLocal || externalDoc != null))
 			{
 				string path;
 
@@ -1876,7 +1891,7 @@ namespace XmlDocMarkdown.Core
 			return isCode ? text : EscapeHtml(text);
 		}
 
-		private static string ToMarkdown(IEnumerable<XmlDocInline> inlines, MarkdownContext context)
+		private string ToMarkdown(IEnumerable<XmlDocInline> inlines, MarkdownContext context)
 			=> inlines == null ? null : string.Concat(inlines.Select(x => ToMarkdown(x, context))).Trim();
 
 		private IEnumerable<string> ToMarkdown(IReadOnlyList<XmlDocBlock> blocks, MarkdownContext context)

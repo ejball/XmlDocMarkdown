@@ -1,5 +1,10 @@
 {
   "sourceCodePath": "../src/Cake.XmlDocMarkdown",
   "newLine": "\n",
-  "shouldClean": true
+  "shouldClean": true,
+  "externalDocs": [
+    {
+      "namespace": "XmlDocMarkdown.Core"
+    }
+  ]
 }

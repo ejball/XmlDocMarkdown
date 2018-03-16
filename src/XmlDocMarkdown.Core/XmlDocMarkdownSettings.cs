@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace XmlDocMarkdown.Core
 {
 	/// <summary>
@@ -50,5 +52,10 @@ namespace XmlDocMarkdown.Core
 		/// If true, executes without making changes to the file system.
 		/// </summary>
 		public bool IsDryRun { get; set; }
+
+		/// <summary>
+		/// Configures external documentation.
+		/// </summary>
+		public IReadOnlyList<ExternalDocumentation> ExternalDocs { get; set; }
 	}
 }

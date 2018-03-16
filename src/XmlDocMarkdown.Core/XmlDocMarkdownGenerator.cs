@@ -36,6 +36,7 @@ namespace XmlDocMarkdown.Core
 				RootNamespace = settings.RootNamespace,
 				IncludeObsolete = settings.IncludeObsolete,
 				Visibility = settings.VisibilityLevel ?? XmlDocVisibilityLevel.Protected,
+				ExternalDocs = settings.ExternalDocs,
 			};
 			if (settings.NewLine != null)
 				generator.NewLine = settings.NewLine;

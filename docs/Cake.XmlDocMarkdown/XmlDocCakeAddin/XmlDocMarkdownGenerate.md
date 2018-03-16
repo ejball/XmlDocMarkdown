@@ -20,6 +20,8 @@ The names of files that were added, changed, or removed.
 
 ## See Also
 
+* class [XmlDocMarkdownResult](../../XmlDocMarkdown.Core/XmlDocMarkdownResult.md)
+* class [XmlDocMarkdownSettings](../../XmlDocMarkdown.Core/XmlDocMarkdownSettings.md)
 * class [XmlDocCakeAddin](../XmlDocCakeAddin.md)
 * namespace [Cake.XmlDocMarkdown](../../Cake.XmlDocMarkdown.md)
 
@@ -47,6 +49,8 @@ The names of files that were added, changed, or removed.
 
 ## See Also
 
+* class [XmlDocMarkdownResult](../../XmlDocMarkdown.Core/XmlDocMarkdownResult.md)
+* class [XmlDocMarkdownSettings](../../XmlDocMarkdown.Core/XmlDocMarkdownSettings.md)
 * class [XmlDocCakeAddin](../XmlDocCakeAddin.md)
 * namespace [Cake.XmlDocMarkdown](../../Cake.XmlDocMarkdown.md)
 

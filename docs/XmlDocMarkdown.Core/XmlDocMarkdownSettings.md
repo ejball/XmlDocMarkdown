@@ -11,6 +11,7 @@ public class XmlDocMarkdownSettings
 | name | description |
 | --- | --- |
 | [XmlDocMarkdownSettings](XmlDocMarkdownSettings/XmlDocMarkdownSettings.md)() | The default constructor. |
+| [ExternalDocs](XmlDocMarkdownSettings/ExternalDocs.md) { get; set; } | Configures external documentation. |
 | [IncludeObsolete](XmlDocMarkdownSettings/IncludeObsolete.md) { get; set; } | If true, generates documentation for obsolete types and members. (Default false.) |
 | [IsDryRun](XmlDocMarkdownSettings/IsDryRun.md) { get; set; } | If true, executes without making changes to the file system. |
 | [IsQuiet](XmlDocMarkdownSettings/IsQuiet.md) { get; set; } | If true, suppresses normal console output. |

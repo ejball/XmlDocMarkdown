@@ -4,6 +4,7 @@
 
 | public type | description |
 | --- | --- |
+| class [ExternalDocumentation](XmlDocMarkdown.Core/ExternalDocumentation.md) | Configures external documentation. |
 | static class [XmlDocMarkdownGenerator](XmlDocMarkdown.Core/XmlDocMarkdownGenerator.md) | Generates Markdown from .NET XML documentation comments. |
 | class [XmlDocMarkdownResult](XmlDocMarkdown.Core/XmlDocMarkdownResult.md) | The names of files that were added, changed, or removed. |
 | class [XmlDocMarkdownSettings](XmlDocMarkdown.Core/XmlDocMarkdownSettings.md) | Settings for markdown generation. |
