@@ -9,6 +9,10 @@ Prefix the description of the change with `[major]`, `[minor]` or `[patch]` in a
 
 ## Released
 
+### 1.3.1
+
+* Use Cake contrib icon.
+
 ### 1.3.0
 
 * Add `--settings` command-line option.
