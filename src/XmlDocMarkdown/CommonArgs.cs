@@ -1,4 +1,4 @@
-﻿using ArgsReading;
+using ArgsReading;
 using XmlDocMarkdown.Core;
 
 namespace XmlDocMarkdown
@@ -25,18 +25,18 @@ namespace XmlDocMarkdown
 			string visibility = args.ReadOption("visibility");
 			switch (visibility)
 			{
-				case "public":
-					return XmlDocVisibilityLevel.Public;
-				case "protected":
-					return XmlDocVisibilityLevel.Protected;
-				case "internal":
-					return XmlDocVisibilityLevel.Internal;
-				case "private":
-					return XmlDocVisibilityLevel.Private;
-				case null:
-					return null;
-				default:
-					throw new ArgsReaderException($"Unknown visibility option: {visibility}");
+			case "public":
+				return XmlDocVisibilityLevel.Public;
+			case "protected":
+				return XmlDocVisibilityLevel.Protected;
+			case "internal":
+				return XmlDocVisibilityLevel.Internal;
+			case "private":
+				return XmlDocVisibilityLevel.Private;
+			case null:
+				return null;
+			default:
+				throw new ArgsReaderException($"Unknown visibility option: {visibility}");
 			}
 		}
 
@@ -78,14 +78,14 @@ namespace XmlDocMarkdown
 
 			switch (value)
 			{
-				case "auto":
-					return null;
-				case "lf":
-					return "\n";
-				case "crlf":
-					return "\r\n";
-				default:
-					throw new ArgsReaderException($"Invalid new line '{value}'. (Should be 'auto', 'lf', or 'crlf'.)");
+			case "auto":
+				return null;
+			case "lf":
+				return "\n";
+			case "crlf":
+				return "\r\n";
+			default:
+				throw new ArgsReaderException($"Invalid new line '{value}'. (Should be 'auto', 'lf', or 'crlf'.)");
 			}
 		}
 	}
