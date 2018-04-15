@@ -1,0 +1,31 @@
+<Project>
+
+  <PropertyGroup>
+    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net461' and '$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.6.1-api/</FrameworkPathOverride>
+    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net47' and '$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.7-api/</FrameworkPathOverride>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <RepositoryName>RepoName</RepositoryName>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/Faithlife/$(RepositoryName)/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Faithlife/$(RepositoryName)</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/Faithlife/$(RepositoryName)/blob/master/VersionHistory.md#released</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/Faithlife/$(RepositoryName).git</RepositoryUrl>
+    <Authors>Faithlife Corporation</Authors>
+    <Copyright>Copyright Faithlife Corporation</Copyright>
+    <SourceLinkUrl>https://raw.githubusercontent.com/Faithlife/$(RepositoryName)/{commit}/*</SourceLinkUrl>
+    <SourceLinkOriginUrl>https://github.com/Faithlife/$(RepositoryName).git</SourceLinkOriginUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SourceLink.Create.GitHub" Version="2.8.0" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Test" Version="2.8.0" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" Version="2.8.0" PrivateAssets="all" />
+    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.0" />
+    <DotNetCliToolReference Include="dotnet-sourcelink-git" Version="2.8.0" />
+  </ItemGroup>
+
+</Project>
