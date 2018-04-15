@@ -5,7 +5,6 @@
     <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net47' and '$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.7-api/</FrameworkPathOverride>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <DebugType>portable</DebugType>
     <DebugSymbols>True</DebugSymbols>
