@@ -16,6 +16,8 @@ Task("Clean")
 	{
 		CleanDirectories("src/**/bin");
 		CleanDirectories("src/**/obj");
+		CleanDirectories("tools/**/bin");
+		CleanDirectories("tools/**/obj");
 		CleanDirectories("tests/**/bin");
 		CleanDirectories("tests/**/obj");
 		CleanDirectories("release");
