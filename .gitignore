@@ -3,9 +3,9 @@ bin/
 build/
 cake/
 obj/
+packages/
 ipch/
 release/
-tools/
 *.nuspec
 
 # ignore user-specific options/cache files

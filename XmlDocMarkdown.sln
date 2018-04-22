@@ -7,7 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{68EEB72A-6
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
 		build.cake = build.cake
 		build.ps1 = build.ps1
@@ -23,11 +22,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocMarkdown.Core", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocMarkdown", "src\XmlDocMarkdown\XmlDocMarkdown.csproj", "{D1ED4B64-41E6-47DC-9CA6-86D0EE303323}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleAssembly", "tests\ExampleAssembly\ExampleAssembly.csproj", "{A2A20621-33DB-41CE-95E7-37480968F3B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleAssembly", "tools\ExampleAssembly\ExampleAssembly.csproj", "{A2A20621-33DB-41CE-95E7-37480968F3B3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocMarkdown.Tests", "tests\XmlDocMarkdown.Tests\XmlDocMarkdown.Tests.csproj", "{62914CA9-ECF5-455A-9E59-0F7128CAE7BF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cake.XmlDocMarkdown", "src\Cake.XmlDocMarkdown\Cake.XmlDocMarkdown.csproj", "{0AF70790-11F5-4445-B79C-97EA61A828C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlDocTarget", "tools\XmlDocTarget\XmlDocTarget.csproj", "{06EF6BB8-3590-40D8-A3A9-03C62D8C98AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +56,10 @@ Global
 		{0AF70790-11F5-4445-B79C-97EA61A828C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AF70790-11F5-4445-B79C-97EA61A828C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AF70790-11F5-4445-B79C-97EA61A828C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06EF6BB8-3590-40D8-A3A9-03C62D8C98AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06EF6BB8-3590-40D8-A3A9-03C62D8C98AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06EF6BB8-3590-40D8-A3A9-03C62D8C98AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06EF6BB8-3590-40D8-A3A9-03C62D8C98AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

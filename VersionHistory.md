@@ -9,6 +9,10 @@ Prefix the description of the change with `[major]`, `[minor]` or `[patch]` in a
 
 ## Released
 
+### 1.4.0
+
+* Target .NET Standard 2.0 and/or .NET Framework 4.7.
+
 ### 1.3.1
 
 * Use Cake contrib icon.

@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
-    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net461' and '$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.6.1-api/</FrameworkPathOverride>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
@@ -12,8 +11,6 @@
     <Description>A class library that generates Markdown from .NET XML documentation comments.</Description>
     <PackageTags>.NET XML documentation comments Markdown Cake</PackageTags>
   </PropertyGroup>
-
-  <Import Project="..\..\SolutionInfo.props" />
 
   <ItemGroup>
     <PackageReference Include="SourceLink.Create.GitHub" Version="2.8.0" PrivateAssets="all" />
