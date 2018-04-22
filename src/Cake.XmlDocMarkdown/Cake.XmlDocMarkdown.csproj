@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cake.Core" Version="0.26.1" />
+    <PackageReference Include="Cake.Core" Version="0.27.1" />
   </ItemGroup>
 
   <ItemGroup>
