@@ -28,7 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocMarkdown.Tests", "tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cake.XmlDocMarkdown", "src\Cake.XmlDocMarkdown\Cake.XmlDocMarkdown.csproj", "{0AF70790-11F5-4445-B79C-97EA61A828C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlDocTarget", "tools\XmlDocTarget\XmlDocTarget.csproj", "{06EF6BB8-3590-40D8-A3A9-03C62D8C98AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlDocTarget", "tools\XmlDocTarget\XmlDocTarget.csproj", "{9076EBBA-E2EF-468C-9139-4B67E4FC69FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,10 +56,10 @@ Global
 		{0AF70790-11F5-4445-B79C-97EA61A828C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AF70790-11F5-4445-B79C-97EA61A828C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AF70790-11F5-4445-B79C-97EA61A828C3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06EF6BB8-3590-40D8-A3A9-03C62D8C98AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06EF6BB8-3590-40D8-A3A9-03C62D8C98AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06EF6BB8-3590-40D8-A3A9-03C62D8C98AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06EF6BB8-3590-40D8-A3A9-03C62D8C98AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9076EBBA-E2EF-468C-9139-4B67E4FC69FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9076EBBA-E2EF-468C-9139-4B67E4FC69FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9076EBBA-E2EF-468C-9139-4B67E4FC69FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9076EBBA-E2EF-468C-9139-4B67E4FC69FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

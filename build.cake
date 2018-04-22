@@ -98,9 +98,9 @@ Task("Default")
 
 void GenerateDocs(bool verify)
 {
-	GenerateDocs(verify, File($"tools/XmlDocTarget/bin/{configuration}/XmlDocMarkdown.Core.dll").ToString(), File("src/XmlDocMarkdown.Core/XmlDocSettings.json").ToString());
-	GenerateDocs(verify, File($"tools/XmlDocTarget/bin/{configuration}/Cake.XmlDocMarkdown.dll").ToString(), File("src/Cake.XmlDocMarkdown/XmlDocSettings.json").ToString());
-	GenerateDocs(verify, File($"tools/XmlDocTarget/bin/{configuration}/ExampleAssembly.dll").ToString(), File("tools/ExampleAssembly/XmlDocSettings.json").ToString());
+	GenerateDocs(verify, File($"tools/XmlDocTarget/bin/{configuration}/net47/XmlDocMarkdown.Core.dll").ToString(), File("src/XmlDocMarkdown.Core/XmlDocSettings.json").ToString());
+	GenerateDocs(verify, File($"tools/XmlDocTarget/bin/{configuration}/net47/Cake.XmlDocMarkdown.dll").ToString(), File("src/Cake.XmlDocMarkdown/XmlDocSettings.json").ToString());
+	GenerateDocs(verify, File($"tools/XmlDocTarget/bin/{configuration}/net47/ExampleAssembly.dll").ToString(), File("tools/ExampleAssembly/XmlDocSettings.json").ToString());
 }
 
 void GenerateDocs(bool verify, string docsAssembly, string settingsPath)
