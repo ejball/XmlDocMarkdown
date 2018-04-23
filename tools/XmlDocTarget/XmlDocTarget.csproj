@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
+    <FrameworkPathOverride Condition="'$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.7-api/</FrameworkPathOverride>
   </PropertyGroup>
 
   <ItemGroup>
