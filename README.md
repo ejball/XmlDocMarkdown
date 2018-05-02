@@ -18,7 +18,7 @@ A class library that generates Markdown from .NET XML documentation comments. [!
 
 ## Documentation
 
-* http://ejball.com/XmlDocMarkdown/
+* https://ejball.com/XmlDocMarkdown/
 * License: [MIT](LICENSE)
 * [Version History](VersionHistory.md)
 * [Contributing Guidelines](CONTRIBUTING.md)
