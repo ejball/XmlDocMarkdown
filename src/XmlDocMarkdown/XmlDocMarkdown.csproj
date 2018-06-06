@@ -16,12 +16,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ArgsReading" Version="1.1.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="ArgsReading" Version="1.1.4" PrivateAssets="All" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj" />
+    <ProjectReference Include="..\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,14 +30,5 @@
       <Pack>true</Pack>
     </None>
   </ItemGroup>
-
-  <ItemDefinitionGroup>
-    <PackageReference>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <ProjectReference>
-      <PrivateAssets>all</PrivateAssets>
-    </ProjectReference>
-  </ItemDefinitionGroup>
 
 </Project>
