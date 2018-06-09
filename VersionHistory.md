@@ -9,6 +9,10 @@ Prefix the description of the change with `[major]`, `[minor]` or `[patch]` in a
 
 ## Released
 
+### 1.4.1
+
+* Fixes for Cake addin audit (issue #9).
+
 ### 1.4.0
 
 * Target .NET Standard 2.0 and/or .NET Framework 4.7.
