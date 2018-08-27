@@ -6,7 +6,6 @@
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <SourceLinkCreate>true</SourceLinkCreate>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <DebugType>portable</DebugType>
     <DebugSymbols>True</DebugSymbols>
@@ -17,17 +16,14 @@
     <RepositoryUrl>https://github.com/Faithlife/$(RepositoryName).git</RepositoryUrl>
     <Authors>Faithlife Corporation</Authors>
     <Copyright>Copyright Faithlife Corporation</Copyright>
-    <SourceLinkUrl>https://raw.githubusercontent.com/Faithlife/$(RepositoryName)/{commit}/*</SourceLinkUrl>
-    <SourceLinkOriginUrl>https://github.com/Faithlife/$(RepositoryName).git</SourceLinkOriginUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" PrivateAssets="all" />
-    <PackageReference Include="SourceLink.Create.GitHub" Version="2.8.1" PrivateAssets="all" />
-    <PackageReference Include="SourceLink.Test" Version="2.8.1" PrivateAssets="all" />
-    <PackageReference Include="SourceLink.Copy.PdbFiles" Version="2.8.1" PrivateAssets="all" />
-    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.1" />
-    <DotNetCliToolReference Include="dotnet-sourcelink-git" Version="2.8.1" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.3" />
   </ItemGroup>
 
 </Project>
