@@ -2,7 +2,7 @@ version: '{build}'
 image: Visual Studio 2017
 environment:
   NUGETAPIKEY:
-    secure: kU8Nrdjnh6k58FzkmCIcyY0InF2YOSoef9u7ot1Uo3jABM6/Xd3VXaCU7/Rfnktn
+    secure: Ev6JfzK7FYZzsR4ALWtJs95U98Pa9FxgMxECDA0LGNidWwULyKoQIKYQwMVZ1s0U
   BUILD_BOT_PASSWORD:
     secure: wJ9JVS5hSAp9ItYlHKxTPg==
 build_script:
