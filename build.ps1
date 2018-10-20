@@ -19,13 +19,11 @@ New-Item -Path $CakeDirPath -Type Directory -ErrorAction SilentlyContinue | Out-
 
 # create packages.config
 $PackagesConfigPath = Join-Path $CakeDirPath "packages.config"
-If (!(Test-Path $PackagesConfigPath)) {
-    [System.IO.File]::WriteAllLines($PackagesConfigPath, @(
-        "<?xml version=`"1.0`" encoding=`"utf-8`"?>",
-        "<packages>",
-        "`t<package id=`"Cake`" version=`"0.30.0`" />",
-        "</packages>"))
-}
+[System.IO.File]::WriteAllLines($PackagesConfigPath, @(
+    "<?xml version=`"1.0`" encoding=`"utf-8`"?>",
+    "<packages>",
+    "`t<package id=`"Cake`" version=`"0.30.0`" />",
+    "</packages>"))
 
 # download nuget.exe if not in path and not already downloaded
 $NuGetExe = Get-Command "nuget.exe" -ErrorAction SilentlyContinue
@@ -41,14 +39,14 @@ Else {
 
 # use NuGet to download Cake
 Push-Location $CakeDirPath
-Invoke-Expression "&`"$NuGetExePath`" install -ExcludeVersion -OutputDirectory ."
+Invoke-Expression "&`"$NuGetExePath`" install -OutputDirectory ."
 If ($LASTEXITCODE -ne 0) {
     Throw "An error occurred while restoring NuGet tools."
 }
 Pop-Location
 
 # run Cake with specified arguments
-$CakeExePath = Join-Path $CakeDirPath "Cake/Cake.exe"
+$CakeExePath = Join-Path $CakeDirPath "Cake.0.30.0/Cake.exe"
 $ExtraArgs = ""
 if ($Target) { $ExtraArgs += "--target=$Target" }
 Invoke-Expression "& `"$CakeExePath`" --paths_tools=cake --experimental $ExtraArgs $ScriptArgs"
