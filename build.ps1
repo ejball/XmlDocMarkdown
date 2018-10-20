@@ -13,6 +13,8 @@ Param(
     [string[]]$ScriptArgs
 )
 
+$CakeVersion = "0.30.0"
+
 # create cake directory
 $CakeDirPath = Join-Path $PSScriptRoot "cake"
 New-Item -Path $CakeDirPath -Type Directory -ErrorAction SilentlyContinue | Out-Null
@@ -22,7 +24,7 @@ $PackagesConfigPath = Join-Path $CakeDirPath "packages.config"
 [System.IO.File]::WriteAllLines($PackagesConfigPath, @(
     "<?xml version=`"1.0`" encoding=`"utf-8`"?>",
     "<packages>",
-    "`t<package id=`"Cake`" version=`"0.30.0`" />",
+    "`t<package id=`"Cake`" version=`"$CakeVersion`" />",
     "</packages>"))
 
 # download nuget.exe if not in path and not already downloaded
@@ -46,7 +48,7 @@ If ($LASTEXITCODE -ne 0) {
 Pop-Location
 
 # run Cake with specified arguments
-$CakeExePath = Join-Path $CakeDirPath "Cake.0.30.0/Cake.exe"
+$CakeExePath = Join-Path $CakeDirPath "Cake.$CakeVersion/Cake.exe"
 $ExtraArgs = ""
 if ($Target) { $ExtraArgs += "--target=$Target" }
 Invoke-Expression "& `"$CakeExePath`" --paths_tools=cake --experimental $ExtraArgs $ScriptArgs"
