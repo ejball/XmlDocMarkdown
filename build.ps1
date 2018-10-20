@@ -51,5 +51,5 @@ Pop-Location
 $CakeExePath = Join-Path $CakeDirPath "Cake.$CakeVersion/Cake.exe"
 $ExtraArgs = ""
 if ($Target) { $ExtraArgs += "--target=$Target" }
-Invoke-Expression "& `"$CakeExePath`" --paths_tools=cake --experimental $ExtraArgs $ScriptArgs"
+Invoke-Expression "& `"$CakeExePath`" --paths_tools=cake $ExtraArgs $ScriptArgs"
 Exit $LASTEXITCODE
