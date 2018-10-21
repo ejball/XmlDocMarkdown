@@ -141,16 +141,4 @@ Task("NuGetPublish")
 Task("Default")
 	.IsDependentOn("Test");
 
-void ExecuteProcess(string exePath, string arguments)
-{
-	if (IsRunningOnUnix())
-	{
-		arguments = exePath + " " + arguments;
-		exePath = "mono";
-	}
-	int exitCode = StartProcess(exePath, arguments);
-	if (exitCode != 0)
-		throw new InvalidOperationException($"{exePath} failed with exit code {exitCode}.");
-}
-
 RunTarget(target);
