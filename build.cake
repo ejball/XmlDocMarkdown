@@ -1,4 +1,4 @@
-#addin "Cake.Git"
+#addin nuget:?package=Cake.Git&version=0.19.0
 #addin nuget:?package=Cake.XmlDocMarkdown&version=1.4.1
 
 using System.Text.RegularExpressions;
@@ -17,6 +17,8 @@ var docsSourceUri = "https://github.com/Faithlife/RepoName/tree/master/src";
 var nugetSource = "https://api.nuget.org/v3/index.json";
 var buildBotUserName = "faithlifebuildbot";
 var buildBotPassword = EnvironmentVariable("BUILD_BOT_PASSWORD");
+var buildBotDisplayName = "Faithlife Build Bot";
+var buildBotEmail = "faithlifebuildbot@users.noreply.github.com";
 
 Task("Clean")
 	.Does(() =>
@@ -66,7 +68,7 @@ Task("UpdateDocs")
 		{
 			Information("Committing all documentation changes.");
 			GitAddAll(docsDirectory);
-			GitCommit(docsDirectory, "Faithlife Build Bot", "faithlifebuildbot@users.noreply.github.com", "Automatic documentation update.");
+			GitCommit(docsDirectory, buildBotDisplayName, buildBotEmail, "Automatic documentation update.");
 			Information("Pushing updated documentation to GitHub.");
 			GitPush(docsDirectory, buildBotUserName, buildBotPassword, branchName);
 		}
@@ -138,17 +140,5 @@ Task("NuGetPublish")
 
 Task("Default")
 	.IsDependentOn("Test");
-
-void ExecuteProcess(string exePath, string arguments)
-{
-	if (IsRunningOnUnix())
-	{
-		arguments = exePath + " " + arguments;
-		exePath = "mono";
-	}
-	int exitCode = StartProcess(exePath, arguments);
-	if (exitCode != 0)
-		throw new InvalidOperationException($"{exePath} failed with exit code {exitCode}.");
-}
 
 RunTarget(target);

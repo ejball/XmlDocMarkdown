@@ -60,4 +60,4 @@ fi
 export MONO_ROOT=$(dirname $(which mono))/../
 
 # Start Cake
-exec mono "$CAKE_EXE" build.cake --paths_tools=cake --experimental ${SCRIPT_ARGUMENTS[@]}
+exec mono "$CAKE_EXE" build.cake --paths_tools=cake ${SCRIPT_ARGUMENTS[@]}
