@@ -8,3 +8,5 @@ environment:
 build_script:
 - ps: .\build.ps1 --target=NuGetPublish """--trigger=$env:APPVEYOR_REPO_TAG_NAME""" "--nugetApiKey=$env:NUGETAPIKEY"
 test: off
+artifacts:
+- path: 'release\*.nupkg'

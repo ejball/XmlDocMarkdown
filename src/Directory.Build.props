@@ -1,0 +1,29 @@
+<Project>
+
+  <PropertyGroup>
+    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net461' and '$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.6.1-api/</FrameworkPathOverride>
+    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net47' and '$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.7-api/</FrameworkPathOverride>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <RepositoryName>RepoName</RepositoryName>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/ejball/$(RepositoryName)/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://ejball.com/$(RepositoryName)</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/ejball/$(RepositoryName)/blob/master/VersionHistory.md#released</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/ejball/$(RepositoryName).git</RepositoryUrl>
+    <Authors>Ed Ball</Authors>
+    <Copyright>Copyright Ed Ball</Copyright>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.3" />
+  </ItemGroup>
+
+</Project>
