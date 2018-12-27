@@ -10,7 +10,7 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>True</DebugSymbols>
     <RepositoryName>RepoName</RepositoryName>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/Faithlife/$(RepositoryName)/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Faithlife/$(RepositoryName)</PackageProjectUrl>
     <PackageReleaseNotes>https://github.com/Faithlife/$(RepositoryName)/blob/master/VersionHistory.md#released</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/Faithlife/$(RepositoryName).git</RepositoryUrl>
