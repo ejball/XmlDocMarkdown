@@ -13,6 +13,7 @@ var solutionFileName = "ProjectName.sln";
 var docsProjects = new[] { "ProjectName" };
 var docsRepoUri = "https://github.com/Faithlife/RepoName.git";
 var docsSourceUri = "https://github.com/Faithlife/RepoName/tree/master/src";
+var nugetIgnore = new string[0];
 
 var nugetSource = "https://api.nuget.org/v3/index.json";
 var buildBotUserName = "faithlifebuildbot";
@@ -94,7 +95,7 @@ Task("NuGetPackage")
 	{
 		if (string.IsNullOrEmpty(versionSuffix) && !string.IsNullOrEmpty(trigger))
 			versionSuffix = Regex.Match(trigger, @"^v[^\.]+\.[^\.]+\.[^\.]+-(.+)").Groups[1].ToString();
-		foreach (var projectPath in GetFiles("src/**/*.csproj").Select(x => x.FullPath))
+		foreach (var projectPath in GetFiles("src/**/*.csproj").Where(x => !nugetIgnore.Contains(x.GetFilenameWithoutExtension().ToString())).Select(x => x.FullPath))
 			DotNetCorePack(projectPath, new DotNetCorePackSettings { Configuration = configuration, NoBuild = true, NoRestore = true, OutputDirectory = "release", VersionSuffix = versionSuffix });
 	});
 
