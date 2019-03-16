@@ -61,7 +61,7 @@ Task("UpdateDocs")
 		Information($"Updating documentation at {docsDirectory}.");
 		foreach (var docsProject in docsProjects)
 		{
-			XmlDocMarkdownGenerate(File($"src/{docsProject}/bin/{configuration}/net461/{docsProject}.dll").ToString(), $"{docsDirectory}{System.IO.Path.DirectorySeparatorChar}",
+			XmlDocMarkdownGenerate(File($"src/{docsProject}/bin/{configuration}/netstandard2.0/{docsProject}.dll").ToString(), $"{docsDirectory}{System.IO.Path.DirectorySeparatorChar}",
 				new XmlDocMarkdownSettings { SourceCodePath = $"{docsSourceUri}/{docsProject}", NewLine = "\n", ShouldClean = true });
 		}
 
