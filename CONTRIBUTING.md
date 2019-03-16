@@ -15,4 +15,4 @@
 
 * Clone the repository: `git clone https://github.com/Faithlife/RepoName.git`
 * `cd RepoName`
-* `dotnet test tests/ProjectName.Tests`
+* `dotnet test`
