@@ -13,6 +13,6 @@
 
 ## How to Build
 
-* Clone the repository: `git clone https://github.com/Faithlife/RepoName.git`
+* `git clone https://github.com/Faithlife/RepoName.git`
 * `cd RepoName`
 * `dotnet test`
