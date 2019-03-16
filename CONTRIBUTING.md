@@ -1,4 +1,4 @@
-# Contributing to ProjectName
+# Contributing to RepoName
 
 ## Prerequisites
 

@@ -9,7 +9,7 @@ var nugetApiKey = Argument("nugetApiKey", "");
 var trigger = Argument("trigger", "");
 var versionSuffix = Argument("versionSuffix", "");
 
-var solutionFileName = "ProjectName.sln";
+var solutionFileName = "RepoName.sln";
 var docsProjects = new[] { "ProjectName" };
 var docsRepoUri = "https://github.com/Faithlife/RepoName.git";
 var docsSourceUri = "https://github.com/Faithlife/RepoName/tree/master/src";
