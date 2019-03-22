@@ -26,4 +26,9 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\xmldocmd\CommonArgs.cs" Link="CommonArgs.cs" />
+    <Compile Include="..\xmldocmd\XmlDocMarkdownApp.cs" Link="XmlDocMarkdownApp.cs" />
+  </ItemGroup>
+
 </Project>

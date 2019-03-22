@@ -8,6 +8,10 @@ Prefix the description of the change with `[major]`, `[minor]` or `[patch]` in a
 
 ## Released
 
+### 1.4.2
+
+* Add .NET Core Global Tool: `xmldocmd`
+
 ### 1.4.1
 
 * Fixes for Cake addin audit (issue #9).
