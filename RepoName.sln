@@ -15,10 +15,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		appveyor.yml = appveyor.yml
 		build.cake = build.cake
 		build.ps1 = build.ps1
+		build.sh = build.sh
 		CONTRIBUTING.md = CONTRIBUTING.md
 		LICENSE = LICENSE
 		README.md = README.md
 		VersionHistory.md = VersionHistory.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{54F18B7A-A267-4D4C-928F-16F46BC2A9FA}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A2FB7FB9-0779-4E9A-87A7-455C1DC2F0B8}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Directory.Build.props = tests\Directory.Build.props
 	EndProjectSection
 EndProject
 Global
@@ -38,6 +49,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A2FB7FB9-0779-4E9A-87A7-455C1DC2F0B8} = {028A6C6D-8F8F-4A91-A063-45FFCF892109}
+		{54F18B7A-A267-4D4C-928F-16F46BC2A9FA} = {028A6C6D-8F8F-4A91-A063-45FFCF892109}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6D621D28-8AB2-41C2-AA99-AE2225542E17}

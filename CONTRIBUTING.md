@@ -1,9 +1,9 @@
-# Contributing to ProjectName
+# Contributing to RepoName
 
 ## Prerequisites
 
-* Install [Visual Studio 2017](https://www.visualstudio.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/) with the [editorconfig extension](https://github.com/editorconfig/editorconfig-vscode).
-* Install [.NET Core 2.0](https://www.microsoft.com/net/core).
+* Install [Visual Studio 2017](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/) with the [editorconfig extension](https://github.com/editorconfig/editorconfig-vscode).
+* Install [.NET Core 2.x](https://dotnet.microsoft.com/download).
 
 ## Guidelines
 
@@ -13,6 +13,6 @@
 
 ## How to Build
 
-* Clone the repository: `git clone https://github.com/ejball/RepoName.git`
+* `git clone https://github.com/ejball/RepoName.git`
 * `cd RepoName`
-* `dotnet test tests/ProjectName.Tests`
+* `dotnet test`

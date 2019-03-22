@@ -9,16 +9,20 @@ var nugetApiKey = Argument("nugetApiKey", "");
 var trigger = Argument("trigger", "");
 var versionSuffix = Argument("versionSuffix", "");
 
-var solutionFileName = "ProjectName.sln";
+var solutionFileName = "RepoName.sln";
 var docsProjects = new[] { "ProjectName" };
 var docsRepoUri = "https://github.com/ejball/RepoName.git";
 var docsSourceUri = "https://github.com/ejball/RepoName/tree/master/src";
+var nugetIgnore = new string[0];
 
 var nugetSource = "https://api.nuget.org/v3/index.json";
 var buildBotUserName = "ejball";
 var buildBotPassword = EnvironmentVariable("BUILD_BOT_PASSWORD");
 var buildBotDisplayName = "ejball";
 var buildBotEmail = "ejball@gmail.com";
+
+var docsBranchName = "gh-pages";
+DirectoryPath docsDirectory = null;
 
 Task("Clean")
 	.Does(() =>
@@ -53,28 +57,14 @@ Task("UpdateDocs")
 	.IsDependentOn("Build")
 	.Does(() =>
 	{
-		var branchName = "gh-pages";
-		var docsDirectory = new DirectoryPath(branchName);
-		GitClone(docsRepoUri, docsDirectory, new GitCloneSettings { BranchName = branchName });
+		docsDirectory = new DirectoryPath(docsBranchName);
+		GitClone(docsRepoUri, docsDirectory, new GitCloneSettings { BranchName = docsBranchName });
 
 		Information($"Updating documentation at {docsDirectory}.");
 		foreach (var docsProject in docsProjects)
 		{
-			XmlDocMarkdownGenerate(File($"src/{docsProject}/bin/{configuration}/net461/{docsProject}.dll").ToString(), $"{docsDirectory}{System.IO.Path.DirectorySeparatorChar}",
+			XmlDocMarkdownGenerate(File($"src/{docsProject}/bin/{configuration}/netstandard2.0/{docsProject}.dll").ToString(), $"{docsDirectory}{System.IO.Path.DirectorySeparatorChar}",
 				new XmlDocMarkdownSettings { SourceCodePath = $"{docsSourceUri}/{docsProject}", NewLine = "\n", ShouldClean = true });
-		}
-
-		if (GitHasUncommitedChanges(docsDirectory))
-		{
-			Information("Committing all documentation changes.");
-			GitAddAll(docsDirectory);
-			GitCommit(docsDirectory, buildBotDisplayName, buildBotEmail, "Automatic documentation update.");
-			Information("Pushing updated documentation to GitHub.");
-			GitPush(docsDirectory, buildBotUserName, buildBotPassword, branchName);
-		}
-		else
-		{
-			Information("No documentation changes detected.");
 		}
 	});
 
@@ -94,7 +84,7 @@ Task("NuGetPackage")
 	{
 		if (string.IsNullOrEmpty(versionSuffix) && !string.IsNullOrEmpty(trigger))
 			versionSuffix = Regex.Match(trigger, @"^v[^\.]+\.[^\.]+\.[^\.]+-(.+)").Groups[1].ToString();
-		foreach (var projectPath in GetFiles("src/**/*.csproj").Select(x => x.FullPath))
+		foreach (var projectPath in GetFiles("src/**/*.csproj").Where(x => !nugetIgnore.Contains(x.GetFilenameWithoutExtension().ToString())).Select(x => x.FullPath))
 			DotNetCorePack(projectPath, new DotNetCorePackSettings { Configuration = configuration, NoBuild = true, NoRestore = true, OutputDirectory = "release", VersionSuffix = versionSuffix });
 	});
 
@@ -131,6 +121,14 @@ Task("NuGetPublish")
 			var pushSettings = new NuGetPushSettings { ApiKey = nugetApiKey, Source = nugetSource };
 			foreach (var nupkgPath in nupkgPaths)
 				NuGetPush(nupkgPath, pushSettings);
+				
+			if (docsDirectory != null && GitHasUncommitedChanges(docsDirectory))
+			{
+				Information("Pushing updated documentation to GitHub.");
+				GitAddAll(docsDirectory);
+				GitCommit(docsDirectory, buildBotDisplayName, buildBotEmail, $"Automatic documentation update for {version}.");
+				GitPush(docsDirectory, buildBotUserName, buildBotPassword, docsBranchName);
+			}
 		}
 		else
 		{
