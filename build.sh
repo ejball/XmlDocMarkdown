@@ -10,7 +10,7 @@ SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 TOOLS_DIR=$SCRIPT_DIR/cake
 NUGET_EXE=$TOOLS_DIR/nuget.exe
 NUGET_URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-CAKE_VERSION=0.28.0
+CAKE_VERSION=0.30.0
 CAKE_EXE=$TOOLS_DIR/Cake.$CAKE_VERSION/Cake.exe
 
 # Define default arguments.
@@ -60,4 +60,4 @@ fi
 export MONO_ROOT=$(dirname $(which mono))/../
 
 # Start Cake
-exec mono "$CAKE_EXE" build.cake --paths_tools=cake --experimental ${SCRIPT_ARGUMENTS[@]}
+exec mono "$CAKE_EXE" build.cake --paths_tools=cake ${SCRIPT_ARGUMENTS[@]}

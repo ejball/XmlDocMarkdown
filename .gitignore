@@ -1,12 +1,8 @@
 # ignore output folders
 bin/
-build/
 cake/
 obj/
-packages/
-ipch/
 release/
-*.nuspec
 
 # ignore user-specific options/cache files
 .vs/
@@ -20,4 +16,5 @@ Thumbs.db
 *.ncrunchproject
 *.ncrunchsolution
 nCrunchTemp*
+_ReSharper*
 launchSettings.json

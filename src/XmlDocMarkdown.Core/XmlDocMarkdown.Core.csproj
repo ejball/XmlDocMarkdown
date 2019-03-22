@@ -2,22 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <NoWarn>$(NoWarn);1591</NoWarn>
-    <DebugType>portable</DebugType>
-    <DebugSymbols>True</DebugSymbols>
     <Description>A class library that generates Markdown from .NET XML documentation comments.</Description>
     <PackageTags>.NET XML documentation comments Markdown</PackageTags>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="SourceLink.Create.GitHub" Version="2.8.0" PrivateAssets="all" />
-    <PackageReference Include="SourceLink.Test" Version="2.8.0" PrivateAssets="all" />
-    <PackageReference Include="SourceLink.Copy.PdbFiles" Version="2.8.0" PrivateAssets="all" />
-    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.0" />
-    <DotNetCliToolReference Include="dotnet-sourcelink-git" Version="2.8.0" />
-  </ItemGroup>
 
 </Project>

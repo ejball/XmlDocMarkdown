@@ -3,13 +3,28 @@
   <PropertyGroup>
     <VersionPrefix>1.4.1</VersionPrefix>
     <Copyright>Copyright 2018 Ed Ball</Copyright>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <RepositoryName>XmlDocMarkdown</RepositoryName>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://ejball.com/$(RepositoryName)</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/ejball/$(RepositoryName)/blob/master/VersionHistory.md#released</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/ejball/$(RepositoryName).git</RepositoryUrl>
     <Authors>Ed Ball</Authors>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/ejball/XmlDocMarkdown/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>http://ejball.com/XmlDocMarkdown/</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/ejball/XmlDocMarkdown/blob/master/VersionHistory.md#released</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/ejball/XmlDocMarkdown.git</RepositoryUrl>
-    <SourceLinkUrl>https://raw.githubusercontent.com/ejball/XmlDocMarkdown/{commit}/*</SourceLinkUrl>
-    <SourceLinkOriginUrl>https://github.com/ejball/XmlDocMarkdown.git</SourceLinkOriginUrl>
+    <Copyright>Copyright Ed Ball</Copyright>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Faithlife.Analyzers" Version="1.0.5" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.3" />
+  </ItemGroup>
 
 </Project>
