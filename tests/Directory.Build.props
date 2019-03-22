@@ -5,4 +5,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Faithlife.Analyzers" Version="1.0.5" />
+  </ItemGroup>
+
 </Project>
