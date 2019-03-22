@@ -6,7 +6,7 @@ environment:
   BUILD_BOT_PASSWORD:
     secure: wJ9JVS5hSAp9ItYlHKxTPg==
 build_script:
-- ps: .\build.ps1 --target=NuGetPublish """--trigger=$env:APPVEYOR_REPO_TAG_NAME""" "--nugetApiKey=$env:NUGETAPIKEY"
+- cmd: .\build.cmd publish "--trigger=%APPVEYOR_REPO_TAG_NAME%" "--branch=%APPVEYOR_REPO_BRANCH%" "--nuget-api-key=%NUGETAPIKEY%"
 test: off
 artifacts:
 - path: 'release\*.nupkg'

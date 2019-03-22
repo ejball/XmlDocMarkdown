@@ -1,6 +1,5 @@
 # ignore output folders
 bin/
-cake/
 obj/
 release/
 
@@ -9,9 +8,6 @@ release/
 Thumbs.db
 *.cache
 *.user
-*.opensdf
-*.sdf
-*.suo
 *.userprefs
 *.ncrunchproject
 *.ncrunchsolution
