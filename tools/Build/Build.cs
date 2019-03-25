@@ -10,9 +10,9 @@ internal static class Build
 			{
 				DocsSettings = new DotNetDocsSettings
 				{
-					GitLogin = new GitLoginInfo("faithlifebuildbot", Environment.GetEnvironmentVariable("BUILD_BOT_PASSWORD") ?? ""),
-					GitAuthor = new GitAuthorInfo("Faithlife Build Bot", "faithlifebuildbot@users.noreply.github.com"),
-					SourceCodeUrl = "https://github.com/Faithlife/RepoName/tree/master/src",
+					GitLogin = new GitLoginInfo("ejball", Environment.GetEnvironmentVariable("BUILD_BOT_PASSWORD") ?? ""),
+					GitAuthor = new GitAuthorInfo("ejball", "ejball@gmail.com"),
+					SourceCodeUrl = "https://github.com/ejball/ArgsReading/tree/master/src",
 				},
 			});
 	});

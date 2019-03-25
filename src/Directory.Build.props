@@ -9,11 +9,11 @@
     <DebugSymbols>True</DebugSymbols>
     <RepositoryName>RepoName</RepositoryName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Faithlife/$(RepositoryName)</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/Faithlife/$(RepositoryName)/blob/master/VersionHistory.md#released</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/Faithlife/$(RepositoryName).git</RepositoryUrl>
-    <Authors>Faithlife Corporation</Authors>
-    <Copyright>Copyright Faithlife Corporation</Copyright>
+    <PackageProjectUrl>https://ejball.com/$(RepositoryName)</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/ejball/$(RepositoryName)/blob/master/VersionHistory.md#released</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/ejball/$(RepositoryName).git</RepositoryUrl>
+    <Authors>Ed Ball</Authors>
+    <Copyright>Copyright Ed Ball</Copyright>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
