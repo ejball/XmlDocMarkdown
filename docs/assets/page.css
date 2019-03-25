@@ -6,19 +6,6 @@ body {
   margin-bottom: 0;
 }
 
-.navbar-inverse,
-.navbar-inverse .navbar-nav > .active > a,
-.navbar-inverse .navbar-nav > .active > a:hover,
-.navbar-inverse .navbar-nav > .active > a:focus,
-.navbar-inverse .navbar-nav > .open > a,
-.navbar-inverse .navbar-nav > .open > a:hover,
-.navbar-inverse .navbar-nav > .open > a:focus,
-.navbar-inverse .navbar-nav .open .dropdown-menu > .active > a,
-.navbar-inverse .navbar-nav .open .dropdown-menu > .active > a:hover,
-.navbar-inverse .navbar-nav .open .dropdown-menu > .active > a:focus {
-  background-color: #429b1c;
-}
-
 .large {
   font-size: 125%;
 }
@@ -44,17 +31,6 @@ h1, .h1, h2, .h2, h3, .h3 {
 h4, .h4, h5, .h5, h6, .h6 {
   margin-top: 14px;
   margin-bottom: 7px;
-}
-
-a, a:focus, a:hover, .btn-link, .btn-link:hover, .btn-link:focus {
-  color: #429b1c;
-}
-
-.navbar-inverse .navbar-nav > li > a:hover,
-.navbar-inverse .navbar-nav > li > a:focus,
-.navbar-inverse .navbar-brand:hover,
-.navbar-inverse .navbar-brand:focus {
-  color: #c1f992;
 }
 
 a.anchorjs-link:active, a.anchorjs-link:hover {
