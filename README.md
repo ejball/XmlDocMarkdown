@@ -1,9 +1,8 @@
 # XmlDocMarkdown
 
-**XmlDocMarkdown** is a .NET Core Global Tool, console app, Cake addin, and class library that generates Markdown from .NET XML documentation comments.
-[![AppVeyor](https://img.shields.io/appveyor/ci/ejball/xmldocmarkdown.svg)](https://ci.appveyor.com/project/ejball/xmldocmarkdown)
-
 Documentation: https://ejball.com/XmlDocMarkdown/
+
+[![AppVeyor](https://img.shields.io/appveyor/ci/ejball/xmldocmarkdown.svg)](https://ci.appveyor.com/project/ejball/xmldocmarkdown)
 
 Project | Description | NuGet
 --- | --- | ---
