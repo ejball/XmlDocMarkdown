@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 using Faithlife.Build;
 using static Faithlife.Build.AppRunner;
 
@@ -36,9 +38,32 @@ internal static class Build
 		void generateDocs(bool verify)
 		{
 			var configuration = dotNetBuildSettings.BuildOptions.ConfigurationOption.Value;
-			RunApp($"src/XmlDocMarkdown/bin/{configuration}/XmlDocMarkdown.exe",
+			RunDotNetFrameworkApp($"src/XmlDocMarkdown/bin/{configuration}/XmlDocMarkdown.exe",
 				$"tools/XmlDocTarget/bin/{configuration}/net47/ExampleAssembly.dll", "docs",
 				"--settings", "tools/ExampleAssembly/XmlDocSettings.json", verify ? "--verify" : null);
 		}
 	});
+
+	private static void RunDotNetFrameworkApp(string path, params string[] args)
+	{
+		if (IsPlatform(OSPlatform.OSX) || IsPlatform(OSPlatform.Linux))
+		{
+			args = new[] { path }.Concat(args).ToArray();
+			path = "mono";
+		}
+
+		RunApp(path, args);
+	}
+
+	private static bool IsPlatform(OSPlatform platform)
+	{
+		try
+		{
+			return RuntimeInformation.IsOSPlatform(platform);
+		}
+		catch (PlatformNotSupportedException)
+		{
+			return false;
+		}
+	}
 }
