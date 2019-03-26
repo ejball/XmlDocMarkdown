@@ -8,39 +8,37 @@ internal static class Build
 {
 	public static int Main(string[] args) => BuildRunner.Execute(args, build =>
 	{
-		var dotNetBuildSettings = new DotNetBuildSettings
-		{
-			DocsSettings = new DotNetDocsSettings
-			{
-				GitLogin = new GitLoginInfo("ejball", Environment.GetEnvironmentVariable("BUILD_BOT_PASSWORD") ?? ""),
-				GitAuthor = new GitAuthorInfo("ejball", "ejball@gmail.com"),
-				SourceCodeUrl = "https://github.com/ejball/ArgsReading/tree/master/src",
-			},
-		};
-
+		var dotNetBuildSettings = new DotNetBuildSettings();
 		build.AddDotNetTargets(dotNetBuildSettings);
 
-		build.Target("generate-example")
-			.Describe("Generates documentation for ExampleAssembly")
+		build.Target("generate-docs")
+			.Describe("Generates documentation")
 			.DependsOn("build")
 			.Does(() => generateDocs(verify: false));
 
-		build.Target("verify-example")
-			.Describe("Generates documentation for ExampleAssembly")
+		build.Target("verify-docs")
+			.Describe("Verifies generated documentation")
 			.DependsOn("build")
 			.Does(() => generateDocs(verify: false));
 
 		build.Target("test")
-			.DependsOn("verify-example");
+			.DependsOn("verify-docs");
 
 		build.Target("default").DependsOn("build");
 
 		void generateDocs(bool verify)
 		{
 			var configuration = dotNetBuildSettings.BuildOptions.ConfigurationOption.Value;
-			RunDotNetFrameworkApp($"src/XmlDocMarkdown/bin/{configuration}/XmlDocMarkdown.exe",
-				$"tools/XmlDocTarget/bin/{configuration}/net47/ExampleAssembly.dll", "docs",
-				"--settings", "tools/ExampleAssembly/XmlDocSettings.json", verify ? "--verify" : null);
+			foreach ((string assemblyPath, string settingsPath) in new[]
+			{
+				($"tools/XmlDocTarget/bin/{configuration}/net47/XmlDocMarkdown.Core.dll", "src/XmlDocMarkdown.Core/XmlDocSettings.json"),
+				($"tools/XmlDocTarget/bin/{configuration}/net47/Cake.XmlDocMarkdown.dll", "src/Cake.XmlDocMarkdown/XmlDocSettings.json"),
+				($"tools/XmlDocTarget/bin/{configuration}/net47/ExampleAssembly.dll", "tools/ExampleAssembly/XmlDocSettings.json"),
+			})
+			{
+				RunDotNetFrameworkApp($"src/XmlDocMarkdown/bin/{configuration}/XmlDocMarkdown.exe",
+					assemblyPath, "docs", "--settings", settingsPath, verify ? "--verify" : null);
+			}
 		}
 	});
 
