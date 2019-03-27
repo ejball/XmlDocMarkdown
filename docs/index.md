@@ -1,11 +1,7 @@
 # ProjectName
 
-**ProjectName** description
+[![NuGet](https://img.shields.io/nuget/v/ProjectName.svg)](https://www.nuget.org/packages/ProjectName)
 
-## Installation
+## Usage
 
-Install **ProjectName** using NuGet. [![NuGet](https://img.shields.io/nuget/v/ProjectName.svg)](https://www.nuget.org/packages/ProjectName)
-
-## Documentation
-
-* [Reference Documentation](ProjectName.md)
+See the [reference documentation](ProjectName.md).
