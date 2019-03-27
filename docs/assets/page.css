@@ -27,6 +27,11 @@ body {
   height: 24px;
 }
 
+.faithlife-logo {
+  height: 28px;
+  margin: -2px;
+}
+
 .page-container {
   margin-top: 21px;
   margin-bottom: 21px;
