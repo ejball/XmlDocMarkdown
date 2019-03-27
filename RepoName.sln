@@ -37,6 +37,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{8412402D
 		tools\Directory.Build.props = tools\Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{478AD8C7-F5B6-45C5-B487-9E2D65BF9118}"
+	ProjectSection(SolutionItems) = preProject
+		docs\index.md = docs\index.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +68,7 @@ Global
 		{54F18B7A-A267-4D4C-928F-16F46BC2A9FA} = {028A6C6D-8F8F-4A91-A063-45FFCF892109}
 		{A2FB7FB9-0779-4E9A-87A7-455C1DC2F0B8} = {028A6C6D-8F8F-4A91-A063-45FFCF892109}
 		{8412402D-21B9-4DF8-BF74-3506AA41D5CD} = {028A6C6D-8F8F-4A91-A063-45FFCF892109}
+		{478AD8C7-F5B6-45C5-B487-9E2D65BF9118} = {028A6C6D-8F8F-4A91-A063-45FFCF892109}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6D621D28-8AB2-41C2-AA99-AE2225542E17}

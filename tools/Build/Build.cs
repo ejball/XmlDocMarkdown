@@ -15,5 +15,8 @@ internal static class Build
 					SourceCodeUrl = "https://github.com/ejball/ArgsReading/tree/master/src",
 				},
 			});
+
+		build.Target("default")
+			.DependsOn("build");
 	});
 }

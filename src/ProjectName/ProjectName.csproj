@@ -3,7 +3,7 @@
   <PropertyGroup>
     <VersionPrefix>0.1.0</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Description></Description>
+    <Description>ProjectName class library.</Description>
     <PackageTags></PackageTags>
   </PropertyGroup>
 
