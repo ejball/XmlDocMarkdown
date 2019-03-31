@@ -4,9 +4,9 @@ image:
 - Ubuntu
 environment:
   NUGETAPIKEY:
-    secure: Ev6JfzK7FYZzsR4ALWtJs95U98Pa9FxgMxECDA0LGNidWwULyKoQIKYQwMVZ1s0U
+    secure: eBKIUm4YxcrbL3oVC/ZCBUA/inEu+7OMbKpgftpOc18ievKNwH8UAUB2t4w+89Xv
   BUILD_BOT_PASSWORD:
-    secure: wJ9JVS5hSAp9ItYlHKxTPg==
+    secure: U2EQbBdxNIC2FL8YeOP3bVixlZ4xLBdN71Szraw+ATqAhYZwEd6JCjCJZLJPu9kN
 build_script:
 - cmd: .\build.cmd publish "--trigger=%APPVEYOR_REPO_TAG_NAME%" "--branch=%APPVEYOR_REPO_BRANCH%" "--nuget-api-key=%NUGETAPIKEY%"
 - sh: ./build.sh package
