@@ -224,7 +224,8 @@ namespace XmlDocMarkdown.Core
 
 					writer.WriteLine($"# {EscapeHtml(GetMemberHeading(memberGroup, memberIndex))}");
 
-					var xmlDocMember = memberContext.XmlDocAssembly.FindMember(XmlDocUtility.GetXmlDocRef(memberInfo));
+					var xmlDocRef = XmlDocUtility.GetXmlDocRef(memberInfo);
+					var xmlDocMember = memberContext.XmlDocAssembly.FindMember(xmlDocRef);
 
 					var summary = GetSummary(xmlDocMember, memberInfo);
 					if (summary != null && summary.Count != 0)
@@ -419,7 +420,7 @@ namespace XmlDocMarkdown.Core
 						seeAlsoMembers.Add(declaringType);
 
 					foreach (var seeAlso in seeAlsoMembers
-						.Where(x => XmlDocUtility.GetXmlDocRef(x) != XmlDocUtility.GetXmlDocRef(memberInfo))
+						.Where(x => XmlDocUtility.GetXmlDocRef(x) != xmlDocRef)
 						.Select(GetGenericDefinition)
 						.GroupBy(XmlDocUtility.GetXmlDocRef)
 						.Select(x => new { Member = x.First(), XmlDocName = x.Key })

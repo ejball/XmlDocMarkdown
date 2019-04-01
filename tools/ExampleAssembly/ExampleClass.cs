@@ -226,6 +226,42 @@ namespace ExampleAssembly
 		}
 
 		/// <summary>
+		/// A method that tries to get a value.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		public bool TryGetValue(out object value)
+		{
+			value = default;
+			return false;
+		}
+
+		/// <summary>
+		/// A method that tries to get a value.
+		/// </summary>
+		/// <param name="value">The value of type <typeparamref name="T"/>.</param>
+		public bool TryGetValue<T>(out T value)
+		{
+			value = default;
+			return false;
+		}
+
+		/// <summary>
+		/// A method that edits a value.
+		/// </summary>
+		/// <param name="value">The value to edit.</param>
+		public void EditValue(ref object value)
+		{
+		}
+
+		/// <summary>
+		/// A method that edits a value.
+		/// </summary>
+		/// <param name="value">The value to edit of type <typeparamref name="T"/>.</param>
+		public void EditValue<T>(ref T value)
+		{
+		}
+
+		/// <summary>
 		/// An obsolete method.
 		/// </summary>
 		[Obsolete("This method is old and busted.")]

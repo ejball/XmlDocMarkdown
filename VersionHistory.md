@@ -8,6 +8,10 @@ Prefix the description of the change with `[major]`, `[minor]`, or `[patch]` in 
 
 ## Released
 
+### 1.4.3
+
+* Fix missing documentation for `out` and `ref` parameters.
+
 ### 1.4.2
 
 * Add .NET Core Global Tool: `xmldocmd`

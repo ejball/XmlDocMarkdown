@@ -22,6 +22,8 @@ public class ExampleClass : IExampleContravariantInterface<ExampleClass>,
 | [IsBadIdea](ExampleClass/IsBadIdea.md) | A public field. |
 | event [WeightChanged](ExampleClass/WeightChanged.md) | An event. |
 | [DefaultParameters&lt;T&gt;](ExampleClass/DefaultParameters.md)(…) | A method with default parameters. |
+| [EditValue](ExampleClass/EditValue.md)(…) | A method that edits a value. |
+| [EditValue&lt;T&gt;](ExampleClass/EditValue.md)(…) | A method that edits a value. |
 | virtual [Jump](ExampleClass/Jump.md)() | A virtual method. |
 | [LongMethodNameWithTemplateParametersAndMethodParameters&lt;T&gt;](ExampleClass/LongMethodNameWithTemplateParametersAndMethodParameters.md)(…) | A method with a really long name. |
 | [Overloaded](ExampleClass/Overloaded.md)() | An overloaded method. |
@@ -30,6 +32,8 @@ public class ExampleClass : IExampleContravariantInterface<ExampleClass>,
 | [Overloaded&lt;T&gt;](ExampleClass/Overloaded.md)(…) | An overloaded method. (2 methods) |
 | [Overloaded&lt;T,U&gt;](ExampleClass/Overloaded.md)(…) | An overloaded method. |
 | [ParameterReference](ExampleClass/ParameterReference.md)(…) | A method whose summary references *value*. |
+| [TryGetValue](ExampleClass/TryGetValue.md)(…) | A method that tries to get a value. |
+| [TryGetValue&lt;T&gt;](ExampleClass/TryGetValue.md)(…) | A method that tries to get a value. |
 | [TypeParameterReference&lt;T&gt;](ExampleClass/TypeParameterReference.md)(…) | A method whose summary references *T*. |
 | static [MaxWeight](ExampleClass/MaxWeight.md) { get; set; } | A static read-write property. |
 | static [MinWeight](ExampleClass/MinWeight.md) { get; } | A static read-only property. |

@@ -63,6 +63,11 @@ namespace XmlDocMarkdown.Core
 				stringBuilder.Append(GetXmlDocTypePart(typeInfo.GetElementType().GetTypeInfo()));
 				stringBuilder.Append("[]");
 			}
+			else if (typeInfo.IsByRef)
+			{
+				stringBuilder.Append(GetXmlDocTypePart(typeInfo.GetElementType().GetTypeInfo()));
+				stringBuilder.Append("@");
+			}
 			else if (!typeInfo.IsGenericParameter)
 			{
 				if (typeInfo.DeclaringType != null)
