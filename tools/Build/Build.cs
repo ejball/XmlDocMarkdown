@@ -5,7 +5,10 @@ internal static class Build
 {
 	public static int Main(string[] args) => BuildRunner.Execute(args, build =>
 	{
-		var dotNetBuildSettings = new DotNetBuildSettings();
+		var dotNetBuildSettings = new DotNetBuildSettings
+		{
+			ProjectUsesSourceLink = name => name == "XmlDocMarkdown.Core" || name == "Cake.XmlDocMarkdown",
+		};
 		build.AddDotNetTargets(dotNetBuildSettings);
 
 		build.Target("generate-docs")
