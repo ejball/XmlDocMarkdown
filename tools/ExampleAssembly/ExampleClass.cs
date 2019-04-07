@@ -262,6 +262,14 @@ namespace ExampleAssembly
 		}
 
 		/// <summary>
+		/// A method with parameters.
+		/// </summary>
+		/// <param name="parameters">The parameters.</param>
+		public void HasParams(params string[] parameters)
+		{
+		}
+
+		/// <summary>
 		/// An obsolete method.
 		/// </summary>
 		[Obsolete("This method is old and busted.")]

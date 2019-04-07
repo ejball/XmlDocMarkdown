@@ -1091,6 +1091,8 @@ namespace XmlDocMarkdown.Core
 
 					if (parameterInfo.ParameterType.IsByRef)
 						yield return parameterInfo.IsOut ? "out " : "ref ";
+					if (parameterInfo.GetCustomAttributes<ParamArrayAttribute>().Any())
+						yield return "params ";
 
 					yield return RenderTypeName(parameterInfo.ParameterType.GetTypeInfo(), seeAlsoMembers);
 

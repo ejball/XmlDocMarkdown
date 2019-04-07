@@ -24,6 +24,7 @@ public class ExampleClass : IExampleContravariantInterface<ExampleClass>,
 | [DefaultParameters&lt;T&gt;](ExampleClass/DefaultParameters.md)(…) | A method with default parameters. |
 | [EditValue](ExampleClass/EditValue.md)(…) | A method that edits a value. |
 | [EditValue&lt;T&gt;](ExampleClass/EditValue.md)(…) | A method that edits a value. |
+| [HasParams](ExampleClass/HasParams.md)(…) | A method with parameters. |
 | virtual [Jump](ExampleClass/Jump.md)() | A virtual method. |
 | [LongMethodNameWithTemplateParametersAndMethodParameters&lt;T&gt;](ExampleClass/LongMethodNameWithTemplateParametersAndMethodParameters.md)(…) | A method with a really long name. |
 | [Overloaded](ExampleClass/Overloaded.md)() | An overloaded method. |
