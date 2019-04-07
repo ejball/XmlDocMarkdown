@@ -1,26 +1,30 @@
 # XmlDocMarkdown
 
-**XmlDocMarkdown** is a .NET Core Global Tool, console app, Cake addin, and class library that generates Markdown from [.NET XML documentation comments](https://msdn.microsoft.com/en-us/library/b2s063f7.aspx).
+**XmlDocMarkdown** generates Markdown from [.NET XML documentation comments](https://msdn.microsoft.com/en-us/library/b2s063f7.aspx).
 
-See the [example documentation](ExampleAssembly.md) for the [ExampleAssembly](https://github.com/ejball/XmlDocMarkdown/tree/master/tests/ExampleAssembly).
+It is distributed as a .NET Core Global Tool, console app, Cake addin, and class library.
 
-## Console App: XmlDocMarkdown
+For example output, see the [Markdown documents](https://github.com/ejball/XmlDocMarkdown/blob/master/docs/ExampleAssembly.md) for the [documentation](ExampleAssembly.md) of the [ExampleAssembly](https://github.com/ejball/XmlDocMarkdown/tree/master/tools/ExampleAssembly) class library.
 
-Use [NuGet](https://www.nuget.org/) to install **XmlDocMarkdown** from its [NuGet package](https://www.nuget.org/packages/XmlDocMarkdown).
+The goal of this tool is to generate Markdown documentation for .NET class libraries that are simple enough to be read and understood in [raw form](https://raw.githubusercontent.com/ejball/XmlDocMarkdown/master/docs/ExampleAssembly/ExampleClass.md), as [rendered in GitHub](https://github.com/ejball/XmlDocMarkdown/blob/master/docs/ExampleAssembly/ExampleClass.md), or when used to generate [web pages](https://ejball.com/XmlDocMarkdown/ExampleAssembly/ExampleClass.html) using [Jekyll](https://jekyllrb.com/) and [GitHub Pages](https://pages.github.com/). To that end, it generates standard [GitHub Flavored Markdown](https://github.github.com/gfm/) without relying on raw HTML tags.
 
-For example, `nuget install XmlDocMarkdown -excludeversion` will download the latest version of `XmlDocMarkdown.exe` into `XmlDocMarkdown/tools`.
+For a more full-featured documentation generation tool, check out [DocFX](https://dotnet.github.io/docfx/) or [Sandcastle](https://github.com/EWSoftware/SHFB).
 
-On Mac or Linux, use [Mono](http://www.mono-project.com/) to run `NuGet.exe` as well as the command-line tool itself.
+## xmldocmd (.NET Core Global Tool)
+
+[![NuGet](https://img.shields.io/nuget/v/xmldocmd.svg)](https://www.nuget.org/packages/xmldocmd)
+
+To install `xmldocmd`: `dotnet tool install xmldocmd -g`
 
 ### Usage
 
-The `XmlDocMarkdown` command-line tool accepts the path to the input assembly, the path to the output directory, and a number of options.
+The `xmldocmd` command-line tool accepts the path to the input assembly, the path to the output directory, and a number of options.
 
 The XML documentation file should be in the same directory as the input assembly.
 
 The output directory will be created if necessary.
 
-For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentation in the `docs` directory for the `MyLibrary.dll` assembly. The compiler-generated `MyLibrary.xml`file should be in the same directory as `MyLibrary.dll`.
+For example, `xmldocmd MyLibrary.dll docs` generates Markdown documentation in the `docs` directory for the `MyLibrary.dll` assembly. The compiler-generated `MyLibrary.xml` file should be in the same directory as `MyLibrary.dll`.
 
 ### Options
 
@@ -35,16 +39,30 @@ For example, `XmlDocMarkdown MyLibrary.dll docs` generates Markdown documentatio
 * `--quiet`: Suppresses normal console output.
 * `--newline (auto|lf|crlf)`: Indicates the newline used in the output. Defaults to `auto`, which uses CRLF or LF, depending on the platform.
 
-## Cake Addin: Cake.XmlDocMarkdown
+## XmlDocMarkdown (console app)
 
-To use the addin, include it at the top of your Cake 0.26.1+ script:
+[![NuGet](https://img.shields.io/nuget/v/XmlDocMarkdown.svg)](https://www.nuget.org/packages/XmlDocMarkdown)
+
+`nuget install XmlDocMarkdown -excludeversion` will download the latest version of `XmlDocMarkdown.exe` into `XmlDocMarkdown/tools`.
+
+On Mac or Linux, use [Mono](http://www.mono-project.com/) to run `nuget` as well as the command-line tool itself.
+
+The command-line arguments and options are the same as `xmldocmd` above.
+
+## Cake.XmlDocMarkdown (Cake addin)
+
+[![NuGet](https://img.shields.io/nuget/v/Cake.XmlDocMarkdown.svg)](https://www.nuget.org/packages/Cake.XmlDocMarkdown)
+
+To use the addin, include it at the top of your [Cake](https://cakebuild.net/) 0.26.1+ script:
 
 ```
-#addin nuget:?package=Cake.XmlDocMarkdown
+#addin Cake.XmlDocMarkdown
 ```
 
 From your script, call [`XmlDocMarkdownGenerate`](Cake.XmlDocMarkdown/XmlDocCakeAddin/XmlDocMarkdownGenerate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
 
-## Class Library: XmlDocMarkdown.Core
+## XmlDocMarkdown.Core (class library)
 
-[`XmlDocMarkdown.Core`](XmlDocMarkdown.Core) is a class library. Call [`XmlDocMarkdownGenerator.Generate`](XmlDocMarkdown.Core/XmlDocMarkdownGenerator/Generate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
+[![NuGet](https://img.shields.io/nuget/v/XmlDocMarkdown.Core.svg)](https://www.nuget.org/packages/XmlDocMarkdown.Core)
+
+Call [`XmlDocMarkdownGenerator.Generate`](XmlDocMarkdown.Core/XmlDocMarkdownGenerator/Generate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
