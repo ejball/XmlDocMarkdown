@@ -1820,6 +1820,8 @@ namespace XmlDocMarkdown.Core
 					text = GetOperatorKeywordName(GetShortName(seeMemberInfo));
 				else if (inline.SeeRef != null)
 					text = XmlDocUtility.GetShortNameForXmlDocRef(inline.SeeRef);
+				else if (inline.LinkUrl != null)
+					text = inline.LinkUrl;
 			}
 
 			if (text.Length != 0)
@@ -1831,7 +1833,7 @@ namespace XmlDocMarkdown.Core
 				if (inline.IsParamRef || inline.IsTypeParamRef)
 					text = $"*{text}*";
 
-				text = WrapMarkdownRefLink(text, seeMemberInfo, context, isCode: inline.IsCode);
+				text = WrapMarkdownRefLink(text, seeMemberInfo, context, isCode: inline.IsCode, linkUrl: inline.LinkUrl);
 			}
 
 			text = Regex.Replace(text, @"\s+", " ");
@@ -1839,7 +1841,7 @@ namespace XmlDocMarkdown.Core
 			return text;
 		}
 
-		private string WrapMarkdownRefLink(string text, MemberInfo memberInfo, MarkdownContext context, bool isCode = false)
+		private string WrapMarkdownRefLink(string text, MemberInfo memberInfo, MarkdownContext context, bool isCode = false, string linkUrl = null)
 		{
 			string xmlDocRef = memberInfo == null ? null : XmlDocUtility.GetXmlDocRef(memberInfo);
 			bool isLocal = xmlDocRef != null && context.MembersByXmlDocName.ContainsKey(xmlDocRef);
@@ -1894,6 +1896,10 @@ namespace XmlDocMarkdown.Core
 				}
 
 				text = $"[{text}]({path})";
+			}
+			else if (linkUrl != null)
+			{
+				text = $"[{text}]({linkUrl})";
 			}
 
 			return isCode ? text : EscapeHtml(text);

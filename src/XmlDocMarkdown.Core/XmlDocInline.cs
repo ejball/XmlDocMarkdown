@@ -6,6 +6,8 @@ namespace XmlDocMarkdown.Core
 
 		public string SeeRef { get; set; }
 
+		public string LinkUrl { get; set; }
+
 		public bool IsCode { get; set; }
 
 		public bool IsParamRef { get; set; }

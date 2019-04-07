@@ -278,6 +278,14 @@ namespace ExampleAssembly
 		}
 
 		/// <summary>
+		/// A method whose docs have <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a">hyperlinks</a>.
+		/// </summary>
+		/// <remarks>Visit <see href="https://ejball.com/" /> for <see href="https://ejball.com/">more info</see>.</remarks>
+		public void HasHyperlinks()
+		{
+		}
+
+		/// <summary>
 		/// An obsolete method.
 		/// </summary>
 		[Obsolete("This method is old and busted.")]
