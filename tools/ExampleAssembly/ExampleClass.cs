@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 #pragma warning disable 67
 
@@ -266,6 +267,13 @@ namespace ExampleAssembly
 		/// </summary>
 		/// <param name="parameters">The parameters.</param>
 		public void HasParams(params string[] parameters)
+		{
+		}
+
+		/// <summary>
+		/// A method that uses caller info.
+		/// </summary>
+		public void UsesCallerInfo([CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
 		{
 		}
 

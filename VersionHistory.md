@@ -6,7 +6,8 @@ Describe changes here when they're committed to the `master` branch. Move them t
 
 Prefix the description of the change with `[major]`, `[minor]`, or `[patch]` in accordance with [Semantic Versioning](https://semver.org/).
 
-* Add `params` support to method signature.
+* [patch] Add `params` support to method signature.
+* [patch] Add `Caller` attributes to method signature.
 
 ## Released
 

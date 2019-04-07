@@ -1076,18 +1076,21 @@ namespace XmlDocMarkdown.Core
 				bool isFirstParameter = true;
 				foreach (var parameterInfo in parameterInfos)
 				{
-					if (isFirstParameter)
-					{
-						if (IsStatic(memberInfo) && memberInfo.GetCustomAttributes<ExtensionAttribute>().Any())
-							yield return "this ";
-
-						isFirstParameter = false;
-					}
-					else
+					if (!isFirstParameter)
 					{
 						yield return ", ";
 						yield return "";
 					}
+
+					if (parameterInfo.GetCustomAttributes<CallerFilePathAttribute>().Any())
+						yield return "[CallerFilePath] ";
+					if (parameterInfo.GetCustomAttributes<CallerLineNumberAttribute>().Any())
+						yield return "[CallerLineNumber] ";
+					if (parameterInfo.GetCustomAttributes<CallerMemberNameAttribute>().Any())
+						yield return "[CallerMemberName] ";
+
+					if (isFirstParameter && IsStatic(memberInfo) && memberInfo.GetCustomAttributes<ExtensionAttribute>().Any())
+						yield return "this ";
 
 					if (parameterInfo.ParameterType.IsByRef)
 						yield return parameterInfo.IsOut ? "out " : "ref ";
@@ -1111,6 +1114,8 @@ namespace XmlDocMarkdown.Core
 						else
 							yield return "null";
 					}
+
+					isFirstParameter = false;
 				}
 
 				yield return propertyInfo != null ? "]" : ")";
