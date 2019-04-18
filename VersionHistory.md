@@ -8,6 +8,10 @@ Prefix the description of the change with `[major]`, `[minor]`, or `[patch]` in 
 
 ## Released
 
+### 1.5.1
+
+* [patch] Drop `ArgsReading` dependency so that we can be used to document it.
+
 ### 1.5.0
 
 * [patch] Add `params` support to method signature.
