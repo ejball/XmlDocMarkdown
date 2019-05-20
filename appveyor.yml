@@ -3,12 +3,12 @@ image:
 - Visual Studio 2017
 - Ubuntu
 environment:
-  NUGETAPIKEY:
+  NUGET_API_KEY:
     secure: Ev6JfzK7FYZzsR4ALWtJs95U98Pa9FxgMxECDA0LGNidWwULyKoQIKYQwMVZ1s0U
   BUILD_BOT_PASSWORD:
     secure: wJ9JVS5hSAp9ItYlHKxTPg==
 build_script:
-- cmd: .\build.cmd publish "--trigger=%APPVEYOR_REPO_TAG_NAME%" "--branch=%APPVEYOR_REPO_BRANCH%" "--nuget-api-key=%NUGETAPIKEY%"
+- cmd: .\build.cmd publish "--trigger=%APPVEYOR_REPO_TAG_NAME%"
 - sh: ./build.sh package
 test: off
 artifacts:

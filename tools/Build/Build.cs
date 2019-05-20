@@ -8,6 +8,7 @@ internal static class Build
 		build.AddDotNetTargets(
 			new DotNetBuildSettings
 			{
+				NuGetApiKey = Environment.GetEnvironmentVariable("NUGET_API_KEY"),
 				DocsSettings = new DotNetDocsSettings
 				{
 					GitLogin = new GitLoginInfo("faithlifebuildbot", Environment.GetEnvironmentVariable("BUILD_BOT_PASSWORD") ?? ""),
@@ -15,8 +16,5 @@ internal static class Build
 					SourceCodeUrl = "https://github.com/Faithlife/RepoName/tree/master/src",
 				},
 			});
-
-		build.Target("default")
-			.DependsOn("build");
 	});
 }
