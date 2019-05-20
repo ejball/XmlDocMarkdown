@@ -22,6 +22,10 @@
     <IsTestProject>false</IsTestProject>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(BuildNumber)' != '' ">
+    <FileVersion>$(VersionPrefix).$(BuildNumber)</FileVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Faithlife.Analyzers" Version="1.0.5" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
