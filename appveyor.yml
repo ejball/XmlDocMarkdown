@@ -4,7 +4,7 @@ image:
 - Ubuntu
 environment:
   NUGET_API_KEY:
-    secure: RJ0TZqHfLpBHVwWjG6cJfG37zcAE1IImJVKfs5tbD0dUL066cJNf+cZr0egrgfTG
+    secure: Ev6JfzK7FYZzsR4ALWtJs95U98Pa9FxgMxECDA0LGNidWwULyKoQIKYQwMVZ1s0U
   BUILD_BOT_PASSWORD:
     secure: wJ9JVS5hSAp9ItYlHKxTPg==
 build_script:
