@@ -23,9 +23,6 @@ internal static class Build
 
 		build.Target("test")
 			.DependsOn("verify-docs");
-
-		build.Target("default")
-			.DependsOn("build");
 	});
 
 	private static void GenerateDocs(DotNetBuildSettings dotNetBuildSettings, bool verify)
