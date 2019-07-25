@@ -1,3 +1,4 @@
+using System;
 using Faithlife.Build;
 using static Faithlife.Build.AppRunner;
 
@@ -7,6 +8,7 @@ internal static class Build
 	{
 		var dotNetBuildSettings = new DotNetBuildSettings
 		{
+			NuGetApiKey = Environment.GetEnvironmentVariable("NUGET_API_KEY"),
 			SourceLinkSettings = new SourceLinkSettings
 			{ 
 				ShouldTestPackage = name => name == "XmlDocMarkdown.Core" || name == "Cake.XmlDocMarkdown",
