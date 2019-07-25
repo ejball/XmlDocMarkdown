@@ -8,6 +8,10 @@ Prefix the description of the change with `[major]`, `[minor]`, or `[patch]` in 
 
 ## Released
 
+### 1.5.2
+
+* [patch] Prevent crash (though the logic is still wrong).
+
 ### 1.5.1
 
 * [patch] Drop `ArgsReading` dependency so that we can be used to document it.

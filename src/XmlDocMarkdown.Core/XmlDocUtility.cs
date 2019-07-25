@@ -75,9 +75,10 @@ namespace XmlDocMarkdown.Core
 				else if (!string.IsNullOrEmpty(typeInfo.Namespace))
 					stringBuilder.Append(typeInfo.Namespace + ".");
 
-				if (typeInfo.IsGenericType && !typeInfo.IsGenericTypeDefinition)
+				int tickIndex = typeInfo.Name.IndexOf('`');
+				if (typeInfo.IsGenericType && !typeInfo.IsGenericTypeDefinition && tickIndex != -1)
 				{
-					stringBuilder.Append(typeInfo.Name.Substring(0, typeInfo.Name.IndexOf('`')));
+					stringBuilder.Append(typeInfo.Name.Substring(0, tickIndex));
 					stringBuilder.Append("{");
 					stringBuilder.Append(string.Join(",", typeInfo.GenericTypeArguments.Select(x => GetXmlDocTypePart(x.GetTypeInfo()))));
 					stringBuilder.Append("}");
