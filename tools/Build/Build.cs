@@ -7,7 +7,10 @@ internal static class Build
 	{
 		var dotNetBuildSettings = new DotNetBuildSettings
 		{
-			ProjectUsesSourceLink = name => name == "XmlDocMarkdown.Core" || name == "Cake.XmlDocMarkdown",
+			SourceLinkSettings = new SourceLinkSettings
+			{ 
+				ShouldTestPackage = name => name == "XmlDocMarkdown.Core" || name == "Cake.XmlDocMarkdown",
+			},
 		};
 		build.AddDotNetTargets(dotNetBuildSettings);
 
