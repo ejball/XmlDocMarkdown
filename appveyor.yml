@@ -11,5 +11,3 @@ build_script:
 - cmd: .\build.cmd publish "--trigger=%APPVEYOR_REPO_TAG_NAME%" "--build-number=%APPVEYOR_BUILD_NUMBER%"
 - sh: ./build.sh package
 test: off
-artifacts:
-- path: 'release\*.nupkg'
