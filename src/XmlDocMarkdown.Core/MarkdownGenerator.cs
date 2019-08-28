@@ -240,7 +240,7 @@ namespace XmlDocMarkdown.Core
 						foreach (var seeAlsoInfo in xmlDocMember.SeeAlso)
 						{
 							string xmlDocName = seeAlsoInfo.Ref;
-							if (memberContext.MembersByXmlDocName.TryGetValue(xmlDocName, out var seeAlsoMember))
+							if (xmlDocName != null && memberContext.MembersByXmlDocName.TryGetValue(xmlDocName, out var seeAlsoMember))
 								seeAlsoMembers.Add(seeAlsoMember);
 						}
 					}
@@ -1822,6 +1822,8 @@ namespace XmlDocMarkdown.Core
 					text = XmlDocUtility.GetShortNameForXmlDocRef(inline.SeeRef);
 				else if (inline.LinkUrl != null)
 					text = inline.LinkUrl;
+				else if (inline.LangWord != null)
+					text = SurroundCode(inline.LangWord);
 			}
 
 			if (text.Length != 0)
