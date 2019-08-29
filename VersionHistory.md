@@ -8,6 +8,11 @@ Prefix the description of the change with `[major]`, `[minor]`, or `[patch]` in 
 
 ## Released
 
+### 1.5.3
+
+* [patch] Support `<see langword="__" />`. (Thanks @sungam3r!)
+* [patch] Update `Newtonsoft.Json` to `12.0.2`. (Thanks @sungam3r!)
+
 ### 1.5.2
 
 * [patch] Prevent crash (though the logic is still wrong).
