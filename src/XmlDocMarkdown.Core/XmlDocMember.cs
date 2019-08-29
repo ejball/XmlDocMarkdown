@@ -188,7 +188,7 @@ namespace XmlDocMarkdown.Core
 					break;
 
 				case "see":
-					m_block?.Inlines.Add(new XmlDocInline { Text = xElement.Value, SeeRef = xElement.Attribute("cref")?.Value, LinkUrl = xElement.Attribute("href")?.Value });
+					m_block?.Inlines.Add(new XmlDocInline { Text = xElement.Value, SeeRef = xElement.Attribute("cref")?.Value, LinkUrl = xElement.Attribute("href")?.Value, LangWord = xElement.Attribute("langword")?.Value });
 					break;
 
 				case "a":
