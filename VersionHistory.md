@@ -6,6 +6,8 @@ Describe changes here when they're committed to the `master` branch. Move them t
 
 Prefix the description of the change with `[major]`, `[minor]`, or `[patch]` in accordance with [Semantic Versioning](https://semver.org/).
 
+* [major] Drop support for `--settings` to avoid potentially conflicting Json.NET dependency.
+
 ## Released
 
 ### 1.5.3

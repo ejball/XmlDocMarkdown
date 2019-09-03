@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using ArgsReading;
-using Newtonsoft.Json;
 using XmlDocMarkdown.Core;
 
 namespace XmlDocMarkdown
@@ -28,25 +27,14 @@ namespace XmlDocMarkdown
 				bool isVerify = argsReader.ReadVerifyFlag();
 
 				var settings = new XmlDocMarkdownSettings();
-
-				string settingsPath = argsReader.ReadSettingsOption();
-				if (settingsPath != null)
-				{
-					settings = JsonConvert.DeserializeObject<XmlDocMarkdownSettings>(
-						File.ReadAllText(settingsPath),
-						new JsonSerializerSettings { DateParseHandling = DateParseHandling.None });
-					if (settings == null)
-						throw new ApplicationException("Failed to load settings file.");
-				}
-
-				settings.NewLine = argsReader.ReadNewLineOption() ?? settings.NewLine;
-				settings.SourceCodePath = argsReader.ReadSourceOption() ?? settings.SourceCodePath;
-				settings.RootNamespace = argsReader.ReadNamespaceOption() ?? settings.RootNamespace;
-				settings.IncludeObsolete = argsReader.ReadObsoleteFlag() || settings.IncludeObsolete;
-				settings.VisibilityLevel = argsReader.ReadVisibilityOption() ?? settings.VisibilityLevel;
-				settings.ShouldClean = argsReader.ReadCleanFlag() || settings.ShouldClean;
-				settings.IsQuiet = argsReader.ReadQuietFlag() || settings.IsQuiet;
-				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag() || settings.IsDryRun;
+				settings.NewLine = argsReader.ReadNewLineOption();
+				settings.SourceCodePath = argsReader.ReadSourceOption();
+				settings.RootNamespace = argsReader.ReadNamespaceOption();
+				settings.IncludeObsolete = argsReader.ReadObsoleteFlag();
+				settings.VisibilityLevel = argsReader.ReadVisibilityOption();
+				settings.ShouldClean = argsReader.ReadCleanFlag();
+				settings.IsQuiet = argsReader.ReadQuietFlag();
+				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag();
 
 				string inputPath = argsReader.ReadArgument();
 				if (inputPath == null)
@@ -74,7 +62,7 @@ namespace XmlDocMarkdown
 					WriteUsage(Console.Error);
 					return 2;
 				}
-				else if (exception is ApplicationException || exception is IOException || exception is UnauthorizedAccessException || exception is JsonException)
+				else if (exception is ApplicationException || exception is IOException || exception is UnauthorizedAccessException)
 				{
 					Console.Error.WriteLine(exception.Message);
 					return 3;
@@ -98,8 +86,6 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("   output");
 			textWriter.WriteLine("      The path to the output directory.");
 			textWriter.WriteLine();
-			textWriter.WriteLine("   --settings <file>");
-			textWriter.WriteLine("      Specifies the settings via JSON file; see docs for details. (optional)");
 			textWriter.WriteLine("   --source <url>");
 			textWriter.WriteLine("      The URL (absolute or relative) of the folder containing the source");
 			textWriter.WriteLine("      code of the assembly, e.g. at GitHub. (optional)");

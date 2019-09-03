@@ -5,11 +5,6 @@ namespace XmlDocMarkdown
 {
 	internal static class CommonArgs
 	{
-		public static string ReadSettingsOption(this ArgsReader args)
-		{
-			return args.ReadOption("settings");
-		}
-
 		public static string ReadSourceOption(this ArgsReader args)
 		{
 			return args.ReadOption("source");
