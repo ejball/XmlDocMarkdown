@@ -10,7 +10,7 @@ internal static class Build
 		{
 			NuGetApiKey = Environment.GetEnvironmentVariable("NUGET_API_KEY"),
 			SourceLinkSettings = new SourceLinkSettings
-			{ 
+			{
 				ShouldTestPackage = name => name == "XmlDocMarkdown.Core" || name == "Cake.XmlDocMarkdown",
 			},
 		};
@@ -35,11 +35,11 @@ internal static class Build
 		var configuration = dotNetBuildSettings.BuildOptions.ConfigurationOption.Value;
 		var projects = new[]
 		{
-			($"tools/XmlDocTarget/bin/{configuration}/net47/XmlDocMarkdown.Core.dll", "src/XmlDocMarkdown.Core/XmlDocSettings.json"),
-			($"tools/XmlDocTarget/bin/{configuration}/net47/Cake.XmlDocMarkdown.dll", "src/Cake.XmlDocMarkdown/XmlDocSettings.json"),
-			($"tools/XmlDocTarget/bin/{configuration}/net47/ExampleAssembly.dll", "tools/ExampleAssembly/XmlDocSettings.json"),
+			new[] { $"tools/XmlDocTarget/bin/{configuration}/net47/XmlDocMarkdown.Core.dll", "docs", verify ? "--verify" : null, "--source", "../src/XmlDocMarkdown.Core", "--newline", "lf", "--clean" },
+			new[] { $"tools/XmlDocTarget/bin/{configuration}/net47/Cake.XmlDocMarkdown.dll", "docs", verify ? "--verify" : null, "--source", "../src/Cake.XmlDocMarkdown", "--external", "XmlDocMarkdown.Core", "--newline", "lf", "--clean" },
+			new[] { $"tools/XmlDocTarget/bin/{configuration}/net47/ExampleAssembly.dll", "docs", verify ? "--verify" : null, "--source", "../tests/ExampleAssembly", "--newline", "lf", "--clean" },
 		};
-		foreach ((string assemblyPath, string settingsPath) in projects)
-			RunDotNetFrameworkApp($"src/XmlDocMarkdown/bin/{configuration}/XmlDocMarkdown.exe", assemblyPath, "docs", "--settings", settingsPath, verify ? "--verify" : null);
+		foreach (var args in projects)
+			RunDotNetFrameworkApp($"src/XmlDocMarkdown/bin/{configuration}/XmlDocMarkdown.exe", args);
 	}
 }

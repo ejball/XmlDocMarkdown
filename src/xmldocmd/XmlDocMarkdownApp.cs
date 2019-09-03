@@ -35,6 +35,13 @@ namespace XmlDocMarkdown
 				settings.IsQuiet = argsReader.ReadQuietFlag();
 				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag();
 
+				var externalDocs = new List<ExternalDocumentation>();
+				string externalOption;
+				while ((externalOption = argsReader.ReadExternalOption()) != null)
+					externalDocs.Add(new ExternalDocumentation { Namespace = externalOption });
+				if (externalDocs.Count != 0)
+					settings.ExternalDocs = externalDocs;
+
 				string inputPath = argsReader.ReadArgument();
 				if (inputPath == null)
 					throw new ArgsReaderException("Missing input path.");
