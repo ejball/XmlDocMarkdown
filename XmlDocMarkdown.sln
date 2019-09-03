@@ -16,16 +16,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocTarget", "tools\XmlDo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xmldocmd", "src\xmldocmd\xmldocmd.csproj", "{9A94F733-DCBA-457F-AB0C-F33640773802}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7BA5312A-24D0-4B73-BCB5-9FF6A7207E65}"
-	ProjectSection(SolutionItems) = preProject
-		src\Directory.Build.props = src\Directory.Build.props
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{AE059396-2571-4A27-9E52-1EFE3E9CAAFB}"
-	ProjectSection(SolutionItems) = preProject
-		tests\Directory.Build.props = tests\Directory.Build.props
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Build", "tools\Build\Build.csproj", "{D787BB4B-8E32-4155-B855-9B06D1CA5FED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{79C28083-1FE9-45CA-A22F-E19E5D3905B4}"
@@ -37,14 +27,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		build.cmd = build.cmd
 		build.sh = build.sh
 		CONTRIBUTING.md = CONTRIBUTING.md
+		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
 		README.md = README.md
 		VersionHistory.md = VersionHistory.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{8E4BACD7-F478-458B-9F44-1F42B7A17C61}"
-	ProjectSection(SolutionItems) = preProject
-		tools\Directory.Build.props = tools\Directory.Build.props
 	EndProjectSection
 EndProject
 Global
@@ -88,11 +74,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{7BA5312A-24D0-4B73-BCB5-9FF6A7207E65} = {79C28083-1FE9-45CA-A22F-E19E5D3905B4}
-		{AE059396-2571-4A27-9E52-1EFE3E9CAAFB} = {79C28083-1FE9-45CA-A22F-E19E5D3905B4}
-		{8E4BACD7-F478-458B-9F44-1F42B7A17C61} = {79C28083-1FE9-45CA-A22F-E19E5D3905B4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF4B9831-B099-48EE-ACEC-0BED47DDE8D1}
