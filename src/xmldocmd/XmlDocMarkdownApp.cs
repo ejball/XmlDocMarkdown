@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using ArgsReading;
 using XmlDocMarkdown.Core;
 
 namespace XmlDocMarkdown

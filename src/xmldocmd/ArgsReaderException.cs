@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace ArgsReading
+namespace XmlDocMarkdown
 {
 	/// <summary>
 	/// Thrown when an error occurs while processing command-line arguments.
