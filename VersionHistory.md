@@ -8,6 +8,10 @@ Prefix the description of the change with `[major]`, `[minor]`, or `[patch]` in 
 
 ## Released
 
+### 2.0.1
+
+* [patch] Update `xmldocmd` to .NET Core 3.0 so it can load .NET Standard 2.1 libraries.
+
 ### 2.0.0
 
 * [major] Drop support for `--settings` to avoid potentially conflicting Json.NET dependency.
