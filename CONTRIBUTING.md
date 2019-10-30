@@ -2,8 +2,8 @@
 
 ## Prerequisites
 
-* Install [Visual Studio 2017](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/) with the [editorconfig extension](https://github.com/editorconfig/editorconfig-vscode).
-* Install [.NET Core 2.x](https://dotnet.microsoft.com/download).
+* Install [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/) or [Visual Studio Code](https://code.visualstudio.com/).
+* Install [.NET Core 3.x](https://dotnet.microsoft.com/download).
 
 ## Guidelines
 
