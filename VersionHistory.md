@@ -1,39 +1,35 @@
 # Version History
 
-## Pending
+### 2.0.2
 
-Describe changes here when they're committed to the `master` branch. Move them to **Released** when the project version number is updated in preparation for publishing an updated NuGet package.
-
-Prefix the description of the change with `[major]`, `[minor]`, or `[patch]` in accordance with [Semantic Versioning](https://semver.org/).
-
-## Released
+* `xmldocmd` can also support .NET Core 2.1 and .NET Core 2.2. (Thanks [sungam3r](https://github.com/sungam3r)!)
 
 ### 2.0.1
 
-* [patch] Update `xmldocmd` to .NET Core 3.0 so it can load .NET Standard 2.1 libraries.
+* Update `xmldocmd` to .NET Core 3.0 so it can load .NET Standard 2.1 libraries.
 
 ### 2.0.0
 
-* [major] Drop support for `--settings` to avoid potentially conflicting Json.NET dependency.
+* **Breaking:** Drop support for `--settings` to avoid potentially conflicting Json.NET dependency.
 
 ### 1.5.3
 
-* [patch] Support `<see langword="__" />`. (Thanks @sungam3r!)
-* [patch] Update `Newtonsoft.Json` to `12.0.2`. (Thanks @sungam3r!)
+* Support `<see langword="__" />`. (Thanks [sungam3r](https://github.com/sungam3r)!)
+* Update `Newtonsoft.Json` to `12.0.2`. (Thanks [sungam3r](https://github.com/sungam3r)!)
 
 ### 1.5.2
 
-* [patch] Prevent crash (though the logic is still wrong).
+* Prevent crash (though the logic is still wrong).
 
 ### 1.5.1
 
-* [patch] Drop `ArgsReading` dependency so that we can be used to document it.
+* Drop `ArgsReading` dependency so that we can be used to document it.
 
 ### 1.5.0
 
-* [patch] Add `params` support to method signature.
-* [minor] Add `Caller` attributes to method signature.
-* [minor] Support hyperlinks to URLs.
+* Add `params` support to method signature.
+* Add `Caller` attributes to method signature.
+* Support hyperlinks to URLs.
 
 ### 1.4.3
 
