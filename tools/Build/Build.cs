@@ -15,7 +15,6 @@ internal static class Build
 					GitAuthor = new GitAuthorInfo("ejball", "ejball@gmail.com"),
 					SourceCodeUrl = "https://github.com/ejball/RepoName/tree/master/src",
 				},
-				SourceLinkSettings = SourceLinkSettings.Default,
 			});
 	});
 }
