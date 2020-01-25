@@ -15,7 +15,6 @@ internal static class Build
 					GitAuthor = new GitAuthorInfo("Faithlife Build Bot", "faithlifebuildbot@users.noreply.github.com"),
 					SourceCodeUrl = "https://github.com/Faithlife/RepoName/tree/master/src",
 				},
-				SourceLinkSettings = SourceLinkSettings.Default,
 			});
 	});
 }
