@@ -409,7 +409,7 @@ namespace XmlDocMarkdown.Core
 									var innerMembers = innerMemberGroup.Members;
 									var firstInnerMember = innerMembers[0];
 									string memberPath = firstInnerMember is TypeInfo ?
-										$"{GetMemberUriName(firstInnerMember)}{extension}" :
+										$"../{GetMemberUriName(firstInnerMember)}{extension}" :
 										$"{GetMemberUriName(firstInnerMember)}{extension}";
 									string memberText = GetShortSignatureMarkdown(innerMemberGroup.ShortSignature, memberPath);
 									string summaryText = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, firstInnerMember, memberContext);
