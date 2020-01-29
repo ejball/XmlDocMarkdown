@@ -64,6 +64,11 @@ namespace XmlDocMarkdown
 			return args.ReadFlag("quiet");
 		}
 
+		public static string ReadFrontMatter(this ArgsReader args)
+		{
+			return args.ReadOption("frontmatter");
+		}
+
 		public static bool ReadVerifyFlag(this ArgsReader args)
 		{
 			return args.ReadFlag("verify");

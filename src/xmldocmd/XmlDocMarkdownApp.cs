@@ -34,6 +34,7 @@ namespace XmlDocMarkdown
 				settings.ShouldClean = argsReader.ReadCleanFlag();
 				settings.IsQuiet = argsReader.ReadQuietFlag();
 				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag();
+				settings.FrontMatter = argsReader.ReadFrontMatter();
 
 				var externalDocs = new List<ExternalDocumentation>();
 				string externalOption;
@@ -109,6 +110,10 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      Executes the tool without making changes to the file system.");
 			textWriter.WriteLine("   --quiet");
 			textWriter.WriteLine("      Suppresses normal console output.");
+			textWriter.WriteLine("   --frontmatter");
+			textWriter.WriteLine("      File containing the Jekyll front matter template you want in each generated page.");
+			textWriter.WriteLine("      The front matter can use $title argument and $rel for permalinks.");
+			textWriter.WriteLine("      When front matter is defined the .md extension is dropped in all generated links.");
 			textWriter.WriteLine("   --newline (auto|lf|crlf)");
 			textWriter.WriteLine("      The newline used in the output (default auto).");
 		}

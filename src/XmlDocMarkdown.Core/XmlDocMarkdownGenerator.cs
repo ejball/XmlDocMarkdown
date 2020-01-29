@@ -41,6 +41,8 @@ namespace XmlDocMarkdown.Core
 			if (settings.NewLine != null)
 				generator.NewLine = settings.NewLine;
 
+			generator.FrontMatter = settings.FrontMatter;
+
 			var assembly = Assembly.LoadFrom(inputPath);
 			XmlDocAssembly xmlDocAssembly;
 

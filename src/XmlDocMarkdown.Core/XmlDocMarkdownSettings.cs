@@ -54,6 +54,11 @@ namespace XmlDocMarkdown.Core
 		public bool IsDryRun { get; set; }
 
 		/// <summary>
+		/// If non-null, contains the path to a file that contains the Jekyll front matter template.
+		/// </summary>
+		public string FrontMatter { get; set; }
+
+		/// <summary>
 		/// Configures external documentation.
 		/// </summary>
 		public IReadOnlyList<ExternalDocumentation> ExternalDocs { get; set; }
