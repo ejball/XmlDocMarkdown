@@ -112,7 +112,7 @@ namespace XmlDocMarkdown.Core
 						{
 							string relative = GetPathWithoutExtension(typeInfo.Path);
 							string safeRelative = relative.Replace(".", "");
-							string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{relative}/{safeRelative}Type{extension}");
+							string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}Type{extension}");
 							string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
 							string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
 							writer.WriteLine($"| {typeText} | {summaryText} |");
@@ -129,7 +129,7 @@ namespace XmlDocMarkdown.Core
 				string relative = GetPathWithoutExtension(visibleTypeRecord.Path);
 				string safeRelative = relative.Replace(".", "");
 				yield return WriteMemberPage(
-					path: $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{relative}/{safeRelative}Type.md",
+					path: $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{safeRelative}Type.md",
 					title: safeRelative,
 					memberInfo: visibleTypeRecord.TypeInfo,
 					context: context);
@@ -227,7 +227,7 @@ namespace XmlDocMarkdown.Core
 			var typeInfo = memberInfo as TypeInfo;
 			if (typeInfo != null)
 			{
-				return $"{GetTypeUriName(typeInfo)}/{GetSafeTypeUriName(typeInfo)}Type";
+				return $"{GetSafeTypeUriName(typeInfo)}Type";
 			}
 			else
 			{
@@ -413,8 +413,8 @@ namespace XmlDocMarkdown.Core
 									var innerMembers = innerMemberGroup.Members;
 									var firstInnerMember = innerMembers[0];
 									string memberPath = firstInnerMember is TypeInfo ?
-										$"../{GetMemberUriName(firstInnerMember)}{extension}" :
-										$"{GetMemberUriName(firstInnerMember)}{extension}";
+										$"{GetMemberUriName(firstInnerMember)}{extension}" :
+										$"{GetTypeUriName(typeInfo)}/{GetMemberUriName(firstInnerMember)}{extension}";
 									string memberText = GetShortSignatureMarkdown(innerMemberGroup.ShortSignature, memberPath);
 									string summaryText = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, firstInnerMember, memberContext);
 									if (innerMembers.Count != 1)
@@ -1929,7 +1929,7 @@ namespace XmlDocMarkdown.Core
 				{
 					if (typeInfo != null)
 					{
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetTypeUriName(typeInfo)}/{GetSafeTypeUriName(typeInfo)}Type{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}Type{extension}";
 					}
 					else
 					{
@@ -1940,7 +1940,7 @@ namespace XmlDocMarkdown.Core
 				{
 					if (typeInfo != null)
 					{
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetTypeUriName(typeInfo)}/{GetSafeTypeUriName(typeInfo)}Type{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}Type{extension}";
 					}
 					else
 					{
@@ -1950,7 +1950,7 @@ namespace XmlDocMarkdown.Core
 				else
 				{
 					if (typeInfo != null)
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetTypeUriName(typeInfo)}/{GetSafeTypeUriName(typeInfo)}Type{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}Type{extension}";
 					else
 						path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 				}

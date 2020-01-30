@@ -19,19 +19,33 @@ namespace XmlDocMarkdown.Core
 			string[] parts = path.Split('/');
 
 			XmlDocToc parent = this;
-			string relativePath = Path;
+			string relativePath = null;
 
 			for (int i = 0, n = parts.Length; i < n; i++)
 			{
 				string part = parts[i];
+				if (part.EndsWith(".md", StringComparison.Ordinal))
+				{
+					var pos = part.LastIndexOf(".", StringComparison.Ordinal);
+					part = part.Substring(0, pos);
+				}
+
 				string childTitle = part;
 				if (i == parts.Length - 1)
 				{
-					childTitle = Title;
+					childTitle = title;
 				}
+				if (relativePath == null)
+				{
+					relativePath = part;
+				}
+				else
+				{
+					relativePath += "/" + part;
+				}
+
 				XmlDocToc child = parent.GetOrCreate(relativePath, childTitle);
 				parent = child;
-				relativePath += "/" + part;
 			}
 		}
 
