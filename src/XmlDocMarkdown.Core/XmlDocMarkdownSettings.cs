@@ -46,7 +46,12 @@ namespace XmlDocMarkdown.Core
 		/// <summary>
 		/// If true, generates a .yml file that can be used in a Jekyll based site.
 		/// </summary>
-		public bool GenerateTOC { get; set; }
+		public bool GenerateToc { get; set; }
+
+		/// <summary>
+		/// A path prefix to add to all links in the table of contents .yml file.
+		/// </summary>
+		public string TocPrefix { get; set; }
 
 		/// <summary>
 		/// If true, suppresses normal console output.

@@ -8,45 +8,51 @@ namespace XmlDocMarkdown.Core
 {
 	internal sealed class XmlDocToc
 	{
+		public string Prefix { get; set; }
+
 		public string Path { get; set; }
 
 		public string Title { get; set; }
 
 		public List<XmlDocToc> Children { get; set; }
 
-		public void AddChild(string path, string title)
+		public void AddChild(string path, string parent, string title)
 		{
-			string[] parts = path.Split('/');
-
-			XmlDocToc parent = this;
-			string relativePath = null;
-
-			for (int i = 0, n = parts.Length; i < n; i++)
+			if (parent == null || parent == Path)
 			{
-				string part = parts[i];
-				if (part.EndsWith(".md", StringComparison.Ordinal))
-				{
-					var pos = part.LastIndexOf(".", StringComparison.Ordinal);
-					part = part.Substring(0, pos);
-				}
-
-				string childTitle = part;
-				if (i == parts.Length - 1)
-				{
-					childTitle = title;
-				}
-				if (relativePath == null)
-				{
-					relativePath = part;
-				}
-				else
-				{
-					relativePath += "/" + part;
-				}
-
-				XmlDocToc child = parent.GetOrCreate(relativePath, childTitle);
-				parent = child;
+				GetOrCreate(path, title);
+				return;
 			}
+
+			var parentItem = FindParent(parent);
+			if (parentItem == null)
+			{
+				throw new Exception(string.Format("Parent '{0}' not found?", parent));
+			}			
+
+			parentItem.GetOrCreate(path, title);
+		}
+
+		private XmlDocToc FindParent(string parent)
+		{
+			if (Children == null)
+			{
+				return null;
+			}
+
+			foreach (var item in Children)
+			{
+				if (item.Path == parent)
+				{
+					return item;
+				}
+				var result = item.FindParent(parent);
+				if (result != null)
+				{
+					return result;
+				}
+			}
+			return null;
 		}
 
 		private XmlDocToc GetOrCreate(string path, string title)
@@ -58,7 +64,7 @@ namespace XmlDocMarkdown.Core
 			var item = (from i in Children where i.Path == path select i).FirstOrDefault();
 			if (item == null)
 			{
-				item = new XmlDocToc() { Path = path, Title = title };
+				item = new XmlDocToc() { Path = path, Title = title, Prefix = Prefix };
 				Children.Add(item);
 			}
 			return item;
@@ -66,6 +72,7 @@ namespace XmlDocMarkdown.Core
 
 		internal void Save(string tocPath)
 		{
+			Directory.CreateDirectory(System.IO.Path.GetDirectoryName(tocPath));
 			using (StreamWriter writer = new StreamWriter(tocPath, false, Encoding.UTF8))
 			{
 				writer.WriteLine("toc:");
@@ -96,7 +103,14 @@ namespace XmlDocMarkdown.Core
 			writer.Write(indent);
 			writer.WriteLine("- name: {0}", Title);
 			writer.Write(indent);
-			writer.WriteLine("  link: {0}", Path);
+			if (!string.IsNullOrEmpty(Prefix))
+			{
+				writer.WriteLine("  link: {0}/{1}", Prefix, Path);
+			}
+			else
+			{
+				writer.WriteLine("  link: {0}", Path);
+			}
 			if (Children != null && Children.Count > 0)
 			{
 				writer.Write(indent);

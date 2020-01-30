@@ -87,18 +87,18 @@ namespace XmlDocMarkdown.Core
 				}
 			}
 
-			if (settings.GenerateTOC)
+			if (settings.GenerateToc)
 			{
 				string tocPath = Path.Combine(outputPath, "toc.yml");
 
 				NamedText root = namedTexts.FirstOrDefault();
 				if (root != null)
 				{
-					XmlDocToc toc = new XmlDocToc() { Path = root.Name, Title = root.Title };
+					XmlDocToc toc = new XmlDocToc() { Path = root.Name, Title = root.Title, Prefix = settings.TocPrefix };
 
 					foreach (var namedText in namedTexts.Skip(1))
 					{
-						toc.AddChild(namedText.Name, namedText.Title);
+						toc.AddChild(namedText.Name, namedText.Parent, namedText.Title);
 					}
 
 					toc.Save(tocPath);

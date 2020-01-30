@@ -89,7 +89,7 @@ namespace XmlDocMarkdown.Core
 				visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0);
 			RootPageLocation = $"{safeAssemblyName}Assembly.md";
 			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation);
-			yield return CreateNamedText(context.PageLocation, assemblyName, writer =>
+			yield return CreateNamedText(context.PageLocation, null, assemblyName, writer =>
 			{
 				var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}Assembly{extension}");
 				if (!string.IsNullOrEmpty(front))
@@ -124,37 +124,82 @@ namespace XmlDocMarkdown.Core
 				writer.WriteLine(GetCodeGenComment(assemblyFileName));
 			});
 
-			foreach (var visibleTypeRecord in visibleTypeRecords)
+
+			// create separate parent pages for each namespace in the assembly.
+			foreach (var group in visibleNamespaceRecords)
 			{
-				string relative = GetPathWithoutExtension(visibleTypeRecord.Path);
-				string safeRelative = relative.Replace(".", "");
-				yield return WriteMemberPage(
-					path: $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{safeRelative}Type.md",
-					title: safeRelative,
-					memberInfo: visibleTypeRecord.TypeInfo,
-					context: context);
-
-				var typeKind = GetTypeKind(visibleTypeRecord.TypeInfo);
-				if (typeKind == TypeKind.Class || typeKind == TypeKind.Struct || typeKind == TypeKind.Interface)
+				var namespacePath = group.Namespace;
+				var safeNamespacePath = namespacePath.Replace(".", ""); // Jekyll gets confused with dots in file names.
+				var nsPageLocation = $"{safeNamespacePath}Namespace.md";
+				var nsContext = new MarkdownContext(context, null, nsPageLocation);
+				yield return CreateNamedText(nsPageLocation, context.PageLocation, group.Namespace, writer =>
 				{
-					var memberGroups = visibleTypeRecord.TypeInfo
-						.DeclaredMembers
-						.Where(x => !(x is TypeInfo) && IsVisible(x))
-						.GroupBy(GetMemberUriName)
-						.Select(tg => new
-						{
-							MemberUriName = tg.Key,
-							Members = OrderMembers(tg, x => x).ToList(),
-						})
-						.ToList();
-
-					foreach (var memberGroup in memberGroups)
+					var front = GetFrontMatter(namespacePath, $"{safeNamespacePath}Namespace");
+					if (!string.IsNullOrEmpty(front))
 					{
+						writer.WriteLine(front);
+					}
+
+					writer.WriteLine($"## {group.Namespace} namespace");
+
+					foreach (var typeGroup in group.Types.GroupBy(x => x.Visibility))
+					{
+						writer.WriteLine();
+						writer.WriteLine($"| {(typeGroup.Key == XmlDocVisibilityLevel.Public ? "public" : "internal")} type | description |");
+						writer.WriteLine("| --- | --- |");
+						foreach (var typeInfo in typeGroup)
+						{
+							string relative = GetPathWithoutExtension(typeInfo.Path);
+							string safeRelative = relative.Replace(".", "");
+							string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}Type{extension}");
+							string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
+							string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
+							writer.WriteLine($"| {typeText} | {summaryText} |");
+						}
+					}
+
+					writer.WriteLine();
+					writer.WriteLine(GetCodeGenComment(assemblyFileName));
+				});
+
+				foreach (var visibleTypeRecord in visibleTypeRecords)
+				{
+					if (visibleTypeRecord.Namespace == group.Namespace)
+					{
+						string relative = GetPathWithoutExtension(visibleTypeRecord.Path);
+						string safeRelative = relative.Replace(".", "");
+						string typePage = $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{safeRelative}Type.md";
 						yield return WriteMemberPage(
-							path: $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{GetTypeUriName(visibleTypeRecord.TypeInfo)}/{memberGroup.MemberUriName}.md",
-							title: memberGroup.MemberUriName,
-							memberGroup: memberGroup.Members,
-							context: context);
+							path: typePage,
+							title: GetFullMemberName(visibleTypeRecord.TypeInfo),
+							parent: nsPageLocation,
+							memberInfo: visibleTypeRecord.TypeInfo,
+							context: nsContext);
+
+						var typeKind = GetTypeKind(visibleTypeRecord.TypeInfo);
+						if (typeKind == TypeKind.Class || typeKind == TypeKind.Struct || typeKind == TypeKind.Interface)
+						{
+							var memberGroups = visibleTypeRecord.TypeInfo
+								.DeclaredMembers
+								.Where(x => !(x is TypeInfo) && IsVisible(x))
+								.GroupBy(GetMemberUriName)
+								.Select(tg => new
+								{
+									MemberUriName = tg.Key,
+									Members = OrderMembers(tg, x => x).ToList(),
+								})
+								.ToList();
+
+							foreach (var memberGroup in memberGroups)
+							{
+								yield return WriteMemberPage(
+									path: $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{GetTypeUriName(visibleTypeRecord.TypeInfo)}/{memberGroup.MemberUriName}.md",
+									parent: typePage,
+									title: memberGroup.MemberUriName,
+									memberGroup: memberGroup.Members,
+									context: context);
+							}
+						}
 					}
 				}
 			}
@@ -171,7 +216,7 @@ namespace XmlDocMarkdown.Core
 			return contents.Replace("$title", title).Replace("$ref", relativeLink);
 		}
 
-		private NamedText CreateNamedText(string name, string title, Action<MarkdownWriter> writeTo)
+		private NamedText CreateNamedText(string name, string parent, string title, Action<MarkdownWriter> writeTo)
 		{
 			using (var stringWriter = new StringWriter())
 			{
@@ -180,7 +225,7 @@ namespace XmlDocMarkdown.Core
 
 				var code = new MarkdownWriter(stringWriter);
 				writeTo(code);
-				return new NamedText(name, title, stringWriter.ToString());
+				return new NamedText(name, parent, title, stringWriter.ToString());
 			}
 		}
 
@@ -247,8 +292,8 @@ namespace XmlDocMarkdown.Core
 			return backticks + value + backticks;
 		}
 
-		private NamedText WriteMemberPage(string path, string title, MemberInfo memberInfo, MarkdownContext context)
-			=> WriteMemberPage(path, title, new[] { memberInfo }, context);
+		private NamedText WriteMemberPage(string path, string parent, string title, MemberInfo memberInfo, MarkdownContext context)
+			=> WriteMemberPage(path, parent, title, new[] { memberInfo }, context);
 
 		private string GetFileExtension()
 		{
@@ -269,11 +314,11 @@ namespace XmlDocMarkdown.Core
 			return path.Replace("\\", "/");
 		}
 
-		private NamedText WriteMemberPage(string path, string title, IReadOnlyList<MemberInfo> memberGroup, MarkdownContext context)
+		private NamedText WriteMemberPage(string path, string parent, string title, IReadOnlyList<MemberInfo> memberGroup, MarkdownContext context)
 		{
 			string extension = GetFileExtension();
 
-			return CreateNamedText(path, title, writer =>
+			return CreateNamedText(path, parent, title, writer =>
 			{
 				var relative = $"{GetPathWithoutExtension(path)}";
 				var front = GetFrontMatter(title, relative);
@@ -505,8 +550,12 @@ namespace XmlDocMarkdown.Core
 						}
 					}
 
-					string namespacePath = MakeRelative(path, RootPageLocation);
+					string namespacePath = MakeRelative(path, parent);
 					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}]({namespacePath})");
+
+					string assemblyName = (declaringType ?? typeInfo).Assembly.GetName().Name;
+					string assemblyPath = MakeRelative(path, RootPageLocation);
+					writer.WriteLine("* " + $"assembly\u00A0[assemblyName]({assemblyPath})");
 
 					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))
 					{
@@ -561,8 +610,15 @@ namespace XmlDocMarkdown.Core
 			if (!IncludeObsolete && memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any())
 				return false;
 
+			if (memberInfo.GetCustomAttributes<System.Runtime.CompilerServices.CompilerGeneratedAttribute>().Any())
+				return false;
+
 			string name = memberInfo.Name;
 			if (name.Length == 0 || name[0] == '<')
+				return false;
+
+			// Catch nested types.
+			if (memberInfo.DeclaringType != null && !IsVisible(memberInfo.DeclaringType))
 				return false;
 
 			if (memberInfo is TypeInfo)
@@ -2066,7 +2122,7 @@ namespace XmlDocMarkdown.Core
 				{
 					TypeInfo = typeInfo;
 				}
-				else
+				else if (memberInfo != null)
 				{
 					TypeInfo = memberInfo.DeclaringType.GetTypeInfo();
 					MemberInfo = memberInfo;

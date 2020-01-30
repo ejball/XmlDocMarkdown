@@ -66,7 +66,7 @@ namespace XmlDocMarkdown
 
 		public static string ReadFrontMatter(this ArgsReader args)
 		{
-			return args.ReadOption("frontmatter");
+			return args.ReadOption("front-matter");
 		}
 
 		public static bool ReadVerifyFlag(this ArgsReader args)
@@ -74,10 +74,19 @@ namespace XmlDocMarkdown
 			return args.ReadFlag("verify");
 		}
 
-
-		public static bool ReadGeneratyeTOCFlag(this ArgsReader args)
+		public static bool ReadGeneratyeTocFlag(this ArgsReader args)
 		{
 			return args.ReadFlag("toc");
+		}
+
+		public static string ReadTocPrefix(this ArgsReader args)
+		{
+			return args.ReadOption("toc-prefix");
+		}
+
+		public static string ReadBlackList(this ArgsReader args)
+		{
+			return args.ReadOption("blacklist");
 		}
 
 		public static string ReadNewLineOption(this ArgsReader args)

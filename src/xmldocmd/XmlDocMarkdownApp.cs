@@ -35,7 +35,8 @@ namespace XmlDocMarkdown
 				settings.IsQuiet = argsReader.ReadQuietFlag();
 				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag();
 				settings.FrontMatter = argsReader.ReadFrontMatter();
-				settings.GenerateTOC = argsReader.ReadGeneratyeTOCFlag();
+				settings.GenerateToc = argsReader.ReadGeneratyeTocFlag();
+				settings.TocPrefix = argsReader.ReadTocPrefix();
 
 				var externalDocs = new List<ExternalDocumentation>();
 				string externalOption;
