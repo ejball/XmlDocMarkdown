@@ -74,6 +74,12 @@ namespace XmlDocMarkdown
 			return args.ReadFlag("verify");
 		}
 
+
+		public static bool ReadGeneratyeTOCFlag(this ArgsReader args)
+		{
+			return args.ReadFlag("toc");
+		}
+
 		public static string ReadNewLineOption(this ArgsReader args)
 		{
 			string value = args.ReadOption("newline");

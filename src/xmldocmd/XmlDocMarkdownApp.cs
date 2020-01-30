@@ -35,6 +35,7 @@ namespace XmlDocMarkdown
 				settings.IsQuiet = argsReader.ReadQuietFlag();
 				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag();
 				settings.FrontMatter = argsReader.ReadFrontMatter();
+				settings.GenerateTOC = argsReader.ReadGeneratyeTOCFlag();
 
 				var externalDocs = new List<ExternalDocumentation>();
 				string externalOption;
@@ -114,6 +115,8 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      File containing the Jekyll front matter template you want in each generated page.");
 			textWriter.WriteLine("      The front matter can use $title argument and $rel for permalinks.");
 			textWriter.WriteLine("      When front matter is defined the .md extension is dropped in all generated links.");
+			textWriter.WriteLine("   --toc");
+			textWriter.WriteLine("      File containing table of contents in .yml format.");
 			textWriter.WriteLine("   --newline (auto|lf|crlf)");
 			textWriter.WriteLine("      The newline used in the output (default auto).");
 		}

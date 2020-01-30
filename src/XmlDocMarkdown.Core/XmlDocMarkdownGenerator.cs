@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core
@@ -83,6 +84,24 @@ namespace XmlDocMarkdown.Core
 					result.Added.Add(namedText.Name);
 					if (!settings.IsQuiet)
 						result.Messages.Add("added " + namedText.Name);
+				}
+			}
+
+			if (settings.GenerateTOC)
+			{
+				string tocPath = Path.Combine(outputPath, "toc.yml");
+
+				NamedText root = namedTexts.FirstOrDefault();
+				if (root != null)
+				{
+					XmlDocToc toc = new XmlDocToc() { Path = root.Name, Title = root.Title };
+
+					foreach (var namedText in namedTexts.Skip(1))
+					{
+						toc.AddChild(namedText.Name, namedText.Title);
+					}
+
+					toc.Save(tocPath);
 				}
 			}
 

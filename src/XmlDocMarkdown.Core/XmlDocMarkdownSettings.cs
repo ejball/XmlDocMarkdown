@@ -44,6 +44,11 @@ namespace XmlDocMarkdown.Core
 		public bool ShouldClean { get; set; }
 
 		/// <summary>
+		/// If true, generates a .yml file that can be used in a Jekyll based site.
+		/// </summary>
+		public bool GenerateTOC { get; set; }
+
+		/// <summary>
 		/// If true, suppresses normal console output.
 		/// </summary>
 		public bool IsQuiet { get; set; }

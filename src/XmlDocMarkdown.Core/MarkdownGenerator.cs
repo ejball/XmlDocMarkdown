@@ -19,6 +19,8 @@ namespace XmlDocMarkdown.Core
 
 		public string RootNamespace { get; set; }
 
+		public string RootPageLocation { get; set; }
+
 		public bool IncludeObsolete { get; set; }
 
 		public XmlDocVisibilityLevel Visibility { get; set; }
@@ -85,10 +87,11 @@ namespace XmlDocMarkdown.Core
 			var safeAssemblyName = rootPath.Replace(".", ""); // Jekyll gets confused with dots in file names.
 			string rootNamespace = RootNamespace ??
 				visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0);
-			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, $"{rootPath}/{safeAssemblyName}Assembly.md");
-			yield return CreateNamedText(context.PageLocation, writer =>
+			RootPageLocation = $"{safeAssemblyName}Assembly.md";
+			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation);
+			yield return CreateNamedText(context.PageLocation, assemblyName, writer =>
 			{
-				var front = GetFrontMatter(assemblyName, $"{rootPath}/{safeAssemblyName}Assembly{extension}");
+				var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}Assembly{extension}");
 				if (!string.IsNullOrEmpty(front))
 				{
 					writer.WriteLine(front);
@@ -127,6 +130,7 @@ namespace XmlDocMarkdown.Core
 				string safeRelative = relative.Replace(".", "");
 				yield return WriteMemberPage(
 					path: $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{relative}/{safeRelative}Type.md",
+					title: safeRelative,
 					memberInfo: visibleTypeRecord.TypeInfo,
 					context: context);
 
@@ -148,6 +152,7 @@ namespace XmlDocMarkdown.Core
 					{
 						yield return WriteMemberPage(
 							path: $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{GetTypeUriName(visibleTypeRecord.TypeInfo)}/{memberGroup.MemberUriName}.md",
+							title: memberGroup.MemberUriName,
 							memberGroup: memberGroup.Members,
 							context: context);
 					}
@@ -166,7 +171,7 @@ namespace XmlDocMarkdown.Core
 			return contents.Replace("$title", title).Replace("$ref", relativeLink);
 		}
 
-		private NamedText CreateNamedText(string name, Action<MarkdownWriter> writeTo)
+		private NamedText CreateNamedText(string name, string title, Action<MarkdownWriter> writeTo)
 		{
 			using (var stringWriter = new StringWriter())
 			{
@@ -175,7 +180,7 @@ namespace XmlDocMarkdown.Core
 
 				var code = new MarkdownWriter(stringWriter);
 				writeTo(code);
-				return new NamedText(name, stringWriter.ToString());
+				return new NamedText(name, title, stringWriter.ToString());
 			}
 		}
 
@@ -242,8 +247,8 @@ namespace XmlDocMarkdown.Core
 			return backticks + value + backticks;
 		}
 
-		private NamedText WriteMemberPage(string path, MemberInfo memberInfo, MarkdownContext context)
-			=> WriteMemberPage(path, new[] { memberInfo }, context);
+		private NamedText WriteMemberPage(string path, string title, MemberInfo memberInfo, MarkdownContext context)
+			=> WriteMemberPage(path, title, new[] { memberInfo }, context);
 
 		private string GetFileExtension()
 		{
@@ -264,14 +269,13 @@ namespace XmlDocMarkdown.Core
 			return path.Replace("\\", "/");
 		}
 
-		private NamedText WriteMemberPage(string path, IReadOnlyList<MemberInfo> memberGroup, MarkdownContext context)
+		private NamedText WriteMemberPage(string path, string title, IReadOnlyList<MemberInfo> memberGroup, MarkdownContext context)
 		{
 			string extension = GetFileExtension();
 
-			return CreateNamedText(path, writer =>
+			return CreateNamedText(path, title, writer =>
 			{
 				var relative = $"{GetPathWithoutExtension(path)}";
-				var title = Path.GetFileNameWithoutExtension(path);
 				var front = GetFrontMatter(title, relative);
 				if (!string.IsNullOrEmpty(front))
 				{
@@ -501,9 +505,7 @@ namespace XmlDocMarkdown.Core
 						}
 					}
 
-					string assemblyPath = GetAssemblyUriName((declaringType ?? typeInfo).Assembly);
-					var safeAssemblyName = assemblyPath.Replace(".", ""); // Jekyll gets confused with dots in file names.
-					string namespacePath = MakeRelative(path, $"{assemblyPath}/{safeAssemblyName}Assembly{extension}");
+					string namespacePath = MakeRelative(path, RootPageLocation);
 					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}]({namespacePath})");
 
 					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))

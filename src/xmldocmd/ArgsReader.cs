@@ -23,7 +23,6 @@ namespace XmlDocMarkdown
 		{
 			m_args = args?.ToList() ?? throw new ArgumentNullException(nameof(args));
 		}
-
 		/// <summary>
 		/// True if short options (e.g. <c>-h</c>) should ignore case. (Default false.)
 		/// </summary>
