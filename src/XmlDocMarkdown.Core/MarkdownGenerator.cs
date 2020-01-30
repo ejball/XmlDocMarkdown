@@ -550,12 +550,12 @@ namespace XmlDocMarkdown.Core
 						}
 					}
 
-					string namespacePath = MakeRelative(path, parent);
-					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}]({namespacePath})");
+					string namespacePath = GetPathWithoutExtension(MakeRelative(path, parent));
+					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}]({namespacePath}{extension})");
 
 					string assemblyName = (declaringType ?? typeInfo).Assembly.GetName().Name;
 					string assemblyPath = MakeRelative(path, RootPageLocation);
-					writer.WriteLine("* " + $"assembly\u00A0[assemblyName]({assemblyPath})");
+					writer.WriteLine("* " + $"assembly\u00A0[{assemblyName}]({assemblyPath})");
 
 					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))
 					{

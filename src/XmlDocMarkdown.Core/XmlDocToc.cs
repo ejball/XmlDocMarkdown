@@ -100,16 +100,27 @@ namespace XmlDocMarkdown.Core
 					- name: State Machines
 					  link: /learn/programming-models/actors/state-machin
 			*/
+
+			string p = Path;
+			if (p.EndsWith(".md", StringComparison.Ordinal))
+			{
+				int pos = p.LastIndexOf('.');
+				if (pos > 0)
+				{
+					p = p.Substring(0, pos);
+				}
+			}
+
 			writer.Write(indent);
 			writer.WriteLine("- name: {0}", Title);
 			writer.Write(indent);
 			if (!string.IsNullOrEmpty(Prefix))
 			{
-				writer.WriteLine("  link: {0}/{1}", Prefix, Path);
+				writer.WriteLine("  link: {0}/{1}", Prefix, p);
 			}
 			else
 			{
-				writer.WriteLine("  link: {0}", Path);
+				writer.WriteLine("  link: {0}", p);
 			}
 			if (Children != null && Children.Count > 0)
 			{
