@@ -30,6 +30,7 @@ namespace XmlDocMarkdown
 				settings.SourceCodePath = argsReader.ReadSourceOption();
 				settings.RootNamespace = argsReader.ReadNamespaceOption();
 				settings.IncludeObsolete = argsReader.ReadObsoleteFlag();
+				settings.IncludeUnbrowsables = argsReader.ReadUnbrowsableFlag();
 				settings.VisibilityLevel = argsReader.ReadVisibilityOption();
 				settings.ShouldClean = argsReader.ReadCleanFlag();
 				settings.IsQuiet = argsReader.ReadQuietFlag();
@@ -104,6 +105,8 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      The minimum visibility of documented members. (default 'protected')");
 			textWriter.WriteLine("   --obsolete");
 			textWriter.WriteLine("      Generates documentation for obsolete types and members.");
+			textWriter.WriteLine("   --unbrowsable");
+			textWriter.WriteLine("      Generates documentation for types that are marked with System.ComponentModel.EditorBrowsable Never.");
 			textWriter.WriteLine("   --clean");
 			textWriter.WriteLine("      Deletes previously generated files that are no longer used.");
 			textWriter.WriteLine("   --verify");

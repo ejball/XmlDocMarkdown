@@ -39,6 +39,11 @@ namespace XmlDocMarkdown
 			return args.ReadFlag("obsolete");
 		}
 
+		public static bool ReadUnbrowsableFlag(this ArgsReader args)
+		{
+			return args.ReadFlag("unbrowsable");
+		}
+
 		public static string ReadExternalOption(this ArgsReader args)
 		{
 			return args.ReadOption("external");

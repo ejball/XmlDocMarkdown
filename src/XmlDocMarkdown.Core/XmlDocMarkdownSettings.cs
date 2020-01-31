@@ -27,6 +27,11 @@ namespace XmlDocMarkdown.Core
 		public bool IncludeObsolete { get; set; }
 
 		/// <summary>
+		/// If true, generates documentation for types that have System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never).
+		/// </summary>
+		public bool IncludeUnbrowsables { get; set; }
+
+		/// <summary>
 		/// The minimum visibility for documented types and members.
 		/// </summary>
 		/// <remarks>Defaults to <c>Protected</c>.</remarks>

@@ -36,6 +36,7 @@ namespace XmlDocMarkdown.Core
 				SourceCodePath = settings.SourceCodePath,
 				RootNamespace = settings.RootNamespace,
 				IncludeObsolete = settings.IncludeObsolete,
+				IncludeUnbrowsables = settings.IncludeUnbrowsables,
 				Visibility = settings.VisibilityLevel ?? XmlDocVisibilityLevel.Protected,
 				ExternalDocs = settings.ExternalDocs,
 			};
