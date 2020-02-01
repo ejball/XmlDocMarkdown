@@ -23,7 +23,7 @@ namespace XmlDocMarkdown.Core
 
 		public bool IncludeObsolete { get; set; }
 
-		public bool IncludeUnbrowsables{ get; set; }
+		public bool IncludeUnbrowsables { get; set; }
 
 		public XmlDocVisibilityLevel Visibility { get; set; }
 
@@ -615,11 +615,14 @@ namespace XmlDocMarkdown.Core
 			if (memberInfo.GetCustomAttributes<System.Runtime.CompilerServices.CompilerGeneratedAttribute>().Any())
 				return false;
 
-			foreach (var browsable in memberInfo.GetCustomAttributes<System.ComponentModel.EditorBrowsableAttribute>())
+			if (!IncludeUnbrowsables)
 			{
-				if (browsable.State == System.ComponentModel.EditorBrowsableState.Never)
+				foreach (var browsable in memberInfo.GetCustomAttributes<System.ComponentModel.EditorBrowsableAttribute>())
 				{
-					return false;
+					if (browsable.State == System.ComponentModel.EditorBrowsableState.Never)
+					{
+						return false;
+					}
 				}
 			}
 
