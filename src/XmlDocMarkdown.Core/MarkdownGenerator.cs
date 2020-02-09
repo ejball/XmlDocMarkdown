@@ -23,7 +23,11 @@ namespace XmlDocMarkdown.Core
 
 		public bool IncludeObsolete { get; set; }
 
-		public bool IncludeUnbrowsables { get; set; }
+		public bool SkipCompilerGenerated { get; set; }
+
+		public bool SkipUnbrowsable { get; set; }
+
+		public bool NamespacePages { get; set; }
 
 		public XmlDocVisibilityLevel Visibility { get; set; }
 
@@ -130,39 +134,45 @@ namespace XmlDocMarkdown.Core
 			// create separate parent pages for each namespace in the assembly.
 			foreach (var group in visibleNamespaceRecords)
 			{
-				var namespacePath = group.Namespace;
-				var safeNamespacePath = namespacePath.Replace(".", ""); // Jekyll gets confused with dots in file names.
-				var nsPageLocation = $"{safeNamespacePath}Namespace.md";
-				var nsContext = new MarkdownContext(context, null, nsPageLocation);
-				yield return CreateNamedText(nsPageLocation, context.PageLocation, group.Namespace, writer =>
+				string parentPageLocation = RootPageLocation;
+				var parentContext = context;
+
+				if (NamespacePages)
 				{
-					var front = GetFrontMatter(namespacePath, $"{safeNamespacePath}Namespace");
-					if (!string.IsNullOrEmpty(front))
+					var namespacePath = group.Namespace;
+					var safeNamespacePath = namespacePath.Replace(".", ""); // Jekyll gets confused with dots in file names.
+					parentPageLocation = $"{safeNamespacePath}Namespace.md";
+					parentContext = new MarkdownContext(context, null, parentPageLocation);
+					yield return CreateNamedText(parentPageLocation, context.PageLocation, group.Namespace, writer =>
 					{
-						writer.WriteLine(front);
-					}
-
-					writer.WriteLine($"## {group.Namespace} namespace");
-
-					foreach (var typeGroup in group.Types.GroupBy(x => x.Visibility))
-					{
-						writer.WriteLine();
-						writer.WriteLine($"| {(typeGroup.Key == XmlDocVisibilityLevel.Public ? "public" : "internal")} type | description |");
-						writer.WriteLine("| --- | --- |");
-						foreach (var typeInfo in typeGroup)
+						var front = GetFrontMatter(namespacePath, $"{safeNamespacePath}Namespace");
+						if (!string.IsNullOrEmpty(front))
 						{
-							string relative = GetPathWithoutExtension(typeInfo.Path);
-							string safeRelative = relative.Replace(".", "");
-							string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}Type{extension}");
-							string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
-							string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
-							writer.WriteLine($"| {typeText} | {summaryText} |");
+							writer.WriteLine(front);
 						}
-					}
 
-					writer.WriteLine();
-					writer.WriteLine(GetCodeGenComment(assemblyFileName));
-				});
+						writer.WriteLine($"## {group.Namespace} namespace");
+
+						foreach (var typeGroup in group.Types.GroupBy(x => x.Visibility))
+						{
+							writer.WriteLine();
+							writer.WriteLine($"| {(typeGroup.Key == XmlDocVisibilityLevel.Public ? "public" : "internal")} type | description |");
+							writer.WriteLine("| --- | --- |");
+							foreach (var typeInfo in typeGroup)
+							{
+								string relative = GetPathWithoutExtension(typeInfo.Path);
+								string safeRelative = relative.Replace(".", "");
+								string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}Type{extension}");
+								string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
+								string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
+								writer.WriteLine($"| {typeText} | {summaryText} |");
+							}
+						}
+
+						writer.WriteLine();
+						writer.WriteLine(GetCodeGenComment(assemblyFileName));
+					});
+				}
 
 				foreach (var visibleTypeRecord in visibleTypeRecords)
 				{
@@ -174,9 +184,9 @@ namespace XmlDocMarkdown.Core
 						yield return WriteMemberPage(
 							path: typePage,
 							title: GetFullMemberName(visibleTypeRecord.TypeInfo),
-							parent: nsPageLocation,
+							parent: parentPageLocation,
 							memberInfo: visibleTypeRecord.TypeInfo,
-							context: nsContext);
+							context: parentContext);
 
 						var typeKind = GetTypeKind(visibleTypeRecord.TypeInfo);
 						if (typeKind == TypeKind.Class || typeKind == TypeKind.Struct || typeKind == TypeKind.Interface)
@@ -552,8 +562,11 @@ namespace XmlDocMarkdown.Core
 						}
 					}
 
-					string namespacePath = GetPathWithoutExtension(MakeRelative(path, parent));
-					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}]({namespacePath}{extension})");
+					if (NamespacePages)
+					{
+						string namespacePath = GetPathWithoutExtension(MakeRelative(path, parent));
+						writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}]({namespacePath}{extension})");
+					}
 
 					string assemblyName = (declaringType ?? typeInfo).Assembly.GetName().Name;
 					string assemblyPath = MakeRelative(path, RootPageLocation);
@@ -612,10 +625,10 @@ namespace XmlDocMarkdown.Core
 			if (!IncludeObsolete && memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any())
 				return false;
 
-			if (memberInfo.GetCustomAttributes<System.Runtime.CompilerServices.CompilerGeneratedAttribute>().Any())
+			if (SkipCompilerGenerated && memberInfo.GetCustomAttributes<System.Runtime.CompilerServices.CompilerGeneratedAttribute>().Any())
 				return false;
 
-			if (!IncludeUnbrowsables)
+			if (SkipUnbrowsable)
 			{
 				foreach (var browsable in memberInfo.GetCustomAttributes<System.ComponentModel.EditorBrowsableAttribute>())
 				{

@@ -6,6 +6,10 @@ using System.Linq;
 
 namespace XmlDocMarkdown.Core
 {
+	/// <summary>
+	/// This class builds a .yml table of contents along the lines of what you see here:
+	/// https://jekyllrb.com/tutorials/navigation/#scenario-4-three-level-navigation-list
+	/// </summary>
 	internal sealed class XmlDocToc
 	{
 		public string Prefix { get; set; }
@@ -82,23 +86,13 @@ namespace XmlDocMarkdown.Core
 
 		internal void Save(StreamWriter writer, string indent)
 		{
-			/*
+			/* 
 			toc:
-			- title: Programming
-			  link: /learn/programming-models
+			- title: ...
+			  link: relative link to the permalink
 			  subfolderitems:
-				- name: Asynchronous Tasks
-				  link: /learn/programming-models/async/overview
-				  tertiaryitems:
-					- name: Overview
-					  link: /learn/programming-models/async/overview
-				- name: Asynchronous Actors
-				  link: /learn/programming-models/actors/overview
-				  tertiaryitems:
-					- name: Overview
-					  link: /learn/programming-models/actors/overview
-					- name: State Machines
-					  link: /learn/programming-models/actors/state-machin
+				- name: ...
+				  link: ...
 			*/
 
 			string p = Path;

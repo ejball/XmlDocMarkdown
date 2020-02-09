@@ -27,9 +27,14 @@ namespace XmlDocMarkdown.Core
 		public bool IncludeObsolete { get; set; }
 
 		/// <summary>
-		/// If true, generates documentation for types that have System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never).
+		/// If true, skips documentation for types that have System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never).
 		/// </summary>
-		public bool IncludeUnbrowsables { get; set; }
+		public bool SkipUnbrowsable { get; set; }
+
+		/// <summary>
+		/// If true, skips documentation for types that have System.Runtime.CompilerServices.CompilerGeneratedAttribute metadata.
+		/// </summary>
+		public bool SkipCompilerGenerated { get; set; }
 
 		/// <summary>
 		/// The minimum visibility for documented types and members.
@@ -52,6 +57,11 @@ namespace XmlDocMarkdown.Core
 		/// If true, generates a .yml file that can be used in a Jekyll based site.
 		/// </summary>
 		public bool GenerateToc { get; set; }
+
+		/// <summary>
+		/// Generate separate pages for each namespace containing list of types in each.
+		/// </summary>
+		public bool NamespacePages { get; set; }
 
 		/// <summary>
 		/// A path prefix to add to all links in the table of contents .yml file.

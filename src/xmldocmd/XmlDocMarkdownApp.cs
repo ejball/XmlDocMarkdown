@@ -30,7 +30,8 @@ namespace XmlDocMarkdown
 				settings.SourceCodePath = argsReader.ReadSourceOption();
 				settings.RootNamespace = argsReader.ReadNamespaceOption();
 				settings.IncludeObsolete = argsReader.ReadObsoleteFlag();
-				settings.IncludeUnbrowsables = argsReader.ReadUnbrowsableFlag();
+				settings.SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag();
+				settings.SkipCompilerGenerated = argsReader.ReadSkipCompilerGeneratedFlag();
 				settings.VisibilityLevel = argsReader.ReadVisibilityOption();
 				settings.ShouldClean = argsReader.ReadCleanFlag();
 				settings.IsQuiet = argsReader.ReadQuietFlag();
@@ -38,6 +39,7 @@ namespace XmlDocMarkdown
 				settings.FrontMatter = argsReader.ReadFrontMatter();
 				settings.GenerateToc = argsReader.ReadGeneratyeTocFlag();
 				settings.TocPrefix = argsReader.ReadTocPrefix();
+				settings.NamespacePages = argsReader.ReadNamespacePageFlag();
 
 				var externalDocs = new List<ExternalDocumentation>();
 				string externalOption;
@@ -105,8 +107,10 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      The minimum visibility of documented members. (default 'protected')");
 			textWriter.WriteLine("   --obsolete");
 			textWriter.WriteLine("      Generates documentation for obsolete types and members.");
-			textWriter.WriteLine("   --unbrowsable");
-			textWriter.WriteLine("      Generates documentation for types that are marked with System.ComponentModel.EditorBrowsable Never.");
+			textWriter.WriteLine("   --skip-unbrowsable");
+			textWriter.WriteLine("      Skips documentation for types that are marked with System.ComponentModel.EditorBrowsable Never.");
+			textWriter.WriteLine("   --skip-compiler-generated");
+			textWriter.WriteLine("      Skips documentation for types that are marked with System.Runtime.CompilerServices.CompilerGenerated.");
 			textWriter.WriteLine("   --clean");
 			textWriter.WriteLine("      Deletes previously generated files that are no longer used.");
 			textWriter.WriteLine("   --verify");
@@ -119,6 +123,8 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      File containing the Jekyll front matter template you want in each generated page.");
 			textWriter.WriteLine("      The front matter can use $title argument and $rel for permalinks.");
 			textWriter.WriteLine("      When front matter is defined the .md extension is dropped in all generated links.");
+			textWriter.WriteLine("   --namespace-pages");
+			textWriter.WriteLine("      Generate separate pages for each namespace, listing types in each.");
 			textWriter.WriteLine("   --toc");
 			textWriter.WriteLine("      File containing table of contents in .yml format.");
 			textWriter.WriteLine("   --newline (auto|lf|crlf)");

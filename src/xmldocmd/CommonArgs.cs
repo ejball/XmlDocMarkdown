@@ -39,9 +39,14 @@ namespace XmlDocMarkdown
 			return args.ReadFlag("obsolete");
 		}
 
-		public static bool ReadUnbrowsableFlag(this ArgsReader args)
+		public static bool ReadSkipUnbrowsableFlag(this ArgsReader args)
 		{
-			return args.ReadFlag("unbrowsable");
+			return args.ReadFlag("skip-unbrowsable");
+		}
+
+		public static bool ReadSkipCompilerGeneratedFlag(this ArgsReader args)
+		{
+			return args.ReadFlag("skip-compiler-generated");
 		}
 
 		public static string ReadExternalOption(this ArgsReader args)
@@ -67,6 +72,11 @@ namespace XmlDocMarkdown
 		public static bool ReadQuietFlag(this ArgsReader args)
 		{
 			return args.ReadFlag("quiet");
+		}
+
+		public static bool ReadNamespacePageFlag(this ArgsReader args)
+		{
+			return args.ReadFlag("namespace-pages");
 		}
 
 		public static string ReadFrontMatter(this ArgsReader args)

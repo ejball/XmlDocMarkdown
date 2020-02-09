@@ -36,9 +36,11 @@ namespace XmlDocMarkdown.Core
 				SourceCodePath = settings.SourceCodePath,
 				RootNamespace = settings.RootNamespace,
 				IncludeObsolete = settings.IncludeObsolete,
-				IncludeUnbrowsables = settings.IncludeUnbrowsables,
+				SkipUnbrowsable = settings.SkipUnbrowsable,
+				SkipCompilerGenerated = settings.SkipCompilerGenerated,
 				Visibility = settings.VisibilityLevel ?? XmlDocVisibilityLevel.Protected,
 				ExternalDocs = settings.ExternalDocs,
+				NamespacePages = settings.NamespacePages
 			};
 			if (settings.NewLine != null)
 				generator.NewLine = settings.NewLine;
