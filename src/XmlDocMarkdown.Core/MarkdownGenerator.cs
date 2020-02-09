@@ -120,7 +120,7 @@ namespace XmlDocMarkdown.Core
 							string safeRelative = GetSafeName(relative);
 							if (PermalinkPretty)
 								safeRelative += "Type";
-							string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}{extension}");
+							string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}");
 							string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
 							string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
 							writer.WriteLine($"| {typeText} | {summaryText} |");
@@ -166,7 +166,7 @@ namespace XmlDocMarkdown.Core
 								string safeRelative = GetSafeName(relative);
 								if (PermalinkPretty)
 									safeRelative += "Type";
-								string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}{extension}");
+								string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}");
 								string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
 								string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
 								writer.WriteLine($"| {typeText} | {summaryText} |");
@@ -185,8 +185,8 @@ namespace XmlDocMarkdown.Core
 						string relative = GetPermalink(visibleTypeRecord.Path);
 						string safeRelative = GetSafeName(relative);
 						if (PermalinkPretty)
-							safeRelative += "Type";
-						string typePage = $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{safeRelative}.md";
+							safeRelative += "Type.md";
+						string typePage = $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{safeRelative}";
 						yield return WriteMemberPage(
 							path: typePage,
 							title: GetFullMemberName(visibleTypeRecord.TypeInfo),
