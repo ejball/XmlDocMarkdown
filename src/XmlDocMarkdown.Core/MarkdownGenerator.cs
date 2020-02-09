@@ -23,8 +23,6 @@ namespace XmlDocMarkdown.Core
 
 		public bool IncludeObsolete { get; set; }
 
-		public bool SkipCompilerGenerated { get; set; }
-
 		public bool SkipUnbrowsable { get; set; }
 
 		public bool NamespacePages { get; set; }
@@ -41,6 +39,8 @@ namespace XmlDocMarkdown.Core
 		private string ActualNewLine => NewLine ?? Environment.NewLine;
 
 		public string FrontMatter { get; internal set; }
+
+		public bool PermalinkPretty{ get; internal set; }
 
 		private IEnumerable<NamedText> DoGenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 		{
@@ -90,14 +90,14 @@ namespace XmlDocMarkdown.Core
 
 			string sourceCodePath = SourceCodePath?.Trim('/');
 			var rootPath = GetAssemblyUriName(assembly);
-			var safeAssemblyName = rootPath.Replace(".", ""); // Jekyll gets confused with dots in file names.
+			var safeAssemblyName = GetSafeName(rootPath);
 			string rootNamespace = RootNamespace ??
 				visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0);
-			RootPageLocation = $"{safeAssemblyName}Assembly.md";
+			RootPageLocation = $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly.md" : ".md");
 			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation);
 			yield return CreateNamedText(context.PageLocation, null, assemblyName, writer =>
 			{
-				var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}Assembly{extension}");
+				var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly" :"") + extension);
 				if (!string.IsNullOrEmpty(front))
 				{
 					writer.WriteLine(front);
@@ -116,9 +116,11 @@ namespace XmlDocMarkdown.Core
 						writer.WriteLine("| --- | --- |");
 						foreach (var typeInfo in typeGroup)
 						{
-							string relative = GetPathWithoutExtension(typeInfo.Path);
-							string safeRelative = relative.Replace(".", "");
-							string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}Type{extension}");
+							string relative = GetPermalink(typeInfo.Path);
+							string safeRelative = GetSafeName(relative);
+							if (PermalinkPretty)
+								safeRelative += "Type";
+							string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}{extension}");
 							string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
 							string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
 							writer.WriteLine($"| {typeText} | {summaryText} |");
@@ -140,7 +142,7 @@ namespace XmlDocMarkdown.Core
 				if (NamespacePages)
 				{
 					var namespacePath = group.Namespace;
-					var safeNamespacePath = namespacePath.Replace(".", ""); // Jekyll gets confused with dots in file names.
+					var safeNamespacePath = GetSafeName(namespacePath);
 					parentPageLocation = $"{safeNamespacePath}Namespace.md";
 					parentContext = new MarkdownContext(context, null, parentPageLocation);
 					yield return CreateNamedText(parentPageLocation, context.PageLocation, group.Namespace, writer =>
@@ -160,9 +162,11 @@ namespace XmlDocMarkdown.Core
 							writer.WriteLine("| --- | --- |");
 							foreach (var typeInfo in typeGroup)
 							{
-								string relative = GetPathWithoutExtension(typeInfo.Path);
-								string safeRelative = relative.Replace(".", "");
-								string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}Type{extension}");
+								string relative = GetPermalink(typeInfo.Path);
+								string safeRelative = GetSafeName(relative);
+								if (PermalinkPretty)
+									safeRelative += "Type";
+								string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}{extension}");
 								string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
 								string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
 								writer.WriteLine($"| {typeText} | {summaryText} |");
@@ -178,9 +182,11 @@ namespace XmlDocMarkdown.Core
 				{
 					if (visibleTypeRecord.Namespace == group.Namespace)
 					{
-						string relative = GetPathWithoutExtension(visibleTypeRecord.Path);
-						string safeRelative = relative.Replace(".", "");
-						string typePage = $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{safeRelative}Type.md";
+						string relative = GetPermalink(visibleTypeRecord.Path);
+						string safeRelative = GetSafeName(relative);
+						if (PermalinkPretty)
+							safeRelative += "Type";
+						string typePage = $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{safeRelative}.md";
 						yield return WriteMemberPage(
 							path: typePage,
 							title: GetFullMemberName(visibleTypeRecord.TypeInfo),
@@ -274,17 +280,33 @@ namespace XmlDocMarkdown.Core
 			});
 		}
 
-		private static string GetSafeTypeUriName(TypeInfo typeInfo)
+		private string GetSafeTypeUriName(TypeInfo typeInfo)
 		{
-			return GetTypeUriName(typeInfo).Replace(".", ""); // Jekyll can't handle dots in file name.
+			var name = GetSafeName(GetTypeUriName(typeInfo));
+			if (PermalinkPretty)
+			{
+				// Jekyll doesn't allow "Foo.md" and a folder named "Foo" containing the method markdown files.
+				// So we rename the type "FooType.md" to avoid this conflict.
+				name += "Type";
+			}
+			return name;
 		}
 
-		private static string GetMemberUriName(MemberInfo memberInfo)
+		private string GetSafeName(string name)
+		{
+			if (PermalinkPretty)
+			{
+				return name.Replace(".", ""); // Jekyll can't handle dots in file name.
+			}
+			return name;
+		}
+
+		private string GetMemberUriName(MemberInfo memberInfo)
 		{
 			var typeInfo = memberInfo as TypeInfo;
 			if (typeInfo != null)
 			{
-				return $"{GetSafeTypeUriName(typeInfo)}Type";
+				return $"{GetSafeTypeUriName(typeInfo)}";
 			}
 			else
 			{
@@ -309,19 +331,23 @@ namespace XmlDocMarkdown.Core
 
 		private string GetFileExtension()
 		{
-			if (string.IsNullOrEmpty(FrontMatter))
+			if (PermalinkPretty)
 			{
-				return ".md";
+				return string.Empty;
 			}
-			return string.Empty;
+			return ".md";
 		}
 
-		private string GetPathWithoutExtension(string path)
+		private string GetPermalink(string path)
 		{
-			int pos = path.LastIndexOf('.');
-			if (pos > 0)
+			if (PermalinkPretty)
 			{
-				path = path.Substring(0, pos);
+				// permalinks paths cannot end in .md
+				int pos = path.LastIndexOf('.');
+				if (pos > 0)
+				{
+					path = path.Substring(0, pos);
+				}
 			}
 			return path.Replace("\\", "/");
 		}
@@ -332,7 +358,7 @@ namespace XmlDocMarkdown.Core
 
 			return CreateNamedText(path, parent, title, writer =>
 			{
-				var relative = $"{GetPathWithoutExtension(path)}";
+				var relative = $"{GetPermalink(path)}";
 				var front = GetFrontMatter(title, relative);
 				if (!string.IsNullOrEmpty(front))
 				{
@@ -564,13 +590,18 @@ namespace XmlDocMarkdown.Core
 
 					if (NamespacePages)
 					{
-						string namespacePath = GetPathWithoutExtension(MakeRelative(path, parent));
+						string namespacePath = GetPermalink(MakeRelative(path, parent));
 						writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}]({namespacePath}{extension})");
-					}
 
-					string assemblyName = (declaringType ?? typeInfo).Assembly.GetName().Name;
-					string assemblyPath = MakeRelative(path, RootPageLocation);
-					writer.WriteLine("* " + $"assembly\u00A0[{assemblyName}]({assemblyPath})");
+						string assemblyName = (declaringType ?? typeInfo).Assembly.GetName().Name;
+						string assemblyPath = MakeRelative(path, RootPageLocation);
+						writer.WriteLine("* " + $"assembly\u00A0[{assemblyName}]({assemblyPath})");
+					}
+					else
+					{
+						// compatibility mode, the namespace name points to the assembly page.
+						writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}](../{(typeInfo != null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo).Assembly)}{extension})");
+					}
 
 					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))
 					{
@@ -625,7 +656,7 @@ namespace XmlDocMarkdown.Core
 			if (!IncludeObsolete && memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any())
 				return false;
 
-			if (SkipCompilerGenerated && memberInfo.GetCustomAttributes<System.Runtime.CompilerServices.CompilerGeneratedAttribute>().Any())
+			if (memberInfo.GetCustomAttributes<System.Runtime.CompilerServices.CompilerGeneratedAttribute>().Any())
 				return false;
 
 			if (SkipUnbrowsable)
@@ -2011,7 +2042,7 @@ namespace XmlDocMarkdown.Core
 				{
 					if (typeInfo != null)
 					{
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}Type{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
 					}
 					else
 					{
@@ -2022,7 +2053,7 @@ namespace XmlDocMarkdown.Core
 				{
 					if (typeInfo != null)
 					{
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}Type{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
 					}
 					else
 					{
@@ -2032,7 +2063,7 @@ namespace XmlDocMarkdown.Core
 				else
 				{
 					if (typeInfo != null)
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}Type{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
 					else
 						path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 				}
@@ -2057,7 +2088,13 @@ namespace XmlDocMarkdown.Core
 			Uri a = new Uri("file:///" + baseUri);
 			Uri b = new Uri("file:///" + path);
 			Uri rel = a.MakeRelativeUri(b);
-			return rel.ToString();
+			string result = rel.ToString();
+			if (string.IsNullOrEmpty(result))
+			{
+				// then the file name is the link
+				return b.Segments.Last();
+			}
+			return result;
 		}
 
 		private string ToMarkdown(IEnumerable<XmlDocInline> inlines, MarkdownContext context)

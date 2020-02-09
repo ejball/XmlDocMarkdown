@@ -44,11 +44,6 @@ namespace XmlDocMarkdown
 			return args.ReadFlag("skip-unbrowsable");
 		}
 
-		public static bool ReadSkipCompilerGeneratedFlag(this ArgsReader args)
-		{
-			return args.ReadFlag("skip-compiler-generated");
-		}
-
 		public static string ReadExternalOption(this ArgsReader args)
 		{
 			return args.ReadOption("external");
@@ -82,6 +77,11 @@ namespace XmlDocMarkdown
 		public static string ReadFrontMatter(this ArgsReader args)
 		{
 			return args.ReadOption("front-matter");
+		}
+
+		public static string ReadPermalinkStyle(this ArgsReader args)
+		{
+			return args.ReadOption("permalink");
 		}
 
 		public static bool ReadVerifyFlag(this ArgsReader args)

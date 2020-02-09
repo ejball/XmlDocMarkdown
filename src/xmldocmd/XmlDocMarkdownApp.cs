@@ -31,12 +31,12 @@ namespace XmlDocMarkdown
 				settings.RootNamespace = argsReader.ReadNamespaceOption();
 				settings.IncludeObsolete = argsReader.ReadObsoleteFlag();
 				settings.SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag();
-				settings.SkipCompilerGenerated = argsReader.ReadSkipCompilerGeneratedFlag();
 				settings.VisibilityLevel = argsReader.ReadVisibilityOption();
 				settings.ShouldClean = argsReader.ReadCleanFlag();
 				settings.IsQuiet = argsReader.ReadQuietFlag();
 				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag();
 				settings.FrontMatter = argsReader.ReadFrontMatter();
+				settings.PermalinkStyle = argsReader.ReadPermalinkStyle();
 				settings.GenerateToc = argsReader.ReadGeneratyeTocFlag();
 				settings.TocPrefix = argsReader.ReadTocPrefix();
 				settings.NamespacePages = argsReader.ReadNamespacePageFlag();
@@ -123,6 +123,11 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      File containing the Jekyll front matter template you want in each generated page.");
 			textWriter.WriteLine("      The front matter can use $title argument and $rel for permalinks.");
 			textWriter.WriteLine("      When front matter is defined the .md extension is dropped in all generated links.");
+			textWriter.WriteLine("   --permalink");
+			textWriter.WriteLine("      Specify permalink style, 'none' or 'pretty' (default 'none').");
+			textWriter.WriteLine("      'pretty' permalinks do not contain file extensions, and when you select this option.");
+			textWriter.WriteLine("      periods have to be removed from file names, for example, 'System.Console' would have to be 'SystemConsole'.");
+			textWriter.WriteLine("      since the removal of the '.md' extension would make Jekyll think .Console is a file extension which doesn't work.");
 			textWriter.WriteLine("   --namespace-pages");
 			textWriter.WriteLine("      Generate separate pages for each namespace, listing types in each.");
 			textWriter.WriteLine("   --toc");

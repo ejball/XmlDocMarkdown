@@ -32,11 +32,6 @@ namespace XmlDocMarkdown.Core
 		public bool SkipUnbrowsable { get; set; }
 
 		/// <summary>
-		/// If true, skips documentation for types that have System.Runtime.CompilerServices.CompilerGeneratedAttribute metadata.
-		/// </summary>
-		public bool SkipCompilerGenerated { get; set; }
-
-		/// <summary>
 		/// The minimum visibility for documented types and members.
 		/// </summary>
 		/// <remarks>Defaults to <c>Protected</c>.</remarks>
@@ -82,6 +77,14 @@ namespace XmlDocMarkdown.Core
 		/// If non-null, contains the path to a file that contains the Jekyll front matter template.
 		/// </summary>
 		public string FrontMatter { get; set; }
+
+		/// <summary>
+		/// Specify permalink style, 'none' or 'pretty' (default 'none').
+		/// 'pretty' permalinks do not contain file extensions, and when you select this option
+		/// periods have to be removed from file names, for example, 'System.Console' would have to be 'SystemConsole'.
+		/// since the removal of the '.md' extension would make Jekyll think '.Console' is a file extension which doesn't work.
+		/// </summary>
+		public string PermalinkStyle { get; set; }
 
 		/// <summary>
 		/// Configures external documentation.

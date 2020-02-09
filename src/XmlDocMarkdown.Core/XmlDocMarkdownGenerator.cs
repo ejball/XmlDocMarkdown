@@ -37,15 +37,16 @@ namespace XmlDocMarkdown.Core
 				RootNamespace = settings.RootNamespace,
 				IncludeObsolete = settings.IncludeObsolete,
 				SkipUnbrowsable = settings.SkipUnbrowsable,
-				SkipCompilerGenerated = settings.SkipCompilerGenerated,
 				Visibility = settings.VisibilityLevel ?? XmlDocVisibilityLevel.Protected,
 				ExternalDocs = settings.ExternalDocs,
-				NamespacePages = settings.NamespacePages
+				NamespacePages = settings.NamespacePages,
+				FrontMatter = settings.FrontMatter,
 			};
 			if (settings.NewLine != null)
 				generator.NewLine = settings.NewLine;
 
-			generator.FrontMatter = settings.FrontMatter;
+			if (string.Compare(settings.PermalinkStyle, "pretty", StringComparison.OrdinalIgnoreCase) == 0)
+				generator.PermalinkPretty = true;
 
 			var assembly = Assembly.LoadFrom(inputPath);
 			XmlDocAssembly xmlDocAssembly;

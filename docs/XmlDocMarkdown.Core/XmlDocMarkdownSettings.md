@@ -12,13 +12,19 @@ public class XmlDocMarkdownSettings
 | --- | --- |
 | [XmlDocMarkdownSettings](XmlDocMarkdownSettings/XmlDocMarkdownSettings.md)() | The default constructor. |
 | [ExternalDocs](XmlDocMarkdownSettings/ExternalDocs.md) { get; set; } | Configures external documentation. |
+| [FrontMatter](XmlDocMarkdownSettings/FrontMatter.md) { get; set; } | If non-null, contains the path to a file that contains the Jekyll front matter template. |
+| [GenerateToc](XmlDocMarkdownSettings/GenerateToc.md) { get; set; } | If true, generates a .yml file that can be used in a Jekyll based site. |
 | [IncludeObsolete](XmlDocMarkdownSettings/IncludeObsolete.md) { get; set; } | If true, generates documentation for obsolete types and members. (Default false.) |
 | [IsDryRun](XmlDocMarkdownSettings/IsDryRun.md) { get; set; } | If true, executes without making changes to the file system. |
 | [IsQuiet](XmlDocMarkdownSettings/IsQuiet.md) { get; set; } | If true, suppresses normal console output. |
+| [NamespacePages](XmlDocMarkdownSettings/NamespacePages.md) { get; set; } | Generate separate pages for each namespace containing list of types in each. |
 | [NewLine](XmlDocMarkdownSettings/NewLine.md) { get; set; } | Indicates the newline used in the output. |
+| [PermalinkStyle](XmlDocMarkdownSettings/PermalinkStyle.md) { get; set; } | Specify permalink style, 'none' or 'pretty' (default 'none'). 'pretty' permalinks do not contain file extensions, and when you select this option periods have to be removed from file names, for example, 'System.Console' would have to be 'SystemConsole'. since the removal of the '.md' extension would make Jekyll think '.Console' is a file extension which doesn't work. |
 | [RootNamespace](XmlDocMarkdownSettings/RootNamespace.md) { get; set; } | The root namespace of the input assembly. |
 | [ShouldClean](XmlDocMarkdownSettings/ShouldClean.md) { get; set; } | If true, deletes previously generated files that are no longer used. |
+| [SkipUnbrowsable](XmlDocMarkdownSettings/SkipUnbrowsable.md) { get; set; } | If true, skips documentation for types that have System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never). |
 | [SourceCodePath](XmlDocMarkdownSettings/SourceCodePath.md) { get; set; } | The URL of the folder containing the source code of the assembly, e.g. at GitHub. |
+| [TocPrefix](XmlDocMarkdownSettings/TocPrefix.md) { get; set; } | A path prefix to add to all links in the table of contents .yml file. |
 | [VisibilityLevel](XmlDocMarkdownSettings/VisibilityLevel.md) { get; set; } | The minimum visibility for documented types and members. |
 
 ## See Also
