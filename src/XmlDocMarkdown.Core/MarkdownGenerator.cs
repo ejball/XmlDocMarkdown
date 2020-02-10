@@ -594,7 +594,7 @@ namespace XmlDocMarkdown.Core
 						writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}]({namespacePath}{extension})");
 
 						string assemblyName = (declaringType ?? typeInfo).Assembly.GetName().Name;
-						string assemblyPath = MakeRelative(path, RootPageLocation);
+						string assemblyPath = GetPermalink(MakeRelative(path, RootPageLocation));
 						writer.WriteLine("* " + $"assembly\u00A0[{assemblyName}]({assemblyPath})");
 					}
 					else
