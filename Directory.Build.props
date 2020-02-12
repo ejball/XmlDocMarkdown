@@ -27,7 +27,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Faithlife.Analyzers" Version="1.0.5" PrivateAssets="All" />
+    <PackageReference Include="Faithlife.Analyzers" Version="1.0.7" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
