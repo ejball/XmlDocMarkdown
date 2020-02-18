@@ -23,7 +23,7 @@ jobs:
     - name: Set up .NET Core 2.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 2.1.100
+        dotnet-version: 2.1.803
     - name: Set up .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
