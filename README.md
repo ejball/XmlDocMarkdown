@@ -1,6 +1,6 @@
 # XmlDocMarkdown
 
-[![AppVeyor](https://img.shields.io/appveyor/ci/ejball/xmldocmarkdown.svg)](https://ci.appveyor.com/project/ejball/xmldocmarkdown)
+[![Build](https://github.com/ejball/XmlDocMarkdown/workflows/Build/badge.svg)](https://github.com/ejball/XmlDocMarkdown/actions?query=workflow%3ABuild)
 
 Project | Description | NuGet
 --- | --- | ---
