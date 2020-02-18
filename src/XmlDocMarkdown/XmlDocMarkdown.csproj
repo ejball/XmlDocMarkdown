@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net47</TargetFramework>
-    <FrameworkPathOverride Condition="'$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.7-api/</FrameworkPathOverride>
+    <TargetFramework>net472</TargetFramework>
+    <FrameworkPathOverride Condition="'$(MONO_ROOT)' != ''">$(MONO_ROOT)/lib/mono/4.7.2-api/</FrameworkPathOverride>
     <Description>A console app that generates Markdown from .NET XML documentation comments.</Description>
     <PackageTags>.NET XML documentation comments Markdown</PackageTags>
     <IsPackable>true</IsPackable>
-    <IsTool>True</IsTool>
+    <IsTool>true</IsTool>
     <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
   </PropertyGroup>
 
   <ItemGroup>

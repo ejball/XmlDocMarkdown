@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp3.0;netcoreapp2.2;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;netcoreapp2.1</TargetFrameworks>
     <Description>A .NET Core Global Tool that generates Markdown from .NET XML documentation comments.</Description>
     <PackageTags>.NET XML documentation comments Markdown</PackageTags>
     <IsPackable>true</IsPackable>
