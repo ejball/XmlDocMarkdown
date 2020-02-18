@@ -39,6 +39,11 @@ namespace XmlDocMarkdown
 			return args.ReadFlag("obsolete");
 		}
 
+		public static bool ReadSkipUnbrowsableFlag(this ArgsReader args)
+		{
+			return args.ReadFlag("skip-unbrowsable");
+		}
+
 		public static string ReadExternalOption(this ArgsReader args)
 		{
 			return args.ReadOption("external");
@@ -64,9 +69,39 @@ namespace XmlDocMarkdown
 			return args.ReadFlag("quiet");
 		}
 
+		public static bool ReadNamespacePageFlag(this ArgsReader args)
+		{
+			return args.ReadFlag("namespace-pages");
+		}
+
+		public static string ReadFrontMatter(this ArgsReader args)
+		{
+			return args.ReadOption("front-matter");
+		}
+
+		public static string ReadPermalinkStyle(this ArgsReader args)
+		{
+			return args.ReadOption("permalink");
+		}
+
 		public static bool ReadVerifyFlag(this ArgsReader args)
 		{
 			return args.ReadFlag("verify");
+		}
+
+		public static bool ReadGeneratyeTocFlag(this ArgsReader args)
+		{
+			return args.ReadFlag("toc");
+		}
+
+		public static string ReadTocPrefix(this ArgsReader args)
+		{
+			return args.ReadOption("toc-prefix");
+		}
+
+		public static string ReadBlackList(this ArgsReader args)
+		{
+			return args.ReadOption("blacklist");
 		}
 
 		public static string ReadNewLineOption(this ArgsReader args)

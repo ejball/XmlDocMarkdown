@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core
@@ -35,11 +36,17 @@ namespace XmlDocMarkdown.Core
 				SourceCodePath = settings.SourceCodePath,
 				RootNamespace = settings.RootNamespace,
 				IncludeObsolete = settings.IncludeObsolete,
+				SkipUnbrowsable = settings.SkipUnbrowsable,
 				Visibility = settings.VisibilityLevel ?? XmlDocVisibilityLevel.Protected,
 				ExternalDocs = settings.ExternalDocs,
+				NamespacePages = settings.NamespacePages,
+				FrontMatter = settings.FrontMatter,
 			};
 			if (settings.NewLine != null)
 				generator.NewLine = settings.NewLine;
+
+			if (string.Compare(settings.PermalinkStyle, "pretty", StringComparison.OrdinalIgnoreCase) == 0)
+				generator.PermalinkPretty = true;
 
 			var assembly = Assembly.LoadFrom(inputPath);
 			XmlDocAssembly xmlDocAssembly;
@@ -81,6 +88,24 @@ namespace XmlDocMarkdown.Core
 					result.Added.Add(namedText.Name);
 					if (!settings.IsQuiet)
 						result.Messages.Add("added " + namedText.Name);
+				}
+			}
+
+			if (settings.GenerateToc)
+			{
+				string tocPath = Path.Combine(outputPath, "toc.yml");
+
+				NamedText root = namedTexts.FirstOrDefault();
+				if (root != null)
+				{
+					XmlDocToc toc = new XmlDocToc() { Path = root.Name, Title = root.Title, Prefix = settings.TocPrefix };
+
+					foreach (var namedText in namedTexts.Skip(1))
+					{
+						toc.AddChild(namedText.Name, namedText.Parent, namedText.Title);
+					}
+
+					toc.Save(tocPath);
 				}
 			}
 

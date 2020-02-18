@@ -30,10 +30,16 @@ namespace XmlDocMarkdown
 				settings.SourceCodePath = argsReader.ReadSourceOption();
 				settings.RootNamespace = argsReader.ReadNamespaceOption();
 				settings.IncludeObsolete = argsReader.ReadObsoleteFlag();
+				settings.SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag();
 				settings.VisibilityLevel = argsReader.ReadVisibilityOption();
 				settings.ShouldClean = argsReader.ReadCleanFlag();
 				settings.IsQuiet = argsReader.ReadQuietFlag();
 				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag();
+				settings.FrontMatter = argsReader.ReadFrontMatter();
+				settings.PermalinkStyle = argsReader.ReadPermalinkStyle();
+				settings.GenerateToc = argsReader.ReadGeneratyeTocFlag();
+				settings.TocPrefix = argsReader.ReadTocPrefix();
+				settings.NamespacePages = argsReader.ReadNamespacePageFlag();
 
 				var externalDocs = new List<ExternalDocumentation>();
 				string externalOption;
@@ -101,6 +107,10 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      The minimum visibility of documented members. (default 'protected')");
 			textWriter.WriteLine("   --obsolete");
 			textWriter.WriteLine("      Generates documentation for obsolete types and members.");
+			textWriter.WriteLine("   --skip-unbrowsable");
+			textWriter.WriteLine("      Skips documentation for types that are marked with System.ComponentModel.EditorBrowsable Never.");
+			textWriter.WriteLine("   --skip-compiler-generated");
+			textWriter.WriteLine("      Skips documentation for types that are marked with System.Runtime.CompilerServices.CompilerGenerated.");
 			textWriter.WriteLine("   --clean");
 			textWriter.WriteLine("      Deletes previously generated files that are no longer used.");
 			textWriter.WriteLine("   --verify");
@@ -109,6 +119,19 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("      Executes the tool without making changes to the file system.");
 			textWriter.WriteLine("   --quiet");
 			textWriter.WriteLine("      Suppresses normal console output.");
+			textWriter.WriteLine("   --front-matter");
+			textWriter.WriteLine("      File containing the Jekyll front matter template you want in each generated page.");
+			textWriter.WriteLine("      The front matter can use $title argument and $rel for permalinks.");
+			textWriter.WriteLine("      When front matter is defined the .md extension is dropped in all generated links.");
+			textWriter.WriteLine("   --permalink");
+			textWriter.WriteLine("      Specify permalink style, 'none' or 'pretty' (default 'none').");
+			textWriter.WriteLine("      'pretty' permalinks do not contain file extensions, and when you select this option.");
+			textWriter.WriteLine("      periods have to be removed from file names, for example, 'System.Console' would have to be 'SystemConsole'.");
+			textWriter.WriteLine("      since the removal of the '.md' extension would make Jekyll think .Console is a file extension which doesn't work.");
+			textWriter.WriteLine("   --namespace-pages");
+			textWriter.WriteLine("      Generate separate pages for each namespace, listing types in each.");
+			textWriter.WriteLine("   --toc");
+			textWriter.WriteLine("      File containing table of contents in .yml format.");
 			textWriter.WriteLine("   --newline (auto|lf|crlf)");
 			textWriter.WriteLine("      The newline used in the output (default auto).");
 		}
