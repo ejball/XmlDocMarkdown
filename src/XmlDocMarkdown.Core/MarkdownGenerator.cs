@@ -600,7 +600,6 @@ namespace XmlDocMarkdown.Core
 					}
 					else
 					{
-						// compatibility mode, the namespace name points to the assembly page.
 						writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}](../{(typeInfo != null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo).Assembly)}{extension})");
 					}
 
