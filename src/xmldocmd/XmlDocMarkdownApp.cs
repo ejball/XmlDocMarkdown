@@ -39,7 +39,7 @@ namespace XmlDocMarkdown
 				settings.PermalinkStyle = argsReader.ReadPermalinkStyle();
 				settings.GenerateToc = argsReader.ReadGeneratyeTocFlag();
 				settings.TocPrefix = argsReader.ReadTocPrefix();
-				settings.NamespacePages = argsReader.ReadNamespacePageFlag();
+				settings.NamespacePages = argsReader.ReadNamespacePagesFlag();
 
 				var externalDocs = new List<ExternalDocumentation>();
 				string externalOption;

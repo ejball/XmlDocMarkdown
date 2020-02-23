@@ -69,7 +69,7 @@ namespace XmlDocMarkdown
 			return args.ReadFlag("quiet");
 		}
 
-		public static bool ReadNamespacePageFlag(this ArgsReader args)
+		public static bool ReadNamespacePagesFlag(this ArgsReader args)
 		{
 			return args.ReadFlag("namespace-pages");
 		}
