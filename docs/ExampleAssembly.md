@@ -27,6 +27,7 @@
 | struct [ExampleTuple&lt;T1,T2,T3&gt;](ExampleAssembly/ExampleTuple-3.md) | A 3-tuple. |
 | struct [ExampleTuple&lt;T1,T2,T3,T4&gt;](ExampleAssembly/ExampleTuple-4.md) | A 4-tuple. |
 | static class [ExampleTuple](ExampleAssembly/ExampleTuple.md) | A helper class for tuples. |
+| class [ExampleUnbrowsableClass](ExampleAssembly/ExampleUnbrowsableClass.md) | An unbrowsable class. |
 | interface [IExampleContravariantInterface&lt;T&gt;](ExampleAssembly/IExampleContravariantInterface-1.md) | An interface with contravariant generic parameters. |
 | interface [IExampleCovariantInterface&lt;T&gt;](ExampleAssembly/IExampleCovariantInterface-1.md) | An interface with covariant generic parameters. |
 | interface [IExampleDerivedInterface](ExampleAssembly/IExampleDerivedInterface.md) | A derived interface. |

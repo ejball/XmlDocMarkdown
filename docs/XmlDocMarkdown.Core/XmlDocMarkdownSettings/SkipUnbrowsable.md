@@ -1,6 +1,6 @@
 # XmlDocMarkdownSettings.SkipUnbrowsable property
 
-If true, skips documentation for types that have System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never).
+If true, skips documentation for types and members with `[EditorBrowsable(EditorBrowsableState.Never)]`.
 
 ```csharp
 public bool SkipUnbrowsable { get; set; }

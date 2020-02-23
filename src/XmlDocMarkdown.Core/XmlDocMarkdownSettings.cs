@@ -27,7 +27,7 @@ namespace XmlDocMarkdown.Core
 		public bool IncludeObsolete { get; set; }
 
 		/// <summary>
-		/// If true, skips documentation for types that have System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never).
+		/// If true, skips documentation for types and members with <c>[EditorBrowsable(EditorBrowsableState.Never)]</c>.
 		/// </summary>
 		public bool SkipUnbrowsable { get; set; }
 

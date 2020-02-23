@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace XmlDocMarkdown.Core
 
 		public string FrontMatter { get; internal set; }
 
-		public bool PermalinkPretty{ get; internal set; }
+		public bool PermalinkPretty { get; internal set; }
 
 		private IEnumerable<NamedText> DoGenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 		{
@@ -97,7 +98,7 @@ namespace XmlDocMarkdown.Core
 			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation);
 			yield return CreateNamedText(context.PageLocation, null, assemblyName, writer =>
 			{
-				var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly" :"") + extension);
+				var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly" : "") + extension);
 				if (!string.IsNullOrEmpty(front))
 				{
 					writer.WriteLine(front);
@@ -656,25 +657,17 @@ namespace XmlDocMarkdown.Core
 			if (!IncludeObsolete && memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any())
 				return false;
 
-			if (memberInfo.GetCustomAttributes<System.Runtime.CompilerServices.CompilerGeneratedAttribute>().Any())
+			if (memberInfo.GetCustomAttributes<CompilerGeneratedAttribute>().Any())
 				return false;
 
-			if (SkipUnbrowsable)
-			{
-				foreach (var browsable in memberInfo.GetCustomAttributes<System.ComponentModel.EditorBrowsableAttribute>())
-				{
-					if (browsable.State == System.ComponentModel.EditorBrowsableState.Never)
-					{
-						return false;
-					}
-				}
-			}
+			if (SkipUnbrowsable && memberInfo.GetCustomAttributes<EditorBrowsableAttribute>().Any(x => x.State == EditorBrowsableState.Never))
+				return false;
 
 			string name = memberInfo.Name;
 			if (name.Length == 0 || name[0] == '<')
 				return false;
 
-			// Catch nested types.
+			// nested types of invisible types are invisible
 			if (memberInfo.DeclaringType != null && !IsVisible(memberInfo.DeclaringType))
 				return false;
 
@@ -1098,6 +1091,15 @@ namespace XmlDocMarkdown.Core
 					yield return RenderConstant(message);
 					yield return ")]";
 				}
+				yield return ActualNewLine;
+			}
+
+			var browsableAttribute = memberInfo.GetCustomAttribute<EditorBrowsableAttribute>();
+			if (browsableAttribute != null && browsableAttribute.State != EditorBrowsableState.Always)
+			{
+				yield return "[EditorBrowsable(";
+				yield return RenderConstant(browsableAttribute.State);
+				yield return ")]";
 				yield return ActualNewLine;
 			}
 

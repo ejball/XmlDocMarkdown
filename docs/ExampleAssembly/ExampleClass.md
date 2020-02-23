@@ -37,6 +37,7 @@ public class ExampleClass : IExampleContravariantInterface<ExampleClass>,
 | [TryGetValue](ExampleClass/TryGetValue.md)(…) | A method that tries to get a value. |
 | [TryGetValue&lt;T&gt;](ExampleClass/TryGetValue.md)(…) | A method that tries to get a value. |
 | [TypeParameterReference&lt;T&gt;](ExampleClass/TypeParameterReference.md)(…) | A method whose summary references *T*. |
+| [UnbrowsableMethod](ExampleClass/UnbrowsableMethod.md)() | An unbrowsable method. |
 | [UsesCallerInfo](ExampleClass/UsesCallerInfo.md)(…) | A method that uses caller info. |
 | static [MaxWeight](ExampleClass/MaxWeight.md) { get; set; } | A static read-write property. |
 | static [MinWeight](ExampleClass/MinWeight.md) { get; } | A static read-only property. |

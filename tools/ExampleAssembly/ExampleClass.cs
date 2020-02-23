@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 #pragma warning disable 67
@@ -290,6 +291,14 @@ namespace ExampleAssembly
 		/// </summary>
 		[Obsolete("This method is old and busted.")]
 		public void OldAndBusted()
+		{
+		}
+
+		/// <summary>
+		/// An unbrowsable method.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void UnbrowsableMethod()
 		{
 		}
 	}
