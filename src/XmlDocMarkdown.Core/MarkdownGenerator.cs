@@ -40,7 +40,7 @@ namespace XmlDocMarkdown.Core
 
 		public string FrontMatter { get; internal set; }
 
-		public bool PermalinkPretty { get; internal set; }
+		public bool PermalinkPretty{ get; internal set; }
 
 		private IEnumerable<NamedText> DoGenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 		{
@@ -97,7 +97,7 @@ namespace XmlDocMarkdown.Core
 			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation);
 			yield return CreateNamedText(context.PageLocation, null, assemblyName, writer =>
 			{
-				var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly" : "") + extension);
+				var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly" :"") + extension);
 				if (!string.IsNullOrEmpty(front))
 				{
 					writer.WriteLine(front);
