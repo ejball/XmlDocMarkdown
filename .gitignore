@@ -14,3 +14,5 @@ Thumbs.db
 nCrunchTemp*
 _ReSharper*
 launchSettings.json
+packages/FSharp.Cor*
+packages/System.ValueTupl*
