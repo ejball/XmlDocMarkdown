@@ -1258,8 +1258,10 @@ namespace XmlDocMarkdown.Core
 				yield return "";
 
 				bool isFirstParameter = true;
+				var index = -1;
 				foreach (var parameterInfo in parameterInfos)
 				{
+					++index;
 					if (!isFirstParameter)
 					{
 						yield return ", ";
@@ -1286,7 +1288,7 @@ namespace XmlDocMarkdown.Core
 					yield return " ";
 					if (IsKeyword(parameterInfo.Name))
 						yield return "@";
-					yield return parameterInfo.Name ?? "_"; // default to a discard if null
+					yield return parameterInfo.Name ?? "P_" + index.ToString(CultureInfo.InvariantCulture); // default as per ILSpy if null
 
 					if (ParameterHasDefaultValue(parameterInfo))
 					{
