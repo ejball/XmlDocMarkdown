@@ -1,8 +1,8 @@
 # Version History
 
-### 2.1.0
+### 2.0.3
 
-* Prevent NRE for F# compiler generated implicit parameters
+* Prevent NRE for F# compiler generated implicit parameters.
 
 ### 2.0.2
 
