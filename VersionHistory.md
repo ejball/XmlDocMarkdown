@@ -3,7 +3,7 @@
 ### 2.1.0
 
 * Add `--skip-unbrowsable`, `--namespace-pages`, `--front-matter`, `--permalink`, `--toc`, and `--toc-prefix`.
-* Prevent NRE for F# compiler generated implicit parameters.
+* Prevent NRE for F# compiler generated implicit parameters. (Thanks [SteveGilham](https://github.com/SteveGilham)!)
 
 ### 2.0.2
 
