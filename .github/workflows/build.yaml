@@ -25,13 +25,14 @@ jobs:
       with:
         dotnet-version: 3.1.100
     - name: Build Windows
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && github.ref != 'refs/heads/master'
+      run: .\build.cmd package
+    - name: Publish Windows
+      if: runner.os == 'Windows' && github.ref == 'refs/heads/master'
       env:
         BUILD_BOT_PASSWORD: ${{ secrets.BUILD_BOT_PASSWORD }}
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        $GitTag = [Regex]::Match($Env:GITHUB_REF, "^refs/tags/(.*)$").Groups[1].Value
-        .\build.cmd publish "--trigger=$GitTag"
+      run: .\build.cmd publish --trigger=publish-all
     - name: Build Linux
       if: runner.os == 'Linux'
       run: ./build.sh package

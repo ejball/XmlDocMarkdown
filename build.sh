@@ -2,4 +2,5 @@
 set -euo pipefail
 export MONO_ROOT=$(dirname $(which mono))/../
 cd "$( dirname "${BASH_SOURCE[0]}" )"
-dotnet run --project tools/Build/Build.csproj -- "$@"
+dotnet publish ./tools/Build/Build.csproj --output ./tools/bin/Build --nologo --verbosity quiet
+dotnet ./tools/bin/Build/Build.dll "$@"
