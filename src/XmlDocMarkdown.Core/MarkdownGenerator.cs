@@ -1259,10 +1259,8 @@ namespace XmlDocMarkdown.Core
 				yield return "";
 
 				bool isFirstParameter = true;
-				var index = -1;
-				foreach (var parameterInfo in parameterInfos)
+				foreach (var (parameterInfo, index) in parameterInfos.Select((x, i) => (x, i)))
 				{
-					++index;
 					if (!isFirstParameter)
 					{
 						yield return ", ";
