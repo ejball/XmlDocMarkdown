@@ -89,7 +89,7 @@ namespace XmlDocMarkdown
 			return args.ReadFlag("verify");
 		}
 
-		public static bool ReadGeneratyeTocFlag(this ArgsReader args)
+		public static bool ReadTocFlag(this ArgsReader args)
 		{
 			return args.ReadFlag("toc");
 		}
@@ -97,11 +97,6 @@ namespace XmlDocMarkdown
 		public static string ReadTocPrefix(this ArgsReader args)
 		{
 			return args.ReadOption("toc-prefix");
-		}
-
-		public static string ReadBlackList(this ArgsReader args)
-		{
-			return args.ReadOption("blacklist");
 		}
 
 		public static string ReadNewLineOption(this ArgsReader args)

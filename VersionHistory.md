@@ -1,7 +1,8 @@
 # Version History
 
-### 2.0.3
+### 2.1.0
 
+* Add `--skip-unbrowsable`, `--namespace-pages`, `--front-matter`, `--permalink`, `--toc`, and `--toc-prefix`.
 * Prevent NRE for F# compiler generated implicit parameters.
 
 ### 2.0.2

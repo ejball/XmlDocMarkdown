@@ -37,7 +37,7 @@ namespace XmlDocMarkdown
 				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag();
 				settings.FrontMatter = argsReader.ReadFrontMatter();
 				settings.PermalinkStyle = argsReader.ReadPermalinkStyle();
-				settings.GenerateToc = argsReader.ReadGeneratyeTocFlag();
+				settings.GenerateToc = argsReader.ReadTocFlag();
 				settings.TocPrefix = argsReader.ReadTocPrefix();
 				settings.NamespacePages = argsReader.ReadNamespacePagesFlag();
 
