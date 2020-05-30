@@ -9,6 +9,7 @@ internal static class Build
 		var dotNetBuildSettings = new DotNetBuildSettings
 		{
 			NuGetApiKey = Environment.GetEnvironmentVariable("NUGET_API_KEY"),
+			Verbosity = "minimal",
 		};
 		build.AddDotNetTargets(dotNetBuildSettings);
 
