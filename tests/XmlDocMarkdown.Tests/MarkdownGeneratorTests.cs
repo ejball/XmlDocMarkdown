@@ -16,5 +16,14 @@ namespace XmlDocMarkdown.Tests
 				Path.Combine(Path.GetTempPath(), "MarkdownGeneratorTests"),
 				new XmlDocMarkdownSettings { IsDryRun = true });
 		}
+
+		[Fact]
+		public void FSharpWithNulls()
+		{
+			XmlDocMarkdownGenerator.Generate(
+				typeof(ExtensionMethods.Augment).GetTypeInfo().Assembly.Location,
+				Path.Combine(Path.GetTempPath(), "MarkdownGeneratorTests"),
+				new XmlDocMarkdownSettings { IsDryRun = true });
+		}
 	}
 }

@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj" />
     <ProjectReference Include="..\..\tools\ExampleAssembly\ExampleAssembly.csproj" />
+    <ProjectReference Include="..\FSharpWithNulls\FSharpWithNulls.fsproj" />
   </ItemGroup>
 
 </Project>

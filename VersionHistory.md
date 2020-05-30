@@ -1,5 +1,9 @@
 # Version History
 
+### 2.1.0
+
+* Prevent NRE for F# compiler generated implicit parameters
+
 ### 2.0.2
 
 * `xmldocmd` can also support .NET Core 2.1 and .NET Core 2.2. (Thanks [sungam3r](https://github.com/sungam3r)!)
