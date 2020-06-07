@@ -100,7 +100,7 @@ namespace XmlDocMarkdown.Core
 			string rootNamespace = RootNamespace ??
 				visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0);
 			RootPageLocation = $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly.md" : ".md");
-			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation);
+			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation, assembly.Location);
 			yield return CreateNamedText(context.PageLocation, null, assemblyName, writer =>
 			{
 				var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly" : "") + extension);
@@ -610,9 +610,16 @@ namespace XmlDocMarkdown.Core
 
 					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))
 					{
-						var documents = context.MetadataContext[typeInfo.FullName];
-						if (documents.Any())
+						if (context.MetadataContext.PdbLoaded)
 						{
+							// **Note** Interface types will not be found
+
+							// Allow for F# modules that contain only types
+							var documents = (new[] { typeInfo.FullName }).Concat(
+								typeInfo.DeclaredNestedTypes.Select(t => t.FullName))
+								.SelectMany(n => context.MetadataContext[n.Replace("+", ".")])
+								.Distinct();
+
 							foreach (var document in documents)
 							{
 								var fileName = Path.GetFileName(document);
@@ -2190,7 +2197,7 @@ namespace XmlDocMarkdown.Core
 
 		private class MarkdownContext
 		{
-			public MarkdownContext(XmlDocAssembly xmlDocAssembly, IReadOnlyDictionary<string, MemberInfo> membersByXmlDocName, string assemblyFileName, string sourceCodePath, string rootNamespace, string pageLocation)
+			public MarkdownContext(XmlDocAssembly xmlDocAssembly, IReadOnlyDictionary<string, MemberInfo> membersByXmlDocName, string assemblyFileName, string sourceCodePath, string rootNamespace, string pageLocation, string assemblyLocation)
 			{
 				XmlDocAssembly = xmlDocAssembly;
 				MembersByXmlDocName = membersByXmlDocName;
@@ -2201,7 +2208,7 @@ namespace XmlDocMarkdown.Core
 
 				MetadataContext =
 				  (!string.IsNullOrEmpty(sourceCodePath) && !string.IsNullOrEmpty(rootNamespace)) ?
-				  new MetadataContext(assemblyFileName) : new MetadataContext();
+				  new MetadataContext(assemblyLocation) : new MetadataContext();
 			}
 
 			public MarkdownContext(MarkdownContext context, MemberInfo memberInfo, string pageLocation)
@@ -2256,6 +2263,7 @@ namespace XmlDocMarkdown.Core
 			public MetadataContext()
 			{
 				PrefixLength = 0;
+				PdbLoaded = false;
 			}
 
 			public MetadataContext(string assemblyPath)
@@ -2267,10 +2275,10 @@ namespace XmlDocMarkdown.Core
 					Func<string, Stream> streamProvider = p => new FileStream(p, FileMode.Open, FileAccess.Read);
 
 					var metadata = reader.GetMetadataReader(MetadataReaderOptions.ApplyWindowsRuntimeProjections);
-					var pdbLoaded = reader.TryOpenAssociatedPortablePdb(stream.Name, streamProvider, out var metadataReaderProvider,
+					PdbLoaded = reader.TryOpenAssociatedPortablePdb(stream.Name, streamProvider, out var metadataReaderProvider,
 						out var pdbPath);
 
-					if (pdbLoaded)
+					if (PdbLoaded)
 					{
 						var metadataSymbol = metadataReaderProvider.GetMetadataReader();
 
@@ -2340,6 +2348,8 @@ namespace XmlDocMarkdown.Core
 			}
 
 			public int PrefixLength { get; }
+
+			public bool PdbLoaded { get; }
 
 			public IEnumerable<string> this[string typename] =>
 				typemap.TryGetValue(typename, out var documents) ?
@@ -2420,7 +2430,7 @@ namespace XmlDocMarkdown.Core
 				var name = metadata.GetString(t.Name);
 				if (t.IsNested)
 					return TypeName(metadata, metadata.GetTypeDefinition(t.GetDeclaringType())) +
-					  "+" + name;
+					  "." + name;
 
 				return metadata.GetString(t.Namespace) + "." + metadata.GetString(t.Name);
 			}
