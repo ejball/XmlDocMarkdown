@@ -2276,7 +2276,7 @@ namespace XmlDocMarkdown.Core
 				{
 					Func<string, Stream> streamProvider = p => new FileStream(p, FileMode.Open, FileAccess.Read);
 
-					var metadata = reader.GetMetadataReader(MetadataReaderOptions.ApplyWindowsRuntimeProjections);
+					var metadata = reader.GetMetadataReader(MetadataReaderOptions.Default);
 					PdbLoaded = reader.TryOpenAssociatedPortablePdb(stream.Name, streamProvider, out var metadataReaderProvider,
 						out var pdbPath);
 
