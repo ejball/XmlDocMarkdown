@@ -613,8 +613,10 @@ namespace XmlDocMarkdown.Core
 						if (context.MetadataContext.PdbLoaded)
 						{
 							// **Note** Interface types will not be found
+							// as they have no executable code locations
+							// Workround -- add a marker inner type
 
-							// Allow for F# modules that contain only types
+							// Allow for e.g. F# modules that contain only types
 							var documents = (new[] { typeInfo.FullName }).Concat(
 								typeInfo.DeclaredNestedTypes.Select(t => t.FullName))
 								.SelectMany(n => context.MetadataContext[n])
