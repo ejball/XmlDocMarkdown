@@ -617,7 +617,7 @@ namespace XmlDocMarkdown.Core
 							// Allow for F# modules that contain only types
 							var documents = (new[] { typeInfo.FullName }).Concat(
 								typeInfo.DeclaredNestedTypes.Select(t => t.FullName))
-								.SelectMany(n => context.MetadataContext[n.Replace("+", ".")])
+								.SelectMany(n => context.MetadataContext[n])
 								.Distinct();
 
 							foreach (var document in documents)
@@ -2430,7 +2430,7 @@ namespace XmlDocMarkdown.Core
 				var name = metadata.GetString(t.Name);
 				if (t.IsNested)
 					return TypeName(metadata, metadata.GetTypeDefinition(t.GetDeclaringType())) +
-					  "." + name;
+					  "+" + name;
 
 				return metadata.GetString(t.Namespace) + "." + metadata.GetString(t.Name);
 			}
