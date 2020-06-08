@@ -120,6 +120,7 @@ namespace XmlDocMarkdown.Core
 						{
 							var assembly = Assembly.LoadFile(f);
 							resolutionTable.Add(a.Name, assembly);
+							Console.WriteLine($"Resolved {a.Name}");
 							return assembly;
 						})
 						.FirstOrDefault();
