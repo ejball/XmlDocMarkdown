@@ -45,6 +45,85 @@ namespace XmlDocMarkdown.Core
 
 		private IEnumerable<NamedText> DoGenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 		{
+			var resolutionTable = new Dictionary<string, Assembly>();
+			AppDomain.CurrentDomain.AssemblyResolve +=
+				new ResolveEventHandler((o, a) =>
+				{
+					var from = a.RequestingAssembly.Location;
+					var name = new AssemblyName(a.Name);
+
+					// perhaps it's a co-located .exe for a
+					// .net Framework build
+					var want = (Path.Combine(
+						Path.GetDirectoryName(from),
+						name.Name + ".exe"
+						));
+					if (File.Exists(want))
+					{
+						return Assembly.LoadFile(want);
+					}
+
+					// perhaps it's in the nuget cache
+					if (resolutionTable.ContainsKey(a.Name))
+						return resolutionTable[a.Name];
+					var nugetCache =
+						  Path.Combine
+							(Path.Combine
+							  (Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget"),
+							 "packages");
+					var share = "|usr|share".Replace('|', Path.DirectorySeparatorChar);
+					var shared = "dotnet|shared".Replace('|', Path.DirectorySeparatorChar);
+
+					var sources = new List<string>
+					{
+						Environment.GetEnvironmentVariable("NUGET_PACKAGES"),
+						Path.Combine
+						  (Environment.GetEnvironmentVariable("ProgramFiles")??share, shared),
+						Path.Combine(share, shared),
+						nugetCache
+					};
+					return sources
+						.Where(x => !String.IsNullOrWhiteSpace(x))
+						.Where(Directory.Exists)
+						.Distinct()
+						.SelectMany(d => Directory.GetFiles(d, name.Name + ".*", SearchOption.AllDirectories))
+						.OrderByDescending(f => f)
+						.Where(f =>
+						{
+							var ext = Path.GetExtension(f);
+							return ext.Equals(".exe", StringComparison.OrdinalIgnoreCase)
+							   || ext.Equals(".dll", StringComparison.OrdinalIgnoreCase);
+						})
+						.Where(f =>
+						{
+							var fname = String.Empty;
+							try
+							{
+								fname = AssemblyName.GetAssemblyName(f).ToString();
+							}
+							catch (Exception ex)
+							{
+								if (ex is ArgumentException ||
+									ex is FileNotFoundException ||
+									ex is System.Security.SecurityException ||
+									ex is BadImageFormatException ||
+									ex is FileLoadException)
+								{
+									fname = String.Empty;
+								}
+								else
+									throw;
+							}
+							return name.FullName == fname;
+						})
+						.Select(f =>
+						{
+							var assembly = Assembly.LoadFile(f);
+							resolutionTable.Add(a.Name, assembly);
+							return assembly;
+						})
+						.FirstOrDefault();
+				});
 			string extension = GetFileExtension();
 			string assemblyName = assembly.GetName().Name;
 			string assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
