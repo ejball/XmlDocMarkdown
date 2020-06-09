@@ -24,6 +24,7 @@ public class XmlDocMarkdownSettings
 | [ShouldClean](XmlDocMarkdownSettings/ShouldClean.md) { get; set; } | If true, deletes previously generated files that are no longer used. |
 | [SkipUnbrowsable](XmlDocMarkdownSettings/SkipUnbrowsable.md) { get; set; } | If true, skips documentation for types and members with `[EditorBrowsable(EditorBrowsableState.Never)]`. |
 | [SourceCodePath](XmlDocMarkdownSettings/SourceCodePath.md) { get; set; } | The URL of the folder containing the source code of the assembly, e.g. at GitHub. |
+| [SourceCodeStyle](XmlDocMarkdownSettings/SourceCodeStyle.md) { get; set; } | The manner in which the URL path is derived, |
 | [TocPrefix](XmlDocMarkdownSettings/TocPrefix.md) { get; set; } | A path prefix to add to all links in the table of contents .yml file. |
 | [VisibilityLevel](XmlDocMarkdownSettings/VisibilityLevel.md) { get; set; } | The minimum visibility for documented types and members. |
 

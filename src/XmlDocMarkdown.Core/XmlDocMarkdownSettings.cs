@@ -15,6 +15,13 @@ namespace XmlDocMarkdown.Core
 		public string SourceCodePath { get; set; }
 
 		/// <summary>
+		/// The manner in which the URL path is derived,
+		/// </summary>
+		/// <remarks>May be a combination of flags, with the preference order being
+		/// SourceLink, DebugSymbol and finally TypeName</remarks>
+		public XmlDocSourceCodeStyle? SourceCodeStyle { get; set; }
+
+		/// <summary>
 		/// The root namespace of the input assembly.
 		/// </summary>
 		/// <remarks>Used to generate source code links in the See Also sections for types.

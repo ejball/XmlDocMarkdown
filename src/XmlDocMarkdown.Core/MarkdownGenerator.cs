@@ -23,6 +23,8 @@ namespace XmlDocMarkdown.Core
 
 		public string SourceCodePath { get; set; }
 
+		public XmlDocSourceCodeStyle SourceCodeStyle { get; set; }
+
 		public string RootNamespace { get; set; }
 
 		public string RootPageLocation { get; set; }
@@ -100,7 +102,8 @@ namespace XmlDocMarkdown.Core
 			string rootNamespace = RootNamespace ??
 				visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0);
 			RootPageLocation = $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly.md" : ".md");
-			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation, assembly.Location);
+			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName,
+				sourceCodePath, SourceCodeStyle, rootNamespace, RootPageLocation, assembly.Location);
 			yield return CreateNamedText(context.PageLocation, null, assemblyName, writer =>
 			{
 				var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly" : "") + extension);
@@ -610,7 +613,11 @@ namespace XmlDocMarkdown.Core
 
 					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))
 					{
-						if (context.MetadataContext.PdbLoaded)
+						var written = false;
+						var mask = XmlDocSourceCodeStyle.SourceLink | XmlDocSourceCodeStyle.DebugSymbol;
+
+						if (context.MetadataContext.PdbLoaded &&
+							(context.SourceCodeStyle & mask) != 0)
 						{
 							// **Note** Types that have no executable code locations
 							// e.g. Interfaces, enums, derived types with only
@@ -633,7 +640,8 @@ namespace XmlDocMarkdown.Core
 							foreach (var document in documents)
 							{
 								var fileName = Path.GetFileName(document);
-								if (context.MetadataContext.TrySourceLink(document, out var link))
+								if ((context.SourceCodeStyle & XmlDocSourceCodeStyle.SourceLink) != 0
+									&& context.MetadataContext.TrySourceLink(document, out var link))
 								{
 									writer.WriteLine($"* [{fileName}]({link})");
 								}
@@ -645,9 +653,13 @@ namespace XmlDocMarkdown.Core
 										filePath = "../" + filePath;
 									writer.WriteLine($"* [{fileName}]({filePath})");
 								}
+								written = true;
 							}
 						}
-						else // default to old behaviour if .PDB cannot be read
+
+						// default to old behaviour if requested
+						if (!written &&
+							  (context.SourceCodeStyle & XmlDocSourceCodeStyle.TypeName) != 0)
 						{
 							string namespaceName = GetNamespaceName(typeInfo);
 							if (namespaceName.StartsWith(context.RootNamespace, StringComparison.Ordinal))
@@ -2207,12 +2219,15 @@ namespace XmlDocMarkdown.Core
 
 		private class MarkdownContext
 		{
-			public MarkdownContext(XmlDocAssembly xmlDocAssembly, IReadOnlyDictionary<string, MemberInfo> membersByXmlDocName, string assemblyFileName, string sourceCodePath, string rootNamespace, string pageLocation, string assemblyLocation)
+			public MarkdownContext(XmlDocAssembly xmlDocAssembly, IReadOnlyDictionary<string, MemberInfo> membersByXmlDocName,
+				string assemblyFileName, string sourceCodePath, XmlDocSourceCodeStyle sourceCodeStyle, string rootNamespace,
+				string pageLocation, string assemblyLocation)
 			{
 				XmlDocAssembly = xmlDocAssembly;
 				MembersByXmlDocName = membersByXmlDocName;
 				AssemblyFileName = assemblyFileName;
 				SourceCodePath = sourceCodePath;
+				SourceCodeStyle = sourceCodeStyle;
 				RootNamespace = rootNamespace;
 				PageLocation = pageLocation;
 
@@ -2227,6 +2242,7 @@ namespace XmlDocMarkdown.Core
 				MembersByXmlDocName = context.MembersByXmlDocName;
 				AssemblyFileName = context.AssemblyFileName;
 				SourceCodePath = context.SourceCodePath;
+				SourceCodeStyle = context.SourceCodeStyle;
 				RootNamespace = context.RootNamespace;
 				PageLocation = pageLocation;
 				MetadataContext = context.MetadataContext;
@@ -2254,6 +2270,8 @@ namespace XmlDocMarkdown.Core
 			public string AssemblyFileName { get; }
 
 			public string SourceCodePath { get; }
+
+			public XmlDocSourceCodeStyle SourceCodeStyle { get; }
 
 			public string RootNamespace { get; }
 
