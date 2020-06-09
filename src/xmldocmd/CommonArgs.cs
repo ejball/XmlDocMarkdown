@@ -44,6 +44,11 @@ namespace XmlDocMarkdown
 			return args.ReadFlag("skip-unbrowsable");
 		}
 
+		public static bool ReadSkipCompilerGeneratedFlag(this ArgsReader args)
+		{
+			return args.ReadFlag("skip-compiler-generated");
+		}
+
 		public static string ReadExternalOption(this ArgsReader args)
 		{
 			return args.ReadOption("external");
