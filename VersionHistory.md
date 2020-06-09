@@ -1,5 +1,9 @@
 # Version History
 
+### 2.x.x
+
+* Add a -- potentially slow -- scan for assembly dependencies, rather than fail with `ReflectionTypeLoadException`, based on [a previous F# implementation](https://github.com/SteveGilham/altcover/blob/498da6195ee434743fb6b0bf6d0ce9ab522ede58/AltCover/Instrument.fs#L235-L284)
+
 ### 2.1.0
 
 * Add `--skip-unbrowsable`, `--namespace-pages`, `--front-matter`, `--permalink`, `--toc`, and `--toc-prefix`.
