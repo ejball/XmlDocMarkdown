@@ -1,5 +1,9 @@
 # Version History
 
+### 2.x.x
+
+* Add `--skip-compiler-generated`
+
 ### 2.1.0
 
 * Add `--skip-unbrowsable`, `--namespace-pages`, `--front-matter`, `--permalink`, `--toc`, and `--toc-prefix`.
