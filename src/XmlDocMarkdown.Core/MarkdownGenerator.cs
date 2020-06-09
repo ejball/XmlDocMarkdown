@@ -110,7 +110,7 @@ namespace XmlDocMarkdown.Core
 				// and later versions first
 				.OrderByDescending(f => f)
 				// match the assembly name
-				.Where(f =>
+				.FirstOrDefault(f =>
 				{
 					try
 					{
@@ -131,8 +131,8 @@ namespace XmlDocMarkdown.Core
 						else
 							throw;
 					}
-				})
-				.FirstOrDefault();
+				});
+
 			if (matched != null)
 			{
 				Console.WriteLine($"Resolved {args.Name}");
