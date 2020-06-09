@@ -639,21 +639,25 @@ namespace XmlDocMarkdown.Core
 
 							foreach (var document in documents)
 							{
+								bool thisDocumentWritten = false;
 								var fileName = Path.GetFileName(document);
 								if ((context.SourceCodeStyle & XmlDocSourceCodeStyle.SourceLink) != 0
 									&& context.MetadataContext.TrySourceLink(document, out var link))
 								{
 									writer.WriteLine($"* [{fileName}]({link})");
+									thisDocumentWritten = true;
+									written = true;
 								}
-								else
+
+								if (!thisDocumentWritten && (context.SourceCodeStyle & XmlDocSourceCodeStyle.DebugSymbol) != 0)
 								{
 									var snip = document.Substring(context.MetadataContext.PrefixLength);
 									string filePath = context.SourceCodePath + snip.Replace('\\', '/');
 									if (!Uri.TryCreate(filePath, UriKind.Absolute, out _))
 										filePath = "../" + filePath;
 									writer.WriteLine($"* [{fileName}]({filePath})");
+									written = true;
 								}
-								written = true;
 							}
 						}
 
@@ -2544,5 +2548,5 @@ namespace XmlDocMarkdown.Core
 			"volatile",
 			"while",
 		};
-	}
+		}
 }
