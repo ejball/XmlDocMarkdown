@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Cake.XmlDocMarkdown\Cake.XmlDocMarkdown.csproj" />
     <ProjectReference Include="..\..\src\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj" />
     <ProjectReference Include="..\..\tools\ExampleAssembly\ExampleAssembly.csproj" />
     <ProjectReference Include="..\FSharpWithNulls\FSharpWithNulls.fsproj" />

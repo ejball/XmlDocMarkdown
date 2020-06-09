@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -43,88 +44,109 @@ namespace XmlDocMarkdown.Core
 
 		public bool PermalinkPretty { get; internal set; }
 
-		private IEnumerable<NamedText> DoGenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
+		private static ConcurrentDictionary<string, Assembly> resolutionTable =
+			new ConcurrentDictionary<string, Assembly>();
+
+		private Assembly MaybeResolveMissingAssemblies(object _, ResolveEventArgs args)
 		{
-			var resolutionTable = new Dictionary<string, Assembly>();
-			AppDomain.CurrentDomain.AssemblyResolve +=
-				new ResolveEventHandler((o, a) =>
-				{
-					var from = a.RequestingAssembly.Location;
-					var name = new AssemblyName(a.Name);
+			// We may have seen this one before.
+			// Even though this is one assembly in one AppDomain,
+			// experimentally we do get repeat requests.
+			if (resolutionTable.TryGetValue(args.Name, out var assembly))
+				return assembly;
 
-					// perhaps it's a co-located .exe for a
-					// .net Framework build
-					var want = (Path.Combine(
-						Path.GetDirectoryName(from),
-						name.Name + ".exe"
-						));
-					if (File.Exists(want))
+			var sought = new AssemblyName(args.Name);
+
+			// perhaps it's a co-located .exe for a
+			// .net Framework build
+			var want = (Path.Combine(
+				Path.GetDirectoryName(args.RequestingAssembly.Location),
+				sought.Name + ".exe"
+				));
+			if (File.Exists(want))
+			{
+				return Assembly.LoadFile(want);
+			}
+
+			// perhaps it's in the nuget cache or one of the
+			// ASP.NETcore installation locations
+			var nugetCache =
+				  Path.Combine
+					(Path.Combine
+					  (Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget"),
+					 "packages");
+			// *nix-style install location root
+			var share = "|usr|share".Replace('|', Path.DirectorySeparatorChar);
+			// sub-directory for shared assemblies
+			var shared = "dotnet|shared".Replace('|', Path.DirectorySeparatorChar);
+
+			var sources = new List<string>
 					{
-						return Assembly.LoadFile(want);
-					}
-
-					// perhaps it's in the nuget cache
-					if (resolutionTable.ContainsKey(a.Name))
-						return resolutionTable[a.Name];
-					var nugetCache =
-						  Path.Combine
-							(Path.Combine
-							  (Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget"),
-							 "packages");
-					var share = "|usr|share".Replace('|', Path.DirectorySeparatorChar);
-					var shared = "dotnet|shared".Replace('|', Path.DirectorySeparatorChar);
-
-					var sources = new List<string>
-					{
+						// any explicit location
 						Environment.GetEnvironmentVariable("NUGET_PACKAGES"),
+						// ASP.Netcore locations
 						Path.Combine
 						  (Environment.GetEnvironmentVariable("ProgramFiles")??share, shared),
 						Path.Combine(share, shared),
+						// and default user nuget cache
 						nugetCache
 					};
-					return sources
-						.Where(x => !String.IsNullOrWhiteSpace(x))
-						.Where(Directory.Exists)
-						.Distinct()
-						.SelectMany(d => Directory.GetFiles(d, name.Name + ".*", SearchOption.AllDirectories))
-						.OrderByDescending(f => f)
-						.Where(f =>
+
+			var matched = sources
+				// for each distinct real directory
+				.Where(x => !String.IsNullOrWhiteSpace(x))
+				.Where(Directory.Exists)
+				.Distinct()
+				// find possible candidate assemblies by name
+				.SelectMany(d => Directory.GetFiles(d,
+								 sought.Name + ".*", SearchOption.AllDirectories))
+				.Where(f =>
+				{
+					var ext = Path.GetExtension(f);
+					return ext.Equals(".exe", StringComparison.OrdinalIgnoreCase)
+					   || ext.Equals(".dll", StringComparison.OrdinalIgnoreCase);
+				})
+				// try netstandard before netcore before net##
+				// and later versions first
+				.OrderByDescending(f => f)
+				// match the assembly name
+				.Where(f =>
+				{
+					try
+					{
+						var fname = AssemblyName.GetAssemblyName(f).ToString();
+						return sought.FullName == fname;
+					}
+					catch (Exception ex)
+					{
+						// soft fail on reasonable exceptions
+						if (ex is ArgumentException ||
+							ex is FileNotFoundException ||
+							ex is System.Security.SecurityException ||
+							ex is BadImageFormatException ||
+							ex is FileLoadException)
 						{
-							var ext = Path.GetExtension(f);
-							return ext.Equals(".exe", StringComparison.OrdinalIgnoreCase)
-							   || ext.Equals(".dll", StringComparison.OrdinalIgnoreCase);
-						})
-						.Where(f =>
-						{
-							var fname = String.Empty;
-							try
-							{
-								fname = AssemblyName.GetAssemblyName(f).ToString();
-							}
-							catch (Exception ex)
-							{
-								if (ex is ArgumentException ||
-									ex is FileNotFoundException ||
-									ex is System.Security.SecurityException ||
-									ex is BadImageFormatException ||
-									ex is FileLoadException)
-								{
-									fname = String.Empty;
-								}
-								else
-									throw;
-							}
-							return name.FullName == fname;
-						})
-						.Select(f =>
-						{
-							var assembly = Assembly.LoadFile(f);
-							resolutionTable.Add(a.Name, assembly);
-							Console.WriteLine($"Resolved {a.Name}");
-							return assembly;
-						})
-						.FirstOrDefault();
-				});
+							return false;
+						}
+						else
+							throw;
+					}
+				})
+				.FirstOrDefault();
+			if (matched != null)
+			{
+				Console.WriteLine($"Resolved {args.Name}");
+				var found = Assembly.LoadFile(matched);
+				resolutionTable.TryAdd(args.Name, found);
+				return found;
+			}
+
+			return null;
+		}
+
+		private IEnumerable<NamedText> DoGenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
+		{
+			AppDomain.CurrentDomain.AssemblyResolve += MaybeResolveMissingAssemblies;
 			string extension = GetFileExtension();
 			string assemblyName = assembly.GetName().Name;
 			string assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
