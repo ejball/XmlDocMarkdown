@@ -28,6 +28,7 @@ namespace XmlDocMarkdown
 				var settings = new XmlDocMarkdownSettings();
 				settings.NewLine = argsReader.ReadNewLineOption();
 				settings.SourceCodePath = argsReader.ReadSourceOption();
+				settings.SourceCodeStyle = argsReader.ReadSourceStyleOption();
 				settings.RootNamespace = argsReader.ReadNamespaceOption();
 				settings.IncludeObsolete = argsReader.ReadObsoleteFlag();
 				settings.SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag();
@@ -101,6 +102,11 @@ namespace XmlDocMarkdown
 			textWriter.WriteLine("   --source <url>");
 			textWriter.WriteLine("      The URL (absolute or relative) of the folder containing the source");
 			textWriter.WriteLine("      code of the assembly, e.g. at GitHub. (optional)");
+			textWriter.WriteLine("   --source-style <style>");
+			textWriter.WriteLine("      The approach used for documenting source code paths, if `--source` is given.");
+			textWriter.WriteLine("      One or more of 'TypeName', 'DebugSymbol' or 'SourceLink' (case insensitive)");
+			textWriter.WriteLine("      The default is 'TypeName' which generates a path for a C# source file based on the type name");
+			textWriter.WriteLine("      Specify multiple options as a quote- delimited, comma separated, string e.g. 'TypeName, SourceLink'");
 			textWriter.WriteLine("   --namespace <ns>");
 			textWriter.WriteLine("      The root namespace of the input assembly. (optional)");
 			textWriter.WriteLine("   --visibility (public|protected|internal|private)");

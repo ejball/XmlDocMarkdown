@@ -1,5 +1,8 @@
 # Version History
 
+### 2.x.x 
+* Add `--source-style` to extend the generation of source URLs for the `--source` option
+
 ### 2.1.0
 
 * Add `--skip-unbrowsable`, `--namespace-pages`, `--front-matter`, `--permalink`, `--toc`, and `--toc-prefix`.

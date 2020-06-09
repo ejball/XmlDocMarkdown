@@ -34,6 +34,7 @@ namespace XmlDocMarkdown.Core
 			var generator = new MarkdownGenerator
 			{
 				SourceCodePath = settings.SourceCodePath,
+				SourceCodeStyle = settings.SourceCodeStyle ?? XmlDocSourceCodeStyle.TypeName,
 				RootNamespace = settings.RootNamespace,
 				IncludeObsolete = settings.IncludeObsolete,
 				SkipUnbrowsable = settings.SkipUnbrowsable,

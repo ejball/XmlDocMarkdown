@@ -5,9 +5,14 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace XmlDocMarkdown.Core
@@ -17,6 +22,8 @@ namespace XmlDocMarkdown.Core
 		public string NewLine { get; set; }
 
 		public string SourceCodePath { get; set; }
+
+		public XmlDocSourceCodeStyle SourceCodeStyle { get; set; }
 
 		public string RootNamespace { get; set; }
 
@@ -95,7 +102,8 @@ namespace XmlDocMarkdown.Core
 			string rootNamespace = RootNamespace ??
 				visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0);
 			RootPageLocation = $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly.md" : ".md");
-			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation);
+			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName,
+				sourceCodePath, SourceCodeStyle, rootNamespace, RootPageLocation, assembly.Location);
 			yield return CreateNamedText(context.PageLocation, null, assemblyName, writer =>
 			{
 				var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly" : "") + extension);
@@ -605,14 +613,64 @@ namespace XmlDocMarkdown.Core
 
 					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))
 					{
-						string namespaceName = GetNamespaceName(typeInfo);
-						if (namespaceName.StartsWith(context.RootNamespace, StringComparison.Ordinal))
+						var written = false;
+						var mask = XmlDocSourceCodeStyle.SourceLink | XmlDocSourceCodeStyle.DebugSymbol;
+
+						if (context.MetadataContext.PdbLoaded &&
+							(context.SourceCodeStyle & mask) != 0)
 						{
-							string directoryPath = context.SourceCodePath + namespaceName.Substring(context.RootNamespace.Length).Replace('.', '/');
-							if (!Uri.TryCreate(directoryPath, UriKind.Absolute, out _))
-								directoryPath = "../" + directoryPath;
-							string fileName = GetShortName(typeInfo) + ".cs";
-							writer.WriteLine($"* [{fileName}]({directoryPath}/{fileName})");
+							// **Note** Types that have no executable code locations
+							// e.g. Interfaces, enums, derived types with only
+							// default constructor and inherited methods,
+							// will not be found.
+							// Workround -- add a marker inner type
+							// Heavier weight workround -- provide an SDK with
+							// an attribute that is constructed with a
+							// [System.Runtime.CompilerServices.CallerFilePath]
+							// argument and reflect for its value
+							// There's nowhere in the .pdb format to add an
+							// arbitrary type -> file mapping
+
+							// Allow for e.g. F# modules that contain only types
+							var documents = (new[] { typeInfo.FullName }).Concat(
+								typeInfo.DeclaredNestedTypes.Select(t => t.FullName))
+								.SelectMany(n => context.MetadataContext[n])
+								.Distinct();
+
+							foreach (var document in documents)
+							{
+								var fileName = Path.GetFileName(document);
+								if ((context.SourceCodeStyle & XmlDocSourceCodeStyle.SourceLink) != 0
+									&& context.MetadataContext.TrySourceLink(document, out var link))
+								{
+									writer.WriteLine($"* [{fileName}]({link})");
+									written = true;
+								}
+								else if ((context.SourceCodeStyle & XmlDocSourceCodeStyle.DebugSymbol) != 0)
+								{
+									var snip = document.Substring(context.MetadataContext.PrefixLength);
+									string filePath = context.SourceCodePath + snip.Replace('\\', '/');
+									if (!Uri.TryCreate(filePath, UriKind.Absolute, out _))
+										filePath = "../" + filePath;
+									writer.WriteLine($"* [{fileName}]({filePath})");
+									written = true;
+								}
+							}
+						}
+
+						// default to old behaviour if requested
+						if (!written &&
+							  (context.SourceCodeStyle & XmlDocSourceCodeStyle.TypeName) != 0)
+						{
+							string namespaceName = GetNamespaceName(typeInfo);
+							if (namespaceName.StartsWith(context.RootNamespace, StringComparison.Ordinal))
+							{
+								string directoryPath = context.SourceCodePath + namespaceName.Substring(context.RootNamespace.Length).Replace('.', '/');
+								if (!Uri.TryCreate(directoryPath, UriKind.Absolute, out _))
+									directoryPath = "../" + directoryPath;
+								string fileName = GetShortName(typeInfo) + ".cs";
+								writer.WriteLine($"* [{fileName}]({directoryPath}/{fileName})");
+							}
 						}
 					}
 
@@ -2162,14 +2220,21 @@ namespace XmlDocMarkdown.Core
 
 		private class MarkdownContext
 		{
-			public MarkdownContext(XmlDocAssembly xmlDocAssembly, IReadOnlyDictionary<string, MemberInfo> membersByXmlDocName, string assemblyFileName, string sourceCodePath, string rootNamespace, string pageLocation)
+			public MarkdownContext(XmlDocAssembly xmlDocAssembly, IReadOnlyDictionary<string, MemberInfo> membersByXmlDocName,
+				string assemblyFileName, string sourceCodePath, XmlDocSourceCodeStyle sourceCodeStyle, string rootNamespace,
+				string pageLocation, string assemblyLocation)
 			{
 				XmlDocAssembly = xmlDocAssembly;
 				MembersByXmlDocName = membersByXmlDocName;
 				AssemblyFileName = assemblyFileName;
 				SourceCodePath = sourceCodePath;
+				SourceCodeStyle = sourceCodeStyle;
 				RootNamespace = rootNamespace;
 				PageLocation = pageLocation;
+
+				MetadataContext =
+				  (!string.IsNullOrEmpty(sourceCodePath) && !string.IsNullOrEmpty(rootNamespace)) ?
+				  new MetadataContext(assemblyLocation) : new MetadataContext();
 			}
 
 			public MarkdownContext(MarkdownContext context, MemberInfo memberInfo, string pageLocation)
@@ -2178,8 +2243,10 @@ namespace XmlDocMarkdown.Core
 				MembersByXmlDocName = context.MembersByXmlDocName;
 				AssemblyFileName = context.AssemblyFileName;
 				SourceCodePath = context.SourceCodePath;
+				SourceCodeStyle = context.SourceCodeStyle;
 				RootNamespace = context.RootNamespace;
 				PageLocation = pageLocation;
+				MetadataContext = context.MetadataContext;
 
 				var typeInfo = memberInfo as TypeInfo;
 				if (typeInfo != null)
@@ -2205,9 +2272,197 @@ namespace XmlDocMarkdown.Core
 
 			public string SourceCodePath { get; }
 
+			public XmlDocSourceCodeStyle SourceCodeStyle { get; }
+
 			public string RootNamespace { get; }
 
 			public string PageLocation { get; }
+
+			public MetadataContext MetadataContext { get; }
+		}
+
+		private class MetadataContext
+		{
+			private Dictionary<string, List<string>> typemap =
+				new Dictionary<string, List<string>>();
+
+			private Dictionary<string, string> sourcelink =
+				new Dictionary<string, string>();
+
+			public MetadataContext()
+			{
+				PrefixLength = 0;
+				PdbLoaded = false;
+			}
+
+			public MetadataContext(string assemblyPath)
+			{
+				var index = 0;
+				using (var stream = File.OpenRead(assemblyPath))
+				using (var reader = new PEReader(stream))
+				{
+					Func<string, Stream> streamProvider = p => new FileStream(p, FileMode.Open, FileAccess.Read);
+
+					var metadata = reader.GetMetadataReader(MetadataReaderOptions.Default);
+					PdbLoaded = reader.TryOpenAssociatedPortablePdb(stream.Name, streamProvider, out var metadataReaderProvider,
+						out var pdbPath);
+
+					if (PdbLoaded)
+					{
+						var metadataSymbol = metadataReaderProvider.GetMetadataReader();
+
+						// Load all the file paths
+						var names = metadataSymbol.Documents
+						   .Select(metadataSymbol.GetDocument)
+						   .Select(d => metadataSymbol.GetString(d.Name))
+						   .Distinct()
+						   .ToList();
+
+						// identify the common prefix
+						var shortest = names.OrderBy(s => s.Length).First();
+						for (; index < shortest.Length; ++index)
+						{
+							var c = shortest[index];
+							var match = names.All(n => n[index] == c);
+							if (!match)
+								break;
+						}
+
+						// for each type, identify the file(s) it refers to
+						var types = metadata.TypeDefinitions.Select(metadata.GetTypeDefinition);
+
+						typemap = types.ToDictionary(t => TypeName(metadata, t),
+						   t => t.GetMethods().Select(m => metadataSymbol.GetMethodDebugInformation(m))
+								.SelectMany(a => a.GetSequencePoints())
+								.Select(a => metadataSymbol.GetDocument(a.Document))
+								.Select(d => metadataSymbol.GetString(d.Name))
+								.Distinct()
+								.ToList()
+						   );
+
+						// identify sourcelink data, if present
+						var custom = metadataSymbol.CustomDebugInformation
+						  .Select(m => metadataSymbol.GetCustomDebugInformation(m))
+						  .Where(c => metadataSymbol.GetGuid(c.Kind) ==
+							 // magic ID -- https://github.com/dotnet/corefx/blob/master/src/System.Reflection.Metadata/specs/PortablePdb-Metadata.md#source-link-c-and-vb-compilers
+							 // It works for F# too, haven't tried C++/CLI
+							 Guid.Parse("cc110556-a091-4d38-9fec-25ab9a351a6a"))
+						  .Select(c => metadataSymbol.GetBlobBytes(c.Value))
+						  .FirstOrDefault();
+
+						if (custom != null)
+						{
+							// Expect the blob to be well-formed
+							using (var blob = new MemoryStream(custom))
+							{
+								var json = JsonDocument.Parse(blob);
+								var root = json.RootElement;
+								var documents = root.GetProperty("documents");
+								using (var scan = documents.EnumerateObject())
+								{
+									foreach (var item in scan)
+									{
+										sourcelink.Add(
+											item.Name,
+											item.Value.GetString()
+											);
+									}
+								}
+							}
+						}
+					}
+				}
+
+				PrefixLength = index;
+			}
+
+			public int PrefixLength { get; }
+
+			public bool PdbLoaded { get; }
+
+			public IEnumerable<string> this[string typename] =>
+				typemap.TryGetValue(typename, out var documents) ?
+						new ReadOnlyCollection<string>(documents) :
+						Enumerable.Empty<string>();
+
+			public bool TrySourceLink(string filepath, out string link)
+			{
+				if (sourcelink.TryGetValue(filepath, out link))
+				{
+					return true;
+				}
+
+				return TryLocateMatch(filepath, sourcelink, out link);
+			}
+
+			private static bool TryLocateMatch(string file,
+				Dictionary<string, string> dict, out string match)
+			{
+				if (TryFindClosestMatch(file, dict, out var best, out var relative))
+				{
+					var replacement =
+					  Path.Combine(relative, Path.GetFileName(file)).Replace('\\', '/');
+					var url = dict[best].Replace("*", replacement);
+					dict.Add(file, url);
+					match = url;
+					return true;
+				}
+				match = file;
+				return false;
+			}
+
+			private static bool TryFindClosestMatch(string file,
+				Dictionary<string, string> dict, out string best,
+				out string relative)
+			{
+				var unmapped = dict.Keys.Where(k => Path.GetFileName(k) == "*");
+				var dir = Path.GetDirectoryName(file);
+
+				var candidate =
+					unmapped.Select(x => new
+					{
+						Best = x,
+						Relative = GetRelativePath(Path.GetDirectoryName(x), dir)
+					})
+						.Where(m => m.Relative.IndexOf("..", StringComparison.Ordinal) < 0)
+						.OrderBy(m => m.Relative.Length)
+						.FirstOrDefault();
+
+				best = candidate?.Best;
+				relative = candidate?.Relative;
+				return candidate != null;
+			}
+
+			private static string EnsureEndsWith(string s, string c)
+			{
+				return s.EndsWith(c, StringComparison.Ordinal) ?
+					s : s + c;
+			}
+
+			private static string GetRelativePath(string relativeTo, string path)
+			{
+				if (Path.GetFullPath(path) == Path.GetFullPath(relativeTo))
+				{
+					return String.Empty;
+				}
+
+				Func<string, string> ender = s => EnsureEndsWith(s, Path.DirectorySeparatorChar.ToString());
+
+				var uri = new Uri(ender(relativeTo));
+
+				return Uri.UnescapeDataString(uri.MakeRelativeUri(new Uri(path)).ToString())
+				   .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+			}
+
+			private static string TypeName(MetadataReader metadata, TypeDefinition t)
+			{
+				var name = metadata.GetString(t.Name);
+				if (t.IsNested)
+					return TypeName(metadata, metadata.GetTypeDefinition(t.GetDeclaringType())) +
+					  "+" + name;
+
+				return metadata.GetString(t.Namespace) + "." + metadata.GetString(t.Name);
+			}
 		}
 
 		static readonly HashSet<string> s_keywords = new HashSet<string>
@@ -2290,5 +2545,5 @@ namespace XmlDocMarkdown.Core
 			"volatile",
 			"while",
 		};
-	}
+		}
 }

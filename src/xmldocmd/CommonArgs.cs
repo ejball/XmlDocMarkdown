@@ -1,3 +1,4 @@
+using System;
 using XmlDocMarkdown.Core;
 
 namespace XmlDocMarkdown
@@ -7,6 +8,20 @@ namespace XmlDocMarkdown
 		public static string ReadSourceOption(this ArgsReader args)
 		{
 			return args.ReadOption("source");
+		}
+
+		public static XmlDocSourceCodeStyle? ReadSourceStyleOption(this ArgsReader args)
+		{
+			string style = args.ReadOption("source-style");
+			if (style == null)
+				return null;
+
+			if (!Enum.TryParse<XmlDocSourceCodeStyle>(style, true, out var choice))
+				throw new ArgsReaderException($"Unknown source code style option: {style}");
+
+			return choice == XmlDocSourceCodeStyle.Default ?
+				XmlDocSourceCodeStyle.TypeName :
+				choice;
 		}
 
 		public static string ReadNamespaceOption(this ArgsReader args)
