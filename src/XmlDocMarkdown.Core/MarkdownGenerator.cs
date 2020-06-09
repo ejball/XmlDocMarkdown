@@ -612,9 +612,17 @@ namespace XmlDocMarkdown.Core
 					{
 						if (context.MetadataContext.PdbLoaded)
 						{
-							// **Note** Interface types will not be found
-							// as they have no executable code locations
+							// **Note** Types that have no executable code locations
+							// e.g. Interfaces, enums, derived types with only
+							// default constructor and inherited methods,
+							// will not be found.
 							// Workround -- add a marker inner type
+							// Heavier weight workround -- provide an SDK with
+							// an attribute that is constructed with a
+							// [System.Runtime.CompilerServices.CallerFilePath]
+							// argument and reflect for its value
+							// There's nowhere in the .pdb format to add an
+							// arbitrary type -> file mapping
 
 							// Allow for e.g. F# modules that contain only types
 							var documents = (new[] { typeInfo.FullName }).Concat(
