@@ -16,3 +16,13 @@
 * `git clone https://github.com/ejball/XmlDocMarkdown.git`
 * `cd XmlDocMarkdown`
 * `dotnet test`
+
+### If the change affects the API
+
+New documentation will be required, so run
+
+* .\build.cmd generate-docs
+or
+* ./build.sh generate-docs
+
+as appropriate, and add the updated documents to your branch
