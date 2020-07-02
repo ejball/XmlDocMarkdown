@@ -11,7 +11,7 @@
     <RepositoryName>RepoName</RepositoryName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Faithlife/$(RepositoryName)</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/Faithlife/$(RepositoryName)/blob/master/VersionHistory.md</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/Faithlife/$(RepositoryName)/blob/master/ReleaseNotes.md</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/Faithlife/$(RepositoryName).git</RepositoryUrl>
     <Authors>Faithlife</Authors>
     <Copyright>Copyright $(Authors)</Copyright>

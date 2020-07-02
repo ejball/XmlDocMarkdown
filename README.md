@@ -4,4 +4,4 @@
 
 * [Documentation](https://faithlife.github.io/RepoName/)
 * [MIT License](LICENSE)
-* [Version History](VersionHistory.md)
+* [Release Notes](ReleaseNotes.md)
