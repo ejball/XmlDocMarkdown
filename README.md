@@ -5,4 +5,3 @@
 * Documentation: https://faithlife.github.io/RepoName/
 * License: [MIT](LICENSE)
 * [Version History](VersionHistory.md)
-* [Contributing Guidelines](CONTRIBUTING.md)
