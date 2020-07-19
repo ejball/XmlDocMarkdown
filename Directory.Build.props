@@ -6,8 +6,7 @@
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);1591;1998</NoWarn>
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
     <RepositoryName>RepoName</RepositoryName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Faithlife/$(RepositoryName)</PackageProjectUrl>
@@ -17,7 +16,6 @@
     <Copyright>Copyright $(Authors)</Copyright>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <IsPackable>false</IsPackable>
     <IsTestProject>false</IsTestProject>
   </PropertyGroup>
