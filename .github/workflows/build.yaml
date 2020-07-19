@@ -1,0 +1,38 @@
+name: Build
+on:
+  push:
+    paths-ignore:
+    - '*.md'
+    - 'docs/**'
+  pull_request:
+    paths-ignore:
+    - '*.md'
+    - 'docs/**'
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v1
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.100
+    - name: Build Windows
+      if: runner.os == 'Windows' && github.ref != 'refs/heads/master'
+      run: .\build.cmd package
+    - name: Publish Windows
+      if: runner.os == 'Windows' && github.ref == 'refs/heads/master'
+      env:
+        BUILD_BOT_PASSWORD: ${{ secrets.BUILD_BOT_PASSWORD }}
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: .\build.cmd publish
+    - name: Build Linux
+      if: runner.os == 'Linux'
+      run: ./build.sh package
