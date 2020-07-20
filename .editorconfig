@@ -81,6 +81,7 @@ dotnet_code_quality_unused_parameters = all : suggestion
 dotnet_diagnostic.CA1031.severity = suggestion
 dotnet_diagnostic.CA1054.severity = none
 dotnet_diagnostic.CA1055.severity = none
+dotnet_diagnostic.CA1056.severity = none
 dotnet_diagnostic.CA1062.severity = suggestion
 dotnet_diagnostic.CA1063.severity = none
 dotnet_diagnostic.CA1303.severity = none
