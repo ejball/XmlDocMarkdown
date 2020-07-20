@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "xmldocmd": {
+      "version": "2.1.0",
+      "commands": [
+        "xmldocmd"
+      ]
+    },
+    "dotnet-format": {
+      "version": "4.1.131201",
+      "commands": [
+        "dotnet-format"
+      ]
+    },
+    "jetbrains.resharper.globaltools": {
+      "version": "2020.2.0-eap07",
+      "commands": [
+        "jb"
+      ]
+    }
+  }
+}

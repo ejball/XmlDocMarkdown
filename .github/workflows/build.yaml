@@ -32,7 +32,7 @@ jobs:
       env:
         BUILD_BOT_PASSWORD: ${{ secrets.BUILD_BOT_PASSWORD }}
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: .\build.cmd publish --trigger=publish-all
+      run: .\build.cmd publish
     - name: Build Linux
       if: runner.os == 'Linux'
       run: ./build.sh package
