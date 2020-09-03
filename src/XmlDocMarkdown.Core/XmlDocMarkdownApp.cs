@@ -55,13 +55,17 @@ namespace XmlDocMarkdown.Core
 				if (inputPath == null)
 					throw new ArgsReaderException("Missing input path.");
 
+				var input = File.Exists(inputPath)
+					? new XmlDocInput { AssemblyPath = inputPath }
+					: new XmlDocInput { Assembly = Assembly.Load(inputPath) };
+
 				string outputPath = argsReader.ReadArgument();
 				if (outputPath == null)
 					throw new ArgsReaderException("Missing output path.");
 
 				argsReader.VerifyComplete();
 
-				var result = XmlDocMarkdownGenerator.Generate(inputPath, outputPath, settings);
+				var result = XmlDocMarkdownGenerator.Generate(input, outputPath, settings);
 
 				foreach (string message in result.Messages)
 					Console.WriteLine(message);
@@ -97,9 +101,9 @@ namespace XmlDocMarkdown.Core
 			textWriter.WriteLine($"Usage: {Assembly.GetEntryAssembly()?.GetName().Name} input output [options]");
 			textWriter.WriteLine();
 			textWriter.WriteLine("   input");
-			textWriter.WriteLine("      The path to the input assembly.");
+			textWriter.WriteLine("      The path or name of the input assembly.");
 			textWriter.WriteLine("   output");
-			textWriter.WriteLine("      The path to the output directory.");
+			textWriter.WriteLine("      The path of the output directory.");
 			textWriter.WriteLine();
 			textWriter.WriteLine("   --source <url>");
 			textWriter.WriteLine("      The URL (absolute or relative) of the folder containing the source");
