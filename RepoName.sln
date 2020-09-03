@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Build", "tools\Build\Build.csproj", "{CBD807B4-F49F-4DD1-BC9A-359E90EA913F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocTarget", "tools\XmlDocTarget\XmlDocTarget.csproj", "{EC2B2484-B209-41A2-94E5-4203A9740983}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocGen", "tools\XmlDocGen\XmlDocGen.csproj", "{EC2B2484-B209-41A2-94E5-4203A9740983}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
