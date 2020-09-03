@@ -1,4 +1,4 @@
-# XmlDocMarkdownGenerator.Generate method
+# XmlDocMarkdownGenerator.Generate method (1 of 2)
 
 Generates Markdown from .NET XML documentation comments.
 
@@ -20,6 +20,35 @@ The names of files that were added, changed, or removed.
 ## See Also
 
 * class [XmlDocMarkdownResult](../XmlDocMarkdownResult.md)
+* class [XmlDocMarkdownSettings](../XmlDocMarkdownSettings.md)
+* class [XmlDocMarkdownGenerator](../XmlDocMarkdownGenerator.md)
+* namespace [XmlDocMarkdown.Core](../../XmlDocMarkdown.Core.md)
+
+---
+
+# XmlDocMarkdownGenerator.Generate method (2 of 2)
+
+Generates Markdown from .NET XML documentation comments.
+
+```csharp
+public static XmlDocMarkdownResult Generate(XmlDocInput input, string outputPath, 
+    XmlDocMarkdownSettings settings)
+```
+
+| parameter | description |
+| --- | --- |
+| input | The input. |
+| outputPath | The output directory. |
+| settings | The settings. |
+
+## Return Value
+
+The names of files that were added, changed, or removed.
+
+## See Also
+
+* class [XmlDocMarkdownResult](../XmlDocMarkdownResult.md)
+* class [XmlDocInput](../XmlDocInput.md)
 * class [XmlDocMarkdownSettings](../XmlDocMarkdownSettings.md)
 * class [XmlDocMarkdownGenerator](../XmlDocMarkdownGenerator.md)
 * namespace [XmlDocMarkdown.Core](../../XmlDocMarkdown.Core.md)

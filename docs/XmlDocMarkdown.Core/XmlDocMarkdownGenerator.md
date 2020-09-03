@@ -10,7 +10,7 @@ public static class XmlDocMarkdownGenerator
 
 | name | description |
 | --- | --- |
-| static [Generate](XmlDocMarkdownGenerator/Generate.md)(…) | Generates Markdown from .NET XML documentation comments. |
+| static [Generate](XmlDocMarkdownGenerator/Generate.md)(…) | Generates Markdown from .NET XML documentation comments. (2 methods) |
 
 ## See Also
 
