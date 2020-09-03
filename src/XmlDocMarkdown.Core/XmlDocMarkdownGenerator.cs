@@ -24,6 +24,21 @@ namespace XmlDocMarkdown.Core
 		{
 			if (inputPath == null)
 				throw new ArgumentNullException(nameof(inputPath));
+
+			return Generate(new XmlDocInput { AssemblyPath = inputPath }, outputPath, settings);
+		}
+
+		/// <summary>
+		/// Generates Markdown from .NET XML documentation comments.
+		/// </summary>
+		/// <param name="input">The input.</param>
+		/// <param name="outputPath">The output directory.</param>
+		/// <param name="settings">The settings.</param>
+		/// <returns>The names of files that were added, changed, or removed.</returns>
+		public static XmlDocMarkdownResult Generate(XmlDocInput input, string outputPath, XmlDocMarkdownSettings settings)
+		{
+			if (input == null)
+				throw new ArgumentNullException(nameof(input));
 			if (outputPath == null)
 				throw new ArgumentNullException(nameof(outputPath));
 
@@ -48,14 +63,23 @@ namespace XmlDocMarkdown.Core
 			if (string.Compare(settings.PermalinkStyle, "pretty", StringComparison.OrdinalIgnoreCase) == 0)
 				generator.PermalinkPretty = true;
 
-			var assembly = Assembly.LoadFrom(inputPath);
 			XmlDocAssembly xmlDocAssembly;
 
-			var xmlDocPath = Path.ChangeExtension(inputPath, ".xml");
-			if (!File.Exists(xmlDocPath))
-				xmlDocPath = Path.ChangeExtension(inputPath, ".XML");
+			var assembly = input.Assembly;
+			if (assembly == null)
+				assembly = Assembly.LoadFrom(input.AssemblyPath);
 
-			if (File.Exists(xmlDocPath))
+			var xmlDocPath = input.XmlDocPath;
+			if (xmlDocPath == null)
+			{
+				var assemblyPath = input.AssemblyPath ?? assembly.Location;
+
+				xmlDocPath = Path.ChangeExtension(assemblyPath, ".xml");
+				if (!File.Exists(xmlDocPath))
+					xmlDocPath = Path.ChangeExtension(assemblyPath, ".XML");
+			}
+
+			if (xmlDocPath != null && File.Exists(xmlDocPath))
 			{
 				var xDocument = XDocument.Load(xmlDocPath);
 				xmlDocAssembly = new XmlDocAssembly(xDocument);
