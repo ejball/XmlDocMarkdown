@@ -1,5 +1,14 @@
 # Version History
 
+### 2.3.0
+
+* Make command-line implementation available from `XmlDocMarkdown.Core`.
+* Allow command-line input to be the name of the assembly.
+
+### 2.2.0
+
+* Support generating markdown from a loaded assembly.
+
 ### 2.1.0
 
 * Add `--skip-unbrowsable`, `--namespace-pages`, `--front-matter`, `--permalink`, `--toc`, and `--toc-prefix`.
