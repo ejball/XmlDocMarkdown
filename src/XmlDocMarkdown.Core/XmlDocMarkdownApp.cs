@@ -1,18 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using XmlDocMarkdown.Core;
+using System.Reflection;
 
-namespace XmlDocMarkdown
+namespace XmlDocMarkdown.Core
 {
+	/// <summary>
+	/// Implements the command-line application.
+	/// </summary>
 	public sealed class XmlDocMarkdownApp
 	{
-		public static int Main(string[] args)
-		{
-			return new XmlDocMarkdownApp().Run(args);
-		}
-
-		public int Run(IReadOnlyList<string> args)
+		/// <summary>
+		/// Run the command-line application.
+		/// </summary>
+		/// <param name="args">The command-line arguments.</param>
+		/// <returns>The exit code.</returns>
+		public static int Run(IReadOnlyList<string> args)
 		{
 			try
 			{
@@ -87,11 +90,11 @@ namespace XmlDocMarkdown
 			}
 		}
 
-		private void WriteUsage(TextWriter textWriter)
+		private static void WriteUsage(TextWriter textWriter)
 		{
 			textWriter.WriteLine("Generates Markdown from .NET XML documentation comments.");
 			textWriter.WriteLine();
-			textWriter.WriteLine("Usage: XmlDocMarkdown input output [options]");
+			textWriter.WriteLine($"Usage: {Assembly.GetEntryAssembly()?.GetName().Name} input output [options]");
 			textWriter.WriteLine();
 			textWriter.WriteLine("   input");
 			textWriter.WriteLine("      The path to the input assembly.");

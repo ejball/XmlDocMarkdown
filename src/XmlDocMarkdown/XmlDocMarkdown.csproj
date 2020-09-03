@@ -23,11 +23,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\xmldocmd\ArgsReader.cs" Link="ArgsReader.cs" />
-    <Compile Include="..\xmldocmd\ArgsReaderException.cs" Link="ArgsReaderException.cs" />
-    <Compile Include="..\xmldocmd\CommonArgs.cs" Link="CommonArgs.cs" />
-    <Compile Include="..\xmldocmd\XmlDocMarkdownApp.cs" Link="XmlDocMarkdownApp.cs" />
-  </ItemGroup>
-
 </Project>

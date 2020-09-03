@@ -1,6 +1,6 @@
 using XmlDocMarkdown.Core;
 
-namespace XmlDocMarkdown
+namespace XmlDocMarkdown.Core
 {
 	internal static class CommonArgs
 	{

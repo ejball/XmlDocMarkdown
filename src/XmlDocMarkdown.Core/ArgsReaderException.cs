@@ -1,11 +1,11 @@
 using System;
 
-namespace XmlDocMarkdown
+namespace XmlDocMarkdown.Core
 {
 	/// <summary>
 	/// Thrown when an error occurs while processing command-line arguments.
 	/// </summary>
-	public sealed class ArgsReaderException : Exception
+	internal sealed class ArgsReaderException : Exception
 	{
 		/// <summary>
 		/// Creates an exception.

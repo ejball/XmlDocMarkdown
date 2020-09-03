@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace XmlDocMarkdown
+namespace XmlDocMarkdown.Core
 {
 	/// <summary>
 	/// Helps process command-line arguments.
@@ -12,7 +12,7 @@ namespace XmlDocMarkdown
 	/// read the supported options one at a time with <see cref="ReadFlag" /> and <see cref="ReadOption"/>,
 	/// read any normal arguments with <see cref="ReadArgument"/>, and finally call <see cref="VerifyComplete"/>,
 	/// which throws an <see cref="ArgsReaderException"/> if any unsupported options or arguments haven't been read.</remarks>
-	public sealed class ArgsReader
+	internal sealed class ArgsReader
 	{
 		/// <summary>
 		/// Creates a reader for the specified command-line arguments.
