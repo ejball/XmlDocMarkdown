@@ -1239,6 +1239,8 @@ namespace XmlDocMarkdown.Core
 				yield return RenderTypeName(Enum.GetUnderlyingType(typeInfo.AsType()).GetTypeInfo(), seeAlsoMembers);
 			}
 
+			var nullableFlags = GetNullableContextFlags(memberInfo.GetCustomAttributes());
+
 			ParameterInfo[] parameterInfos = null;
 
 			var propertyInfo = memberInfo as PropertyInfo;
@@ -1282,7 +1284,9 @@ namespace XmlDocMarkdown.Core
 					if (parameterInfo.GetCustomAttributes<ParamArrayAttribute>().Any())
 						yield return "params ";
 
-					yield return RenderTypeName(parameterInfo.ParameterType.GetTypeInfo(), seeAlsoMembers);
+					nullableFlags ??= GetNullableFlags(parameterInfo.GetCustomAttributes());
+					var nullableFlagIndex = 0;
+					yield return RenderTypeName(parameterInfo.ParameterType.GetTypeInfo(), nullableFlags, ref nullableFlagIndex, seeAlsoMembers);
 
 					yield return " ";
 					if (IsKeyword(parameterInfo.Name))
@@ -1395,6 +1399,26 @@ namespace XmlDocMarkdown.Core
 				return methodInfo.ReturnType;
 
 			return null;
+		}
+
+		private static byte[] GetNullableContextFlags(IEnumerable<Attribute> attributes)
+		{
+			var attribute = attributes.FirstOrDefault(x => x.GetType().ToString() == "System.Runtime.CompilerServices.NullableContextAttribute");
+			if (attribute is null)
+				return null;
+
+			var field = attribute.GetType().GetField("Flag");
+			return new[] { (byte) field.GetValue(attribute) };
+		}
+
+		private static byte[] GetNullableFlags(IEnumerable<Attribute> attributes)
+		{
+			var attribute = attributes.FirstOrDefault(x => x.GetType().ToString() == "System.Runtime.CompilerServices.NullableAttribute");
+			if (attribute is null)
+				return Array.Empty<byte>();
+
+			var field = attribute.GetType().GetField("NullableFlags");
+			return (byte[]) field.GetValue(attribute);
 		}
 
 		private static bool ParameterHasDefaultValue(ParameterInfo parameterInfo)
@@ -1519,26 +1543,42 @@ namespace XmlDocMarkdown.Core
 
 		private static string RenderTypeName(TypeInfo typeInfo, ICollection<MemberInfo> seeAlso = null)
 		{
+			int nullableFlagIndex = 0;
+			return RenderTypeName(typeInfo, Array.Empty<byte>(), ref nullableFlagIndex, seeAlso);
+		}
+
+		private static string RenderTypeName(TypeInfo typeInfo, byte[] nullableFlags, ref int nullableFlagIndex, ICollection<MemberInfo> seeAlso = null)
+		{
+			var nullableSuffix = "";
+			if (nullableFlagIndex < nullableFlags.Length && nullableFlags[nullableFlagIndex++] == 2)
+				nullableSuffix = "?";
+
 			if (typeInfo.IsArray)
-				return $"{RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso)}[]";
+				return $"{RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), nullableFlags, ref nullableFlagIndex, seeAlso)}[]{nullableSuffix}";
 
 			if (typeInfo.IsByRef)
-				return RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso);
+				return RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), nullableFlags, ref nullableFlagIndex, seeAlso);
 
 			var nullableOfType = Nullable.GetUnderlyingType(typeInfo.AsType());
 			if (nullableOfType != null)
-				return $"{RenderTypeName(nullableOfType.GetTypeInfo(), seeAlso)}?";
+				return $"{RenderTypeName(nullableOfType.GetTypeInfo(), nullableFlags, ref nullableFlagIndex, seeAlso)}?";
 
-			string builtIn = TryGetBuiltInTypeName(typeInfo.AsType());
+			string builtIn = TryGetBuiltInTypeName(typeInfo.AsType(), nullableSuffix);
 			if (builtIn != null)
 				return builtIn;
 
 			seeAlso?.Add(typeInfo);
 
-			return GetShortName(typeInfo) + RenderGenericArguments(typeInfo.GenericTypeArguments, seeAlso);
+			return GetShortName(typeInfo) + RenderGenericArguments(typeInfo.GenericTypeArguments, nullableFlags, ref nullableFlagIndex, seeAlso) + nullableSuffix;
 		}
 
 		private static string RenderGenericArguments(Type[] genericArguments, ICollection<MemberInfo> seeAlso = null)
+		{
+			int nullableFieldIndex = 0;
+			return RenderGenericArguments(genericArguments, Array.Empty<byte>(), ref nullableFieldIndex, seeAlso);
+		}
+
+		private static string RenderGenericArguments(Type[] genericArguments, byte[] nullableFlags, ref int nullableFlagIndex, ICollection<MemberInfo> seeAlso = null)
 		{
 			if (genericArguments == null)
 				return "";
@@ -1548,14 +1588,14 @@ namespace XmlDocMarkdown.Core
 			{
 				var genericArgument = genericArguments[index];
 				stringBuilder.Append((index == 0 ? "<" : "") +
-					RenderTypeName(genericArgument.GetTypeInfo(), seeAlso) +
+					RenderTypeName(genericArgument.GetTypeInfo(), nullableFlags, ref nullableFlagIndex, seeAlso) +
 					(index < genericArguments.Length - 1 ? ", " : "") +
 					(index == genericArguments.Length - 1 ? ">" : ""));
 			}
 			return stringBuilder.ToString();
 		}
 
-		private static string TryGetBuiltInTypeName(Type type)
+		private static string TryGetBuiltInTypeName(Type type, string nullableSuffix = "")
 		{
 			if (type == typeof(void))
 				return "void";
@@ -1582,13 +1622,13 @@ namespace XmlDocMarkdown.Core
 			else if (type == typeof(ulong))
 				return "ulong";
 			else if (type == typeof(object))
-				return "object";
+				return "object" + nullableSuffix;
 			else if (type == typeof(short))
 				return "short";
 			else if (type == typeof(ushort))
 				return "ushort";
 			else if (type == typeof(string))
-				return "string";
+				return "string" + nullableSuffix;
 			else
 				return null;
 		}
