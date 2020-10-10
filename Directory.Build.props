@@ -7,11 +7,12 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);1591;1998;NU5105</NoWarn>
     <DebugType>embedded</DebugType>
+    <GitHubOrganization>Faithlife</GitHubOrganization>
     <RepositoryName>RepoName</RepositoryName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Faithlife/$(RepositoryName)</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/Faithlife/$(RepositoryName)/blob/master/ReleaseNotes.md</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/Faithlife/$(RepositoryName).git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/$(GitHubOrganization)/$(RepositoryName)</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/$(GitHubOrganization)/$(RepositoryName)/blob/master/ReleaseNotes.md</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/$(GitHubOrganization)/$(RepositoryName).git</RepositoryUrl>
     <Authors>Faithlife</Authors>
     <Copyright>Copyright $(Authors)</Copyright>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
