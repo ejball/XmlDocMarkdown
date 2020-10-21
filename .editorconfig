@@ -250,6 +250,7 @@ resharper_csharp_wrap_ternary_expr_style = wrap_if_long
 resharper_identifier_typo_highlighting = none
 resharper_invert_if_highlighting = none
 resharper_is_expression_always_true_highlighting = hint
+resharper_localizable_element_highlighting = none
 resharper_pattern_always_of_type_highlighting = none
 resharper_string_literal_typo_highlighting = none
 resharper_unused_auto_property_accessor_global_highlighting = none
