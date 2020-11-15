@@ -1,5 +1,9 @@
 # Version History
 
+### 2.3.1
+
+* Allow .NET Core 3.1 build to run on .NET 5.
+
 ### 2.3.0
 
 * Make command-line implementation available from `XmlDocMarkdown.Core`.
