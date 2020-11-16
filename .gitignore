@@ -1,9 +1,6 @@
-# ignore output folders
 bin/
 obj/
 release/
-
-# ignore user-specific options/cache files
 .vs/
 Thumbs.db
 *.cache

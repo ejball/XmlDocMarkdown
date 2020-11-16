@@ -84,7 +84,7 @@ namespace XmlDocMarkdown.Core
 					Types = ng
 						.OrderBy(x => x.ShortName, StringComparer.OrdinalIgnoreCase)
 						.ThenBy(x => x.Path, StringComparer.OrdinalIgnoreCase)
-						.ToList()
+						.ToList(),
 				})
 				.OrderBy(x => x.Namespace, StringComparer.OrdinalIgnoreCase)
 				.ToList();
@@ -132,7 +132,6 @@ namespace XmlDocMarkdown.Core
 				writer.WriteLine();
 				writer.WriteLine(GetCodeGenComment(assemblyFileName));
 			});
-
 
 			// create separate parent pages for each namespace in the assembly.
 			foreach (var group in visibleNamespaceRecords)
@@ -438,9 +437,9 @@ namespace XmlDocMarkdown.Core
 						foreach (var enumValue in typeInfo.DeclaredMembers.OfType<FieldInfo>().Where(x => x.IsPublic && x.IsLiteral))
 						{
 							object valueObject = enumValue.GetValue(null);
-							string valueText = isFlags ? "0x" + Convert.ToString(Convert.ToInt64(valueObject), 16).ToUpperInvariant() :
-								Enum.GetUnderlyingType(typeInfo.AsType()) == typeof(ulong) ? Convert.ToString(Convert.ToUInt64(valueObject)) :
-									Convert.ToString(Convert.ToInt64(valueObject));
+							string valueText = isFlags ? "0x" + Convert.ToString(Convert.ToInt64(valueObject, CultureInfo.InvariantCulture), 16).ToUpperInvariant() :
+								Enum.GetUnderlyingType(typeInfo.AsType()) == typeof(ulong) ? Convert.ToString(Convert.ToUInt64(valueObject, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture) :
+									Convert.ToString(Convert.ToInt64(valueObject, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
 							string description = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, enumValue, memberContext);
 							writer.WriteLine($"| {enumValue.Name} | {SurroundCode(valueText)} | {description} |");
 						}
@@ -465,7 +464,7 @@ namespace XmlDocMarkdown.Core
 								.Select(tg => new
 								{
 									ShortSignature = tg.Key,
-									Members = tg.OrderBy(x => (x as TypeInfo)?.GenericTypeParameters.Length ?? 0).ToList()
+									Members = tg.OrderBy(x => (x as TypeInfo)?.GenericTypeParameters.Length ?? 0).ToList(),
 								}), x => x.Members[0]).ToList();
 
 							if (innerMemberSignatureGroups.Count != 0)
@@ -1480,7 +1479,7 @@ namespace XmlDocMarkdown.Core
 			case '\v':
 				return @"\v";
 			default:
-				return char.IsControl(ch) ? $"\\u{((int) ch):x4}" : ch.ToString();
+				return char.IsControl(ch) ? $"\\u{(int) ch:x4}" : ch.ToString();
 			}
 		}
 
@@ -1946,7 +1945,7 @@ namespace XmlDocMarkdown.Core
 				return type.GenericTypeParameters;
 
 			var method = memberInfo as MethodInfo;
-			return method?.GetGenericArguments() ?? new Type[0];
+			return method?.GetGenericArguments() ?? Array.Empty<Type>();
 		}
 
 		private static ParameterInfo[] GetParameters(MemberInfo memberInfo)
@@ -1960,7 +1959,7 @@ namespace XmlDocMarkdown.Core
 				return propertyInfo.GetIndexParameters();
 
 			var method = memberInfo as MethodBase;
-			return method?.GetParameters() ?? new ParameterInfo[0];
+			return method?.GetParameters() ?? Array.Empty<ParameterInfo>();
 		}
 
 		private static string GetParameterShortNames(MemberInfo memberInfo)
@@ -2210,7 +2209,7 @@ namespace XmlDocMarkdown.Core
 			public string PageLocation { get; }
 		}
 
-		static readonly HashSet<string> s_keywords = new HashSet<string>
+		private static readonly HashSet<string> s_keywords = new HashSet<string>
 		{
 			"abstract",
 			"as",

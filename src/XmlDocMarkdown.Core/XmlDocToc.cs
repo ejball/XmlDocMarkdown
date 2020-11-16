@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace XmlDocMarkdown.Core
 {
@@ -30,9 +30,7 @@ namespace XmlDocMarkdown.Core
 
 			var parentItem = FindParent(parent);
 			if (parentItem == null)
-			{
-				throw new Exception(string.Format("Parent '{0}' not found?", parent));
-			}			
+				throw new Exception($"Parent '{parent}' not found?");
 
 			parentItem.GetOrCreate(path, title);
 		}
@@ -86,7 +84,7 @@ namespace XmlDocMarkdown.Core
 
 		internal void Save(StreamWriter writer, string indent)
 		{
-			/* 
+			/*
 			toc:
 			- title: ...
 			  link: relative link to the permalink

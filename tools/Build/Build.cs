@@ -9,7 +9,6 @@ internal static class Build
 		var dotNetBuildSettings = new DotNetBuildSettings
 		{
 			NuGetApiKey = Environment.GetEnvironmentVariable("NUGET_API_KEY"),
-			Verbosity = "minimal",
 		};
 		build.AddDotNetTargets(dotNetBuildSettings);
 
@@ -37,6 +36,6 @@ internal static class Build
 			new[] { $"tools/XmlDocTarget/bin/{configuration}/net472/ExampleAssembly.dll", "docs", verify ? "--verify" : null, "--source", "../tests/ExampleAssembly", "--newline", "lf", "--clean" },
 		};
 		foreach (var args in projects)
-			RunDotNetFrameworkApp($"src/XmlDocMarkdown/bin/{configuration}/XmlDocMarkdown.exe", args);
+			RunApp($"src/XmlDocMarkdown/bin/{configuration}/XmlDocMarkdown.exe", new AppRunnerSettings { Arguments = args, IsFrameworkApp = true });
 	}
 }

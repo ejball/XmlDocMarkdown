@@ -2,7 +2,7 @@
 
 **XmlDocMarkdown** generates Markdown from [.NET XML documentation comments](https://msdn.microsoft.com/en-us/library/b2s063f7.aspx).
 
-It is distributed as a .NET Core Global Tool, console app, Cake addin, and class library.
+It is distributed as a .NET tool, console app, Cake addin, and class library.
 
 For example output, see the [Markdown documents](https://github.com/ejball/XmlDocMarkdown/blob/master/docs/ExampleAssembly.md) for the [documentation](ExampleAssembly.md) of the [ExampleAssembly](https://github.com/ejball/XmlDocMarkdown/tree/master/tools/ExampleAssembly) class library.
 
@@ -10,7 +10,7 @@ The goal of this tool is to generate Markdown documentation for .NET class libra
 
 For a more full-featured documentation generation tool, check out [DocFX](https://dotnet.github.io/docfx/) or [Sandcastle](https://github.com/EWSoftware/SHFB).
 
-## xmldocmd (.NET Core Global Tool)
+## xmldocmd (.NET tool)
 
 [![NuGet](https://img.shields.io/nuget/v/xmldocmd.svg)](https://www.nuget.org/packages/xmldocmd)
 

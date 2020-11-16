@@ -261,11 +261,11 @@ namespace XmlDocMarkdown.Core
 				return text;
 			}
 
-			List<XmlDocBlock> m_blocks;
-			XmlDocBlock m_block;
-			readonly Stack<XmlDocListKind> m_listKinds;
-			bool m_isListHeader;
-			bool m_isListTerm;
+			private List<XmlDocBlock> m_blocks;
+			private XmlDocBlock m_block;
+			private readonly Stack<XmlDocListKind> m_listKinds;
+			private bool m_isListHeader;
+			private bool m_isListTerm;
 		}
 	}
 }

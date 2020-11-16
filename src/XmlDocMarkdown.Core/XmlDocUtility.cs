@@ -66,7 +66,7 @@ namespace XmlDocMarkdown.Core
 			else if (typeInfo.IsByRef)
 			{
 				stringBuilder.Append(GetXmlDocTypePart(typeInfo.GetElementType().GetTypeInfo()));
-				stringBuilder.Append("@");
+				stringBuilder.Append('@');
 			}
 			else if (!typeInfo.IsGenericParameter)
 			{
@@ -79,9 +79,9 @@ namespace XmlDocMarkdown.Core
 				if (typeInfo.IsGenericType && !typeInfo.IsGenericTypeDefinition && tickIndex != -1)
 				{
 					stringBuilder.Append(typeInfo.Name.Substring(0, tickIndex));
-					stringBuilder.Append("{");
+					stringBuilder.Append('{');
 					stringBuilder.Append(string.Join(",", typeInfo.GenericTypeArguments.Select(x => GetXmlDocTypePart(x.GetTypeInfo()))));
-					stringBuilder.Append("}");
+					stringBuilder.Append('}');
 				}
 				else
 				{
