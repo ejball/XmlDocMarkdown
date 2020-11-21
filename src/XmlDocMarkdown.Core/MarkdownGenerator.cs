@@ -538,7 +538,9 @@ namespace XmlDocMarkdown.Core
 
 						foreach (var exception in exceptions)
 						{
-							memberContext.MembersByXmlDocName.TryGetValue(exception.ExceptionTypeRef, out var exceptionMemberInfo);
+							MemberInfo exceptionMemberInfo = null;
+							if (exception.ExceptionTypeRef != null)
+								memberContext.MembersByXmlDocName.TryGetValue(exception.ExceptionTypeRef, out exceptionMemberInfo);
 							string text = exceptionMemberInfo != null ? GetShortName(exceptionMemberInfo) : XmlDocUtility.GetShortNameForXmlDocRef(exception.ExceptionTypeRef);
 							string link = WrapMarkdownRefLink(text, exceptionMemberInfo, memberContext);
 							writer.WriteLine($"| {link} | {ToMarkdown(exception.Condition?.FirstOrDefault()?.Inlines, memberContext) ?? ""} |");
