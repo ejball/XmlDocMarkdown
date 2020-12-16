@@ -1,3 +1,3 @@
 using XmlDocMarkdown.Core;
 
-XmlDocMarkdownApp.Run(args);
+return XmlDocMarkdownApp.Run(args);
