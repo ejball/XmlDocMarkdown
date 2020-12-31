@@ -10,6 +10,7 @@ namespace Cake.XmlDocMarkdown
 	/// <summary>
 	/// The Cake addin.
 	/// </summary>
+	[CakeAliasCategory("XmlDocMarkdown")]
 	[CakeNamespaceImport("XmlDocMarkdown.Core")]
 	public static class XmlDocCakeAddin
 	{
