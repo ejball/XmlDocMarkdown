@@ -24,15 +24,12 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.100
-    - name: Build Windows
-      if: runner.os == 'Windows' && !(github.repository_owner == 'Faithlife' && github.ref == 'refs/heads/master')
-      run: .\build.cmd package
-    - name: Publish Windows
+    - name: Build
+      run: .\build.ps1 package
+      shell: pwsh
+    - name: Publish
       if: runner.os == 'Windows' && github.repository_owner == 'Faithlife' && github.ref == 'refs/heads/master'
       env:
         BUILD_BOT_PASSWORD: ${{ secrets.BUILD_BOT_PASSWORD }}
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: .\build.cmd publish
-    - name: Build Linux/macOS
-      if: runner.os == 'Linux' || runner.os == 'macOS'
-      run: ./build.sh package
+      run: .\build.ps1 publish --skip package
