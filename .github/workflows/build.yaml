@@ -17,6 +17,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+    defaults:
+      run:
+        shell: pwsh
     steps:
     - name: Check out code
       uses: actions/checkout@v1
@@ -24,12 +27,15 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.100
+    - name: Restore
+      run: .\build.ps1 restore
     - name: Build
-      run: .\build.ps1 package
-      shell: pwsh
+      run: .\build.ps1 build --skip restore
+    - name: Test
+      run: .\build.ps1 test --skip build
     - name: Publish
       if: runner.os == 'Windows' && github.repository_owner == 'Faithlife' && github.ref == 'refs/heads/master'
       env:
         BUILD_BOT_PASSWORD: ${{ secrets.BUILD_BOT_PASSWORD }}
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: .\build.ps1 publish --skip package
+      run: .\build.ps1 publish --skip test
