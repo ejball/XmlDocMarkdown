@@ -1,4 +1,4 @@
-﻿using ExampleAssembly.InnerNamespace;
+using ExampleAssembly.InnerNamespace;
 
 namespace ExampleAssembly
 {

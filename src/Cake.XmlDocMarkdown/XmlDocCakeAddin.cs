@@ -1,9 +1,8 @@
 using Cake.Core;
 using Cake.Core.Annotations;
+using Cake.Core.Diagnostics;
 using Cake.Core.IO;
 using XmlDocMarkdown.Core;
-using LogLevel = Cake.Core.Diagnostics.LogLevel;
-using Verbosity = Cake.Core.Diagnostics.Verbosity;
 
 namespace Cake.XmlDocMarkdown
 {
@@ -37,7 +36,7 @@ namespace Cake.XmlDocMarkdown
 		public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, string inputPath, string outputPath, XmlDocMarkdownSettings settings = null)
 		{
 			var result = XmlDocMarkdownGenerator.Generate(inputPath, outputPath, settings);
-			foreach (string message in result.Messages)
+			foreach (var message in result.Messages)
 				context?.Log.Write(Verbosity.Normal, LogLevel.Information, message);
 			return result;
 		}

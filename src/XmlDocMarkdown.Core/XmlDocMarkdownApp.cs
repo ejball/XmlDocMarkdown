@@ -26,7 +26,7 @@ namespace XmlDocMarkdown.Core
 					return 0;
 				}
 
-				bool isVerify = argsReader.ReadVerifyFlag();
+				var isVerify = argsReader.ReadVerifyFlag();
 
 				var settings = new XmlDocMarkdownSettings();
 				settings.NewLine = argsReader.ReadNewLineOption();
@@ -51,7 +51,7 @@ namespace XmlDocMarkdown.Core
 				if (externalDocs.Count != 0)
 					settings.ExternalDocs = externalDocs;
 
-				string inputPath = argsReader.ReadArgument();
+				var inputPath = argsReader.ReadArgument();
 				if (inputPath == null)
 					throw new ArgsReaderException("Missing input path.");
 
@@ -59,7 +59,7 @@ namespace XmlDocMarkdown.Core
 					? new XmlDocInput { AssemblyPath = inputPath }
 					: new XmlDocInput { Assembly = Assembly.Load(inputPath) };
 
-				string outputPath = argsReader.ReadArgument();
+				var outputPath = argsReader.ReadArgument();
 				if (outputPath == null)
 					throw new ArgsReaderException("Missing output path.");
 
@@ -67,7 +67,7 @@ namespace XmlDocMarkdown.Core
 
 				var result = XmlDocMarkdownGenerator.Generate(input, outputPath, settings);
 
-				foreach (string message in result.Messages)
+				foreach (var message in result.Messages)
 					Console.WriteLine(message);
 
 				return isVerify && result.Added.Count + result.Changed.Count + result.Removed.Count != 0 ? 1 : 0;

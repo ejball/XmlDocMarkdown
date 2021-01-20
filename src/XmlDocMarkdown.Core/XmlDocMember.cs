@@ -16,33 +16,33 @@ namespace XmlDocMarkdown.Core
 			{
 				switch (xElement.Name.LocalName)
 				{
-				case "summary":
-					AddBlocks(xElement, Summary);
-					break;
-				case "typeparam":
-					AddParameter(xElement, TypeParameters);
-					break;
-				case "param":
-					AddParameter(xElement, Parameters);
-					break;
-				case "returns":
-					AddBlocks(xElement, ReturnValue);
-					break;
-				case "value":
-					AddBlocks(xElement, PropertyValue);
-					break;
-				case "exception":
-					AddException(xElement, Exceptions);
-					break;
-				case "remarks":
-					AddBlocks(xElement, Remarks);
-					break;
-				case "example":
-					AddBlocks(xElement, Examples);
-					break;
-				case "seealso":
-					AddSeeAlso(xElement, SeeAlso);
-					break;
+					case "summary":
+						AddBlocks(xElement, Summary);
+						break;
+					case "typeparam":
+						AddParameter(xElement, TypeParameters);
+						break;
+					case "param":
+						AddParameter(xElement, Parameters);
+						break;
+					case "returns":
+						AddBlocks(xElement, ReturnValue);
+						break;
+					case "value":
+						AddBlocks(xElement, PropertyValue);
+						break;
+					case "exception":
+						AddException(xElement, Exceptions);
+						break;
+					case "remarks":
+						AddBlocks(xElement, Remarks);
+						break;
+					case "example":
+						AddBlocks(xElement, Examples);
+						break;
+					case "seealso":
+						AddSeeAlso(xElement, SeeAlso);
+						break;
 				}
 			}
 		}
@@ -134,78 +134,78 @@ namespace XmlDocMarkdown.Core
 			{
 				switch (xElement.Name.LocalName)
 				{
-				case "para":
-					NextBlock();
-					AddNodes(xElement.Nodes());
-					NextBlock();
-					break;
+					case "para":
+						NextBlock();
+						AddNodes(xElement.Nodes());
+						NextBlock();
+						break;
 
-				case "code":
-					NextBlock();
-					m_block.IsCode = true;
-					m_block.Inlines.Add(new XmlDocInline { Text = TrimCode(xElement.Value) });
-					NextBlock();
-					break;
+					case "code":
+						NextBlock();
+						m_block.IsCode = true;
+						m_block.Inlines.Add(new XmlDocInline { Text = TrimCode(xElement.Value) });
+						NextBlock();
+						break;
 
-				case "list":
-					m_listKinds.Push(GetListKind(xElement));
-					NextBlock();
-					AddNodes(xElement.Nodes());
-					m_listKinds.Pop();
-					NextBlock();
-					break;
+					case "list":
+						m_listKinds.Push(GetListKind(xElement));
+						NextBlock();
+						AddNodes(xElement.Nodes());
+						m_listKinds.Pop();
+						NextBlock();
+						break;
 
-				case "listheader":
-					m_isListHeader = true;
-					NextBlock();
-					AddNodes(xElement.Nodes());
-					NextBlock();
-					m_isListHeader = false;
-					break;
+					case "listheader":
+						m_isListHeader = true;
+						NextBlock();
+						AddNodes(xElement.Nodes());
+						NextBlock();
+						m_isListHeader = false;
+						break;
 
-				case "item":
-					NextBlock();
-					AddNodes(xElement.Nodes());
-					NextBlock();
-					break;
+					case "item":
+						NextBlock();
+						AddNodes(xElement.Nodes());
+						NextBlock();
+						break;
 
-				case "term":
-					m_isListTerm = true;
-					NextBlock();
-					AddNodes(xElement.Nodes());
-					m_isListTerm = false;
-					NextBlock();
-					break;
+					case "term":
+						m_isListTerm = true;
+						NextBlock();
+						AddNodes(xElement.Nodes());
+						m_isListTerm = false;
+						NextBlock();
+						break;
 
-				case "description":
-					NextBlock();
-					AddNodes(xElement.Nodes());
-					NextBlock();
-					break;
+					case "description":
+						NextBlock();
+						AddNodes(xElement.Nodes());
+						NextBlock();
+						break;
 
-				case "c":
-					m_block?.Inlines.Add(new XmlDocInline { Text = xElement.Value, IsCode = true });
-					break;
+					case "c":
+						m_block?.Inlines.Add(new XmlDocInline { Text = xElement.Value, IsCode = true });
+						break;
 
-				case "see":
-					m_block?.Inlines.Add(new XmlDocInline { Text = xElement.Value, SeeRef = xElement.Attribute("cref")?.Value, LinkUrl = xElement.Attribute("href")?.Value, LangWord = xElement.Attribute("langword")?.Value });
-					break;
+					case "see":
+						m_block?.Inlines.Add(new XmlDocInline { Text = xElement.Value, SeeRef = xElement.Attribute("cref")?.Value, LinkUrl = xElement.Attribute("href")?.Value, LangWord = xElement.Attribute("langword")?.Value });
+						break;
 
-				case "a":
-					m_block?.Inlines.Add(new XmlDocInline { Text = xElement.Value, LinkUrl = xElement.Attribute("href")?.Value });
-					break;
+					case "a":
+						m_block?.Inlines.Add(new XmlDocInline { Text = xElement.Value, LinkUrl = xElement.Attribute("href")?.Value });
+						break;
 
-				case "paramref":
-					m_block?.Inlines.Add(new XmlDocInline { Text = (string) xElement.Attribute("name"), IsParamRef = true });
-					break;
+					case "paramref":
+						m_block?.Inlines.Add(new XmlDocInline { Text = (string) xElement.Attribute("name"), IsParamRef = true });
+						break;
 
-				case "typeparamref":
-					m_block?.Inlines.Add(new XmlDocInline { Text = (string) xElement.Attribute("name"), IsTypeParamRef = true });
-					break;
+					case "typeparamref":
+						m_block?.Inlines.Add(new XmlDocInline { Text = (string) xElement.Attribute("name"), IsTypeParamRef = true });
+						break;
 
-				default:
-					AddNodes(xElement.Nodes());
-					break;
+					default:
+						AddNodes(xElement.Nodes());
+						break;
 				}
 			}
 
@@ -228,14 +228,14 @@ namespace XmlDocMarkdown.Core
 			{
 				switch (xElement.Attribute("type")?.Value.ToLowerInvariant())
 				{
-				case "bullet":
-					return XmlDocListKind.Bullet;
-				case "number":
-					return XmlDocListKind.Number;
-				case "table":
-					return XmlDocListKind.Table;
-				default:
-					return XmlDocListKind.Other;
+					case "bullet":
+						return XmlDocListKind.Bullet;
+					case "number":
+						return XmlDocListKind.Number;
+					case "table":
+						return XmlDocListKind.Table;
+					default:
+						return XmlDocListKind.Other;
 				}
 			}
 
@@ -252,7 +252,7 @@ namespace XmlDocMarkdown.Core
 				if (lines.Count == 0)
 					return "";
 
-				int indentLength = lines[0].Length - lines[0].TrimStart().Length;
+				var indentLength = lines[0].Length - lines[0].TrimStart().Length;
 				if (indentLength <= 4 && lines[0].Length != 0 && lines[0][0] != '\t')
 					indentLength = 0;
 

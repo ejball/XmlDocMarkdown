@@ -1,4 +1,4 @@
-﻿namespace ExampleAssembly
+namespace ExampleAssembly
 {
 	/// <summary>
 	/// This class has an exceptionally long summary. Even the first paragraph is really long, which is important

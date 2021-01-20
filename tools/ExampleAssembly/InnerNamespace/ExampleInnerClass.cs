@@ -1,4 +1,4 @@
-﻿namespace ExampleAssembly.InnerNamespace
+namespace ExampleAssembly.InnerNamespace
 {
 	/// <summary>
 	/// A class in an inner namespace.

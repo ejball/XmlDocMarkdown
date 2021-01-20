@@ -1,6 +1,7 @@
 using System.IO;
 using System.Reflection;
 using ExampleAssembly;
+using ExtensionMethods;
 using XmlDocMarkdown.Core;
 using Xunit;
 
@@ -21,7 +22,7 @@ namespace XmlDocMarkdown.Tests
 		public void FSharpWithNulls()
 		{
 			XmlDocMarkdownGenerator.Generate(
-				typeof(ExtensionMethods.Augment).GetTypeInfo().Assembly.Location,
+				typeof(Augment).GetTypeInfo().Assembly.Location,
 				Path.Combine(Path.GetTempPath(), "MarkdownGeneratorTests"),
 				new XmlDocMarkdownSettings { IsDryRun = true });
 		}

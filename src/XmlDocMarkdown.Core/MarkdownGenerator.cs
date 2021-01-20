@@ -45,10 +45,10 @@ namespace XmlDocMarkdown.Core
 
 		private IEnumerable<NamedText> DoGenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 		{
-			string extension = GetFileExtension();
-			string assemblyName = assembly.GetName().Name;
-			string assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
-			string assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
+			var extension = GetFileExtension();
+			var assemblyName = assembly.GetName().Name;
+			var assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
+			var assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
 
 			var visibleTypes = assembly
 				.DefinedTypes
@@ -89,10 +89,10 @@ namespace XmlDocMarkdown.Core
 				.OrderBy(x => x.Namespace, StringComparer.OrdinalIgnoreCase)
 				.ToList();
 
-			string sourceCodePath = SourceCodePath?.Trim('/');
+			var sourceCodePath = SourceCodePath?.Trim('/');
 			var rootPath = GetAssemblyUriName(assembly);
 			var safeAssemblyName = GetSafeName(rootPath);
-			string rootNamespace = RootNamespace ??
+			var rootNamespace = RootNamespace ??
 				visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0);
 			RootPageLocation = $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly.md" : ".md");
 			var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation);
@@ -117,13 +117,13 @@ namespace XmlDocMarkdown.Core
 						writer.WriteLine("| --- | --- |");
 						foreach (var typeInfo in typeGroup)
 						{
-							string relative = GetPermalink(typeInfo.Path);
-							string safeRelative = GetSafeName(relative);
+							var relative = GetPermalink(typeInfo.Path);
+							var safeRelative = GetSafeName(relative);
 							if (PermalinkPretty)
 								safeRelative += "Type";
-							string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}");
-							string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
-							string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
+							var rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}");
+							var typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
+							var summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
 							writer.WriteLine($"| {typeText} | {summaryText} |");
 						}
 					}
@@ -136,7 +136,7 @@ namespace XmlDocMarkdown.Core
 			// create separate parent pages for each namespace in the assembly.
 			foreach (var group in visibleNamespaceRecords)
 			{
-				string parentPageLocation = RootPageLocation;
+				var parentPageLocation = RootPageLocation;
 				var parentContext = context;
 
 				if (NamespacePages)
@@ -162,13 +162,13 @@ namespace XmlDocMarkdown.Core
 							writer.WriteLine("| --- | --- |");
 							foreach (var typeInfo in typeGroup)
 							{
-								string relative = GetPermalink(typeInfo.Path);
-								string safeRelative = GetSafeName(relative);
+								var relative = GetPermalink(typeInfo.Path);
+								var safeRelative = GetSafeName(relative);
 								if (PermalinkPretty)
 									safeRelative += "Type";
-								string rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}");
-								string typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
-								string summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
+								var rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}");
+								var typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
+								var summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
 								writer.WriteLine($"| {typeText} | {summaryText} |");
 							}
 						}
@@ -182,11 +182,11 @@ namespace XmlDocMarkdown.Core
 				{
 					if (visibleTypeRecord.Namespace == group.Namespace)
 					{
-						string relative = GetPermalink(visibleTypeRecord.Path);
-						string safeRelative = GetSafeName(relative);
+						var relative = GetPermalink(visibleTypeRecord.Path);
+						var safeRelative = GetSafeName(relative);
 						if (PermalinkPretty)
 							safeRelative += "Type.md";
-						string typePage = $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{safeRelative}";
+						var typePage = $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{safeRelative}";
 						yield return WriteMemberPage(
 							path: typePage,
 							title: GetFullMemberName(visibleTypeRecord.TypeInfo),
@@ -230,7 +230,7 @@ namespace XmlDocMarkdown.Core
 				return null;
 			}
 
-			string contents = File.ReadAllText(FrontMatter);
+			var contents = File.ReadAllText(FrontMatter);
 			return contents.Replace("$title", title).Replace("$ref", relativeLink);
 		}
 
@@ -275,7 +275,7 @@ namespace XmlDocMarkdown.Core
 		{
 			return GetFullTypeName(typeInfo, x =>
 			{
-				int genericTypeCount = x.GenericTypeParameters.Length;
+				var genericTypeCount = x.GenericTypeParameters.Length;
 				return GetShortName(x) + (genericTypeCount == 0 ? "" : $"-{genericTypeCount}");
 			});
 		}
@@ -322,7 +322,7 @@ namespace XmlDocMarkdown.Core
 
 		private static string SurroundCode(string value)
 		{
-			string backticks = new string('`', Regex.Matches(value, @"`+").Cast<Match>().Select(x => x.Length).Concat(new[] { 0 }).Max() + 1);
+			var backticks = new string('`', Regex.Matches(value, @"`+").Cast<Match>().Select(x => x.Length).Concat(new[] { 0 }).Max() + 1);
 			return backticks + value + backticks;
 		}
 
@@ -343,7 +343,7 @@ namespace XmlDocMarkdown.Core
 			if (PermalinkPretty)
 			{
 				// permalinks paths cannot end in .md
-				int pos = path.LastIndexOf('.');
+				var pos = path.LastIndexOf('.');
 				if (pos > 0)
 				{
 					path = path.Substring(0, pos);
@@ -354,7 +354,7 @@ namespace XmlDocMarkdown.Core
 
 		private NamedText WriteMemberPage(string path, string parent, string title, IReadOnlyList<MemberInfo> memberGroup, MarkdownContext context)
 		{
-			string extension = GetFileExtension();
+			var extension = GetFileExtension();
 
 			return CreateNamedText(path, parent, title, writer =>
 			{
@@ -365,7 +365,7 @@ namespace XmlDocMarkdown.Core
 					writer.WriteLine(front);
 				}
 
-				for (int memberIndex = 0; memberIndex < memberGroup.Count; memberIndex++)
+				for (var memberIndex = 0; memberIndex < memberGroup.Count; memberIndex++)
 				{
 					var memberInfo = memberGroup[memberIndex];
 					var memberContext = new MarkdownContext(context, memberInfo, path);
@@ -392,7 +392,7 @@ namespace XmlDocMarkdown.Core
 					{
 						foreach (var seeAlsoInfo in xmlDocMember.SeeAlso)
 						{
-							string xmlDocName = seeAlsoInfo.Ref;
+							var xmlDocName = seeAlsoInfo.Ref;
 							if (xmlDocName != null && memberContext.MembersByXmlDocName.TryGetValue(xmlDocName, out var seeAlsoMember))
 								seeAlsoMembers.Add(seeAlsoMember);
 						}
@@ -414,12 +414,12 @@ namespace XmlDocMarkdown.Core
 							writer.WriteLine("| --- | --- |");
 							foreach (var typeParameter in typeParameters)
 							{
-								string description = ToMarkdown(typeParameter.Description.FirstOrDefault()?.Inlines, memberContext) ?? "";
+								var description = ToMarkdown(typeParameter.Description.FirstOrDefault()?.Inlines, memberContext) ?? "";
 								writer.WriteLine($"| {typeParameter.Name} | {description} |");
 							}
 							foreach (var parameter in parameters)
 							{
-								string description = ToMarkdown(parameter.Description.FirstOrDefault()?.Inlines, memberContext) ?? "";
+								var description = ToMarkdown(parameter.Description.FirstOrDefault()?.Inlines, memberContext) ?? "";
 								writer.WriteLine($"| {parameter.Name} | {description} |");
 							}
 						}
@@ -433,14 +433,14 @@ namespace XmlDocMarkdown.Core
 						writer.WriteLine("| name | value | description |");
 						writer.WriteLine("| --- | --- | --- |");
 
-						bool isFlags = IsFlagsEnum(typeInfo);
+						var isFlags = IsFlagsEnum(typeInfo);
 						foreach (var enumValue in typeInfo.DeclaredMembers.OfType<FieldInfo>().Where(x => x.IsPublic && x.IsLiteral))
 						{
-							object valueObject = enumValue.GetValue(null);
-							string valueText = isFlags ? "0x" + Convert.ToString(Convert.ToInt64(valueObject, CultureInfo.InvariantCulture), 16).ToUpperInvariant() :
+							var valueObject = enumValue.GetValue(null);
+							var valueText = isFlags ? "0x" + Convert.ToString(Convert.ToInt64(valueObject, CultureInfo.InvariantCulture), 16).ToUpperInvariant() :
 								Enum.GetUnderlyingType(typeInfo.AsType()) == typeof(ulong) ? Convert.ToString(Convert.ToUInt64(valueObject, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture) :
-									Convert.ToString(Convert.ToInt64(valueObject, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
-							string description = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, enumValue, memberContext);
+								Convert.ToString(Convert.ToInt64(valueObject, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
+							var description = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, enumValue, memberContext);
 							writer.WriteLine($"| {enumValue.Name} | {SurroundCode(valueText)} | {description} |");
 						}
 					}
@@ -472,20 +472,20 @@ namespace XmlDocMarkdown.Core
 								writer.WriteLine();
 								switch (innerMemberVisibilityGroup.Visibility)
 								{
-								case XmlDocVisibilityLevel.Public:
-									writer.WriteLine(typeKind == TypeKind.Interface ? "## Members" : "## Public Members");
-									break;
-								case XmlDocVisibilityLevel.Protected:
-									writer.WriteLine("## Protected Members");
-									break;
-								case XmlDocVisibilityLevel.Internal:
-									writer.WriteLine("## Internal Members");
-									break;
-								case XmlDocVisibilityLevel.Private:
-									writer.WriteLine("## Private Members");
-									break;
-								default:
-									throw new InvalidOperationException();
+									case XmlDocVisibilityLevel.Public:
+										writer.WriteLine(typeKind == TypeKind.Interface ? "## Members" : "## Public Members");
+										break;
+									case XmlDocVisibilityLevel.Protected:
+										writer.WriteLine("## Protected Members");
+										break;
+									case XmlDocVisibilityLevel.Internal:
+										writer.WriteLine("## Internal Members");
+										break;
+									case XmlDocVisibilityLevel.Private:
+										writer.WriteLine("## Private Members");
+										break;
+									default:
+										throw new InvalidOperationException();
 								}
 								writer.WriteLine();
 								writer.WriteLine("| name | description |");
@@ -495,11 +495,11 @@ namespace XmlDocMarkdown.Core
 								{
 									var innerMembers = innerMemberGroup.Members;
 									var firstInnerMember = innerMembers[0];
-									string memberPath = firstInnerMember is TypeInfo ?
+									var memberPath = firstInnerMember is TypeInfo ?
 										$"{GetMemberUriName(firstInnerMember)}{extension}" :
 										$"{GetTypeUriName(typeInfo)}/{GetMemberUriName(firstInnerMember)}{extension}";
-									string memberText = GetShortSignatureMarkdown(innerMemberGroup.ShortSignature, memberPath);
-									string summaryText = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, firstInnerMember, memberContext);
+									var memberText = GetShortSignatureMarkdown(innerMemberGroup.ShortSignature, memberPath);
+									var summaryText = GetShortSummaryMarkdown(memberContext.XmlDocAssembly, firstInnerMember, memberContext);
 									if (innerMembers.Count != 1)
 										summaryText += $" ({innerMembers.Count} {GetMemberGroupNoun(innerMembers)})";
 
@@ -541,8 +541,8 @@ namespace XmlDocMarkdown.Core
 							MemberInfo exceptionMemberInfo = null;
 							if (exception.ExceptionTypeRef != null)
 								memberContext.MembersByXmlDocName.TryGetValue(exception.ExceptionTypeRef, out exceptionMemberInfo);
-							string text = exceptionMemberInfo != null ? GetShortName(exceptionMemberInfo) : XmlDocUtility.GetShortNameForXmlDocRef(exception.ExceptionTypeRef);
-							string link = WrapMarkdownRefLink(text, exceptionMemberInfo, memberContext);
+							var text = exceptionMemberInfo != null ? GetShortName(exceptionMemberInfo) : XmlDocUtility.GetShortNameForXmlDocRef(exception.ExceptionTypeRef);
+							var link = WrapMarkdownRefLink(text, exceptionMemberInfo, memberContext);
 							writer.WriteLine($"| {link} | {ToMarkdown(exception.Condition?.FirstOrDefault()?.Inlines, memberContext) ?? ""} |");
 						}
 					}
@@ -570,7 +570,7 @@ namespace XmlDocMarkdown.Core
 					writer.WriteLine();
 
 					var declaringType = memberInfo.DeclaringType?.GetTypeInfo();
-					string declaringTypeXmlDocName = declaringType == null ? null : XmlDocUtility.GetXmlDocRef(declaringType);
+					var declaringTypeXmlDocName = declaringType == null ? null : XmlDocUtility.GetXmlDocRef(declaringType);
 					if (declaringType != null)
 						seeAlsoMembers.Add(declaringType);
 
@@ -592,11 +592,11 @@ namespace XmlDocMarkdown.Core
 
 					if (NamespacePages)
 					{
-						string namespacePath = GetPermalink(MakeRelative(path, parent));
+						var namespacePath = GetPermalink(MakeRelative(path, parent));
 						writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo)}]({namespacePath}{extension})");
 
-						string assemblyName = (declaringType ?? typeInfo).Assembly.GetName().Name;
-						string assemblyPath = GetPermalink(MakeRelative(path, RootPageLocation));
+						var assemblyName = (declaringType ?? typeInfo).Assembly.GetName().Name;
+						var assemblyPath = GetPermalink(MakeRelative(path, RootPageLocation));
 						writer.WriteLine("* " + $"assembly\u00A0[{assemblyName}]({assemblyPath})");
 					}
 					else
@@ -606,13 +606,13 @@ namespace XmlDocMarkdown.Core
 
 					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))
 					{
-						string namespaceName = GetNamespaceName(typeInfo);
+						var namespaceName = GetNamespaceName(typeInfo);
 						if (namespaceName.StartsWith(context.RootNamespace, StringComparison.Ordinal))
 						{
-							string directoryPath = context.SourceCodePath + namespaceName.Substring(context.RootNamespace.Length).Replace('.', '/');
+							var directoryPath = context.SourceCodePath + namespaceName.Substring(context.RootNamespace.Length).Replace('.', '/');
 							if (!Uri.TryCreate(directoryPath, UriKind.Absolute, out _))
 								directoryPath = "../" + directoryPath;
-							string fileName = GetShortName(typeInfo) + ".cs";
+							var fileName = GetShortName(typeInfo) + ".cs";
 							writer.WriteLine($"* [{fileName}]({directoryPath}/{fileName})");
 						}
 					}
@@ -631,7 +631,7 @@ namespace XmlDocMarkdown.Core
 
 		private ExternalDocumentation FindExternalDocumentation(MemberInfo memberInfo)
 		{
-			string namespaceName = (memberInfo as TypeInfo ?? memberInfo.DeclaringType.GetTypeInfo()).Namespace;
+			var namespaceName = (memberInfo as TypeInfo ?? memberInfo.DeclaringType.GetTypeInfo()).Namespace;
 			return ExternalDocs?.FirstOrDefault(x => x.Namespace == namespaceName);
 		}
 
@@ -663,7 +663,7 @@ namespace XmlDocMarkdown.Core
 			if (SkipUnbrowsable && memberInfo.GetCustomAttributes<EditorBrowsableAttribute>().Any(x => x.State == EditorBrowsableState.Never))
 				return false;
 
-			string name = memberInfo.Name;
+			var name = memberInfo.Name;
 			if (name.Length == 0 || name[0] == '<')
 				return false;
 
@@ -706,7 +706,7 @@ namespace XmlDocMarkdown.Core
 
 		private static string GetMemberGroupNoun(IReadOnlyList<MemberInfo> memberInfos)
 		{
-			bool plural = memberInfos.Count != 1;
+			var plural = memberInfos.Count != 1;
 
 			if (memberInfos.All(x => x is ConstructorInfo))
 				return plural ? "constructors" : "constructor";
@@ -730,7 +730,7 @@ namespace XmlDocMarkdown.Core
 
 		private static string GetTypeGroupNoun(IReadOnlyList<TypeInfo> typeInfos)
 		{
-			bool plural = typeInfos.Count != 1;
+			var plural = typeInfos.Count != 1;
 
 			var typeKinds = typeInfos.Select(GetTypeKind).ToList();
 			if (typeKinds.All(x => x == TypeKind.Class))
@@ -753,9 +753,9 @@ namespace XmlDocMarkdown.Core
 
 		private static string GetShortName(MemberInfo memberInfo)
 		{
-			string name = memberInfo.Name;
+			var name = memberInfo.Name;
 
-			int tickIndex = name.IndexOf('`');
+			var tickIndex = name.IndexOf('`');
 			if (tickIndex != -1)
 				name = name.Substring(0, tickIndex);
 
@@ -773,60 +773,60 @@ namespace XmlDocMarkdown.Core
 		{
 			switch (name)
 			{
-			case "op_Addition":
-				return "operator +";
-			case "op_BitwiseAnd":
-				return "operator &";
-			case "op_BitwiseOr":
-				return "operator |";
-			case "op_Decrement":
-				return "operator --";
-			case "op_Division":
-				return "operator /";
-			case "op_Equality":
-				return "operator ==";
-			case "op_ExclusiveOr":
-				return "operator ^";
-			case "op_Explicit":
-				return "explicit operator";
-			case "op_False":
-				return "operator false";
-			case "op_GreaterThan":
-				return "operator >";
-			case "op_GreaterThanOrEqual":
-				return "operator >=";
-			case "op_Implicit":
-				return "implicit operator";
-			case "op_Increment":
-				return "operator ++";
-			case "op_Inequality":
-				return "operator !=";
-			case "op_LeftShift":
-				return "operator <<";
-			case "op_LessThan":
-				return "operator <";
-			case "op_LessThanOrEqual":
-				return "operator <=";
-			case "op_LogicalNot":
-				return "operator !";
-			case "op_Modulus":
-				return "operator %";
-			case "op_Multiply":
-				return "operator *";
-			case "op_OnesComplement":
-				return "operator ~";
-			case "op_RightShift":
-				return "operator >>";
-			case "op_Subtraction":
-				return "operator -";
-			case "op_True":
-				return "operator true";
-			case "op_UnaryNegation":
-				return "operator -";
-			case "op_UnaryPlus":
-				return "operator +";
-			default:
-				return name;
+				case "op_Addition":
+					return "operator +";
+				case "op_BitwiseAnd":
+					return "operator &";
+				case "op_BitwiseOr":
+					return "operator |";
+				case "op_Decrement":
+					return "operator --";
+				case "op_Division":
+					return "operator /";
+				case "op_Equality":
+					return "operator ==";
+				case "op_ExclusiveOr":
+					return "operator ^";
+				case "op_Explicit":
+					return "explicit operator";
+				case "op_False":
+					return "operator false";
+				case "op_GreaterThan":
+					return "operator >";
+				case "op_GreaterThanOrEqual":
+					return "operator >=";
+				case "op_Implicit":
+					return "implicit operator";
+				case "op_Increment":
+					return "operator ++";
+				case "op_Inequality":
+					return "operator !=";
+				case "op_LeftShift":
+					return "operator <<";
+				case "op_LessThan":
+					return "operator <";
+				case "op_LessThanOrEqual":
+					return "operator <=";
+				case "op_LogicalNot":
+					return "operator !";
+				case "op_Modulus":
+					return "operator %";
+				case "op_Multiply":
+					return "operator *";
+				case "op_OnesComplement":
+					return "operator ~";
+				case "op_RightShift":
+					return "operator >>";
+				case "op_Subtraction":
+					return "operator -";
+				case "op_True":
+					return "operator true";
+				case "op_UnaryNegation":
+					return "operator -";
+				case "op_UnaryPlus":
+					return "operator +";
+				default:
+					return name;
 			}
 		}
 
@@ -839,7 +839,7 @@ namespace XmlDocMarkdown.Core
 			if (memberInfo is ConstructorInfo || (memberInfo as PropertyInfo)?.GetIndexParameters().Length > 0)
 				return GetFullTypeName(memberInfo.DeclaringType.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters));
 
-			string methodName = (memberInfo as MethodInfo)?.Name;
+			var methodName = (memberInfo as MethodInfo)?.Name;
 			if (methodName?.StartsWith("op_", StringComparison.Ordinal) == true)
 				return GetFullTypeName(memberInfo.DeclaringType.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters)) + " " + methodName.Substring(3);
 
@@ -849,7 +849,7 @@ namespace XmlDocMarkdown.Core
 
 		private static string GetFullTypeName(TypeInfo typeInfo, Func<TypeInfo, string> render)
 		{
-			string name = render(typeInfo);
+			var name = render(typeInfo);
 			if (typeInfo.DeclaringType != null)
 				name = $"{GetFullTypeName(typeInfo.DeclaringType.GetTypeInfo(), render)}.{name}";
 			return name;
@@ -881,9 +881,9 @@ namespace XmlDocMarkdown.Core
 
 		private ShortSignature GetShortSignature(MemberInfo memberInfo, bool forSeeAlso = false)
 		{
-			string name = GetOperatorKeywordName(GetShortName(memberInfo));
-			string prefix = "";
-			string suffix = "";
+			var name = GetOperatorKeywordName(GetShortName(memberInfo));
+			var prefix = "";
+			var suffix = "";
 
 			var typeInfo = memberInfo as TypeInfo;
 			if (typeInfo != null)
@@ -892,21 +892,21 @@ namespace XmlDocMarkdown.Core
 
 				switch (GetTypeKind(typeInfo))
 				{
-				case TypeKind.Class:
-					prefix = "class ";
-					break;
-				case TypeKind.Interface:
-					prefix = "interface ";
-					break;
-				case TypeKind.Struct:
-					prefix = "struct ";
-					break;
-				case TypeKind.Enum:
-					prefix = "enum ";
-					break;
-				case TypeKind.Delegate:
-					prefix = "delegate ";
-					break;
+					case TypeKind.Class:
+						prefix = "class ";
+						break;
+					case TypeKind.Interface:
+						prefix = "interface ";
+						break;
+					case TypeKind.Struct:
+						prefix = "struct ";
+						break;
+					case TypeKind.Enum:
+						prefix = "enum ";
+						break;
+					case TypeKind.Delegate:
+						prefix = "delegate ";
+						break;
 				}
 
 				if (!forSeeAlso)
@@ -979,7 +979,7 @@ namespace XmlDocMarkdown.Core
 				}
 				else if (methodBase != null)
 				{
-					bool isOperator = methodBase.Name.StartsWith("op_", StringComparison.Ordinal);
+					var isOperator = methodBase.Name.StartsWith("op_", StringComparison.Ordinal);
 
 					if (methodBase is MethodInfo)
 						name += RenderShortGenericParameters(methodBase.GetGenericArguments());
@@ -1033,7 +1033,7 @@ namespace XmlDocMarkdown.Core
 			var segmentBuilder = new StringBuilder();
 			const int maxLineLength = 100;
 
-			void wrapLineIfNecessary(bool hard)
+			void WrapLineIfNecessary(bool hard)
 			{
 				const string indent = "    ";
 
@@ -1048,16 +1048,16 @@ namespace XmlDocMarkdown.Core
 				}
 			}
 
-			foreach (string part in GetFullSignatureParts(memberInfo, seeAlsoMembers))
+			foreach (var part in GetFullSignatureParts(memberInfo, seeAlsoMembers))
 			{
 				if (part.Length == 0 || part == ActualNewLine)
 				{
-					wrapLineIfNecessary(false);
+					WrapLineIfNecessary(false);
 
 					lineBuilder.Append(segmentBuilder);
 					segmentBuilder.Clear();
 
-					wrapLineIfNecessary(part == ActualNewLine);
+					WrapLineIfNecessary(part == ActualNewLine);
 				}
 				else
 				{
@@ -1065,7 +1065,7 @@ namespace XmlDocMarkdown.Core
 				}
 			}
 
-			wrapLineIfNecessary(false);
+			WrapLineIfNecessary(false);
 
 			lineBuilder.Append(segmentBuilder);
 			stringBuilder.Append(lineBuilder);
@@ -1080,7 +1080,7 @@ namespace XmlDocMarkdown.Core
 			var obsoleteAttribute = memberInfo.GetCustomAttribute<ObsoleteAttribute>();
 			if (obsoleteAttribute != null)
 			{
-				string message = obsoleteAttribute.Message;
+				var message = obsoleteAttribute.Message;
 				if (string.IsNullOrWhiteSpace(message))
 				{
 					yield return "[Obsolete]";
@@ -1157,28 +1157,28 @@ namespace XmlDocMarkdown.Core
 
 			switch (typeKind)
 			{
-			case TypeKind.Class:
-				yield return "class ";
-				break;
-			case TypeKind.Interface:
-				yield return "interface ";
-				break;
-			case TypeKind.Struct:
-				yield return "struct ";
-				break;
-			case TypeKind.Enum:
-				yield return "enum ";
-				break;
-			case TypeKind.Delegate:
-				yield return "delegate ";
-				break;
+				case TypeKind.Class:
+					yield return "class ";
+					break;
+				case TypeKind.Interface:
+					yield return "interface ";
+					break;
+				case TypeKind.Struct:
+					yield return "struct ";
+					break;
+				case TypeKind.Enum:
+					yield return "enum ";
+					break;
+				case TypeKind.Delegate:
+					yield return "delegate ";
+					break;
 			}
 
-			string shortName = GetOperatorKeywordName(GetShortName(memberInfo));
+			var shortName = GetOperatorKeywordName(GetShortName(memberInfo));
 			if (shortName == "Item" && memberInfo is PropertyInfo)
 				shortName = "this";
 
-			bool isConversion = shortName == "explicit operator" || shortName == "implicit operator";
+			var isConversion = shortName == "explicit operator" || shortName == "implicit operator";
 
 			var valueType = GetValueType(memberInfo)?.GetTypeInfo();
 			if (valueType != null && !isConversion)
@@ -1205,7 +1205,7 @@ namespace XmlDocMarkdown.Core
 
 			if (typeKind == TypeKind.Class || typeKind == TypeKind.Struct || typeKind == TypeKind.Interface)
 			{
-				bool isFirstBase = true;
+				var isFirstBase = true;
 				if (typeKind == TypeKind.Class && typeInfo.BaseType != typeof(object))
 				{
 					yield return " : ";
@@ -1259,7 +1259,7 @@ namespace XmlDocMarkdown.Core
 				yield return propertyInfo != null ? "[" : "(";
 				yield return "";
 
-				bool isFirstParameter = true;
+				var isFirstParameter = true;
 				foreach (var (parameterInfo, index) in parameterInfos.Select((x, i) => (x, i)))
 				{
 					if (!isFirstParameter)
@@ -1312,7 +1312,7 @@ namespace XmlDocMarkdown.Core
 
 			foreach (var genericParameter in genericParameters)
 			{
-				bool isFirstPart = true;
+				var isFirstPart = true;
 
 				if (genericParameter.GetTypeInfo().GenericParameterAttributes.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
 				{
@@ -1323,7 +1323,7 @@ namespace XmlDocMarkdown.Core
 					isFirstPart = false;
 				}
 
-				bool isStruct = genericParameter.GetTypeInfo().GenericParameterAttributes.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint);
+				var isStruct = genericParameter.GetTypeInfo().GenericParameterAttributes.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint);
 				if (isStruct)
 				{
 					if (isFirstPart)
@@ -1430,7 +1430,7 @@ namespace XmlDocMarkdown.Core
 			if (value is string valueAsString)
 				return RenderString(valueAsString);
 
-			Type type = value.GetType();
+			var type = value.GetType();
 			if (type.GetTypeInfo().IsEnum)
 			{
 				return string.Join(" | ", value.ToString()
@@ -1438,7 +1438,7 @@ namespace XmlDocMarkdown.Core
 					.Select(x => $"{type.Name}.{x}"));
 			}
 
-			string rendered = Convert.ToString(value, CultureInfo.InvariantCulture);
+			var rendered = Convert.ToString(value, CultureInfo.InvariantCulture);
 
 			if (value is double)
 				rendered += "m";
@@ -1449,7 +1449,7 @@ namespace XmlDocMarkdown.Core
 		private static string RenderString(string value)
 		{
 			var builder = new StringBuilder("\"");
-			foreach (char ch in value)
+			foreach (var ch in value)
 				builder.Append(ch == '\'' ? "'" : EscapeChar(ch));
 			return builder.Append('"').ToString();
 		}
@@ -1460,35 +1460,35 @@ namespace XmlDocMarkdown.Core
 		{
 			switch (ch)
 			{
-			case '\'':
-				return @"\'";
-			case '\"':
-				return @"\""";
-			case '\\':
-				return @"\\";
-			case '\a':
-				return @"\a";
-			case '\b':
-				return @"\b";
-			case '\f':
-				return @"\f";
-			case '\n':
-				return @"\n";
-			case '\r':
-				return @"\r";
-			case '\t':
-				return @"\t";
-			case '\v':
-				return @"\v";
-			default:
-				return char.IsControl(ch) ? $"\\u{(int) ch:x4}" : ch.ToString();
+				case '\'':
+					return @"\'";
+				case '\"':
+					return @"\""";
+				case '\\':
+					return @"\\";
+				case '\a':
+					return @"\a";
+				case '\b':
+					return @"\b";
+				case '\f':
+					return @"\f";
+				case '\n':
+					return @"\n";
+				case '\r':
+					return @"\r";
+				case '\t':
+					return @"\t";
+				case '\v':
+					return @"\v";
+				default:
+					return char.IsControl(ch) ? $"\\u{(int) ch:x4}" : ch.ToString();
 			}
 		}
 
 		private static string RenderGenericParameters(Type[] genericParameters)
 		{
 			var stringBuilder = new StringBuilder();
-			for (int index = 0; index < genericParameters.Length; index++)
+			for (var index = 0; index < genericParameters.Length; index++)
 			{
 				var genericParameter = genericParameters[index];
 				stringBuilder.Append((index == 0 ? "<" : "") +
@@ -1507,7 +1507,7 @@ namespace XmlDocMarkdown.Core
 				return "";
 
 			var stringBuilder = new StringBuilder();
-			for (int index = 0; index < genericParameters.Length; index++)
+			for (var index = 0; index < genericParameters.Length; index++)
 			{
 				var genericParameter = genericParameters[index];
 				stringBuilder.Append((index == 0 ? "<" : "") +
@@ -1530,7 +1530,7 @@ namespace XmlDocMarkdown.Core
 			if (nullableOfType != null)
 				return $"{RenderTypeName(nullableOfType.GetTypeInfo(), seeAlso)}?";
 
-			string builtIn = TryGetBuiltInTypeName(typeInfo.AsType());
+			var builtIn = TryGetBuiltInTypeName(typeInfo.AsType());
 			if (builtIn != null)
 				return builtIn;
 
@@ -1545,7 +1545,7 @@ namespace XmlDocMarkdown.Core
 				return "";
 
 			var stringBuilder = new StringBuilder();
-			for (int index = 0; index < genericArguments.Length; index++)
+			for (var index = 0; index < genericArguments.Length; index++)
 			{
 				var genericArgument = genericArguments[index];
 				stringBuilder.Append((index == 0 ? "<" : "") +
@@ -1805,18 +1805,18 @@ namespace XmlDocMarkdown.Core
 			var visibility = GetVisibility(memberInfo, XmlDocVisibilityLevel.ProtectedInternal);
 			switch (visibility)
 			{
-			case XmlDocVisibilityLevel.Public:
-				return "public";
-			case XmlDocVisibilityLevel.ProtectedInternal:
-				return "protected internal";
-			case XmlDocVisibilityLevel.Protected:
-				return "protected";
-			case XmlDocVisibilityLevel.Internal:
-				return "internal";
-			case XmlDocVisibilityLevel.Private:
-				return "private";
-			default:
-				throw new InvalidOperationException();
+				case XmlDocVisibilityLevel.Public:
+					return "public";
+				case XmlDocVisibilityLevel.ProtectedInternal:
+					return "protected internal";
+				case XmlDocVisibilityLevel.Protected:
+					return "protected";
+				case XmlDocVisibilityLevel.Internal:
+					return "internal";
+				case XmlDocVisibilityLevel.Private:
+					return "private";
+				default:
+					throw new InvalidOperationException();
 			}
 		}
 
@@ -1976,7 +1976,7 @@ namespace XmlDocMarkdown.Core
 			if (a.IsGenericType && b.IsGenericType && a.GetGenericTypeDefinition().GetTypeInfo() == b.GetGenericTypeDefinition().GetTypeInfo())
 			{
 				var parameters = a.GetGenericTypeDefinition().GetTypeInfo().GenericTypeParameters;
-				for (int i = 0; i < parameters.Length; i++)
+				for (var i = 0; i < parameters.Length; i++)
 				{
 					var paramAttributes = parameters[i].GetTypeInfo().GenericParameterAttributes;
 					var aArgInfo = a.GenericTypeArguments[i].GetTypeInfo();
@@ -1994,7 +1994,7 @@ namespace XmlDocMarkdown.Core
 
 		private string ToMarkdown(XmlDocInline inline, MarkdownContext context)
 		{
-			string text = inline.Text ?? "";
+			var text = inline.Text ?? "";
 
 			MemberInfo seeMemberInfo = null;
 			if (inline.SeeRef != null)
@@ -2014,7 +2014,7 @@ namespace XmlDocMarkdown.Core
 
 			if (text.Length != 0)
 			{
-				bool isCode = inline.IsCode || seeMemberInfo != null;
+				var isCode = inline.IsCode || seeMemberInfo != null;
 				if (isCode)
 					text = SurroundCode(text);
 
@@ -2031,9 +2031,9 @@ namespace XmlDocMarkdown.Core
 
 		private string WrapMarkdownRefLink(string text, MemberInfo memberInfo, MarkdownContext context, bool isCode = false, string linkUrl = null)
 		{
-			string extension = GetFileExtension();
-			string xmlDocRef = memberInfo == null ? null : XmlDocUtility.GetXmlDocRef(memberInfo);
-			bool isLocal = xmlDocRef != null && context.MembersByXmlDocName.ContainsKey(xmlDocRef);
+			var extension = GetFileExtension();
+			var xmlDocRef = memberInfo == null ? null : XmlDocUtility.GetXmlDocRef(memberInfo);
+			var isLocal = xmlDocRef != null && context.MembersByXmlDocName.ContainsKey(xmlDocRef);
 			var externalDoc = isLocal || xmlDocRef == null ? null : FindExternalDocumentation(memberInfo);
 			if (memberInfo != null && xmlDocRef != XmlDocUtility.GetXmlDocRef(context.MemberInfo) && (isLocal || externalDoc != null))
 			{
@@ -2087,10 +2087,10 @@ namespace XmlDocMarkdown.Core
 
 		private string MakeRelative(string baseUri, string path)
 		{
-			Uri a = new Uri("file:///" + baseUri);
-			Uri b = new Uri("file:///" + path);
-			Uri rel = a.MakeRelativeUri(b);
-			string result = rel.ToString();
+			var a = new Uri("file:///" + baseUri);
+			var b = new Uri("file:///" + path);
+			var rel = a.MakeRelativeUri(b);
+			var result = rel.ToString();
 			if (string.IsNullOrEmpty(result))
 			{
 				// then the file name is the link
@@ -2104,7 +2104,7 @@ namespace XmlDocMarkdown.Core
 
 		private IEnumerable<string> ToMarkdown(IReadOnlyList<XmlDocBlock> blocks, MarkdownContext context)
 		{
-			for (int index = 0; index < blocks.Count; index++)
+			for (var index = 0; index < blocks.Count; index++)
 			{
 				if (index != 0)
 					yield return "";
@@ -2113,11 +2113,11 @@ namespace XmlDocMarkdown.Core
 
 				if (block.ListKind == XmlDocListKind.Bullet || block.ListKind == XmlDocListKind.Number)
 				{
-					int number = 0;
+					var number = 0;
 					while (true)
 					{
-						string prefix = new string(' ', block.ListDepth * 2) + (block.ListKind == XmlDocListKind.Number ? $"{++number}. " : "* ");
-						string markdown = ToMarkdown(block.Inlines, context);
+						var prefix = new string(' ', block.ListDepth * 2) + (block.ListKind == XmlDocListKind.Number ? $"{++number}. " : "* ");
+						var markdown = ToMarkdown(block.Inlines, context);
 
 						if (block.IsListTerm)
 						{
@@ -2152,7 +2152,7 @@ namespace XmlDocMarkdown.Core
 					}
 					else
 					{
-						string markdown = ToMarkdown(block.Inlines, context);
+						var markdown = ToMarkdown(block.Inlines, context);
 						if (block.IsListHeader || block.IsListTerm)
 							markdown = $"**{markdown}**";
 						yield return markdown;

@@ -28,7 +28,7 @@ internal static class Build
 
 	private static void GenerateDocs(DotNetBuildSettings dotNetBuildSettings, bool verify)
 	{
-		var configuration = dotNetBuildSettings.BuildOptions.ConfigurationOption.Value;
+		var configuration = dotNetBuildSettings.BuildOptions!.ConfigurationOption!.Value;
 		var projects = new[]
 		{
 			new[] { $"tools/XmlDocTarget/bin/{configuration}/net472/XmlDocMarkdown.Core.dll", "docs", verify ? "--verify" : null, "--source", "../src/XmlDocMarkdown.Core", "--newline", "lf", "--clean" },

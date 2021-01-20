@@ -1,4 +1,4 @@
-﻿namespace ExampleAssembly
+namespace ExampleAssembly
 {
 	/// <summary>
 	/// A 64-bit enumeration.

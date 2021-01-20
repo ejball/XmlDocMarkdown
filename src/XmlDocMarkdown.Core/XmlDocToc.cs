@@ -74,8 +74,8 @@ namespace XmlDocMarkdown.Core
 
 		internal void Save(string tocPath)
 		{
-			Directory.CreateDirectory(System.IO.Path.GetDirectoryName(tocPath));
-			using (StreamWriter writer = new StreamWriter(tocPath, false, Encoding.UTF8))
+			Directory.CreateDirectory(System.IO.Path.GetDirectoryName(tocPath)!);
+			using (var writer = new StreamWriter(tocPath, false, Encoding.UTF8))
 			{
 				writer.WriteLine("toc:");
 				Save(writer, "  ");
@@ -93,10 +93,10 @@ namespace XmlDocMarkdown.Core
 				  link: ...
 			*/
 
-			string p = Path;
+			var p = Path;
 			if (p.EndsWith(".md", StringComparison.Ordinal))
 			{
-				int pos = p.LastIndexOf('.');
+				var pos = p.LastIndexOf('.');
 				if (pos > 0)
 				{
 					p = p.Substring(0, pos);

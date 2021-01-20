@@ -75,7 +75,7 @@ namespace XmlDocMarkdown.Core
 				else if (!string.IsNullOrEmpty(typeInfo.Namespace))
 					stringBuilder.Append(typeInfo.Namespace + ".");
 
-				int tickIndex = typeInfo.Name.IndexOf('`');
+				var tickIndex = typeInfo.Name.IndexOf('`');
 				if (typeInfo.IsGenericType && !typeInfo.IsGenericTypeDefinition && tickIndex != -1)
 				{
 					stringBuilder.Append(typeInfo.Name.Substring(0, tickIndex));
@@ -90,7 +90,7 @@ namespace XmlDocMarkdown.Core
 			}
 			else if (typeInfo.DeclaringMethod != null)
 			{
-				int genericTypeIndex = typeInfo.DeclaringMethod.GetGenericArguments().ToList().IndexOf(typeInfo.AsType());
+				var genericTypeIndex = typeInfo.DeclaringMethod.GetGenericArguments().ToList().IndexOf(typeInfo.AsType());
 				if (genericTypeIndex == -1)
 					throw new InvalidOperationException("Unexpected type: " + typeInfo);
 
@@ -98,7 +98,7 @@ namespace XmlDocMarkdown.Core
 			}
 			else
 			{
-				int genericTypeIndex = typeInfo.DeclaringType.GetTypeInfo().GenericTypeParameters.ToList().IndexOf(typeInfo.AsType());
+				var genericTypeIndex = typeInfo.DeclaringType.GetTypeInfo().GenericTypeParameters.ToList().IndexOf(typeInfo.AsType());
 				if (genericTypeIndex == -1)
 					throw new InvalidOperationException("Unexpected type: " + typeInfo);
 

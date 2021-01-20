@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core
@@ -94,7 +93,7 @@ namespace XmlDocMarkdown.Core
 			var namedTextsToWrite = new List<NamedText>();
 			foreach (var namedText in namedTexts)
 			{
-				string existingFilePath = Path.Combine(outputPath, namedText.Name);
+				var existingFilePath = Path.Combine(outputPath, namedText.Name);
 				if (File.Exists(existingFilePath))
 				{
 					// ignore CR when comparing files
@@ -117,12 +116,12 @@ namespace XmlDocMarkdown.Core
 
 			if (settings.GenerateToc)
 			{
-				string tocPath = Path.Combine(outputPath, "toc.yml");
+				var tocPath = Path.Combine(outputPath, "toc.yml");
 
-				NamedText root = namedTexts.FirstOrDefault();
+				var root = namedTexts.FirstOrDefault();
 				if (root != null)
 				{
-					XmlDocToc toc = new XmlDocToc() { Path = root.Name, Title = root.Title, Prefix = settings.TocPrefix };
+					var toc = new XmlDocToc() { Path = root.Name, Title = root.Title, Prefix = settings.TocPrefix };
 
 					foreach (var namedText in namedTexts.Skip(1))
 					{
@@ -139,14 +138,14 @@ namespace XmlDocMarkdown.Core
 				var directoryInfo = new DirectoryInfo(outputPath);
 				if (directoryInfo.Exists)
 				{
-					string assemblyName = assembly.GetName().Name;
-					string assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
-					string assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
-					string assemblyFolder = Path.GetFileNameWithoutExtension(assemblyFileName);
+					var assemblyName = assembly.GetName().Name;
+					var assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
+					var assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
+					var assemblyFolder = Path.GetFileNameWithoutExtension(assemblyFileName);
 					var patterns = new[] { $"{assemblyFolder}/*.md", $"{assemblyFolder}/*/*.md" };
-					string codeGenComment = MarkdownGenerator.GetCodeGenComment(assemblyFileName);
+					var codeGenComment = MarkdownGenerator.GetCodeGenComment(assemblyFileName);
 
-					foreach (string nameMatchingPattern in FindNamesMatchingPatterns(directoryInfo, patterns, codeGenComment))
+					foreach (var nameMatchingPattern in FindNamesMatchingPatterns(directoryInfo, patterns, codeGenComment))
 					{
 						if (namedTexts.All(x => x.Name != nameMatchingPattern))
 						{
@@ -166,16 +165,16 @@ namespace XmlDocMarkdown.Core
 
 				foreach (var namedText in namedTextsToWrite)
 				{
-					string outputFilePath = Path.Combine(outputPath, namedText.Name);
+					var outputFilePath = Path.Combine(outputPath, namedText.Name);
 
-					string outputFileDirectoryPath = Path.GetDirectoryName(outputFilePath);
+					var outputFileDirectoryPath = Path.GetDirectoryName(outputFilePath);
 					if (outputFileDirectoryPath != null && outputFileDirectoryPath != outputPath && !Directory.Exists(outputFileDirectoryPath))
 						Directory.CreateDirectory(outputFileDirectoryPath);
 
 					File.WriteAllText(outputFilePath, namedText.Text);
 				}
 
-				foreach (string nameToDelete in namesToDelete)
+				foreach (var nameToDelete in namesToDelete)
 					File.Delete(Path.Combine(outputPath, nameToDelete));
 			}
 
@@ -186,7 +185,7 @@ namespace XmlDocMarkdown.Core
 		{
 			foreach (var namePattern in namePatterns)
 			{
-				foreach (string name in FindNamesMatchingPattern(directoryInfo, namePattern, requiredSubstring))
+				foreach (var name in FindNamesMatchingPattern(directoryInfo, namePattern, requiredSubstring))
 					yield return name;
 			}
 		}
@@ -209,7 +208,7 @@ namespace XmlDocMarkdown.Core
 			{
 				foreach (var subdirectoryInfo in directoryInfo.GetDirectories(parts[0]))
 				{
-					foreach (string name in FindNamesMatchingPattern(subdirectoryInfo, parts[1], requiredSubstring))
+					foreach (var name in FindNamesMatchingPattern(subdirectoryInfo, parts[1], requiredSubstring))
 						yield return subdirectoryInfo.Name + '/' + name;
 				}
 			}

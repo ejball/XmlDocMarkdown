@@ -65,7 +65,7 @@ namespace XmlDocMarkdown.Core
 			if (names.Length > 1)
 				return names.Any(ReadFlag);
 
-			int index = m_args.FindIndex(x => IsOptionArgument(name, x));
+			var index = m_args.FindIndex(x => IsOptionArgument(name, x));
 			if (index == -1)
 				return false;
 
@@ -100,11 +100,11 @@ namespace XmlDocMarkdown.Core
 			if (names.Length > 1)
 				return names.Select(ReadOption).FirstOrDefault(x => x != null);
 
-			int index = m_args.FindIndex(x => IsOptionArgument(name, x));
+			var index = m_args.FindIndex(x => IsOptionArgument(name, x));
 			if (index == -1)
 				return null;
 
-			string value = index + 1 < m_args.Count ? m_args[index + 1] : null;
+			var value = index + 1 < m_args.Count ? m_args[index + 1] : null;
 			if (value == null || IsOption(value))
 				throw new ArgsReaderException($"Missing value after '{RenderOption(name)}'.");
 
@@ -126,7 +126,7 @@ namespace XmlDocMarkdown.Core
 			if (m_args.Count == 0)
 				return null;
 
-			string value = m_args[0];
+			var value = m_args[0];
 			if (IsOption(value))
 				throw new ArgsReaderException($"Unexpected option '{value}'.");
 
@@ -147,7 +147,7 @@ namespace XmlDocMarkdown.Core
 			var arguments = new List<string>();
 			while (true)
 			{
-				string argument = ReadArgument();
+				var argument = ReadArgument();
 				if (argument == null)
 					return arguments;
 				arguments.Add(argument);
@@ -170,7 +170,7 @@ namespace XmlDocMarkdown.Core
 
 		private bool IsOptionArgument(string optionName, string argument)
 		{
-			string renderedOption = RenderOption(optionName);
+			var renderedOption = RenderOption(optionName);
 			if (optionName.Length == 1)
 			{
 				return string.Equals(argument, renderedOption, ShortOptionIgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);

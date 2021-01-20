@@ -1,4 +1,4 @@
-﻿namespace ExampleAssembly
+namespace ExampleAssembly
 {
 	/// <summary>
 	/// An interface with covariant generic parameters.
