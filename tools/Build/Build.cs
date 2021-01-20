@@ -2,33 +2,31 @@ using System;
 using Faithlife.Build;
 using static Faithlife.Build.AppRunner;
 
-internal static class Build
+return BuildRunner.Execute(args, build =>
 {
-	public static int Main(string[] args) => BuildRunner.Execute(args, build =>
+	var dotNetBuildSettings = new DotNetBuildSettings
 	{
-		var dotNetBuildSettings = new DotNetBuildSettings
-		{
-			NuGetApiKey = Environment.GetEnvironmentVariable("NUGET_API_KEY"),
-		};
-		build.AddDotNetTargets(dotNetBuildSettings);
+		NuGetApiKey = Environment.GetEnvironmentVariable("NUGET_API_KEY"),
+	};
 
-		build.Target("generate-docs")
-			.Describe("Generates documentation")
-			.DependsOn("build")
-			.Does(() => GenerateDocs(dotNetBuildSettings, verify: false));
+	build.AddDotNetTargets(dotNetBuildSettings);
 
-		build.Target("verify-docs")
-			.Describe("Verifies generated documentation")
-			.DependsOn("build")
-			.Does(() => GenerateDocs(dotNetBuildSettings, verify: true));
+	build.Target("generate-docs")
+		.Describe("Generates documentation")
+		.DependsOn("build")
+		.Does(() => GenerateDocs(verify: false));
 
-		build.Target("test")
-			.DependsOn("verify-docs");
-	});
+	build.Target("verify-docs")
+		.Describe("Verifies generated documentation")
+		.DependsOn("build")
+		.Does(() => GenerateDocs(verify: true));
 
-	private static void GenerateDocs(DotNetBuildSettings dotNetBuildSettings, bool verify)
+	build.Target("test")
+		.DependsOn("verify-docs");
+
+	void GenerateDocs(bool verify)
 	{
-		var configuration = dotNetBuildSettings.BuildOptions!.ConfigurationOption!.Value;
+		var configuration = dotNetBuildSettings.GetConfiguration();
 		var projects = new[]
 		{
 			new[] { $"tools/XmlDocTarget/bin/{configuration}/net472/XmlDocMarkdown.Core.dll", "docs", verify ? "--verify" : null, "--source", "../src/XmlDocMarkdown.Core", "--newline", "lf", "--clean" },
@@ -38,4 +36,4 @@ internal static class Build
 		foreach (var args in projects)
 			RunApp($"src/XmlDocMarkdown/bin/{configuration}/XmlDocMarkdown.exe", new AppRunnerSettings { Arguments = args, IsFrameworkApp = true });
 	}
-}
+});
