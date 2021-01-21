@@ -43,7 +43,7 @@ namespace XmlDocMarkdown.Core
 
 			var result = new XmlDocMarkdownResult();
 
-			settings = settings ?? new XmlDocMarkdownSettings();
+			settings ??= new XmlDocMarkdownSettings();
 
 			var generator = new MarkdownGenerator
 			{
@@ -121,12 +121,10 @@ namespace XmlDocMarkdown.Core
 				var root = namedTexts.FirstOrDefault();
 				if (root != null)
 				{
-					var toc = new XmlDocToc() { Path = root.Name, Title = root.Title, Prefix = settings.TocPrefix };
+					var toc = new XmlDocToc { Path = root.Name, Title = root.Title, Prefix = settings.TocPrefix };
 
 					foreach (var namedText in namedTexts.Skip(1))
-					{
 						toc.AddChild(namedText.Name, namedText.Parent, namedText.Title);
-					}
 
 					toc.Save(tocPath);
 				}

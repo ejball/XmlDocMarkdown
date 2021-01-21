@@ -6,6 +6,6 @@ namespace XmlDocMarkdown.Core
 	{
 		public string Name { get; set; }
 
-		public Collection<XmlDocBlock> Description { get; } = new Collection<XmlDocBlock>();
+		public Collection<XmlDocBlock> Description { get; } = new();
 	}
 }

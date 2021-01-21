@@ -6,6 +6,6 @@ namespace XmlDocMarkdown.Core
 	{
 		public string ExceptionTypeRef { get; set; }
 
-		public Collection<XmlDocBlock> Condition { get; } = new Collection<XmlDocBlock>();
+		public Collection<XmlDocBlock> Condition { get; } = new();
 	}
 }

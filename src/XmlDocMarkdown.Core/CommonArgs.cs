@@ -2,118 +2,61 @@ namespace XmlDocMarkdown.Core
 {
 	internal static class CommonArgs
 	{
-		public static string ReadSourceOption(this ArgsReader args)
-		{
-			return args.ReadOption("source");
-		}
+		public static string ReadSourceOption(this ArgsReader args) => args.ReadOption("source");
 
-		public static string ReadNamespaceOption(this ArgsReader args)
-		{
-			return args.ReadOption("namespace");
-		}
+		public static string ReadNamespaceOption(this ArgsReader args) => args.ReadOption("namespace");
 
 		public static XmlDocVisibilityLevel? ReadVisibilityOption(this ArgsReader args)
 		{
 			var visibility = args.ReadOption("visibility");
-			switch (visibility)
+			return visibility switch
 			{
-				case "public":
-					return XmlDocVisibilityLevel.Public;
-				case "protected":
-					return XmlDocVisibilityLevel.Protected;
-				case "internal":
-					return XmlDocVisibilityLevel.Internal;
-				case "private":
-					return XmlDocVisibilityLevel.Private;
-				case null:
-					return null;
-				default:
-					throw new ArgsReaderException($"Unknown visibility option: {visibility}");
-			}
+				"public" => XmlDocVisibilityLevel.Public,
+				"protected" => XmlDocVisibilityLevel.Protected,
+				"internal" => XmlDocVisibilityLevel.Internal,
+				"private" => XmlDocVisibilityLevel.Private,
+				null => null,
+				_ => throw new ArgsReaderException($"Unknown visibility option: {visibility}"),
+			};
 		}
 
-		public static bool ReadObsoleteFlag(this ArgsReader args)
-		{
-			return args.ReadFlag("obsolete");
-		}
+		public static bool ReadObsoleteFlag(this ArgsReader args) => args.ReadFlag("obsolete");
 
-		public static bool ReadSkipUnbrowsableFlag(this ArgsReader args)
-		{
-			return args.ReadFlag("skip-unbrowsable");
-		}
+		public static bool ReadSkipUnbrowsableFlag(this ArgsReader args) => args.ReadFlag("skip-unbrowsable");
 
-		public static string ReadExternalOption(this ArgsReader args)
-		{
-			return args.ReadOption("external");
-		}
+		public static string ReadExternalOption(this ArgsReader args) => args.ReadOption("external");
 
-		public static bool ReadCleanFlag(this ArgsReader args)
-		{
-			return args.ReadFlag("clean");
-		}
+		public static bool ReadCleanFlag(this ArgsReader args) => args.ReadFlag("clean");
 
-		public static bool ReadDryRunFlag(this ArgsReader args)
-		{
-			return args.ReadFlag("dryrun");
-		}
+		public static bool ReadDryRunFlag(this ArgsReader args) => args.ReadFlag("dryrun");
 
-		public static bool ReadHelpFlag(this ArgsReader args)
-		{
-			return args.ReadFlag("help|h|?");
-		}
+		public static bool ReadHelpFlag(this ArgsReader args) => args.ReadFlag("help|h|?");
 
-		public static bool ReadQuietFlag(this ArgsReader args)
-		{
-			return args.ReadFlag("quiet");
-		}
+		public static bool ReadQuietFlag(this ArgsReader args) => args.ReadFlag("quiet");
 
-		public static bool ReadNamespacePagesFlag(this ArgsReader args)
-		{
-			return args.ReadFlag("namespace-pages");
-		}
+		public static bool ReadNamespacePagesFlag(this ArgsReader args) => args.ReadFlag("namespace-pages");
 
-		public static string ReadFrontMatter(this ArgsReader args)
-		{
-			return args.ReadOption("front-matter");
-		}
+		public static string ReadFrontMatter(this ArgsReader args) => args.ReadOption("front-matter");
 
-		public static string ReadPermalinkStyle(this ArgsReader args)
-		{
-			return args.ReadOption("permalink");
-		}
+		public static string ReadPermalinkStyle(this ArgsReader args) => args.ReadOption("permalink");
 
-		public static bool ReadVerifyFlag(this ArgsReader args)
-		{
-			return args.ReadFlag("verify");
-		}
+		public static bool ReadVerifyFlag(this ArgsReader args) => args.ReadFlag("verify");
 
-		public static bool ReadTocFlag(this ArgsReader args)
-		{
-			return args.ReadFlag("toc");
-		}
+		public static bool ReadTocFlag(this ArgsReader args) => args.ReadFlag("toc");
 
-		public static string ReadTocPrefix(this ArgsReader args)
-		{
-			return args.ReadOption("toc-prefix");
-		}
+		public static string ReadTocPrefix(this ArgsReader args) => args.ReadOption("toc-prefix");
 
 		public static string ReadNewLineOption(this ArgsReader args)
 		{
 			var value = args.ReadOption("newline");
-			if (value == null)
-				return null;
-
-			switch (value)
+			return value switch
 			{
-				case "auto":
-					return null;
-				case "lf":
-					return "\n";
-				case "crlf":
-					return "\r\n";
-				default:
-					throw new ArgsReaderException($"Invalid new line '{value}'. (Should be 'auto', 'lf', or 'crlf'.)");
-			}
+				"auto" => null,
+				"lf" => "\n",
+				"crlf" => "\r\n",
+				null => null,
+				_ => throw new ArgsReaderException($"Invalid new line '{value}'. (Should be 'auto', 'lf', or 'crlf'.)"),
+			};
 		}
 	}
 }

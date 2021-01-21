@@ -49,23 +49,23 @@ namespace XmlDocMarkdown.Core
 
 		public string XmlDocName { get; set; }
 
-		public Collection<XmlDocBlock> Summary { get; } = new Collection<XmlDocBlock>();
+		public Collection<XmlDocBlock> Summary { get; } = new();
 
-		public Collection<XmlDocParameter> TypeParameters { get; } = new Collection<XmlDocParameter>();
+		public Collection<XmlDocParameter> TypeParameters { get; } = new();
 
-		public Collection<XmlDocParameter> Parameters { get; } = new Collection<XmlDocParameter>();
+		public Collection<XmlDocParameter> Parameters { get; } = new();
 
-		public Collection<XmlDocBlock> ReturnValue { get; } = new Collection<XmlDocBlock>();
+		public Collection<XmlDocBlock> ReturnValue { get; } = new();
 
-		public Collection<XmlDocBlock> PropertyValue { get; } = new Collection<XmlDocBlock>();
+		public Collection<XmlDocBlock> PropertyValue { get; } = new();
 
-		public Collection<XmlDocException> Exceptions { get; } = new Collection<XmlDocException>();
+		public Collection<XmlDocException> Exceptions { get; } = new();
 
-		public Collection<XmlDocBlock> Remarks { get; } = new Collection<XmlDocBlock>();
+		public Collection<XmlDocBlock> Remarks { get; } = new();
 
-		public Collection<XmlDocBlock> Examples { get; } = new Collection<XmlDocBlock>();
+		public Collection<XmlDocBlock> Examples { get; } = new();
 
-		public Collection<XmlDocSeeAlso> SeeAlso { get; } = new Collection<XmlDocSeeAlso>();
+		public Collection<XmlDocSeeAlso> SeeAlso { get; } = new();
 
 		public override string ToString() => XmlDocName;
 
@@ -224,20 +224,14 @@ namespace XmlDocMarkdown.Core
 				}
 			}
 
-			private static XmlDocListKind GetListKind(XElement xElement)
-			{
-				switch (xElement.Attribute("type")?.Value.ToLowerInvariant())
+			private static XmlDocListKind GetListKind(XElement xElement) =>
+				xElement.Attribute("type")?.Value.ToLowerInvariant() switch
 				{
-					case "bullet":
-						return XmlDocListKind.Bullet;
-					case "number":
-						return XmlDocListKind.Number;
-					case "table":
-						return XmlDocListKind.Table;
-					default:
-						return XmlDocListKind.Other;
-				}
-			}
+					"bullet" => XmlDocListKind.Bullet,
+					"number" => XmlDocListKind.Number,
+					"table" => XmlDocListKind.Table,
+					_ => XmlDocListKind.Other,
+				};
 
 			private static string TrimCode(string text)
 			{
