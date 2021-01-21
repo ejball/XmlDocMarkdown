@@ -19,7 +19,7 @@ namespace XmlDocMarkdown.Core
 		/// <param name="outputPath">The output directory.</param>
 		/// <param name="settings">The settings.</param>
 		/// <returns>The names of files that were added, changed, or removed.</returns>
-		public static XmlDocMarkdownResult Generate(string inputPath, string outputPath, XmlDocMarkdownSettings settings)
+		public static XmlDocMarkdownResult Generate(string inputPath, string outputPath, XmlDocMarkdownSettings? settings)
 		{
 			if (inputPath == null)
 				throw new ArgumentNullException(nameof(inputPath));
@@ -34,7 +34,7 @@ namespace XmlDocMarkdown.Core
 		/// <param name="outputPath">The output directory.</param>
 		/// <param name="settings">The settings.</param>
 		/// <returns>The names of files that were added, changed, or removed.</returns>
-		public static XmlDocMarkdownResult Generate(XmlDocInput input, string outputPath, XmlDocMarkdownSettings settings)
+		public static XmlDocMarkdownResult Generate(XmlDocInput input, string outputPath, XmlDocMarkdownSettings? settings)
 		{
 			if (input == null)
 				throw new ArgumentNullException(nameof(input));

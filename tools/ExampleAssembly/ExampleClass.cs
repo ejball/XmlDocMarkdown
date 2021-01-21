@@ -95,12 +95,12 @@ namespace ExampleAssembly
 		/// <summary>
 		/// An event.
 		/// </summary>
-		public event EventHandler WeightChanged;
+		public event EventHandler? WeightChanged;
 
 		/// <summary>
 		/// A static event.
 		/// </summary>
-		public static event EventHandler MaxWeightChanged;
+		public static event EventHandler? MaxWeightChanged;
 
 		/// <summary>
 		/// A virtual method.
@@ -132,7 +132,7 @@ namespace ExampleAssembly
 		/// <c>like | and ` and &amp;#x21;</c>.</remarks>
 		public T Overloaded<T>(string x)
 		{
-			return default(T);
+			return default!;
 		}
 
 		/// <summary>
@@ -163,7 +163,7 @@ namespace ExampleAssembly
 		/// <typeparam name="T">The type parameter.</typeparam>
 		public T Overloaded<T>()
 		{
-			return default(T);
+			return default!;
 		}
 
 		/// <summary>
@@ -196,7 +196,7 @@ namespace ExampleAssembly
 			byte @byte = byte.MaxValue, sbyte @sbyte = sbyte.MaxValue,
 			char @char = '\u1234', decimal @decimal = 3.14m, double @double = double.NaN, float @float = float.NegativeInfinity,
 			int @int = -42, uint @uint = 42, long @long = long.MinValue, ulong @ulong = long.MaxValue,
-			object @object = null, short @short = short.MinValue, ushort @ushort = ushort.MaxValue,
+			object? @object = null, short @short = short.MinValue, ushort @ushort = ushort.MaxValue,
 			string @string = "hi\0'\"\\\a\b\f\n\r\t\v\u0001\uABCD", T t = default(T),
 			DateTime @virtual = default(DateTime),
 			ExampleEnum @enum = ExampleEnum.One,
@@ -231,7 +231,7 @@ namespace ExampleAssembly
 		/// A method that tries to get a value.
 		/// </summary>
 		/// <param name="value">The value.</param>
-		public bool TryGetValue(out object value)
+		public bool TryGetValue(out object? value)
 		{
 			value = default;
 			return false;
@@ -243,7 +243,7 @@ namespace ExampleAssembly
 		/// <param name="value">The value of type <typeparamref name="T"/>.</param>
 		public bool TryGetValue<T>(out T value)
 		{
-			value = default;
+			value = default!;
 			return false;
 		}
 

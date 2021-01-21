@@ -12,15 +12,15 @@ namespace XmlDocMarkdown.Core
 	/// </summary>
 	internal sealed class XmlDocToc
 	{
-		public string Prefix { get; set; }
+		public string? Prefix { get; set; }
 
-		public string Path { get; set; }
+		public string? Path { get; set; }
 
-		public string Title { get; set; }
+		public string? Title { get; set; }
 
-		public List<XmlDocToc> Children { get; set; }
+		public List<XmlDocToc>? Children { get; set; }
 
-		public void AddChild(string path, string parent, string title)
+		public void AddChild(string path, string? parent, string title)
 		{
 			if (parent == null || parent == Path)
 			{
@@ -35,7 +35,7 @@ namespace XmlDocMarkdown.Core
 			parentItem.GetOrCreate(path, title);
 		}
 
-		private XmlDocToc FindParent(string parent)
+		private XmlDocToc? FindParent(string parent)
 		{
 			if (Children == null)
 			{
@@ -93,7 +93,7 @@ namespace XmlDocMarkdown.Core
 				  link: ...
 			*/
 
-			var p = Path;
+			var p = Path!;
 			if (p.EndsWith(".md", StringComparison.Ordinal))
 			{
 				var pos = p.LastIndexOf('.');

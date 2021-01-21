@@ -12,7 +12,7 @@ namespace ExampleAssembly
 		/// </summary>
 		/// <param name="message">The message.</param>
 		/// <param name="innerException">The inner exception.</param>
-		public ExampleException(string message, Exception innerException = null)
+		public ExampleException(string message, Exception? innerException = null)
 			: base(message, innerException)
 		{
 		}

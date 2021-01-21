@@ -45,7 +45,7 @@ namespace XmlDocMarkdown.Core
 				settings.NamespacePages = argsReader.ReadNamespacePagesFlag();
 
 				var externalDocs = new List<ExternalDocumentation>();
-				string externalOption;
+				string? externalOption;
 				while ((externalOption = argsReader.ReadExternalOption()) != null)
 					externalDocs.Add(new ExternalDocumentation { Namespace = externalOption });
 				if (externalDocs.Count != 0)

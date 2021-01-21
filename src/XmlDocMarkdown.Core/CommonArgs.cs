@@ -2,9 +2,9 @@ namespace XmlDocMarkdown.Core
 {
 	internal static class CommonArgs
 	{
-		public static string ReadSourceOption(this ArgsReader args) => args.ReadOption("source");
+		public static string? ReadSourceOption(this ArgsReader args) => args.ReadOption("source");
 
-		public static string ReadNamespaceOption(this ArgsReader args) => args.ReadOption("namespace");
+		public static string? ReadNamespaceOption(this ArgsReader args) => args.ReadOption("namespace");
 
 		public static XmlDocVisibilityLevel? ReadVisibilityOption(this ArgsReader args)
 		{
@@ -24,7 +24,7 @@ namespace XmlDocMarkdown.Core
 
 		public static bool ReadSkipUnbrowsableFlag(this ArgsReader args) => args.ReadFlag("skip-unbrowsable");
 
-		public static string ReadExternalOption(this ArgsReader args) => args.ReadOption("external");
+		public static string? ReadExternalOption(this ArgsReader args) => args.ReadOption("external");
 
 		public static bool ReadCleanFlag(this ArgsReader args) => args.ReadFlag("clean");
 
@@ -36,17 +36,17 @@ namespace XmlDocMarkdown.Core
 
 		public static bool ReadNamespacePagesFlag(this ArgsReader args) => args.ReadFlag("namespace-pages");
 
-		public static string ReadFrontMatter(this ArgsReader args) => args.ReadOption("front-matter");
+		public static string? ReadFrontMatter(this ArgsReader args) => args.ReadOption("front-matter");
 
-		public static string ReadPermalinkStyle(this ArgsReader args) => args.ReadOption("permalink");
+		public static string? ReadPermalinkStyle(this ArgsReader args) => args.ReadOption("permalink");
 
 		public static bool ReadVerifyFlag(this ArgsReader args) => args.ReadFlag("verify");
 
 		public static bool ReadTocFlag(this ArgsReader args) => args.ReadFlag("toc");
 
-		public static string ReadTocPrefix(this ArgsReader args) => args.ReadOption("toc-prefix");
+		public static string? ReadTocPrefix(this ArgsReader args) => args.ReadOption("toc-prefix");
 
-		public static string ReadNewLineOption(this ArgsReader args)
+		public static string? ReadNewLineOption(this ArgsReader args)
 		{
 			var value = args.ReadOption("newline");
 			return value switch

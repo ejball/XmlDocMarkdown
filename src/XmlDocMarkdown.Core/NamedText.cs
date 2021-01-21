@@ -4,7 +4,7 @@ namespace XmlDocMarkdown.Core
 {
 	internal sealed class NamedText
 	{
-		public NamedText(string name, string parent, string title, string text)
+		public NamedText(string name, string? parent, string title, string text)
 		{
 			Name = name ?? throw new ArgumentNullException(nameof(name));
 			Parent = parent;
@@ -14,7 +14,7 @@ namespace XmlDocMarkdown.Core
 
 		public string Name { get; }
 
-		public string Parent { get; }
+		public string? Parent { get; }
 
 		public string Title { get; }
 

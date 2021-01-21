@@ -22,8 +22,8 @@ namespace Cake.XmlDocMarkdown
 		/// <param name="settings">The settings.</param>
 		/// <returns>The names of files that were added, changed, or removed.</returns>
 		[CakeMethodAlias]
-		public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, FilePath inputPath, DirectoryPath outputPath, XmlDocMarkdownSettings settings = null)
-			=> context.XmlDocMarkdownGenerate(inputPath.FullPath, outputPath.FullPath, settings);
+		public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, FilePath inputPath, DirectoryPath outputPath, XmlDocMarkdownSettings? settings = null) =>
+			context.XmlDocMarkdownGenerate(inputPath.FullPath, outputPath.FullPath, settings);
 
 		/// <summary>
 		/// Generates Markdown from .NET XML documentation comments.
@@ -34,7 +34,7 @@ namespace Cake.XmlDocMarkdown
 		/// <param name="settings">The settings.</param>
 		/// <returns>The names of files that were added, changed, or removed.</returns>
 		[CakeMethodAlias]
-		public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, string inputPath, string outputPath, XmlDocMarkdownSettings settings = null)
+		public static XmlDocMarkdownResult XmlDocMarkdownGenerate(this ICakeContext context, string inputPath, string outputPath, XmlDocMarkdownSettings? settings = null)
 		{
 			var result = XmlDocMarkdownGenerator.Generate(inputPath, outputPath, settings);
 			foreach (var message in result.Messages)

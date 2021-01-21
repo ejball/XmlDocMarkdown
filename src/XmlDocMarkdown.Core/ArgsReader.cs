@@ -21,7 +21,7 @@ namespace XmlDocMarkdown.Core
 		/// <exception cref="ArgumentNullException"><c>args</c> is <c>null</c>.</exception>
 		public ArgsReader(IEnumerable<string> args)
 		{
-			m_args = args?.ToList() ?? throw new ArgumentNullException(nameof(args));
+			m_args = (args ?? throw new ArgumentNullException(nameof(args))).ToList();
 		}
 
 		/// <summary>
@@ -40,18 +40,22 @@ namespace XmlDocMarkdown.Core
 		public bool LongOptionIgnoreKebabCase { get; set; }
 
 		/// <summary>
+		/// True if <c>--</c> is ignored and all following arguments are not read as options. (Default false.)
+		/// </summary>
+		public bool NoOptionsAfterDoubleDash { get; set; }
+
+		/// <summary>
 		/// Reads the specified flag, returning true if it is found.
 		/// </summary>
 		/// <param name="name">The name of the specified flag.</param>
 		/// <returns>True if the specified flag was found on the command line.</returns>
 		/// <remarks><para>If the flag is found, the method returns <c>true</c> and the flag is
-		/// removed. If <c>ReadFlag</c> is called with the same name, it will return <c>false</c>,
+		/// removed. If <c>ReadFlag</c> is called again with the same name, it will return <c>false</c>,
 		/// unless the same flag appears twice on the command line.</para>
 		/// <para>To support multiple names for the same flag, use a <c>|</c> to separate them,
 		/// e.g. use <c>help|h|?</c> to support three different names for a help flag.</para>
-		/// <para>Single-character names use a single hyphen, e.g. <c>-h</c>, and are matched
-		/// case-sensitively. Longer names use a double hyphen, e.g. <c>--help</c>, and are
-		/// matched case-insensitively.</para></remarks>
+		/// <para>Single-character names use a single hyphen, e.g. <c>-h</c>. Longer names
+		/// use a double hyphen, e.g. <c>--help</c>.</para></remarks>
 		/// <exception cref="ArgumentNullException"><c>name</c> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentException">One of the names is empty.</exception>
 		public bool ReadFlag(string name)
@@ -65,7 +69,7 @@ namespace XmlDocMarkdown.Core
 			if (names.Length > 1)
 				return names.Any(ReadFlag);
 
-			var index = m_args.FindIndex(x => IsOptionArgument(name, x));
+			var index = FindOptionArgumentIndex(name);
 			if (index == -1)
 				return false;
 
@@ -79,17 +83,16 @@ namespace XmlDocMarkdown.Core
 		/// <param name="name">The name of the specified option.</param>
 		/// <returns>The specified option if it was found on the command line; <c>null</c> otherwise.</returns>
 		/// <remarks><para>If the option is found, the method returns the command-line argument
-		/// after the option and both arguments are removed. If <c>ReadOption</c> is called with the
+		/// after the option and both arguments are removed. If <c>ReadOption</c> is called again with the
 		/// same name, it will return <c>null</c>, unless the same option appears twice on the command line.</para>
 		/// <para>To support multiple names for the same option, use a vertical bar (<c>|</c>) to separate them,
 		/// e.g. use <c>n|name</c> to support two different names for a module option.</para>
-		/// <para>Single-character names use a single hyphen, e.g. <c>-n example</c>, and are matched
-		/// case-sensitively. Longer names use a double hyphen, e.g. <c>--name example</c>, and are
-		/// matched case-insensitively.</para></remarks>
+		/// <para>Single-character names use a single hyphen, e.g. <c>-n example</c>. Longer names use a
+		/// double hyphen, e.g. <c>--name example</c>.</para></remarks>
 		/// <exception cref="ArgumentNullException"><c>name</c> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentException">One of the names is empty.</exception>
 		/// <exception cref="ArgsReaderException">The argument that must follow the option is missing.</exception>
-		public string ReadOption(string name)
+		public string? ReadOption(string name)
 		{
 			if (name == null)
 				throw new ArgumentNullException(nameof(name));
@@ -100,7 +103,7 @@ namespace XmlDocMarkdown.Core
 			if (names.Length > 1)
 				return names.Select(ReadOption).FirstOrDefault(x => x != null);
 
-			var index = m_args.FindIndex(x => IsOptionArgument(name, x));
+			var index = FindOptionArgumentIndex(name);
 			if (index == -1)
 				return null;
 
@@ -121,13 +124,21 @@ namespace XmlDocMarkdown.Core
 		/// If options can appear before normal arguments, be sure to read all options before reading
 		/// any normal arguments.</para></remarks>
 		/// <exception cref="ArgsReaderException">The next argument is an option.</exception>
-		public string ReadArgument()
+		public string? ReadArgument()
 		{
 			if (m_args.Count == 0)
 				return null;
 
 			var value = m_args[0];
-			if (IsOption(value))
+
+			if (NoOptionsAfterDoubleDash && value == "--")
+			{
+				m_args.RemoveAt(0);
+				m_noMoreOptions = true;
+				return ReadArgument();
+			}
+
+			if (!m_noMoreOptions && IsOption(value))
 				throw new ArgsReaderException($"Unexpected option '{value}'.");
 
 			m_args.RemoveAt(0);
@@ -187,6 +198,21 @@ namespace XmlDocMarkdown.Core
 			}
 		}
 
+		private int FindOptionArgumentIndex(string optionName)
+		{
+			for (var index = 0; index < m_args.Count; index++)
+			{
+				var arg = m_args[index];
+				if (NoOptionsAfterDoubleDash && arg == "--")
+					break;
+				if (IsOptionArgument(optionName, arg))
+					return index;
+			}
+
+			return -1;
+		}
+
 		private readonly List<string> m_args;
+		private bool m_noMoreOptions;
 	}
 }

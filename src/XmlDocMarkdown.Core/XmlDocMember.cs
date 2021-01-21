@@ -47,7 +47,7 @@ namespace XmlDocMarkdown.Core
 			}
 		}
 
-		public string XmlDocName { get; set; }
+		public string? XmlDocName { get; set; }
 
 		public Collection<XmlDocBlock> Summary { get; } = new();
 
@@ -67,7 +67,7 @@ namespace XmlDocMarkdown.Core
 
 		public Collection<XmlDocSeeAlso> SeeAlso { get; } = new();
 
-		public override string ToString() => XmlDocName;
+		public override string ToString() => XmlDocName ?? "";
 
 		private static void AddBlocks(XElement xElement, ICollection<XmlDocBlock> blocks)
 		{
@@ -118,7 +118,7 @@ namespace XmlDocMarkdown.Core
 
 				var blocks = m_blocks;
 				m_blocks = null;
-				return blocks;
+				return blocks ?? throw new InvalidOperationException();
 			}
 
 			private void AddNode(XNode xNode)
@@ -142,7 +142,7 @@ namespace XmlDocMarkdown.Core
 
 					case "code":
 						NextBlock();
-						m_block.IsCode = true;
+						m_block!.IsCode = true;
 						m_block.Inlines.Add(new XmlDocInline { Text = TrimCode(xElement.Value) });
 						NextBlock();
 						break;
@@ -255,8 +255,8 @@ namespace XmlDocMarkdown.Core
 				return text;
 			}
 
-			private List<XmlDocBlock> m_blocks;
-			private XmlDocBlock m_block;
+			private List<XmlDocBlock>? m_blocks;
+			private XmlDocBlock? m_block;
 			private readonly Stack<XmlDocListKind> m_listKinds;
 			private bool m_isListHeader;
 			private bool m_isListTerm;

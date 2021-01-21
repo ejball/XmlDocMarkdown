@@ -8,7 +8,7 @@ namespace XmlDocMarkdown.Core
 {
 	internal static class XmlDocUtility
 	{
-		public static string GetXmlDocRef(MemberInfo memberInfo)
+		public static string? GetXmlDocRef(MemberInfo? memberInfo)
 		{
 			if (memberInfo == null)
 				return null;

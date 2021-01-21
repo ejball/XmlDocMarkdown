@@ -19,7 +19,7 @@ namespace ExampleAssembly
 		/// <summary>
 		/// The value.
 		/// </summary>
-		public IEnumerable<T> Value { get; set; }
+		public IEnumerable<T>? Value { get; set; }
 
 		/// <summary>
 		/// Gets an example tuple.

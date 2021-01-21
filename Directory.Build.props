@@ -3,7 +3,7 @@
   <PropertyGroup>
     <VersionPrefix>2.3.2</VersionPrefix>
     <LangVersion>9.0</LangVersion>
-    <Nullable>disable</Nullable>
+    <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);1591;1998;NU5105;CA1014</NoWarn>
     <DebugType>embedded</DebugType>

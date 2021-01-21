@@ -8,6 +8,6 @@ namespace XmlDocMarkdown.Core
 		/// <summary>
 		/// The namespace to configure.
 		/// </summary>
-		public string Namespace { get; set; }
+		public string? Namespace { get; set; }
 	}
 }
