@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.3.2
+
+* Add .NET 5 target to `xmldocmd`.
+
 ## 2.3.1
 
 * Allow .NET Core 3.1 build to run on .NET 5.
