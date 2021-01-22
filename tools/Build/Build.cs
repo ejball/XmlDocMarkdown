@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using Faithlife.Build;
-using static Faithlife.Build.AppRunner;
 using static Faithlife.Build.BuildUtility;
+using static Faithlife.Build.DotNetRunner;
 
 return BuildRunner.Execute(args, build =>
 {
@@ -31,11 +31,11 @@ return BuildRunner.Execute(args, build =>
 		var configuration = dotNetBuildSettings.GetConfiguration();
 		var projects = new[]
 		{
-			new[] { "XmlDocMarkdown.Core", "docs", verify ? "--verify" : null, "--source", "../src/XmlDocMarkdown.Core", "--newline", "lf", "--clean" },
-			new[] { "ExampleAssembly", "docs", verify ? "--verify" : null, "--source", "../tests/ExampleAssembly", "--newline", "lf", "--clean" },
+			("XmlDocMarkdown.Core", "../src/XmlDocMarkdown.Core"),
+			("ExampleAssembly", "../tests/ExampleAssembly"),
 		};
-		var xmlDocGenPath = FindFiles($"tools/XmlDocGen/bin/{configuration}/net*/XmlDocGen.exe").First();
-		foreach (var args in projects)
-			RunApp(xmlDocGenPath, new AppRunnerSettings { Arguments = args, IsFrameworkApp = true });
+		var xmlDocGenPath = FindFiles($"tools/XmlDocGen/bin/{configuration}/net*/XmlDocGen.dll").First();
+		foreach (var (assembly, sourcePath) in projects)
+			RunDotNet(xmlDocGenPath, assembly, "docs", verify ? "--verify" : null, "--source", sourcePath, "--newline", "lf", "--clean");
 	}
 });
