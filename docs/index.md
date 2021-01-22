@@ -50,7 +50,9 @@ For example, `xmldocmd MyLibrary.dll docs` generates Markdown documentation in t
 
 [![NuGet](https://img.shields.io/nuget/v/XmlDocMarkdown.Core.svg)](https://www.nuget.org/packages/XmlDocMarkdown.Core)
 
-Call [`XmlDocMarkdownGenerator.Generate`](XmlDocMarkdown.Core/XmlDocMarkdownGenerator/Generate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
+To implement a command-line tool, call [XmlDocMarkdownApp.Run](https://ejball.com/XmlDocMarkdown/XmlDocMarkdown.Core/XmlDocMarkdownApp/Run.html) with the command-line arguments.
+
+To use the library directly, call [`XmlDocMarkdownGenerator.Generate`](XmlDocMarkdown.Core/XmlDocMarkdownGenerator/Generate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
 
 ### xmldocmd (.NET tool)
 
@@ -58,7 +60,7 @@ Call [`XmlDocMarkdownGenerator.Generate`](XmlDocMarkdown.Core/XmlDocMarkdownGene
 
 To install `xmldocmd`: `dotnet tool install xmldocmd -g`
 
-### XmlDocMarkdown (console app)
+### XmlDocMarkdown (.NET Framework console app)
 
 [![NuGet](https://img.shields.io/nuget/v/XmlDocMarkdown.svg)](https://www.nuget.org/packages/XmlDocMarkdown)
 
