@@ -28,21 +28,23 @@ namespace XmlDocMarkdown.Core
 
 				var isVerify = argsReader.ReadVerifyFlag();
 
-				var settings = new XmlDocMarkdownSettings();
-				settings.NewLine = argsReader.ReadNewLineOption();
-				settings.SourceCodePath = argsReader.ReadSourceOption();
-				settings.RootNamespace = argsReader.ReadNamespaceOption();
-				settings.IncludeObsolete = argsReader.ReadObsoleteFlag();
-				settings.SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag();
-				settings.VisibilityLevel = argsReader.ReadVisibilityOption();
-				settings.ShouldClean = argsReader.ReadCleanFlag();
-				settings.IsQuiet = argsReader.ReadQuietFlag();
-				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag();
-				settings.FrontMatter = argsReader.ReadFrontMatter();
-				settings.PermalinkStyle = argsReader.ReadPermalinkStyle();
-				settings.GenerateToc = argsReader.ReadTocFlag();
-				settings.TocPrefix = argsReader.ReadTocPrefix();
-				settings.NamespacePages = argsReader.ReadNamespacePagesFlag();
+				var settings = new XmlDocMarkdownSettings
+				{
+					NewLine = argsReader.ReadNewLineOption(),
+					SourceCodePath = argsReader.ReadSourceOption(),
+					RootNamespace = argsReader.ReadNamespaceOption(),
+					IncludeObsolete = argsReader.ReadObsoleteFlag(),
+					SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag(),
+					VisibilityLevel = argsReader.ReadVisibilityOption(),
+					ShouldClean = argsReader.ReadCleanFlag(),
+					IsQuiet = argsReader.ReadQuietFlag(),
+					IsDryRun = isVerify || argsReader.ReadDryRunFlag(),
+					FrontMatter = argsReader.ReadFrontMatter(),
+					PermalinkStyle = argsReader.ReadPermalinkStyle(),
+					GenerateToc = argsReader.ReadTocFlag(),
+					TocPrefix = argsReader.ReadTocPrefix(),
+					NamespacePages = argsReader.ReadNamespacePagesFlag(),
+				};
 
 				var externalDocs = new List<ExternalDocumentation>();
 				string? externalOption;
