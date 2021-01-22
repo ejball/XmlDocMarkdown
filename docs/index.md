@@ -12,7 +12,7 @@ For a more full-featured documentation generation tool, check out [DocFX](https:
 
 ## Usage
 
-The most reliable way to use **XmlDocMarkdown** is to build and run a command-line tool that references the **XmlDocMarkdown.Core** class library and the assembly that you want to document. This ensures that the assembly and all of its dependencies are loaded propertly.
+The most reliable way to use **XmlDocMarkdown** is to build and run a command-line tool that references the **XmlDocMarkdown.Core** class library and the assembly that you want to document. This ensures that the assembly and all of its dependencies are loaded properly.
 
 This is easier than it sounds, because the class library contains the full implementation of the command-line application via [XmlDocMarkdownApp.Run](https://ejball.com/XmlDocMarkdown/XmlDocMarkdown.Core/XmlDocMarkdownApp/Run.html). For example, here is how the `ArgsReading` library defines its documentation generation tool:
 
