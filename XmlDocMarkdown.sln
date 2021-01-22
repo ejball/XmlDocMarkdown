@@ -12,7 +12,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocMarkdown.Tests", "tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cake.XmlDocMarkdown", "src\Cake.XmlDocMarkdown\Cake.XmlDocMarkdown.csproj", "{0AF70790-11F5-4445-B79C-97EA61A828C3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocTarget", "tools\XmlDocTarget\XmlDocTarget.csproj", "{9076EBBA-E2EF-468C-9139-4B67E4FC69FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocGen", "tools\XmlDocGen\XmlDocGen.csproj", "{9076EBBA-E2EF-468C-9139-4B67E4FC69FE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xmldocmd", "src\xmldocmd\xmldocmd.csproj", "{9A94F733-DCBA-457F-AB0C-F33640773802}"
 EndProject

@@ -53,13 +53,7 @@ The command-line arguments and options are the same as `xmldocmd` above.
 
 [![NuGet](https://img.shields.io/nuget/v/Cake.XmlDocMarkdown.svg)](https://www.nuget.org/packages/Cake.XmlDocMarkdown)
 
-To use the addin, include it at the top of your [Cake](https://cakebuild.net/) 0.26.1+ script:
-
-```
-#addin Cake.XmlDocMarkdown
-```
-
-From your script, call [`XmlDocMarkdownGenerate`](Cake.XmlDocMarkdown/XmlDocCakeAddin/XmlDocMarkdownGenerate) with the desired input path, output path, and [`XmlDocMarkdownSettings`](XmlDocMarkdown.Core/XmlDocMarkdownSettings).
+See [https://cakebuild.net/extensions/cake-xmldocmarkdown/](https://cakebuild.net/extensions/cake-xmldocmarkdown/).
 
 ## XmlDocMarkdown.Core (class library)
 
