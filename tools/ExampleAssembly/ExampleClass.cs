@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -313,9 +314,16 @@ namespace ExampleAssembly
 		/// <summary>
 		/// A method with a long tuple.
 		/// </summary>
-		public (int, int, int, int, int, int, int, int)? EightTuple()
+		public ((int A1, int A2) A, int B, int C, int, int, int D, int E, (int F1, int F2) F)? EightTuple()
 		{
 			return null;
+		}
+
+		/// <summary>
+		/// A method with a nested tuple.
+		/// </summary>
+		public void NestedTuple(Dictionary<((int A, int B) C, IList<(int D, int E)> F), (int G, int H)> dictionary)
+		{
 		}
 	}
 }

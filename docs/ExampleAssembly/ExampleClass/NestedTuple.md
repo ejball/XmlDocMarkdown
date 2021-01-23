@@ -1,9 +1,10 @@
-# ExampleClass.EightTuple method
+# ExampleClass.NestedTuple method
 
-A method with a long tuple.
+A method with a nested tuple.
 
 ```csharp
-public ((int A1, int A2) A, int B, int C, int, int, int D, int E, (int F1, int F2) F)? EightTuple()
+public void NestedTuple(
+    Dictionary<((int A, int B) C, IList<(int D, int E)> F), (int G, int H)> dictionary)
 ```
 
 ## See Also

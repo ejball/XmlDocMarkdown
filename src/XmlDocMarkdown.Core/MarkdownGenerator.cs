@@ -1123,10 +1123,10 @@ namespace XmlDocMarkdown.Core
 
 			var isConversion = shortName == "explicit operator" || shortName == "implicit operator";
 
-			var valueType = GetValueType(memberInfo)?.GetTypeInfo();
+			var (valueType, valueAttributes) = GetValueType(memberInfo);
 			if (valueType != null && !isConversion)
 			{
-				yield return RenderTypeName(valueType, seeAlsoMembers);
+				yield return RenderTypeName(valueType, seeAlsoMembers, valueAttributes);
 				yield return " ";
 			}
 
@@ -1134,7 +1134,7 @@ namespace XmlDocMarkdown.Core
 			{
 				yield return shortName;
 				yield return " ";
-				yield return RenderTypeName(valueType, seeAlsoMembers);
+				yield return RenderTypeName(valueType, seeAlsoMembers, valueAttributes);
 			}
 			else
 			{
@@ -1226,7 +1226,9 @@ namespace XmlDocMarkdown.Core
 					if (parameterInfo.GetCustomAttributes<ParamArrayAttribute>().Any())
 						yield return "params ";
 
-					yield return RenderTypeName(parameterInfo.ParameterType.GetTypeInfo(), seeAlsoMembers);
+					yield return RenderTypeName(parameterInfo.ParameterType.GetTypeInfo(),
+						seeAlso: seeAlsoMembers,
+						attributes: parameterInfo.GetCustomAttributes());
 
 					yield return " ";
 					if (IsKeyword(parameterInfo.Name))
@@ -1239,7 +1241,7 @@ namespace XmlDocMarkdown.Core
 						if (CanRenderParameterConstant(parameterInfo))
 							yield return RenderConstant(parameterInfo.DefaultValue);
 						else if (parameterInfo.ParameterType.GetTypeInfo().IsValueType || parameterInfo.ParameterType.IsGenericParameter)
-							yield return $"default({RenderTypeName(parameterInfo.ParameterType.GetTypeInfo())})";
+							yield return "default";
 						else
 							yield return "null";
 					}
@@ -1320,25 +1322,25 @@ namespace XmlDocMarkdown.Core
 				yield return ";";
 		}
 
-		private static Type? GetValueType(MemberInfo member)
+		private static (TypeInfo? Type, IReadOnlyList<Attribute>? Attributes) GetValueType(MemberInfo member)
 		{
 			var eventInfo = member as EventInfo;
 			if (eventInfo != null)
-				return eventInfo.EventHandlerType;
+				return (eventInfo.EventHandlerType.GetTypeInfo(), eventInfo.GetCustomAttributes().ToList());
 
 			var propertyInfo = member as PropertyInfo;
 			if (propertyInfo != null)
-				return propertyInfo.PropertyType;
+				return (propertyInfo.PropertyType.GetTypeInfo(), propertyInfo.GetCustomAttributes().ToList());
 
 			var fieldInfo = member as FieldInfo;
 			if (fieldInfo != null)
-				return fieldInfo.FieldType;
+				return (fieldInfo.FieldType.GetTypeInfo(), fieldInfo.GetCustomAttributes().ToList());
 
 			var methodInfo = member as MethodInfo ?? TryGetDelegateInvoke(member);
 			if (methodInfo != null)
-				return methodInfo.ReturnType;
+				return (methodInfo.ReturnType.GetTypeInfo(), methodInfo.ReturnTypeCustomAttributes.GetCustomAttributes(inherit: false).OfType<Attribute>().ToList());
 
-			return null;
+			return default;
 		}
 
 		private static bool ParameterHasDefaultValue(ParameterInfo parameterInfo)
@@ -1448,45 +1450,83 @@ namespace XmlDocMarkdown.Core
 			return stringBuilder.ToString();
 		}
 
-		private static string RenderTypeName(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso = null)
+		private static string RenderTypeName(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso = null, IEnumerable<Attribute>? attributes = null)
+		{
+			var tupleNameIndex = 0;
+			return RenderTypeName(typeInfo, seeAlso, GetTupleNames(attributes ?? Array.Empty<Attribute>()), ref tupleNameIndex);
+		}
+
+		private static string RenderTypeName(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex)
 		{
 			if (typeInfo.IsArray)
-				return $"{RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso)}[]";
+				return $"{RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex)}[]";
 
 			if (typeInfo.IsByRef)
-				return RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso);
+				return RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex);
 
 			var nullableOfType = Nullable.GetUnderlyingType(typeInfo.AsType());
 			if (nullableOfType != null)
-				return $"{RenderTypeName(nullableOfType.GetTypeInfo(), seeAlso)}?";
+				return $"{RenderTypeName(nullableOfType.GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex)}?";
 
 			var builtIn = TryGetBuiltInTypeName(typeInfo.AsType());
 			if (builtIn != null)
 				return builtIn;
 
-			var tupleTypes = GetTupleTypes(typeInfo);
-			if (tupleTypes.Count > 1)
-				return $"({string.Join(", ", tupleTypes.Select(x => RenderTypeName(x, seeAlso)))})";
+			var renderedTupleTypes = RenderTupleTypes(typeInfo, seeAlso, tupleNames, ref tupleNameIndex);
+			if (renderedTupleTypes.Count > 1)
+				return $"({string.Join(", ", renderedTupleTypes)})";
 
 			seeAlso?.Add(typeInfo);
 
-			return GetShortName(typeInfo) + RenderGenericArguments(typeInfo.GenericTypeArguments, seeAlso);
+			return GetShortName(typeInfo) + RenderGenericArguments(typeInfo.GenericTypeArguments, seeAlso, tupleNames, ref tupleNameIndex);
 		}
 
-		private static IReadOnlyList<TypeInfo> GetTupleTypes(TypeInfo typeInfo)
+		private static IReadOnlyList<string> RenderTupleTypes(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex)
 		{
+			var renderedTupleTypes = new List<string>();
+
 			if (typeInfo.FullName?.StartsWith("System.ValueTuple`", StringComparison.Ordinal) == true)
 			{
+				var ourTupleNameIndex = tupleNameIndex;
+				tupleNameIndex += CountTupleItems(typeInfo);
+
 				var genericTypeArguments = typeInfo.GenericTypeArguments;
-				return genericTypeArguments.Length < 8 ?
-					genericTypeArguments.Select(x => x.GetTypeInfo()).ToList() :
-					genericTypeArguments.Take(7).Select(x => x.GetTypeInfo()).Concat(GetTupleTypes(genericTypeArguments[7].GetTypeInfo())).ToList();
+				while (true)
+				{
+					foreach (var genericTypeArgument in genericTypeArguments.Take(7))
+					{
+						var itemType = genericTypeArgument.GetTypeInfo();
+						var renderedTupleType = RenderTypeName(itemType, seeAlso, tupleNames, ref tupleNameIndex);
+						var itemName = tupleNames.ElementAtOrDefault(ourTupleNameIndex++);
+						if (itemName is not null)
+							renderedTupleType += $" {itemName}";
+						renderedTupleTypes.Add(renderedTupleType);
+					}
+
+					if (genericTypeArguments.Length < 8)
+						break;
+
+					genericTypeArguments = genericTypeArguments[7].GenericTypeArguments;
+					tupleNameIndex++;
+				}
 			}
 
-			return Array.Empty<TypeInfo>();
+			return renderedTupleTypes;
 		}
 
+		private static int CountTupleItems(TypeInfo typeInfo) =>
+			typeInfo.GenericTypeArguments.Length < 8 ? typeInfo.GenericTypeArguments.Length : 7 + CountTupleItems(typeInfo.GenericTypeArguments[7].GetTypeInfo());
+
+		private static IReadOnlyList<string?> GetTupleNames(IEnumerable<Attribute> attributes) =>
+			attributes.OfType<TupleElementNamesAttribute>().FirstOrDefault()?.TransformNames as IReadOnlyList<string?> ?? Array.Empty<string?>();
+
 		private static string RenderGenericArguments(Type[]? genericArguments, ICollection<MemberInfo>? seeAlso = null)
+		{
+			var tupleNameIndex = 0;
+			return RenderGenericArguments(genericArguments, seeAlso, Array.Empty<string?>(), ref tupleNameIndex);
+		}
+
+		private static string RenderGenericArguments(Type[]? genericArguments, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex)
 		{
 			if (genericArguments == null)
 				return "";
@@ -1496,7 +1536,7 @@ namespace XmlDocMarkdown.Core
 			{
 				var genericArgument = genericArguments[index];
 				stringBuilder.Append((index == 0 ? "<" : "") +
-					RenderTypeName(genericArgument.GetTypeInfo(), seeAlso) +
+					RenderTypeName(genericArgument.GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex) +
 					(index < genericArguments.Length - 1 ? ", " : "") +
 					(index == genericArguments.Length - 1 ? ">" : ""));
 			}
@@ -1890,10 +1930,8 @@ namespace XmlDocMarkdown.Core
 			return method?.GetParameters() ?? Array.Empty<ParameterInfo>();
 		}
 
-		private static string GetParameterShortNames(MemberInfo memberInfo)
-		{
-			return string.Join(", ", GetParameters(memberInfo).Select(x => RenderTypeName(x.ParameterType.GetTypeInfo())));
-		}
+		private static string GetParameterShortNames(MemberInfo memberInfo) =>
+			string.Join(", ", GetParameters(memberInfo).Select(x => RenderTypeName(x.ParameterType.GetTypeInfo())));
 
 		private static bool IsLessDerived(TypeInfo a, TypeInfo b)
 		{
