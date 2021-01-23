@@ -24,6 +24,7 @@ public class ExampleClass : IExampleContravariantInterface<ExampleClass>,
 | [DefaultParameters&lt;T&gt;](ExampleClass/DefaultParameters.md)(…) | A method with default parameters. |
 | [EditValue](ExampleClass/EditValue.md)(…) | A method that edits a value. |
 | [EditValue&lt;T&gt;](ExampleClass/EditValue.md)(…) | A method that edits a value. |
+| [EightTuple](ExampleClass/EightTuple.md)() | A method with a long tuple. |
 | [HasHyperlinks](ExampleClass/HasHyperlinks.md)() | A method whose docs have [hyperlinks](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a). |
 | [HasParams](ExampleClass/HasParams.md)(…) | A method with parameters. |
 | virtual [Jump](ExampleClass/Jump.md)() | A virtual method. |
@@ -36,6 +37,7 @@ public class ExampleClass : IExampleContravariantInterface<ExampleClass>,
 | [ParameterReference](ExampleClass/ParameterReference.md)(…) | A method whose summary references *value*. |
 | [TryGetValue](ExampleClass/TryGetValue.md)(…) | A method that tries to get a value. |
 | [TryGetValue&lt;T&gt;](ExampleClass/TryGetValue.md)(…) | A method that tries to get a value. |
+| [Tuples](ExampleClass/Tuples.md)(…) | A method with tuples. |
 | [TypeParameterReference&lt;T&gt;](ExampleClass/TypeParameterReference.md)(…) | A method whose summary references *T*. |
 | [UnbrowsableMethod](ExampleClass/UnbrowsableMethod.md)() | An unbrowsable method. |
 | [UsesCallerInfo](ExampleClass/UsesCallerInfo.md)(…) | A method that uses caller info. |

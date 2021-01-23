@@ -1464,9 +1464,26 @@ namespace XmlDocMarkdown.Core
 			if (builtIn != null)
 				return builtIn;
 
+			var tupleTypes = GetTupleTypes(typeInfo);
+			if (tupleTypes.Count > 1)
+				return $"({string.Join(", ", tupleTypes.Select(x => RenderTypeName(x, seeAlso)))})";
+
 			seeAlso?.Add(typeInfo);
 
 			return GetShortName(typeInfo) + RenderGenericArguments(typeInfo.GenericTypeArguments, seeAlso);
+		}
+
+		private static IReadOnlyList<TypeInfo> GetTupleTypes(TypeInfo typeInfo)
+		{
+			if (typeInfo.FullName?.StartsWith("System.ValueTuple`", StringComparison.Ordinal) == true)
+			{
+				var genericTypeArguments = typeInfo.GenericTypeArguments;
+				return genericTypeArguments.Length < 8 ?
+					genericTypeArguments.Select(x => x.GetTypeInfo()).ToList() :
+					genericTypeArguments.Take(7).Select(x => x.GetTypeInfo()).Concat(GetTupleTypes(genericTypeArguments[7].GetTypeInfo())).ToList();
+			}
+
+			return Array.Empty<TypeInfo>();
 		}
 
 		private static string RenderGenericArguments(Type[]? genericArguments, ICollection<MemberInfo>? seeAlso = null)

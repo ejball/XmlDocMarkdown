@@ -301,5 +301,21 @@ namespace ExampleAssembly
 		public void UnbrowsableMethod()
 		{
 		}
+
+		/// <summary>
+		/// A method with tuples.
+		/// </summary>
+		/// <param name="tuples">The tuples.</param>
+		public void Tuples(params (string Key, object? Value)[] tuples)
+		{
+		}
+
+		/// <summary>
+		/// A method with a long tuple.
+		/// </summary>
+		public (int, int, int, int, int, int, int, int)? EightTuple()
+		{
+			return null;
+		}
 	}
 }
