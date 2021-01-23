@@ -6,6 +6,12 @@ An overridden method.
 public override void Jump()
 ```
 
+## Exceptions
+
+| exception | condition |
+| --- | --- |
+|  | Some exception is thrown. |
+
 ## See Also
 
 * class [ExampleDerivedClass](../ExampleDerivedClass.md)

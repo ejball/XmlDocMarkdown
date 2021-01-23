@@ -45,6 +45,7 @@ namespace ExampleAssembly
 		/// <summary>
 		/// An overridden method.
 		/// </summary>
+		/// <exception>Some exception is thrown.</exception>
 		public override void Jump()
 		{
 		}
