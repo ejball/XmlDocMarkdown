@@ -6,7 +6,7 @@
 
 ## 2.3.2
 
-* Add .NET 5 target to `xmldocmd`.
+* Add .NET 5 target to `xmldocmd`. (Thanks [qmfrederik](https://github.com/qmfrederik)!)
 
 ## 2.3.1
 
