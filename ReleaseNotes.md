@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.4.0
+
+* Support tuple syntax, including element names.
+
 ## 2.3.2
 
 * Add .NET 5 target to `xmldocmd`.
