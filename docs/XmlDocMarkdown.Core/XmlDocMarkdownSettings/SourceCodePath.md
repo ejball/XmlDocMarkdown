@@ -3,7 +3,7 @@
 The URL of the folder containing the source code of the assembly, e.g. at GitHub.
 
 ```csharp
-public string SourceCodePath { get; set; }
+public string? SourceCodePath { get; set; }
 ```
 
 ## Remarks

@@ -3,7 +3,7 @@
 A static event.
 
 ```csharp
-public static event EventHandler MaxWeightChanged;
+public static event EventHandler? MaxWeightChanged;
 ```
 
 ## See Also

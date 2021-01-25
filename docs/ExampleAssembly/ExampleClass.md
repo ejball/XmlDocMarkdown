@@ -30,6 +30,7 @@ public class ExampleClass : IExampleContravariantInterface<ExampleClass>,
 | virtual [Jump](ExampleClass/Jump.md)() | A virtual method. |
 | [LongMethodNameWithTemplateParametersAndMethodParameters&lt;T&gt;](ExampleClass/LongMethodNameWithTemplateParametersAndMethodParameters.md)(…) | A method with a really long name. |
 | [NestedTuple](ExampleClass/NestedTuple.md)(…) | A method with a nested tuple. |
+| [NullableReferences&lt;T&gt;](ExampleClass/NullableReferences.md)(…) | A method with nullable references. |
 | [Overloaded](ExampleClass/Overloaded.md)() | An overloaded method. |
 | [Overloaded](ExampleClass/Overloaded.md)(…) | An overloaded method. (2 methods) |
 | [Overloaded&lt;T&gt;](ExampleClass/Overloaded.md)() | An overloaded method. |

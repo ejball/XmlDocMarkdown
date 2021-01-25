@@ -3,7 +3,7 @@
 The path of the XML documentation for the assembly.
 
 ```csharp
-public string XmlDocPath { get; set; }
+public string? XmlDocPath { get; set; }
 ```
 
 ## Remarks

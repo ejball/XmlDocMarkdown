@@ -3,7 +3,7 @@
 Configures external documentation.
 
 ```csharp
-public IReadOnlyList<ExternalDocumentation> ExternalDocs { get; set; }
+public IReadOnlyList<ExternalDocumentation>? ExternalDocs { get; set; }
 ```
 
 ## See Also

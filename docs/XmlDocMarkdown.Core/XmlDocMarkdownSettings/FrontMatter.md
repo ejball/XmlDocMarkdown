@@ -3,7 +3,7 @@
 If non-null, contains the path to a file that contains the Jekyll front matter template.
 
 ```csharp
-public string FrontMatter { get; set; }
+public string? FrontMatter { get; set; }
 ```
 
 ## See Also

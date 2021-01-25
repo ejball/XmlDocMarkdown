@@ -325,5 +325,12 @@ namespace ExampleAssembly
 		public void NestedTuple(Dictionary<((int A, int B) C, IList<(int D, int E)> F), (int G, int H)> dictionary)
 		{
 		}
+
+		/// <summary>
+		/// A method with nullable references.
+		/// </summary>
+		public void NullableReferences<T>(string? a, (string B1, string? B2, string B3) b, Dictionary<string, string?> c, string[]? d, string?[] e, (T F1, T? F2) f)
+		{
+		}
 	}
 }

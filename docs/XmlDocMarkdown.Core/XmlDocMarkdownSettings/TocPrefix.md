@@ -3,7 +3,7 @@
 A path prefix to add to all links in the table of contents .yml file.
 
 ```csharp
-public string TocPrefix { get; set; }
+public string? TocPrefix { get; set; }
 ```
 
 ## See Also

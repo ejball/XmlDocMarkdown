@@ -3,7 +3,7 @@
 Indicates the newline used in the output.
 
 ```csharp
-public string NewLine { get; set; }
+public string? NewLine { get; set; }
 ```
 
 ## Remarks

@@ -3,7 +3,7 @@
 The root namespace of the input assembly.
 
 ```csharp
-public string RootNamespace { get; set; }
+public string? RootNamespace { get; set; }
 ```
 
 ## Remarks

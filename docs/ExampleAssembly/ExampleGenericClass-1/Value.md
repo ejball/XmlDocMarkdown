@@ -3,7 +3,7 @@
 The value.
 
 ```csharp
-public IEnumerable<T> Value { get; set; }
+public IEnumerable<T>? Value { get; set; }
 ```
 
 ## See Also

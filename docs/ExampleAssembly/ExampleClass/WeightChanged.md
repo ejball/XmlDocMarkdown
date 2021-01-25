@@ -3,7 +3,7 @@
 An event.
 
 ```csharp
-public event EventHandler WeightChanged;
+public event EventHandler? WeightChanged;
 ```
 
 ## See Also

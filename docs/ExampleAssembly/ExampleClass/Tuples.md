@@ -3,7 +3,7 @@
 A method with tuples.
 
 ```csharp
-public void Tuples(params (string Key, object Value)[] tuples)
+public void Tuples(params (string Key, object? Value)[] tuples)
 ```
 
 | parameter | description |

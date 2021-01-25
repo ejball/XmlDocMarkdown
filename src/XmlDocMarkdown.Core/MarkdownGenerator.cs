@@ -1123,10 +1123,12 @@ namespace XmlDocMarkdown.Core
 
 			var isConversion = shortName == "explicit operator" || shortName == "implicit operator";
 
+			var typeNullableContextFlags = GetNullableContextFlags(memberInfo.DeclaringType?.GetCustomAttributes() ?? Array.Empty<Attribute>());
+
 			var (valueType, valueAttributes) = GetValueType(memberInfo);
 			if (valueType != null && !isConversion)
 			{
-				yield return RenderTypeName(valueType, seeAlsoMembers, valueAttributes);
+				yield return RenderTypeName(valueType, seeAlsoMembers, valueAttributes, typeNullableContextFlags);
 				yield return " ";
 			}
 
@@ -1134,7 +1136,7 @@ namespace XmlDocMarkdown.Core
 			{
 				yield return shortName;
 				yield return " ";
-				yield return RenderTypeName(valueType, seeAlsoMembers, valueAttributes);
+				yield return RenderTypeName(valueType, seeAlsoMembers, valueAttributes, typeNullableContextFlags);
 			}
 			else
 			{
@@ -1184,6 +1186,7 @@ namespace XmlDocMarkdown.Core
 			}
 
 			ParameterInfo[]? parameterInfos = null;
+			var memberNullableContextFlags = Array.Empty<byte>();
 
 			var propertyInfo = memberInfo as PropertyInfo;
 			if (propertyInfo != null)
@@ -1191,11 +1194,15 @@ namespace XmlDocMarkdown.Core
 				parameterInfos = GetParameters(propertyInfo);
 				if (parameterInfos.Length == 0)
 					parameterInfos = null;
+				memberNullableContextFlags = GetNullableContextFlags(propertyInfo.GetCustomAttributes());
 			}
 
 			var methodInfo = memberInfo as MethodBase ?? TryGetDelegateInvoke(memberInfo);
 			if (methodInfo != null)
+			{
 				parameterInfos = GetParameters(methodInfo);
+				memberNullableContextFlags = GetNullableContextFlags(methodInfo.GetCustomAttributes());
+			}
 
 			if (parameterInfos != null)
 			{
@@ -1228,7 +1235,8 @@ namespace XmlDocMarkdown.Core
 
 					yield return RenderTypeName(parameterInfo.ParameterType.GetTypeInfo(),
 						seeAlso: seeAlsoMembers,
-						attributes: parameterInfo.GetCustomAttributes());
+						attributes: parameterInfo.GetCustomAttributes().ToList(),
+						nullableContextFlags: memberNullableContextFlags.Length != 0 ? memberNullableContextFlags : typeNullableContextFlags);
 
 					yield return " ";
 					if (IsKeyword(parameterInfo.Name))
@@ -1343,6 +1351,18 @@ namespace XmlDocMarkdown.Core
 			return default;
 		}
 
+		private static byte[] GetNullableContextFlags(IEnumerable<Attribute> attributes)
+		{
+			var attribute = attributes.FirstOrDefault(x => x.GetType().FullName == "System.Runtime.CompilerServices.NullableContextAttribute");
+			return attribute is null ? Array.Empty<byte>() : new[] { (byte) attribute.GetType().GetField("Flag").GetValue(attribute) };
+		}
+
+		private static byte[] GetNullableFlags(IEnumerable<Attribute> attributes)
+		{
+			var attribute = attributes.FirstOrDefault(x => x.GetType().FullName == "System.Runtime.CompilerServices.NullableAttribute");
+			return ((byte[]?) attribute?.GetType().GetField("NullableFlags").GetValue(attribute)) ?? Array.Empty<byte>();
+		}
+
 		private static bool ParameterHasDefaultValue(ParameterInfo parameterInfo)
 		{
 			if (parameterInfo.Attributes.HasFlag(ParameterAttributes.HasDefault))
@@ -1450,38 +1470,53 @@ namespace XmlDocMarkdown.Core
 			return stringBuilder.ToString();
 		}
 
-		private static string RenderTypeName(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso = null, IEnumerable<Attribute>? attributes = null)
+		private static string RenderTypeName(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso = null, IReadOnlyList<Attribute>? attributes = null, byte[]? nullableContextFlags = null)
 		{
+			attributes ??= Array.Empty<Attribute>();
+			var tupleNames = GetTupleNames(attributes);
 			var tupleNameIndex = 0;
-			return RenderTypeName(typeInfo, seeAlso, GetTupleNames(attributes ?? Array.Empty<Attribute>()), ref tupleNameIndex);
+			var nullableFlags = GetNullableFlags(attributes);
+			if (nullableFlags.Length == 0)
+				nullableFlags = nullableContextFlags ?? Array.Empty<byte>();
+			var nullableFlagIndex = 0;
+			return RenderTypeName(typeInfo, seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex);
 		}
 
-		private static string RenderTypeName(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex)
+		private static string RenderTypeName(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex, byte[] nullableFlags, ref int nullableFlagIndex)
 		{
-			if (typeInfo.IsArray)
-				return $"{RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex)}[]";
-
 			if (typeInfo.IsByRef)
-				return RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex);
+				return RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex);
 
 			var nullableOfType = Nullable.GetUnderlyingType(typeInfo.AsType());
 			if (nullableOfType != null)
-				return $"{RenderTypeName(nullableOfType.GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex)}?";
+				return $"{RenderTypeName(nullableOfType.GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex)}?";
+
+			var nullableSuffix = "";
+			if (!typeInfo.IsValueType || typeInfo.IsGenericType)
+			{
+				if (nullableFlagIndex < nullableFlags.Length && nullableFlags[nullableFlagIndex] == 2)
+					nullableSuffix = "?";
+				if (nullableFlagIndex < nullableFlags.Length - 1)
+					nullableFlagIndex++;
+			}
+
+			if (typeInfo.IsArray)
+				return $"{RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex)}[]" + nullableSuffix;
 
 			var builtIn = TryGetBuiltInTypeName(typeInfo.AsType());
 			if (builtIn != null)
-				return builtIn;
+				return builtIn + nullableSuffix;
 
-			var renderedTupleTypes = RenderTupleTypes(typeInfo, seeAlso, tupleNames, ref tupleNameIndex);
+			var renderedTupleTypes = RenderTupleTypes(typeInfo, seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex);
 			if (renderedTupleTypes.Count > 1)
 				return $"({string.Join(", ", renderedTupleTypes)})";
 
 			seeAlso?.Add(typeInfo);
 
-			return GetShortName(typeInfo) + RenderGenericArguments(typeInfo.GenericTypeArguments, seeAlso, tupleNames, ref tupleNameIndex);
+			return GetShortName(typeInfo) + RenderGenericArguments(typeInfo.GenericTypeArguments, seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex) + nullableSuffix;
 		}
 
-		private static IReadOnlyList<string> RenderTupleTypes(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex)
+		private static IReadOnlyList<string> RenderTupleTypes(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex, byte[] nullableFlags, ref int nullableFlagIndex)
 		{
 			var renderedTupleTypes = new List<string>();
 
@@ -1496,7 +1531,7 @@ namespace XmlDocMarkdown.Core
 					foreach (var genericTypeArgument in genericTypeArguments.Take(7))
 					{
 						var itemType = genericTypeArgument.GetTypeInfo();
-						var renderedTupleType = RenderTypeName(itemType, seeAlso, tupleNames, ref tupleNameIndex);
+						var renderedTupleType = RenderTypeName(itemType, seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex);
 						var itemName = tupleNames.ElementAtOrDefault(ourTupleNameIndex++);
 						if (itemName is not null)
 							renderedTupleType += $" {itemName}";
@@ -1523,10 +1558,11 @@ namespace XmlDocMarkdown.Core
 		private static string RenderGenericArguments(Type[]? genericArguments, ICollection<MemberInfo>? seeAlso = null)
 		{
 			var tupleNameIndex = 0;
-			return RenderGenericArguments(genericArguments, seeAlso, Array.Empty<string?>(), ref tupleNameIndex);
+			var nullableFlagIndex = 0;
+			return RenderGenericArguments(genericArguments, seeAlso, Array.Empty<string?>(), ref tupleNameIndex, Array.Empty<byte>(), ref nullableFlagIndex);
 		}
 
-		private static string RenderGenericArguments(Type[]? genericArguments, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex)
+		private static string RenderGenericArguments(Type[]? genericArguments, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex, byte[] nullableFlags, ref int nullableFlagIndex)
 		{
 			if (genericArguments == null)
 				return "";
@@ -1536,7 +1572,7 @@ namespace XmlDocMarkdown.Core
 			{
 				var genericArgument = genericArguments[index];
 				stringBuilder.Append((index == 0 ? "<" : "") +
-					RenderTypeName(genericArgument.GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex) +
+					RenderTypeName(genericArgument.GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex) +
 					(index < genericArguments.Length - 1 ? ", " : "") +
 					(index == genericArguments.Length - 1 ? ">" : ""));
 			}

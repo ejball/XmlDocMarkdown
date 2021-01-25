@@ -3,7 +3,7 @@
 The path of the assembly to load.
 
 ```csharp
-public string AssemblyPath { get; set; }
+public string? AssemblyPath { get; set; }
 ```
 
 ## Remarks

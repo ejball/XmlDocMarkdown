@@ -3,7 +3,7 @@
 An already-loaded assembly.
 
 ```csharp
-public Assembly Assembly { get; set; }
+public Assembly? Assembly { get; set; }
 ```
 
 ## Remarks

@@ -4,7 +4,7 @@ Generates Markdown from .NET XML documentation comments.
 
 ```csharp
 public static XmlDocMarkdownResult Generate(string inputPath, string outputPath, 
-    XmlDocMarkdownSettings settings)
+    XmlDocMarkdownSettings? settings)
 ```
 
 | parameter | description |
@@ -32,7 +32,7 @@ Generates Markdown from .NET XML documentation comments.
 
 ```csharp
 public static XmlDocMarkdownResult Generate(XmlDocInput input, string outputPath, 
-    XmlDocMarkdownSettings settings)
+    XmlDocMarkdownSettings? settings)
 ```
 
 | parameter | description |
