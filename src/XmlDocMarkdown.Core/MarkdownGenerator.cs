@@ -1123,12 +1123,25 @@ namespace XmlDocMarkdown.Core
 
 			var isConversion = shortName == "explicit operator" || shortName == "implicit operator";
 
-			var typeNullableContextFlags = GetNullableContextFlags(memberInfo.DeclaringType?.GetCustomAttributes() ?? Array.Empty<Attribute>());
+			var nullableContextFlags = GetNullableContextFlags(memberInfo.GetCustomAttributes());
+			if (nullableContextFlags.Length == 0)
+			{
+				var ancestor = memberInfo;
+				while (true)
+				{
+					ancestor = ancestor.DeclaringType?.GetTypeInfo();
+					if (ancestor is null)
+						break;
+					nullableContextFlags = GetNullableContextFlags(ancestor.GetCustomAttributes());
+					if (nullableContextFlags.Length != 0)
+						break;
+				}
+			}
 
 			var (valueType, valueAttributes) = GetValueType(memberInfo);
 			if (valueType != null && !isConversion)
 			{
-				yield return RenderTypeName(valueType, seeAlsoMembers, valueAttributes, typeNullableContextFlags);
+				yield return RenderTypeName(valueType, seeAlsoMembers, valueAttributes, nullableContextFlags);
 				yield return " ";
 			}
 
@@ -1136,7 +1149,7 @@ namespace XmlDocMarkdown.Core
 			{
 				yield return shortName;
 				yield return " ";
-				yield return RenderTypeName(valueType, seeAlsoMembers, valueAttributes, typeNullableContextFlags);
+				yield return RenderTypeName(valueType, seeAlsoMembers, valueAttributes, nullableContextFlags);
 			}
 			else
 			{
@@ -1186,7 +1199,6 @@ namespace XmlDocMarkdown.Core
 			}
 
 			ParameterInfo[]? parameterInfos = null;
-			var memberNullableContextFlags = Array.Empty<byte>();
 
 			var propertyInfo = memberInfo as PropertyInfo;
 			if (propertyInfo != null)
@@ -1194,15 +1206,11 @@ namespace XmlDocMarkdown.Core
 				parameterInfos = GetParameters(propertyInfo);
 				if (parameterInfos.Length == 0)
 					parameterInfos = null;
-				memberNullableContextFlags = GetNullableContextFlags(propertyInfo.GetCustomAttributes());
 			}
 
 			var methodInfo = memberInfo as MethodBase ?? TryGetDelegateInvoke(memberInfo);
 			if (methodInfo != null)
-			{
 				parameterInfos = GetParameters(methodInfo);
-				memberNullableContextFlags = GetNullableContextFlags(methodInfo.GetCustomAttributes());
-			}
 
 			if (parameterInfos != null)
 			{
@@ -1236,7 +1244,7 @@ namespace XmlDocMarkdown.Core
 					yield return RenderTypeName(parameterInfo.ParameterType.GetTypeInfo(),
 						seeAlso: seeAlsoMembers,
 						attributes: parameterInfo.GetCustomAttributes().ToList(),
-						nullableContextFlags: memberNullableContextFlags.Length != 0 ? memberNullableContextFlags : typeNullableContextFlags);
+						nullableContextFlags: nullableContextFlags);
 
 					yield return " ";
 					if (IsKeyword(parameterInfo.Name))
