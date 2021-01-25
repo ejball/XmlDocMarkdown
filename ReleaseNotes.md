@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.5.1
+
+* Fix nullable references bugs.
+
 ## 2.5.0
 
 * Support nullable references. (Thanks [bgrainger](https://github.com/bgrainger)!)
