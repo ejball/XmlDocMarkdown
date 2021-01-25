@@ -3,4 +3,6 @@ updates:
 - package-ecosystem: nuget
   directory: "/"
   schedule:
-    interval: weekly
+    interval: daily
+  allow:
+  - dependency-name: XmlDocMarkdown.Core
