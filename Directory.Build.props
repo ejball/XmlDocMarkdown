@@ -30,7 +30,7 @@
   <ItemGroup>
     <PackageReference Include="Faithlife.Analyzers" Version="1.0.7" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.312" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.321" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
   </ItemGroup>
 
 </Project>
