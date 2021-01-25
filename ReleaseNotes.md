@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.5.0
+
+* Support nullable references. (Thanks [bgrainger](https://github.com/bgrainger)!)
+
 ## 2.4.0
 
 * Support tuple syntax, including element names.
