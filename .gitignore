@@ -10,3 +10,4 @@ Thumbs.db
 *.ncrunchsolution
 nCrunchTemp*
 _ReSharper*
+.DS_Store
