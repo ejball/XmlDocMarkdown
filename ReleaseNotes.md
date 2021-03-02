@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.5.2
+
+* Fix tuple rendering bug.
+
 ## 2.5.1
 
 * Fix nullable references bugs.
