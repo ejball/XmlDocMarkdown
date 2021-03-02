@@ -1528,7 +1528,7 @@ namespace XmlDocMarkdown.Core
 		{
 			var renderedTupleTypes = new List<string>();
 
-			if (typeInfo.FullName?.StartsWith("System.ValueTuple`", StringComparison.Ordinal) == true)
+			if (typeInfo.Namespace == "System" && typeInfo.Name.StartsWith("ValueTuple`", StringComparison.Ordinal) == true)
 			{
 				var ourTupleNameIndex = tupleNameIndex;
 				tupleNameIndex += CountTupleItems(typeInfo);

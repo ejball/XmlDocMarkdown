@@ -36,5 +36,13 @@ namespace ExampleAssembly
 		{
 			throw new NotImplementedException();
 		}
+
+		/// <summary>
+		/// Adds values.
+		/// </summary>
+		public T AddTuples(IEnumerable<(T Key, object? Value)> values)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -4,7 +4,7 @@ A method with nullable references.
 
 ```csharp
 public void NullableReferences<T>(string? a, (string B1, string? B2, string B3) b, 
-    Dictionary<string, string?> c, string[]? d, string?[] e, ValueTuple<T, T?> f)
+    Dictionary<string, string?> c, string[]? d, string?[] e, (T F1, T? F2) f)
 ```
 
 ## See Also
