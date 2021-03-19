@@ -4,6 +4,10 @@ on:
     paths-ignore:
     - '*.md'
     - 'docs/**'
+    branches:
+    - '**'
+    tags-ignore:
+    - '**'
   pull_request:
     paths-ignore:
     - '*.md'
