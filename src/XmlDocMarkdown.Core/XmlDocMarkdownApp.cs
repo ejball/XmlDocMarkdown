@@ -42,6 +42,7 @@ namespace XmlDocMarkdown.Core
 					FrontMatter = argsReader.ReadFrontMatter(),
 					PermalinkStyle = argsReader.ReadPermalinkStyle(),
 					GenerateToc = argsReader.ReadTocFlag(),
+					RelativeLinks = argsReader.ReadRelativeLinksFlag(),
 					TocPrefix = argsReader.ReadTocPrefix(),
 					NamespacePages = argsReader.ReadNamespacePagesFlag(),
 				};
@@ -137,6 +138,9 @@ namespace XmlDocMarkdown.Core
 			textWriter.WriteLine("      'pretty' permalinks do not contain file extensions, and when you select this option.");
 			textWriter.WriteLine("      periods have to be removed from file names, for example, 'System.Console' would have to be 'SystemConsole'.");
 			textWriter.WriteLine("      since the removal of the '.md' extension would make Jekyll think .Console is a file extension which doesn't work.");
+			textWriter.WriteLine("   --relative-links");
+			textWriter.WriteLine("      Generate all links in relative format.");
+			textWriter.WriteLine("      Can be usefull in Gitlab wiki.");
 			textWriter.WriteLine("   --namespace-pages");
 			textWriter.WriteLine("      Generate separate pages for each namespace, listing types in each.");
 			textWriter.WriteLine("   --toc");

@@ -28,6 +28,8 @@ namespace XmlDocMarkdown.Core
 
 		public bool NamespacePages { get; set; }
 
+		public bool RelativeLinks { get; set; }
+
 		public XmlDocVisibilityLevel Visibility { get; set; }
 
 		public IReadOnlyList<ExternalDocumentation>? ExternalDocs { get; set; }
@@ -2094,7 +2096,7 @@ namespace XmlDocMarkdown.Core
 				// then the file name is the link
 				return b.Segments.Last();
 			}
-			return result;
+			return RelativeLinks ? $"./{result}" : result;
 		}
 
 		private string? ToMarkdown(IEnumerable<XmlDocInline>? inlines, MarkdownContext context) =>

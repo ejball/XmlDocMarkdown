@@ -74,6 +74,14 @@ namespace XmlDocMarkdown.Core
 		public bool IsDryRun { get; set; }
 
 		/// <summary>
+		/// If true, generates links with relative path prefix './'.
+		/// </summary>
+		/// <remarks>
+		/// It's can be usefull for gitlab wiki section.
+		/// </remarks>
+		public bool RelativeLinks { get; set; }
+
+		/// <summary>
 		/// If non-null, contains the path to a file that contains the Jekyll front matter template.
 		/// </summary>
 		public string? FrontMatter { get; set; }
