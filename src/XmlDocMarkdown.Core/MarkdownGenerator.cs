@@ -2092,9 +2092,11 @@ namespace XmlDocMarkdown.Core
 			if (string.IsNullOrEmpty(result))
 			{
 				// then the file name is the link
-				return b.Segments.Last();
+				result = b.Segments.Last();
 			}
-			return result;
+
+			// generate explicit relative link, e.g. for GitLab wiki
+			return result[0] == '.' ? result : $"./{result}";
 		}
 
 		private string? ToMarkdown(IEnumerable<XmlDocInline>? inlines, MarkdownContext context) =>

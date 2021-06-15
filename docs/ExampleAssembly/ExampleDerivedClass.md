@@ -1,6 +1,6 @@
 # ExampleDerivedClass class
 
-A class that derives from [`ExampleClass`](ExampleClass.md).
+A class that derives from [`ExampleClass`](./ExampleClass.md).
 
 ```csharp
 public class ExampleDerivedClass : ExampleClass, IEnumerable<object>, IEnumerable<string>, 
@@ -20,10 +20,10 @@ public class ExampleDerivedClass : ExampleClass, IEnumerable<object>, IEnumerabl
 
 ## See Also
 
-* class [ExampleClass](ExampleClass.md)
-* interface [IExampleContravariantInterface&lt;T&gt;](IExampleContravariantInterface-1.md)
-* interface [IExampleCovariantInterface&lt;T&gt;](IExampleCovariantInterface-1.md)
-* interface [IExampleInterface](IExampleInterface.md)
+* class [ExampleClass](./ExampleClass.md)
+* interface [IExampleContravariantInterface&lt;T&gt;](./IExampleContravariantInterface-1.md)
+* interface [IExampleCovariantInterface&lt;T&gt;](./IExampleCovariantInterface-1.md)
+* interface [IExampleInterface](./IExampleInterface.md)
 * namespace [ExampleAssembly](../ExampleAssembly.md)
 * [ExampleDerivedClass.cs](../../tests/ExampleAssembly/ExampleDerivedClass.cs)
 

@@ -9,7 +9,7 @@ public interface IExampleDerivedInterface : IDictionary<string, IExampleInterfac
 
 ## See Also
 
-* interface [IExampleInterface](IExampleInterface.md)
+* interface [IExampleInterface](./IExampleInterface.md)
 * namespace [ExampleAssembly](../ExampleAssembly.md)
 * [IExampleDerivedInterface.cs](../../tests/ExampleAssembly/IExampleDerivedInterface.cs)
 

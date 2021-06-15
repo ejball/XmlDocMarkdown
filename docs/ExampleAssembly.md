@@ -4,39 +4,39 @@
 
 | public type | description |
 | --- | --- |
-| abstract class [ExampleAbstractClass](ExampleAssembly/ExampleAbstractClass.md) | An abstract class. |
-| class [ExampleAttribute](ExampleAssembly/ExampleAttribute.md) | An attribute. |
-| class [ExampleClass](ExampleAssembly/ExampleClass.md) | A class. |
-| class [ExampleDeepClass](ExampleAssembly/ExampleDeepClass.md) | A class with nested types. |
-| delegate [ExampleDelegate](ExampleAssembly/ExampleDelegate.md) | A delegate. |
-| class [ExampleDerivedClass](ExampleAssembly/ExampleDerivedClass.md) | A class that derives from [`ExampleClass`](ExampleAssembly/ExampleClass.md). |
-| enum [ExampleEnum](ExampleAssembly/ExampleEnum.md) | An enumeration. |
-| class [ExampleException](ExampleAssembly/ExampleException.md) | An example exception. |
-| [Flags] enum [ExampleFlagsEnum](ExampleAssembly/ExampleFlagsEnum.md) | A flags enumeration. |
-| class [ExampleGenericClass&lt;T&gt;](ExampleAssembly/ExampleGenericClass-1.md) | A generic class. |
-| delegate [ExampleGenericDelegate&lt;T1,T2,TResult&gt;](ExampleAssembly/ExampleGenericDelegate-3.md) | A generic delegate. |
-| enum [ExampleLongEnum](ExampleAssembly/ExampleLongEnum.md) | A 64-bit enumeration. |
-| class [ExampleLongSummary](ExampleAssembly/ExampleLongSummary.md) | This class has an exceptionally long summary. Even the first paragraph is really long, which is important to test because some documenters put a lot of information in the summary, perhaps not expecting that someone will ever actually generate documentation. |
-| delegate [ExampleRefOutDelegate](ExampleAssembly/ExampleRefOutDelegate.md) | A delegate. |
-| class [ExampleSealedClass](ExampleAssembly/ExampleSealedClass.md) | A sealed class. |
-| static class [ExampleStaticClass](ExampleAssembly/ExampleStaticClass.md) | A static class. |
-| struct [ExampleStruct](ExampleAssembly/ExampleStruct.md) | A structure. |
-| class [ExampleTriGenericClass&lt;TOne,TTwo,TThree&gt;](ExampleAssembly/ExampleTriGenericClass-3.md) | A generic class with three generic type parameters. |
-| struct [ExampleTuple&lt;T1&gt;](ExampleAssembly/ExampleTuple-1.md) | A 1-tuple. |
-| struct [ExampleTuple&lt;T1,T2&gt;](ExampleAssembly/ExampleTuple-2.md) | A 2-tuple. |
-| struct [ExampleTuple&lt;T1,T2,T3&gt;](ExampleAssembly/ExampleTuple-3.md) | A 3-tuple. |
-| struct [ExampleTuple&lt;T1,T2,T3,T4&gt;](ExampleAssembly/ExampleTuple-4.md) | A 4-tuple. |
-| static class [ExampleTuple](ExampleAssembly/ExampleTuple.md) | A helper class for tuples. |
-| class [ExampleUnbrowsableClass](ExampleAssembly/ExampleUnbrowsableClass.md) | An unbrowsable class. |
-| interface [IExampleContravariantInterface&lt;T&gt;](ExampleAssembly/IExampleContravariantInterface-1.md) | An interface with contravariant generic parameters. |
-| interface [IExampleCovariantInterface&lt;T&gt;](ExampleAssembly/IExampleCovariantInterface-1.md) | An interface with covariant generic parameters. |
-| interface [IExampleDerivedInterface](ExampleAssembly/IExampleDerivedInterface.md) | A derived interface. |
-| interface [IExampleInterface](ExampleAssembly/IExampleInterface.md) | An interface. |
+| abstract class [ExampleAbstractClass](./ExampleAssembly/ExampleAbstractClass.md) | An abstract class. |
+| class [ExampleAttribute](./ExampleAssembly/ExampleAttribute.md) | An attribute. |
+| class [ExampleClass](./ExampleAssembly/ExampleClass.md) | A class. |
+| class [ExampleDeepClass](./ExampleAssembly/ExampleDeepClass.md) | A class with nested types. |
+| delegate [ExampleDelegate](./ExampleAssembly/ExampleDelegate.md) | A delegate. |
+| class [ExampleDerivedClass](./ExampleAssembly/ExampleDerivedClass.md) | A class that derives from [`ExampleClass`](./ExampleAssembly/ExampleClass.md). |
+| enum [ExampleEnum](./ExampleAssembly/ExampleEnum.md) | An enumeration. |
+| class [ExampleException](./ExampleAssembly/ExampleException.md) | An example exception. |
+| [Flags] enum [ExampleFlagsEnum](./ExampleAssembly/ExampleFlagsEnum.md) | A flags enumeration. |
+| class [ExampleGenericClass&lt;T&gt;](./ExampleAssembly/ExampleGenericClass-1.md) | A generic class. |
+| delegate [ExampleGenericDelegate&lt;T1,T2,TResult&gt;](./ExampleAssembly/ExampleGenericDelegate-3.md) | A generic delegate. |
+| enum [ExampleLongEnum](./ExampleAssembly/ExampleLongEnum.md) | A 64-bit enumeration. |
+| class [ExampleLongSummary](./ExampleAssembly/ExampleLongSummary.md) | This class has an exceptionally long summary. Even the first paragraph is really long, which is important to test because some documenters put a lot of information in the summary, perhaps not expecting that someone will ever actually generate documentation. |
+| delegate [ExampleRefOutDelegate](./ExampleAssembly/ExampleRefOutDelegate.md) | A delegate. |
+| class [ExampleSealedClass](./ExampleAssembly/ExampleSealedClass.md) | A sealed class. |
+| static class [ExampleStaticClass](./ExampleAssembly/ExampleStaticClass.md) | A static class. |
+| struct [ExampleStruct](./ExampleAssembly/ExampleStruct.md) | A structure. |
+| class [ExampleTriGenericClass&lt;TOne,TTwo,TThree&gt;](./ExampleAssembly/ExampleTriGenericClass-3.md) | A generic class with three generic type parameters. |
+| struct [ExampleTuple&lt;T1&gt;](./ExampleAssembly/ExampleTuple-1.md) | A 1-tuple. |
+| struct [ExampleTuple&lt;T1,T2&gt;](./ExampleAssembly/ExampleTuple-2.md) | A 2-tuple. |
+| struct [ExampleTuple&lt;T1,T2,T3&gt;](./ExampleAssembly/ExampleTuple-3.md) | A 3-tuple. |
+| struct [ExampleTuple&lt;T1,T2,T3,T4&gt;](./ExampleAssembly/ExampleTuple-4.md) | A 4-tuple. |
+| static class [ExampleTuple](./ExampleAssembly/ExampleTuple.md) | A helper class for tuples. |
+| class [ExampleUnbrowsableClass](./ExampleAssembly/ExampleUnbrowsableClass.md) | An unbrowsable class. |
+| interface [IExampleContravariantInterface&lt;T&gt;](./ExampleAssembly/IExampleContravariantInterface-1.md) | An interface with contravariant generic parameters. |
+| interface [IExampleCovariantInterface&lt;T&gt;](./ExampleAssembly/IExampleCovariantInterface-1.md) | An interface with covariant generic parameters. |
+| interface [IExampleDerivedInterface](./ExampleAssembly/IExampleDerivedInterface.md) | A derived interface. |
+| interface [IExampleInterface](./ExampleAssembly/IExampleInterface.md) | An interface. |
 
 ## ExampleAssembly.InnerNamespace namespace
 
 | public type | description |
 | --- | --- |
-| class [ExampleInnerClass](ExampleAssembly.InnerNamespace/ExampleInnerClass.md) | A class in an inner namespace. |
+| class [ExampleInnerClass](./ExampleAssembly.InnerNamespace/ExampleInnerClass.md) | A class in an inner namespace. |
 
 <!-- DO NOT EDIT: generated by xmldocmd for ExampleAssembly.dll -->
