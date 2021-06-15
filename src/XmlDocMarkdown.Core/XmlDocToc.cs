@@ -30,7 +30,7 @@ namespace XmlDocMarkdown.Core
 
 			var parentItem = FindParent(parent);
 			if (parentItem == null)
-				throw new Exception($"Parent '{parent}' not found?");
+				throw new InvalidOperationException($"Parent '{parent}' not found?");
 
 			parentItem.GetOrCreate(path, title);
 		}

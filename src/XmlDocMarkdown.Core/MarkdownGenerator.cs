@@ -61,7 +61,7 @@ namespace XmlDocMarkdown.Core
 				.Where(x => !(x is TypeInfo) && IsVisible(x))
 				.Concat(visibleTypes)
 				.GroupBy(XmlDocUtility.GetXmlDocRef)
-				.ToDictionary(x => x.Key, x => x.Single());
+				.ToDictionary(x => x.Key!, x => x.Single());
 
 			var visibleTypeRecords = visibleTypes
 				.Select(typeInfo => new
@@ -414,7 +414,7 @@ namespace XmlDocMarkdown.Core
 						writer.WriteLine("| --- | --- | --- |");
 
 						var isFlags = IsFlagsEnum(typeInfo!);
-						foreach (var enumValue in typeInfo.DeclaredMembers.OfType<FieldInfo>().Where(x => x.IsPublic && x.IsLiteral))
+						foreach (var enumValue in typeInfo!.DeclaredMembers.OfType<FieldInfo>().Where(x => x.IsPublic && x.IsLiteral))
 						{
 							var valueObject = enumValue.GetValue(null);
 							var valueText = isFlags ? "0x" + Convert.ToString(Convert.ToInt64(valueObject, CultureInfo.InvariantCulture), 16).ToUpperInvariant() :
@@ -558,10 +558,10 @@ namespace XmlDocMarkdown.Core
 						.Where(x => XmlDocUtility.GetXmlDocRef(x) != xmlDocRef)
 						.Select(GetGenericDefinition)
 						.GroupBy(XmlDocUtility.GetXmlDocRef)
-						.Select(x => new { Member = x.First(), XmlDocName = x.Key })
+						.Select(x => new { Member = x.First(), XmlDocName = x.Key! })
 						.OrderBy(x => x.XmlDocName == declaringTypeXmlDocName))
 					{
-						if (memberContext.MembersByXmlDocName.ContainsKey(seeAlso.XmlDocName) ||
+						if (memberContext.MembersByXmlDocName.ContainsKey(seeAlso.XmlDocName!) ||
 							FindExternalDocumentation(seeAlso.Member) != null)
 						{
 							var shortSignature = GetShortSignature(seeAlso.Member, forSeeAlso: true);

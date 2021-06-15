@@ -198,7 +198,7 @@ namespace ExampleAssembly
 			char @char = '\u1234', decimal @decimal = 3.14m, double @double = double.NaN, float @float = float.NegativeInfinity,
 			int @int = -42, uint @uint = 42, long @long = long.MinValue, ulong @ulong = long.MaxValue,
 			object? @object = null, short @short = short.MinValue, ushort @ushort = ushort.MaxValue,
-			string @string = "hi\0'\"\\\a\b\f\n\r\t\v\u0001\uABCD", T t = default(T),
+			string @string = "hi\0'\"\\\a\b\f\n\r\t\v\u0001\uABCD", T? t = default,
 			DateTime @virtual = default(DateTime),
 			ExampleEnum @enum = ExampleEnum.One,
 			ExampleFlagsEnum flags = ExampleFlagsEnum.Second | ExampleFlagsEnum.Third)
