@@ -44,6 +44,8 @@ namespace XmlDocMarkdown.Core
 
 		public static bool ReadTocFlag(this ArgsReader args) => args.ReadFlag("toc");
 
+		public static bool ReadRelativeLinksFlag(this ArgsReader args) => args.ReadFlag("relative-links");
+
 		public static string? ReadTocPrefix(this ArgsReader args) => args.ReadOption("toc-prefix");
 
 		public static string? ReadNewLineOption(this ArgsReader args)
