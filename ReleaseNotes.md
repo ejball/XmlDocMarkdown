@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.6.0-beta.1
+
+* Use `./` with relative links (for [GitLab wikis](https://community.opengroup.org/examples/wiki/-/wikis/Basics/Linking#internal-wiki-pages)).
+
 ## 2.5.2
 
 * Fix tuple rendering bug.
