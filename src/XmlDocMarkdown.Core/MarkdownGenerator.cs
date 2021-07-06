@@ -56,7 +56,7 @@ namespace XmlDocMarkdown.Core
 				.ToList();
 
 			var membersByXmlDocName = visibleTypes
-				.Where(x => new[] { TypeKind.Class, TypeKind.Struct, TypeKind.Interface }.Contains(GetTypeKind(x)))
+				.Where(x => new[] { TypeKind.Record, TypeKind.Class, TypeKind.Struct, TypeKind.Interface }.Contains(GetTypeKind(x)))
 				.SelectMany(x => x.DeclaredMembers)
 				.Where(x => !(x is TypeInfo) && IsVisible(x))
 				.Concat(visibleTypes)
@@ -192,7 +192,7 @@ namespace XmlDocMarkdown.Core
 							context: parentContext);
 
 						var typeKind = GetTypeKind(visibleTypeRecord.TypeInfo);
-						if (typeKind == TypeKind.Class || typeKind == TypeKind.Struct || typeKind == TypeKind.Interface)
+						if (typeKind is TypeKind.Record or TypeKind.Class or TypeKind.Struct or TypeKind.Interface)
 						{
 							var memberGroups = visibleTypeRecord.TypeInfo
 								.DeclaredMembers
@@ -424,7 +424,7 @@ namespace XmlDocMarkdown.Core
 							writer.WriteLine($"| {enumValue.Name} | {SurroundCode(valueText)} | {description} |");
 						}
 					}
-					else if (typeKind == TypeKind.Class || typeKind == TypeKind.Struct || typeKind == TypeKind.Interface)
+					else if (typeKind is TypeKind.Record or TypeKind.Class or TypeKind.Struct or TypeKind.Interface)
 					{
 						var innerMemberVisibilityGroups = typeInfo!
 							.DeclaredMembers
@@ -716,7 +716,9 @@ namespace XmlDocMarkdown.Core
 			var plural = typeInfos.Count != 1;
 
 			var typeKinds = typeInfos.Select(GetTypeKind).ToList();
-			if (typeKinds.All(x => x == TypeKind.Class))
+			if (typeKinds.All(x => x == TypeKind.Record))
+				return plural ? "records" : "record";
+			else if (typeKinds.All(x => x == TypeKind.Class))
 				return plural ? "classes" : "class";
 			else if (typeKinds.All(x => x == TypeKind.Interface))
 				return plural ? "interfaces" : "interface";
@@ -844,6 +846,7 @@ namespace XmlDocMarkdown.Core
 
 				prefix = GetTypeKind(typeInfo) switch
 				{
+					TypeKind.Record=> "record ",
 					TypeKind.Class => "class ",
 					TypeKind.Interface => "interface ",
 					TypeKind.Struct => "struct ",
@@ -1100,6 +1103,9 @@ namespace XmlDocMarkdown.Core
 
 			switch (typeKind)
 			{
+				case TypeKind.Record:
+					yield return "record ";
+					break;
 				case TypeKind.Class:
 					yield return "class ";
 					break;
@@ -1161,7 +1167,7 @@ namespace XmlDocMarkdown.Core
 			if (genericParameters.Length != 0)
 				yield return RenderGenericParameters(genericParameters);
 
-			if (typeKind == TypeKind.Class || typeKind == TypeKind.Struct || typeKind == TypeKind.Interface)
+			if (typeKind is TypeKind.Record or TypeKind.Class or TypeKind.Struct or TypeKind.Interface)
 			{
 				var isFirstBase = true;
 				if (typeKind == TypeKind.Class && typeInfo!.BaseType != typeof(object))
@@ -1733,6 +1739,8 @@ namespace XmlDocMarkdown.Core
 			return type != null && type.IsEnum && type.GetCustomAttributes<FlagsAttribute>().Any();
 		}
 
+		public static bool IsRecord(Type type) => type.GetMethod("<Clone>$") != null;
+
 		private static XmlDocVisibilityLevel GetVisibility(MemberInfo memberInfo) => GetVisibility(memberInfo, XmlDocVisibilityLevel.Protected);
 
 		private static XmlDocVisibilityLevel GetVisibility(MemberInfo memberInfo, XmlDocVisibilityLevel protectedInternal)
@@ -1844,12 +1852,15 @@ namespace XmlDocMarkdown.Core
 			Struct,
 			Enum,
 			Delegate,
+			Record,
 		}
 
 		private static TypeKind GetTypeKind(TypeInfo typeInfo)
 		{
 			if (typeof(Delegate).GetTypeInfo().IsAssignableFrom(typeInfo))
 				return TypeKind.Delegate;
+			if (IsRecord(typeInfo))
+				return TypeKind.Record;
 			else if (typeInfo.IsClass)
 				return TypeKind.Class;
 			else if (typeInfo.IsInterface)
