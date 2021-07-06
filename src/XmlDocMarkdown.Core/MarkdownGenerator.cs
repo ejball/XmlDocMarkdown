@@ -1741,6 +1741,25 @@ namespace XmlDocMarkdown.Core
 
 		public static bool IsRecord(Type type) => type.GetMethod("<Clone>$") != null;
 
+		private static readonly HashSet<string> s_recordBuiltInMethods = new()
+		{
+			"<Clone>$",
+			"Deconstruct",
+			"Equals",
+			"GetHashCode",
+			"op_Equality",
+			"op_Inequality",
+			"ToString",
+		};
+
+		public static bool IsBuiltInRecordMethod(MemberInfo memberInfo)
+		{
+			var declaringType = memberInfo.DeclaringType;
+			if (declaringType == null) return false;
+			if (!IsRecord(declaringType)) return false;
+			return s_recordBuiltInMethods.Contains(memberInfo.Name);
+		}
+
 		private static XmlDocVisibilityLevel GetVisibility(MemberInfo memberInfo) => GetVisibility(memberInfo, XmlDocVisibilityLevel.Protected);
 
 		private static XmlDocVisibilityLevel GetVisibility(MemberInfo memberInfo, XmlDocVisibilityLevel protectedInternal)
