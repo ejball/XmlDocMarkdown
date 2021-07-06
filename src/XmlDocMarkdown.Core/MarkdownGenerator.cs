@@ -693,22 +693,21 @@ namespace XmlDocMarkdown.Core
 
 			if (memberInfos.All(x => x is ConstructorInfo))
 				return plural ? "constructors" : "constructor";
-			else if (memberInfos.All(x => (x as PropertyInfo)?.GetIndexParameters().Length > 0))
+			if (memberInfos.All(x => (x as PropertyInfo)?.GetIndexParameters().Length > 0))
 				return plural ? "indexers" : "indexer";
-			else if (memberInfos.All(x => x is PropertyInfo))
+			if (memberInfos.All(x => x is PropertyInfo))
 				return plural ? "properties" : "property";
-			else if (memberInfos.All(x => (x as MethodInfo)?.Name.StartsWith("op_", StringComparison.Ordinal) == true))
+			if (memberInfos.All(x => (x as MethodInfo)?.Name.StartsWith("op_", StringComparison.Ordinal) == true))
 				return plural ? "operators" : "operator";
-			else if (memberInfos.All(x => x is MethodInfo))
+			if (memberInfos.All(x => x is MethodInfo))
 				return plural ? "methods" : "method";
-			else if (memberInfos.All(x => x is EventInfo))
+			if (memberInfos.All(x => x is EventInfo))
 				return plural ? "events" : "event";
-			else if (memberInfos.All(x => x is FieldInfo))
+			if (memberInfos.All(x => x is FieldInfo))
 				return plural ? "fields" : "field";
-			else if (memberInfos.All(x => x is TypeInfo))
+			if (memberInfos.All(x => x is TypeInfo))
 				return GetTypeGroupNoun(memberInfos.Cast<TypeInfo>().ToList());
-			else
-				return plural ? "members" : "member";
+			return plural ? "members" : "member";
 		}
 
 		private static string GetTypeGroupNoun(IReadOnlyList<TypeInfo> typeInfos)
@@ -718,18 +717,17 @@ namespace XmlDocMarkdown.Core
 			var typeKinds = typeInfos.Select(GetTypeKind).ToList();
 			if (typeKinds.All(x => x == TypeKind.Record))
 				return plural ? "records" : "record";
-			else if (typeKinds.All(x => x == TypeKind.Class))
+			if (typeKinds.All(x => x == TypeKind.Class))
 				return plural ? "classes" : "class";
-			else if (typeKinds.All(x => x == TypeKind.Interface))
+			if (typeKinds.All(x => x == TypeKind.Interface))
 				return plural ? "interfaces" : "interface";
-			else if (typeKinds.All(x => x == TypeKind.Struct))
+			if (typeKinds.All(x => x == TypeKind.Struct))
 				return plural ? "structures" : "structure";
-			else if (typeKinds.All(x => x == TypeKind.Enum))
+			if (typeKinds.All(x => x == TypeKind.Enum))
 				return plural ? "enumerations" : "enumeration";
-			else if (typeKinds.All(x => x == TypeKind.Delegate))
+			if (typeKinds.All(x => x == TypeKind.Delegate))
 				return plural ? "delegates" : "delegate";
-			else
-				return plural ? "types" : "type";
+			return plural ? "types" : "type";
 		}
 
 		private static string GetNamespaceName(TypeInfo typeInfo) => typeInfo.Namespace ?? "global";
@@ -966,10 +964,9 @@ namespace XmlDocMarkdown.Core
 
 			if (getVisibility == setVisibility)
 				return " { get; set; }";
-			else if (IsMorePrivateThan(getVisibility, setVisibility))
+			if (IsMorePrivateThan(getVisibility, setVisibility))
 				return $" {{ {GetAccessModifier(getMethod)} get; set; }}";
-			else
-				return $" {{ get; {GetAccessModifier(setMethod!)} set; }}";
+			return $" {{ get; {GetAccessModifier(setMethod!)} set; }}";
 		}
 
 		private string GetFullSignature(MemberInfo memberInfo, ICollection<MemberInfo> seeAlsoMembers)
@@ -1534,7 +1531,7 @@ namespace XmlDocMarkdown.Core
 		{
 			var renderedTupleTypes = new List<string>();
 
-			if (typeInfo.Namespace == "System" && typeInfo.Name.StartsWith("ValueTuple`", StringComparison.Ordinal) == true)
+			if (typeInfo.Namespace == "System" && typeInfo.Name.StartsWith("ValueTuple`", StringComparison.Ordinal))
 			{
 				var ourTupleNameIndex = tupleNameIndex;
 				tupleNameIndex += CountTupleItems(typeInfo);
@@ -1597,38 +1594,37 @@ namespace XmlDocMarkdown.Core
 		{
 			if (type == typeof(void))
 				return "void";
-			else if (type == typeof(bool))
+			if (type == typeof(bool))
 				return "bool";
-			else if (type == typeof(byte))
+			if (type == typeof(byte))
 				return "byte";
-			else if (type == typeof(sbyte))
+			if (type == typeof(sbyte))
 				return "sbyte";
-			else if (type == typeof(char))
+			if (type == typeof(char))
 				return "char";
-			else if (type == typeof(decimal))
+			if (type == typeof(decimal))
 				return "decimal";
-			else if (type == typeof(double))
+			if (type == typeof(double))
 				return "double";
-			else if (type == typeof(float))
+			if (type == typeof(float))
 				return "float";
-			else if (type == typeof(int))
+			if (type == typeof(int))
 				return "int";
-			else if (type == typeof(uint))
+			if (type == typeof(uint))
 				return "uint";
-			else if (type == typeof(long))
+			if (type == typeof(long))
 				return "long";
-			else if (type == typeof(ulong))
+			if (type == typeof(ulong))
 				return "ulong";
-			else if (type == typeof(object))
+			if (type == typeof(object))
 				return "object";
-			else if (type == typeof(short))
+			if (type == typeof(short))
 				return "short";
-			else if (type == typeof(ushort))
+			if (type == typeof(ushort))
 				return "ushort";
-			else if (type == typeof(string))
+			if (type == typeof(string))
 				return "string";
-			else
-				return null;
+			return null;
 		}
 
 		private static bool IsStatic(MemberInfo memberInfo)
@@ -1794,28 +1790,26 @@ namespace XmlDocMarkdown.Core
 		{
 			if (typeInfo.IsPublic || typeInfo.IsNestedPublic)
 				return XmlDocVisibilityLevel.Public;
-			else if (typeInfo.IsNestedFamORAssem)
+			if (typeInfo.IsNestedFamORAssem)
 				return protectedInternal;
-			else if (typeInfo.IsNestedFamily)
+			if (typeInfo.IsNestedFamily)
 				return XmlDocVisibilityLevel.Protected;
-			else if (typeInfo.IsNestedAssembly || typeInfo.IsNestedFamANDAssem)
+			if (typeInfo.IsNestedAssembly || typeInfo.IsNestedFamANDAssem)
 				return XmlDocVisibilityLevel.Internal;
-			else
-				return XmlDocVisibilityLevel.Private;
+			return XmlDocVisibilityLevel.Private;
 		}
 
 		private static XmlDocVisibilityLevel GetMethodVisibility(MethodBase methodBase, XmlDocVisibilityLevel protectedInternal = XmlDocVisibilityLevel.Protected)
 		{
 			if (methodBase.IsPublic)
 				return XmlDocVisibilityLevel.Public;
-			else if (methodBase.IsFamilyOrAssembly)
+			if (methodBase.IsFamilyOrAssembly)
 				return protectedInternal;
-			else if (methodBase.IsFamily)
+			if (methodBase.IsFamily)
 				return XmlDocVisibilityLevel.Protected;
-			else if (methodBase.IsAssembly || methodBase.IsFamilyAndAssembly)
+			if (methodBase.IsAssembly || methodBase.IsFamilyAndAssembly)
 				return XmlDocVisibilityLevel.Internal;
-			else
-				return XmlDocVisibilityLevel.Private;
+			return XmlDocVisibilityLevel.Private;
 		}
 
 		private static XmlDocVisibilityLevel GetPropertyVisibility(PropertyInfo propertyInfo, XmlDocVisibilityLevel protectedInternal = XmlDocVisibilityLevel.Protected)
@@ -1839,14 +1833,13 @@ namespace XmlDocMarkdown.Core
 		{
 			if (fieldInfo.IsPublic)
 				return XmlDocVisibilityLevel.Public;
-			else if (fieldInfo.IsFamilyOrAssembly)
+			if (fieldInfo.IsFamilyOrAssembly)
 				return protectedInternal;
-			else if (fieldInfo.IsFamily)
+			if (fieldInfo.IsFamily)
 				return XmlDocVisibilityLevel.Protected;
-			else if (fieldInfo.IsAssembly || fieldInfo.IsFamilyAndAssembly)
+			if (fieldInfo.IsAssembly || fieldInfo.IsFamilyAndAssembly)
 				return XmlDocVisibilityLevel.Internal;
-			else
-				return XmlDocVisibilityLevel.Private;
+			return XmlDocVisibilityLevel.Private;
 		}
 
 		private static string GetAccessModifier(MemberInfo memberInfo)
@@ -1880,16 +1873,15 @@ namespace XmlDocMarkdown.Core
 				return TypeKind.Delegate;
 			if (IsRecord(typeInfo))
 				return TypeKind.Record;
-			else if (typeInfo.IsClass)
+			if (typeInfo.IsClass)
 				return TypeKind.Class;
-			else if (typeInfo.IsInterface)
+			if (typeInfo.IsInterface)
 				return TypeKind.Interface;
-			else if (typeInfo.IsEnum)
+			if (typeInfo.IsEnum)
 				return TypeKind.Enum;
-			else if (typeInfo.IsValueType)
+			if (typeInfo.IsValueType)
 				return TypeKind.Struct;
-			else
-				return TypeKind.Unknown;
+			return TypeKind.Unknown;
 		}
 
 		private enum MemberOrder
@@ -1928,10 +1920,9 @@ namespace XmlDocMarkdown.Core
 			var method = propertyInfo.GetMethod ?? propertyInfo.SetMethod;
 			if (!method.IsStatic)
 				return MemberOrder.InstanceProperty;
-			else if (propertyInfo.PropertyType == propertyInfo.DeclaringType)
+			if (propertyInfo.PropertyType == propertyInfo.DeclaringType)
 				return MemberOrder.LifetimeProperty;
-			else
-				return MemberOrder.StaticProperty;
+			return MemberOrder.StaticProperty;
 		}
 
 		private static MemberOrder GetEventOrder(EventInfo eventInfo)
@@ -1939,30 +1930,27 @@ namespace XmlDocMarkdown.Core
 			var method = eventInfo.AddMethod ?? eventInfo.RemoveMethod;
 			if (!method.IsStatic)
 				return MemberOrder.InstanceEvent;
-			else
-				return MemberOrder.StaticEvent;
+			return MemberOrder.StaticEvent;
 		}
 
 		private static MemberOrder GetMethodOrder(MethodInfo methodInfo)
 		{
 			if (methodInfo.Name.StartsWith("op_", StringComparison.Ordinal))
 				return MemberOrder.Operator;
-			else if (!methodInfo.IsStatic)
+			if (!methodInfo.IsStatic)
 				return MemberOrder.InstanceMethod;
-			else if (methodInfo.ReturnType == methodInfo.DeclaringType)
+			if (methodInfo.ReturnType == methodInfo.DeclaringType)
 				return MemberOrder.LifetimeMethod;
-			else
-				return MemberOrder.StaticMethod;
+			return MemberOrder.StaticMethod;
 		}
 
 		private static MemberOrder GetFieldOrder(FieldInfo fieldInfo)
 		{
 			if (!fieldInfo.IsStatic)
 				return MemberOrder.InstanceField;
-			else if (fieldInfo.FieldType == fieldInfo.DeclaringType)
+			if (fieldInfo.FieldType == fieldInfo.DeclaringType)
 				return MemberOrder.LifetimeField;
-			else
-				return MemberOrder.StaticField;
+			return MemberOrder.StaticField;
 		}
 
 		private static IEnumerable<T> OrderMembers<T>(IEnumerable<T> items, Func<T, MemberInfo> getMemberInfo)
