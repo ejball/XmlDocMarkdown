@@ -25,6 +25,7 @@
 
   <PropertyGroup Condition=" '$(BuildNumber)' != '' ">
     <FileVersion>$(VersionPrefix).$(BuildNumber)</FileVersion>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>
