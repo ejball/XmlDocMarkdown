@@ -4,6 +4,10 @@ on:
     paths-ignore:
     - '*.md'
     - 'docs/**'
+    branches:
+    - '**'
+    tags-ignore:
+    - '**'
   pull_request:
     paths-ignore:
     - '*.md'
@@ -26,7 +30,7 @@ jobs:
     - name: Set up .NET 5
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.x
     - name: Restore
       run: .\build.ps1 restore
     - name: Build
