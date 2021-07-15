@@ -6,9 +6,16 @@ using static Faithlife.Build.DotNetRunner;
 
 return BuildRunner.Execute(args, build =>
 {
+	var gitLogin = new GitLoginInfo("ejball", Environment.GetEnvironmentVariable("BUILD_BOT_PASSWORD") ?? "");
+
 	var dotNetBuildSettings = new DotNetBuildSettings
 	{
 		NuGetApiKey = Environment.GetEnvironmentVariable("NUGET_API_KEY"),
+		PackageSettings = new DotNetPackageSettings
+		{
+			GitLogin = gitLogin,
+			PushTagOnPublish = x => $"v{x.Version}",
+		},
 	};
 
 	build.AddDotNetTargets(dotNetBuildSettings);

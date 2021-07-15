@@ -10,6 +10,7 @@ Thumbs.db
 *.ncrunchsolution
 nCrunchTemp*
 _ReSharper*
+.DS_Store
 launchSettings.json
 packages/FSharp.Cor*
 packages/System.ValueTupl*
