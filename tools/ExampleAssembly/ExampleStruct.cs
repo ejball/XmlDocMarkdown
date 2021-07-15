@@ -250,7 +250,7 @@ namespace ExampleAssembly
 		/// <summary>
 		/// Check for equality.
 		/// </summary>
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			throw new NotImplementedException();
 		}

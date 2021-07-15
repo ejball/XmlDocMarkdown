@@ -17,6 +17,7 @@
 | delegate [ExampleGenericDelegate&lt;T1,T2,TResult&gt;](./ExampleAssembly/ExampleGenericDelegate-3.md) | A generic delegate. |
 | enum [ExampleLongEnum](./ExampleAssembly/ExampleLongEnum.md) | A 64-bit enumeration. |
 | class [ExampleLongSummary](./ExampleAssembly/ExampleLongSummary.md) | This class has an exceptionally long summary. Even the first paragraph is really long, which is important to test because some documenters put a lot of information in the summary, perhaps not expecting that someone will ever actually generate documentation. |
+| record [ExampleRecord&lt;T&gt;](./ExampleAssembly/ExampleRecord-1.md) | A C# 9 generic record&lt;T&gt;. |
 | delegate [ExampleRefOutDelegate](./ExampleAssembly/ExampleRefOutDelegate.md) | A delegate. |
 | class [ExampleSealedClass](./ExampleAssembly/ExampleSealedClass.md) | A sealed class. |
 | static class [ExampleStaticClass](./ExampleAssembly/ExampleStaticClass.md) | A static class. |
