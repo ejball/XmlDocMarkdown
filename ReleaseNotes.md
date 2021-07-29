@@ -1,6 +1,6 @@
 # Release Notes
 
-## 2.6.0-beta.1
+## 2.6.0
 
 * Use `./` with relative links (for [GitLab wikis](https://community.opengroup.org/examples/wiki/-/wikis/Basics/Linking#internal-wiki-pages)).
 
