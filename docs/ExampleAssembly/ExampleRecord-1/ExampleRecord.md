@@ -1,19 +1,6 @@
-# ExampleRecord&lt;T&gt; constructor (1 of 2)
+# ExampleRecord&lt;T&gt; constructor
 
-```csharp
-protected ExampleRecord(ExampleRecord original)
-```
-
-## See Also
-
-* record [ExampleRecord&lt;T&gt;](../ExampleRecord-1.md)
-* namespace [ExampleAssembly](../../ExampleAssembly.md)
-
----
-
-# ExampleRecord&lt;T&gt; constructor (2 of 2)
-
-A C# 9 generic record&lt;T&gt;.
+A C# 9 generic record.
 
 ```csharp
 public ExampleRecord(string Name, int Age, HashSet<DayOfWeek> Days, T GenericType, 
@@ -22,12 +9,12 @@ public ExampleRecord(string Name, int Age, HashSet<DayOfWeek> Days, T GenericTyp
 
 | parameter | description |
 | --- | --- |
-| T | Some generic type |
-| Name | A readonly string |
-| Age | A readonly int |
-| Days | A Hashset&lt;DayOfWeek&gt; |
+| T | Some generic type. |
+| Name | A string. |
+| Age | An integer. |
+| Days | A hash set. |
 | GenericType | A generic type parameter. |
-| GenericLambda | An Action&lt;T&gt; lambda parameter. |
+| GenericLambda | An lambda parameter. |
 
 ## See Also
 
