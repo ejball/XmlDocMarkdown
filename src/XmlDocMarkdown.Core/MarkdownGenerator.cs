@@ -844,7 +844,7 @@ namespace XmlDocMarkdown.Core
 
 				prefix = GetTypeKind(typeInfo) switch
 				{
-					TypeKind.Record=> "record ",
+					TypeKind.Record => "record ",
 					TypeKind.Class => "class ",
 					TypeKind.Interface => "interface ",
 					TypeKind.Struct => "struct ",
