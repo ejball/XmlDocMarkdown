@@ -1193,7 +1193,8 @@ namespace XmlDocMarkdown.Core
 				foreach (var baseInterface in baseInterfaces)
 				{
 					if (!(typeKind == TypeKind.Class && baseTypeInterfaces!.Contains(baseInterface)) &&
-						!baseInterfaces.Any(x => XmlDocUtility.GetXmlDocRef(x) != XmlDocUtility.GetXmlDocRef(baseInterface) && IsLessDerived(baseInterface, x)))
+						!baseInterfaces.Any(x => XmlDocUtility.GetXmlDocRef(x) != XmlDocUtility.GetXmlDocRef(baseInterface) && IsLessDerived(baseInterface, x)) &&
+						!(typeKind == TypeKind.Record && baseInterface.Name == "IEquatable`1" && baseInterface.GenericTypeArguments[0] == typeInfo.AsType()))
 					{
 						yield return isFirstBase ? " : " : ", ";
 						yield return "";
