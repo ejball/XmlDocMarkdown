@@ -638,6 +638,9 @@ namespace XmlDocMarkdown.Core
 
 		private bool IsVisible(MemberInfo memberInfo)
 		{
+			if (IsBuiltInRecordMember(memberInfo))
+				return false;
+
 			var visibility = GetVisibility(memberInfo);
 			if (IsMorePrivateThan(visibility, Visibility))
 				return false;
@@ -1740,25 +1743,20 @@ namespace XmlDocMarkdown.Core
 			return type != null && type.IsEnum && type.GetCustomAttributes<FlagsAttribute>().Any();
 		}
 
-		public static bool IsRecord(Type type) => type.GetMethod("<Clone>$") != null;
+		private static bool IsRecord(Type type) => type.GetMethod("<Clone>$") != null;
 
-		private static readonly HashSet<string> s_recordBuiltInMethods = new()
+		private static bool IsBuiltInRecordMember(MemberInfo memberInfo)
 		{
-			"<Clone>$",
-			"Deconstruct",
-			"Equals",
-			"GetHashCode",
-			"op_Equality",
-			"op_Inequality",
-			"ToString",
-		};
+			if (memberInfo.DeclaringType is not Type declaringType || !IsRecord(declaringType))
+				return false;
 
-		public static bool IsBuiltInRecordMethod(MemberInfo memberInfo)
-		{
-			var declaringType = memberInfo.DeclaringType;
-			if (declaringType == null) return false;
-			if (!IsRecord(declaringType)) return false;
-			return s_recordBuiltInMethods.Contains(memberInfo.Name);
+			return memberInfo switch
+			{
+				MethodInfo method => method.Name is "<Clone>$" or "Deconstruct" or "Equals" or "GetHashCode" or "op_Equality" or "op_Inequality" or "PrintMembers" or "ToString",
+				PropertyInfo property => property.Name is "EqualityContract",
+				ConstructorInfo constructor => !constructor.IsPublic && constructor.GetParameters().Select(x => x.ParameterType).SequenceEqual(new[] { declaringType }),
+				_ => false,
+			};
 		}
 
 		private static XmlDocVisibilityLevel GetVisibility(MemberInfo memberInfo) => GetVisibility(memberInfo, XmlDocVisibilityLevel.Protected);
