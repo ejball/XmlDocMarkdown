@@ -387,6 +387,11 @@ namespace XmlDocMarkdown.Core
 					{
 						var typeParameters = xmlDocMember.TypeParameters;
 						var parameters = xmlDocMember.Parameters;
+
+						// record parameters are documented by the constructor, so don't repeat them here
+						if (typeKind == TypeKind.Record)
+							parameters = new Collection<XmlDocParameter>();
+
 						if (typeParameters.Count + parameters.Count > 0)
 						{
 							writer.WriteLine();
