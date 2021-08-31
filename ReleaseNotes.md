@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.7.0
+
+* Support C# 9 records. (Thanks [bigtlb](https://github.com/bigtlb)!)
+
 ## 2.6.0
 
 * Use `./` with relative links (for [GitLab wikis](https://community.opengroup.org/examples/wiki/-/wikis/Basics/Linking#internal-wiki-pages)).
