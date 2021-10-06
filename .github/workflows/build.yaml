@@ -38,12 +38,8 @@ jobs:
       run: .\build.ps1 build --skip restore
     - name: Test
       run: .\build.ps1 test --skip build
-  publish:
-    if: github.repository_owner == 'Faithlife' && github.ref == 'refs/heads/master'
-    needs: build
-    runs-on: windows-latest
-    steps:
     - name: Publish
+      if: runner.os == 'Windows' && github.repository_owner == 'Faithlife' && github.ref == 'refs/heads/master'
       env:
         BUILD_BOT_PASSWORD: ${{ secrets.BUILD_BOT_PASSWORD }}
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
