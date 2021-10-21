@@ -6,7 +6,7 @@ on:
     - '*.md'
     - 'docs/**'
     branches:
-    - '**'
+    - 'master'
     tags-ignore:
     - '**'
   pull_request:
