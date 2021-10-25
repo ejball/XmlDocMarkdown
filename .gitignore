@@ -2,6 +2,7 @@ bin/
 obj/
 release/
 .vs/
+.idea/
 Thumbs.db
 *.cache
 *.user
