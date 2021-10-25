@@ -314,13 +314,7 @@ namespace XmlDocMarkdown.Core
 		private NamedText WriteMemberPage(string path, string parent, string title, MemberInfo memberInfo, MarkdownContext context) =>
 			WriteMemberPage(path, parent, title, new[] { memberInfo }, context);
 
-		private string GetFileExtension()
-		{
-			if (PermalinkPretty)
-				return string.Empty;
-
-			return ".md";
-		}
+		private string GetFileExtension() => PermalinkPretty ? "" : ".md";
 
 		private string GetPermalink(string path)
 		{
