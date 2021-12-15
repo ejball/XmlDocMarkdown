@@ -13,6 +13,9 @@ resharper_comment_typo_highlighting = none
 resharper_identifier_typo_highlighting = none
 resharper_string_literal_typo_highlighting = none
 
+[dotnet-tools.json]
+insert_final_newline = false
+
 [*.cs]
 indent_size = 4
 indent_style = tab
