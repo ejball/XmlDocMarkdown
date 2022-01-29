@@ -59,7 +59,7 @@ namespace XmlDocMarkdown.Core
 			if (settings.NewLine != null)
 				generator.NewLine = settings.NewLine;
 
-			if (string.Compare(settings.PermalinkStyle, "pretty", StringComparison.OrdinalIgnoreCase) == 0)
+			if (string.Equals(settings.PermalinkStyle, "pretty", StringComparison.OrdinalIgnoreCase))
 				generator.PermalinkPretty = true;
 
 			XmlDocAssembly xmlDocAssembly;
