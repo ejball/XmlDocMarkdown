@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.8.0
+
+* Support .NET 6. Drop out-of-support .NET Core 2.1.
+
 ## 2.7.0
 
 * Support C# 9 records. (Thanks [bigtlb](https://github.com/bigtlb)!)
