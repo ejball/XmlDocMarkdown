@@ -1,5 +1,3 @@
-using Faithlife.Build;
-
 return BuildRunner.Execute(args, build =>
 {
 	var gitLogin = new GitLoginInfo("ejball", Environment.GetEnvironmentVariable("BUILD_BOT_PASSWORD") ?? "");
