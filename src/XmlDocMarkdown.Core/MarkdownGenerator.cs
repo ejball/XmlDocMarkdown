@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -14,6 +10,7 @@ namespace XmlDocMarkdown.Core
 {
 	internal sealed class MarkdownGenerator
 	{
+		private readonly IPathBuilderFactory pathBuilderFactory;
 		public string? NewLine { get; set; }
 
 		public string? SourceCodePath { get; set; }
@@ -31,6 +28,11 @@ namespace XmlDocMarkdown.Core
 		public XmlDocVisibilityLevel Visibility { get; set; }
 
 		public IReadOnlyList<ExternalDocumentation>? ExternalDocs { get; set; }
+
+		public MarkdownGenerator(IPathBuilderFactory pathBuilderFactory)
+		{
+			this.pathBuilderFactory = pathBuilderFactory;
+		}
 
 		public IReadOnlyList<NamedText> GenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly) =>
 			DoGenerateOutput(assembly, xmlDocAssembly).ToList();
@@ -116,11 +118,16 @@ namespace XmlDocMarkdown.Core
 						writer.WriteLine("| --- | --- |");
 						foreach (var typeInfo in typeGroup)
 						{
-							var relative = GetPermalink(typeInfo.Path);
-							var safeRelative = GetSafeName(relative);
+							var builder = pathBuilderFactory
+								.Create()
+								.WithNamespace(group.Namespace)
+								.WithType(typeInfo.TypeInfo);
+
 							if (PermalinkPretty)
-								safeRelative += "Type";
-							var rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}");
+								builder.WithPermalinkPretty();
+
+							var rel = builder.Build();
+
 							var typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
 							var summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
 							writer.WriteLine($"| {typeText} | {summaryText} |");
@@ -159,11 +166,16 @@ namespace XmlDocMarkdown.Core
 							writer.WriteLine("| --- | --- |");
 							foreach (var typeInfo in typeGroup)
 							{
-								var relative = GetPermalink(typeInfo.Path);
-								var safeRelative = GetSafeName(relative);
+								var builder =
+									pathBuilderFactory
+										.Create()
+										.WithNamespace(group.Namespace)
+										.WithType(typeInfo.TypeInfo);
+
 								if (PermalinkPretty)
-									safeRelative += "Type";
-								var rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}");
+									builder.WithPermalinkPretty();
+
+								var rel = builder.Build();
 								var typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
 								var summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
 								writer.WriteLine($"| {typeText} | {summaryText} |");
@@ -179,11 +191,16 @@ namespace XmlDocMarkdown.Core
 				{
 					if (visibleTypeRecord.Namespace == group.Namespace)
 					{
-						var relative = GetPermalink(visibleTypeRecord.Path);
-						var safeRelative = GetSafeName(relative);
+						var builder = pathBuilderFactory
+							.Create()
+							.WithNamespace(visibleTypeRecord.Namespace)
+							.WithType(visibleTypeRecord.TypeInfo);
+
 						if (PermalinkPretty)
-							safeRelative += "Type.md";
-						var typePage = $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{safeRelative}";
+							builder.WithPermalinkPretty();
+
+						var typePage = builder.Build();
+
 						yield return WriteMemberPage(
 							path: typePage,
 							title: GetFullMemberName(visibleTypeRecord.TypeInfo),
@@ -207,8 +224,15 @@ namespace XmlDocMarkdown.Core
 
 							foreach (var memberGroup in memberGroups)
 							{
+								var path = pathBuilderFactory
+									.Create()
+									.WithNamespace(visibleTypeRecord.Namespace)
+									.WithType(visibleTypeRecord.TypeInfo)
+									.WithMemberGroup(memberGroup.MemberUriName)
+									.Build();
+
 								yield return WriteMemberPage(
-									path: $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{GetTypeUriName(visibleTypeRecord.TypeInfo)}/{memberGroup.MemberUriName}.md",
+									path: path,
 									parent: typePage,
 									title: memberGroup.MemberUriName,
 									memberGroup: memberGroup.Members,
@@ -474,6 +498,7 @@ namespace XmlDocMarkdown.Core
 								{
 									var innerMembers = innerMemberGroup.Members;
 									var firstInnerMember = innerMembers[0];
+
 									var memberPath = firstInnerMember is TypeInfo ?
 										$"{GetMemberUriName(firstInnerMember)}{extension}" :
 										$"{GetTypeUriName(typeInfo)}/{GetMemberUriName(firstInnerMember)}{extension}";

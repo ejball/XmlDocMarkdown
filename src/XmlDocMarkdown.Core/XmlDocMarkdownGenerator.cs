@@ -18,13 +18,16 @@ namespace XmlDocMarkdown.Core
 		/// <param name="inputPath">The input assembly.</param>
 		/// <param name="outputPath">The output directory.</param>
 		/// <param name="settings">The settings.</param>
+		/// <param name="pathBuilderFactory">.</param>
 		/// <returns>The names of files that were added, changed, or removed.</returns>
-		public static XmlDocMarkdownResult Generate(string inputPath, string outputPath, XmlDocMarkdownSettings? settings)
+		public static XmlDocMarkdownResult Generate(
+			string inputPath, string outputPath, XmlDocMarkdownSettings? settings,
+			IPathBuilderFactory? pathBuilderFactory = null)
 		{
 			if (inputPath == null)
 				throw new ArgumentNullException(nameof(inputPath));
 
-			return Generate(new XmlDocInput { AssemblyPath = inputPath }, outputPath, settings);
+			return Generate(new XmlDocInput { AssemblyPath = inputPath }, outputPath, settings, pathBuilderFactory);
 		}
 
 		/// <summary>
@@ -33,8 +36,11 @@ namespace XmlDocMarkdown.Core
 		/// <param name="input">The input.</param>
 		/// <param name="outputPath">The output directory.</param>
 		/// <param name="settings">The settings.</param>
+		/// <param name="pathBuilderFactory">.</param>
 		/// <returns>The names of files that were added, changed, or removed.</returns>
-		public static XmlDocMarkdownResult Generate(XmlDocInput input, string outputPath, XmlDocMarkdownSettings? settings)
+		public static XmlDocMarkdownResult Generate(
+			XmlDocInput input, string outputPath, XmlDocMarkdownSettings? settings,
+			IPathBuilderFactory? pathBuilderFactory = null)
 		{
 			if (input == null)
 				throw new ArgumentNullException(nameof(input));
@@ -45,7 +51,7 @@ namespace XmlDocMarkdown.Core
 
 			settings ??= new XmlDocMarkdownSettings();
 
-			var generator = new MarkdownGenerator
+			var generator = new MarkdownGenerator(pathBuilderFactory ?? new DefaultPathBuilderFactory())
 			{
 				SourceCodePath = settings.SourceCodePath,
 				RootNamespace = settings.RootNamespace,

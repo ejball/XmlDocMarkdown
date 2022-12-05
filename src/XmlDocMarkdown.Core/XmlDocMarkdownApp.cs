@@ -14,8 +14,9 @@ namespace XmlDocMarkdown.Core
 		/// Run the command-line application.
 		/// </summary>
 		/// <param name="args">The command-line arguments.</param>
+		/// <param name="pathBuilderFactory">.</param>
 		/// <returns>The exit code.</returns>
-		public static int Run(IReadOnlyList<string> args)
+		public static int Run(IReadOnlyList<string> args, IPathBuilderFactory? pathBuilderFactory = null)
 		{
 			try
 			{
@@ -67,7 +68,7 @@ namespace XmlDocMarkdown.Core
 
 				argsReader.VerifyComplete();
 
-				var result = XmlDocMarkdownGenerator.Generate(input, outputPath, settings);
+				var result = XmlDocMarkdownGenerator.Generate(input, outputPath, settings, pathBuilderFactory);
 
 				foreach (var message in result.Messages)
 					Console.WriteLine(message);
