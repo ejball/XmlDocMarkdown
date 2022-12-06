@@ -18,7 +18,7 @@ namespace XmlDocMarkdown.Core
 		/// <param name="inputPath">The input assembly.</param>
 		/// <param name="outputPath">The output directory.</param>
 		/// <param name="settings">The settings.</param>
-		/// <param name="pathBuilderFactory">.</param>
+		/// <param name="pathBuilderFactory">The factory to create a Path Builder.</param>
 		/// <returns>The names of files that were added, changed, or removed.</returns>
 		public static XmlDocMarkdownResult Generate(
 			string inputPath, string outputPath, XmlDocMarkdownSettings? settings,
@@ -36,7 +36,7 @@ namespace XmlDocMarkdown.Core
 		/// <param name="input">The input.</param>
 		/// <param name="outputPath">The output directory.</param>
 		/// <param name="settings">The settings.</param>
-		/// <param name="pathBuilderFactory">.</param>
+		/// <param name="pathBuilderFactory">The factory to create a Path Builder.</param>
 		/// <returns>The names of files that were added, changed, or removed.</returns>
 		public static XmlDocMarkdownResult Generate(
 			XmlDocInput input, string outputPath, XmlDocMarkdownSettings? settings,

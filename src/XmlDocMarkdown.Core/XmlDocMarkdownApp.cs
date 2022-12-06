@@ -14,7 +14,7 @@ namespace XmlDocMarkdown.Core
 		/// Run the command-line application.
 		/// </summary>
 		/// <param name="args">The command-line arguments.</param>
-		/// <param name="pathBuilderFactory">.</param>
+		/// <param name="pathBuilderFactory">The factory to create a Path Builder.</param>
 		/// <returns>The exit code.</returns>
 		public static int Run(IReadOnlyList<string> args, IPathBuilderFactory? pathBuilderFactory = null)
 		{
