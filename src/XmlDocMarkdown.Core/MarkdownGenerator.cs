@@ -29,6 +29,8 @@ namespace XmlDocMarkdown.Core
 
 		public IReadOnlyList<ExternalDocumentation>? ExternalDocs { get; set; }
 
+		public bool UseTypeFolders { get; set; }
+
 		public MarkdownGenerator(IPathBuilderFactory pathBuilderFactory)
 		{
 			this.pathBuilderFactory = pathBuilderFactory;
@@ -123,6 +125,9 @@ namespace XmlDocMarkdown.Core
 								.WithNamespace(group.Namespace)
 								.WithType(typeInfo.TypeInfo);
 
+							if (UseTypeFolders)
+								builder.WithTypeFolders();
+
 							if (PermalinkPretty)
 								builder.WithPermalinkPretty();
 
@@ -172,6 +177,9 @@ namespace XmlDocMarkdown.Core
 										.WithNamespace(group.Namespace)
 										.WithType(typeInfo.TypeInfo);
 
+								if (UseTypeFolders)
+									builder.WithTypeFolders();
+
 								if (PermalinkPretty)
 									builder.WithPermalinkPretty();
 
@@ -195,6 +203,9 @@ namespace XmlDocMarkdown.Core
 							.Create()
 							.WithNamespace(visibleTypeRecord.Namespace)
 							.WithType(visibleTypeRecord.TypeInfo);
+
+						if (UseTypeFolders)
+							builder.WithTypeFolders();
 
 						if (PermalinkPretty)
 							builder.WithPermalinkPretty();
@@ -228,7 +239,7 @@ namespace XmlDocMarkdown.Core
 									.Create()
 									.WithNamespace(visibleTypeRecord.Namespace)
 									.WithType(visibleTypeRecord.TypeInfo)
-									.WithMemberGroup(memberGroup.MemberUriName)
+									.WithMemberName(memberGroup.MemberUriName)
 									.Build();
 
 								yield return WriteMemberPage(
@@ -499,7 +510,7 @@ namespace XmlDocMarkdown.Core
 									var innerMembers = innerMemberGroup.Members;
 									var firstInnerMember = innerMembers[0];
 
-									var memberPath = firstInnerMember is TypeInfo ?
+									var memberPath = firstInnerMember is TypeInfo || UseTypeFolders ?
 										$"{GetMemberUriName(firstInnerMember)}{extension}" :
 										$"{GetTypeUriName(typeInfo)}/{GetMemberUriName(firstInnerMember)}{extension}";
 									var memberText = GetShortSignatureMarkdown(innerMemberGroup.ShortSignature, memberPath);
@@ -605,7 +616,7 @@ namespace XmlDocMarkdown.Core
 					}
 					else
 					{
-						writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo!)}](../{(typeInfo != null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo!).Assembly)}{extension})");
+						writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo!)}](../{(typeInfo != null ? (UseTypeFolders ? "../" : "") : "../")}{GetAssemblyUriName((declaringType ?? typeInfo!).Assembly)}{extension})");
 					}
 
 					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))
@@ -2092,21 +2103,21 @@ namespace XmlDocMarkdown.Core
 				if (context.MemberInfo != null)
 				{
 					if (typeInfo != null)
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{(UseTypeFolders ? "/" + GetSafeTypeUriName(typeInfo) : "")}{extension}";
 					else
 						path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 				}
 				else if (context.TypeInfo != null)
 				{
 					if (typeInfo != null)
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{(UseTypeFolders ? "/" + GetSafeTypeUriName(typeInfo) : "")}{extension}";
 					else
 						path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 				}
 				else
 				{
 					if (typeInfo != null)
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{(UseTypeFolders ? "/" + GetSafeTypeUriName(typeInfo) : "")}{extension}";
 					else
 						path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 				}

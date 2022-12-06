@@ -8,6 +8,7 @@ internal class JekyllPathBuilder : IPathBuilder
 	private string? typeName;
 	private string? memberName;
 	private bool hasPermalinkPretty;
+	private bool useTypeFolders;
 
 	public IPathBuilder WithNamespace(string @namespace)
 	{
@@ -21,7 +22,7 @@ internal class JekyllPathBuilder : IPathBuilder
 		return this;
 	}
 
-	public IPathBuilder WithMemberGroup(string name)
+	public IPathBuilder WithMemberName(string name)
 	{
 		memberName = name;
 		return this;
@@ -30,6 +31,12 @@ internal class JekyllPathBuilder : IPathBuilder
 	public IPathBuilder WithPermalinkPretty()
 	{
 		hasPermalinkPretty = true;
+		return this;
+	}
+
+	public IPathBuilder WithTypeFolders()
+	{
+		useTypeFolders = true;
 		return this;
 	}
 
@@ -43,6 +50,8 @@ internal class JekyllPathBuilder : IPathBuilder
 		var path = $"{GetNamespaceUriName(@namespace)}/{safeRelative}";
 		if (memberName is not null)
 			path += $"/{memberName}";
+		else if (useTypeFolders)
+			path += $"/{safeRelative}";
 		return $"{path}.md";
 	}
 

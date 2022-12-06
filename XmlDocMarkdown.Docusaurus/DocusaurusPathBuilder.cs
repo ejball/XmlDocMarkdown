@@ -9,6 +9,7 @@ internal class DocusaurusPathBuilder : IPathBuilder
 	private string? typeName;
 	private string? memberName;
 	private bool hasPermalinkPretty;
+	private bool useTypeFolders;
 
 	public IPathBuilder WithNamespace(string @namespace)
 	{
@@ -22,7 +23,7 @@ internal class DocusaurusPathBuilder : IPathBuilder
 		return this;
 	}
 
-	public IPathBuilder WithMemberGroup(string name)
+	public IPathBuilder WithMemberName(string name)
 	{
 		memberName = name;
 		return this;
@@ -31,6 +32,12 @@ internal class DocusaurusPathBuilder : IPathBuilder
 	public IPathBuilder WithPermalinkPretty()
 	{
 		hasPermalinkPretty = true;
+		return this;
+	}
+
+	public IPathBuilder WithTypeFolders()
+	{
+		useTypeFolders = true;
 		return this;
 	}
 
@@ -45,6 +52,8 @@ internal class DocusaurusPathBuilder : IPathBuilder
 		var path = $"{GetNamespaceUriName(@namespace)}/{safeRelative}";
 		if (memberName is not null)
 			path += $"/{memberName}";
+		else if (useTypeFolders)
+			path += $"/{safeRelative}";
 		return $"{path}.md".Replace("`", "-", StringComparison.OrdinalIgnoreCase);
 	}
 

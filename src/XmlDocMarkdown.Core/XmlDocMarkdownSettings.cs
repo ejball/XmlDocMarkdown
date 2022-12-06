@@ -90,5 +90,10 @@ namespace XmlDocMarkdown.Core
 		/// Configures external documentation.
 		/// </summary>
 		public IReadOnlyList<ExternalDocumentation>? ExternalDocs { get; set; }
+
+		/// <summary>
+		/// Specify if types should be on the same folder has it's members.
+		/// </summary>
+		public bool UseTypeFolders { get; set; }
 	}
 }

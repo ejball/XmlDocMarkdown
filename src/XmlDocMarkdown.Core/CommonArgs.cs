@@ -58,5 +58,7 @@ namespace XmlDocMarkdown.Core
 				_ => throw new ArgsReaderException($"Invalid new line '{value}'. (Should be 'auto', 'lf', or 'crlf'.)"),
 			};
 		}
+
+		public static bool ReadUseTypeFoldersFlag(this ArgsReader args) => args.ReadFlag("type-folders");
 	}
 }

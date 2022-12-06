@@ -61,6 +61,7 @@ namespace XmlDocMarkdown.Core
 				ExternalDocs = settings.ExternalDocs,
 				NamespacePages = settings.NamespacePages,
 				FrontMatter = settings.FrontMatter,
+				UseTypeFolders = settings.UseTypeFolders,
 			};
 			if (settings.NewLine != null)
 				generator.NewLine = settings.NewLine;

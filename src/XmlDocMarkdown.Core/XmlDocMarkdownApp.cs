@@ -45,6 +45,7 @@ namespace XmlDocMarkdown.Core
 					GenerateToc = argsReader.ReadTocFlag(),
 					TocPrefix = argsReader.ReadTocPrefix(),
 					NamespacePages = argsReader.ReadNamespacePagesFlag(),
+					UseTypeFolders = argsReader.ReadUseTypeFoldersFlag(),
 				};
 
 				var externalDocs = new List<ExternalDocumentation>();
@@ -144,6 +145,8 @@ namespace XmlDocMarkdown.Core
 			textWriter.WriteLine("      File containing table of contents in .yml format.");
 			textWriter.WriteLine("   --newline (auto|lf|crlf)");
 			textWriter.WriteLine("      The newline used in the output (default auto).");
+			textWriter.WriteLine("   --type-folders");
+			textWriter.WriteLine("      Type markdown will be inside the same folder has it's members.");
 		}
 	}
 }
