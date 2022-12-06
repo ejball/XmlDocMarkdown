@@ -1,14 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1</TargetFrameworks>
+    <Description>A .NET tool that generates Markdown from .NET XML documentation comments compatible with Docusaurus.</Description>
+    <PackageTags>.NET XML documentation comments Markdown Docusaurus</PackageTags>
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <AssemblyName>xmldocmd-docusaurus</AssemblyName>
+    <RollForward>Major</RollForward>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\src\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\src\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj"/>
+  </ItemGroup>
 
 </Project>
