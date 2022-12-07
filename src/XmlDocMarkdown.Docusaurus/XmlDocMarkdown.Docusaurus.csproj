@@ -11,10 +11,11 @@
     <RollForward>Major</RollForward>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj"/>
+    <ProjectReference Include="..\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj" />
   </ItemGroup>
 
 </Project>
