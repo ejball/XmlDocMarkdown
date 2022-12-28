@@ -28,10 +28,10 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v3
-    - name: Set up .NET 6
+    - name: Set up .NET 7
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Restore
       run: .\build.ps1 restore
     - name: Build
