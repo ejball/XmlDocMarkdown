@@ -307,7 +307,7 @@ namespace XmlDocMarkdown.Core
 
 		private static string SurroundCode(string value)
 		{
-			var backticks = new string('`', Regex.Matches(value, @"`+").Cast<Match>().Select(x => x.Length).Concat(new[] { 0 }).Max() + 1);
+			var backticks = new string('`', Regex.Matches(value, "`+").Cast<Match>().Select(x => x.Length).Concat(new[] { 0 }).Max() + 1);
 			return backticks + value + backticks;
 		}
 
