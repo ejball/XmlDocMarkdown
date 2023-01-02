@@ -1,5 +1,7 @@
 # ExampleRecord&lt;T&gt;.GenericLambda property
 
+An lambda parameter.
+
 ```csharp
 public Action<T> GenericLambda { get; set; }
 ```

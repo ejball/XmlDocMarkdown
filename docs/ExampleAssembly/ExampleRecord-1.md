@@ -15,11 +15,11 @@ public record ExampleRecord<T>
 | name | description |
 | --- | --- |
 | [ExampleRecord](ExampleRecord-1/ExampleRecord.md)(…) | A C# 9 generic record. |
-| [Age](ExampleRecord-1/Age.md) { get; set; } |  |
-| [Days](ExampleRecord-1/Days.md) { get; set; } |  |
-| [GenericLambda](ExampleRecord-1/GenericLambda.md) { get; set; } |  |
-| [GenericType](ExampleRecord-1/GenericType.md) { get; set; } |  |
-| [Name](ExampleRecord-1/Name.md) { get; set; } |  |
+| [Age](ExampleRecord-1/Age.md) { get; set; } | An integer. |
+| [Days](ExampleRecord-1/Days.md) { get; set; } | A hash set. |
+| [GenericLambda](ExampleRecord-1/GenericLambda.md) { get; set; } | An lambda parameter. |
+| [GenericType](ExampleRecord-1/GenericType.md) { get; set; } | A generic type parameter. |
+| [Name](ExampleRecord-1/Name.md) { get; set; } | A string. |
 
 ## See Also
 

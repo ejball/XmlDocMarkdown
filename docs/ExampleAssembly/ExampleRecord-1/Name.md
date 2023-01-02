@@ -1,5 +1,7 @@
 # ExampleRecord&lt;T&gt;.Name property
 
+A string.
+
 ```csharp
 public string Name { get; set; }
 ```

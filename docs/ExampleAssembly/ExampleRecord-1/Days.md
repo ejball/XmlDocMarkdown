@@ -1,5 +1,7 @@
 # ExampleRecord&lt;T&gt;.Days property
 
+A hash set.
+
 ```csharp
 public HashSet<DayOfWeek> Days { get; set; }
 ```

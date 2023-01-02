@@ -1,5 +1,7 @@
 # ExampleRecord&lt;T&gt;.GenericType property
 
+A generic type parameter.
+
 ```csharp
 public T GenericType { get; set; }
 ```

@@ -1,5 +1,7 @@
 # ExampleRecord&lt;T&gt;.Age property
 
+An integer.
+
 ```csharp
 public int Age { get; set; }
 ```
