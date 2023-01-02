@@ -2,7 +2,7 @@
 
 ## 2.9.0
 
-* Add `--skip-compiler-generated`.
+* Add `--skip-compiler-generated`. (Thanks [SteveGilham](https://github.com/SteveGilham)!)
 
 ## 2.8.0
 
