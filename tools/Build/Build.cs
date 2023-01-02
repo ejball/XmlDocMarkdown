@@ -41,7 +41,7 @@ return BuildRunner.Execute(args, build =>
 			("XmlDocMarkdown.Core", "../src/XmlDocMarkdown.Core"),
 			("ExampleAssembly", "../tests/ExampleAssembly"),
 		};
-		var xmlDocGenPath = FindFiles($"tools/XmlDocGen/bin/{configuration}/net*/XmlDocGen.dll").First();
+		var xmlDocGenPath = FindFiles($"tools/XmlDocGen/bin/{configuration}/net7.0/XmlDocGen.dll").First();
 		foreach (var (assembly, sourcePath) in projects)
 			RunDotNet(xmlDocGenPath, assembly, "docs", verify ? "--verify" : null, "--source", sourcePath, "--newline", "lf", "--clean");
 	}
