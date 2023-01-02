@@ -26,6 +26,8 @@ namespace XmlDocMarkdown.Core
 
 		public bool SkipUnbrowsable { get; set; }
 
+		public bool SkipCompilerGenerated { get; set; }
+
 		public bool NamespacePages { get; set; }
 
 		public XmlDocVisibilityLevel Visibility { get; set; }
@@ -646,6 +648,9 @@ namespace XmlDocMarkdown.Core
 				return false;
 
 			if (SkipUnbrowsable && memberInfo.GetCustomAttributes<EditorBrowsableAttribute>().Any(x => x.State == EditorBrowsableState.Never))
+				return false;
+
+			if (SkipCompilerGenerated && memberInfo.GetCustomAttributes<CompilerGeneratedAttribute>().Any())
 				return false;
 
 			var name = memberInfo.Name;

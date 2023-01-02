@@ -35,6 +35,7 @@ namespace XmlDocMarkdown.Core
 					RootNamespace = argsReader.ReadNamespaceOption(),
 					IncludeObsolete = argsReader.ReadObsoleteFlag(),
 					SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag(),
+					SkipCompilerGenerated = argsReader.ReadSkipCompilerGeneratedFlag(),
 					VisibilityLevel = argsReader.ReadVisibilityOption(),
 					ShouldClean = argsReader.ReadCleanFlag(),
 					IsQuiet = argsReader.ReadQuietFlag(),

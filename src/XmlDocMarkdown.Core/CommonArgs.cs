@@ -24,6 +24,8 @@ namespace XmlDocMarkdown.Core
 
 		public static bool ReadSkipUnbrowsableFlag(this ArgsReader args) => args.ReadFlag("skip-unbrowsable");
 
+		public static bool ReadSkipCompilerGeneratedFlag(this ArgsReader args) => args.ReadFlag("skip-compiler-generated");
+
 		public static string? ReadExternalOption(this ArgsReader args) => args.ReadOption("external");
 
 		public static bool ReadCleanFlag(this ArgsReader args) => args.ReadFlag("clean");

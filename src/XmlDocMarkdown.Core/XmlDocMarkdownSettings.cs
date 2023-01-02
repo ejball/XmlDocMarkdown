@@ -32,6 +32,11 @@ namespace XmlDocMarkdown.Core
 		public bool SkipUnbrowsable { get; set; }
 
 		/// <summary>
+		/// If true, skips documentation for types and members with <c>[CompilerGenerated]</c>.
+		/// </summary>
+		public bool SkipCompilerGenerated { get; set; }
+
+		/// <summary>
 		/// The minimum visibility for documented types and members.
 		/// </summary>
 		/// <remarks>Defaults to <c>Protected</c>.</remarks>

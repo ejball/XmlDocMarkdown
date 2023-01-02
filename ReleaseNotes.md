@@ -1,5 +1,9 @@
 # Release Notes
 
+## 2.9.0
+
+* Add `--skip-compiler-generated`.
+
 ## 2.8.0
 
 * Support .NET 6. Drop out-of-support .NET Core 2.1.

@@ -51,6 +51,7 @@ namespace XmlDocMarkdown.Core
 				RootNamespace = settings.RootNamespace,
 				IncludeObsolete = settings.IncludeObsolete,
 				SkipUnbrowsable = settings.SkipUnbrowsable,
+				SkipCompilerGenerated = settings.SkipCompilerGenerated,
 				Visibility = settings.VisibilityLevel ?? XmlDocVisibilityLevel.Protected,
 				ExternalDocs = settings.ExternalDocs,
 				NamespacePages = settings.NamespacePages,
