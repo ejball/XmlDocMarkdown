@@ -19,27 +19,35 @@ namespace XmlDocMarkdown.Core
 					case "summary":
 						AddBlocks(xElement, Summary);
 						break;
+
 					case "typeparam":
 						AddParameter(xElement, TypeParameters);
 						break;
+
 					case "param":
 						AddParameter(xElement, Parameters);
 						break;
+
 					case "returns":
 						AddBlocks(xElement, ReturnValue);
 						break;
+
 					case "value":
 						AddBlocks(xElement, PropertyValue);
 						break;
+
 					case "exception":
 						AddException(xElement, Exceptions);
 						break;
+
 					case "remarks":
 						AddBlocks(xElement, Remarks);
 						break;
+
 					case "example":
 						AddBlocks(xElement, Examples);
 						break;
+
 					case "seealso":
 						AddSeeAlso(xElement, SeeAlso);
 						break;

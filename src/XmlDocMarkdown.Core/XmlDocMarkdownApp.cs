@@ -47,8 +47,7 @@ namespace XmlDocMarkdown.Core
 				};
 
 				var externalDocs = new List<ExternalDocumentation>();
-				string? externalOption;
-				while ((externalOption = argsReader.ReadExternalOption()) != null)
+				while (argsReader.ReadExternalOption() is { } externalOption)
 					externalDocs.Add(new ExternalDocumentation { Namespace = externalOption });
 				if (externalDocs.Count != 0)
 					settings.ExternalDocs = externalDocs;
