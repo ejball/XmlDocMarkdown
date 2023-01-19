@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core
@@ -151,7 +152,12 @@ namespace XmlDocMarkdown.Core
 					case "code":
 						NextBlock();
 						m_block!.IsCode = true;
-						m_block.Inlines.Add(new XmlDocInline { Text = TrimCode(xElement.Value) });
+						XAttribute lang = xElement.Attribute("lang");
+						if (lang == null)
+							lang = xElement.Attribute("language");
+						if (lang != null)
+							m_block.CodeLanguage = lang.Value;
+						m_block.Inlines.Add(new XmlDocInline { Text = TrimCode(xElement.ToString()) });
 						NextBlock();
 						break;
 
@@ -246,6 +252,11 @@ namespace XmlDocMarkdown.Core
 				// trimming logic adapted from https://github.com/kzu/NuDoq
 				var lines = text.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.None).ToList();
 
+				if (lines.Count != 0)
+					lines.RemoveAt(0); // remove <code>
+				if (lines.Count != 0)
+					lines.RemoveAt(lines.Count - 1); // remove </code>
+
 				if (lines.Count != 0 && lines[0].Trim().Length == 0)
 					lines.RemoveAt(0);
 				if (lines.Count != 0 && lines[lines.Count - 1].Trim().Length == 0)
@@ -253,8 +264,8 @@ namespace XmlDocMarkdown.Core
 
 				if (lines.Count == 0)
 					return "";
+				var indentLength = lines.Min( l => !string.IsNullOrWhiteSpace(l) ? l.Length - l.TrimStart().Length : int.MaxValue);
 
-				var indentLength = lines[0].Length - lines[0].TrimStart().Length;
 				if (indentLength <= 4 && lines[0].Length != 0 && lines[0][0] != '\t')
 					indentLength = 0;
 
