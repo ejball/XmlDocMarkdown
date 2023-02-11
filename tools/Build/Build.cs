@@ -11,6 +11,8 @@ return BuildRunner.Execute(args, build =>
 				GitLogin = gitLogin,
 				GitAuthor = new GitAuthorInfo("Faithlife Build Bot", "faithlifebuildbot@users.noreply.github.com"),
 				SourceCodeUrl = "https://github.com/Faithlife/RepoName/tree/master/src",
+				GitBranchName = "docs",
+				TargetDirectory = "",
 			},
 			PackageSettings = new DotNetPackageSettings
 			{
