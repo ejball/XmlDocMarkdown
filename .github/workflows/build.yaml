@@ -2,17 +2,11 @@ name: Build
 on:
   workflow_dispatch:
   push:
-    paths-ignore:
-    - '*.md'
-    - 'docs/**'
     branches:
     - 'master'
     tags-ignore:
     - '**'
   pull_request:
-    paths-ignore:
-    - '*.md'
-    - 'docs/**'
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
