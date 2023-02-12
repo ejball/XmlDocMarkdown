@@ -10,7 +10,12 @@
     <AssemblyName>xmldocmd</AssemblyName>
     <RootNamespace>XmlDocMarkdown</RootNamespace>
     <RollForward>Major</RollForward>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj" />
