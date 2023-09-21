@@ -12,9 +12,11 @@ For a more full-featured documentation generation tool, check out [DocFX](https:
 
 ## Usage
 
+**XmlDocMarkdown** uses the `.xml` documentation files generated when your code is compiled, so make sure they are being generated, e.g. by including `<GenerateDocumentationFile>true</GenerateDocumentationFile>` in your `.csproj` files.
+
 The most reliable way to use **XmlDocMarkdown** is to build and run a command-line tool that references the **XmlDocMarkdown.Core** class library and the assembly that you want to document. This ensures that the assembly and all of its dependencies are loaded properly.
 
-This is easier than it sounds, because the class library contains the full implementation of the command-line application via [XmlDocMarkdownApp.Run](https://ejball.com/XmlDocMarkdown/XmlDocMarkdown.Core/XmlDocMarkdownApp/Run.html). For example, here is how the `ArgsReading` library defines its documentation generation tool:
+This is easier than it sounds, because the **XmlDocMarkdown.Core** class library contains the full implementation of the command-line application via [XmlDocMarkdownApp.Run](https://ejball.com/XmlDocMarkdown/XmlDocMarkdown.Core/XmlDocMarkdownApp/Run.html). For example, here is how the `ArgsReading` library defines its documentation generation tool:
 
 * [XmlDocGen.csproj](https://github.com/ejball/ArgsReading/blob/master/tools/XmlDocGen/XmlDocGen.csproj)
 * [XmlDocGenApp.cs](https://github.com/ejball/ArgsReading/blob/master/tools/XmlDocGen/XmlDocGenApp.cs)
