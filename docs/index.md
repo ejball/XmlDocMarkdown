@@ -16,24 +16,50 @@ For a more full-featured documentation generation tool, check out [DocFX](https:
 
 The most reliable way to use **XmlDocMarkdown** is to build and run a command-line tool that references the **XmlDocMarkdown.Core** class library and the assembly that you want to document. This ensures that the assembly and all of its dependencies are loaded properly.
 
-This is easier than it sounds, because the **XmlDocMarkdown.Core** class library contains the full implementation of the command-line application via [XmlDocMarkdownApp.Run](https://ejball.com/XmlDocMarkdown/XmlDocMarkdown.Core/XmlDocMarkdownApp/Run.html). For example, here is how the `ArgsReading` library defines its documentation generation tool:
+This is easier than it sounds, because the **XmlDocMarkdown.Core** class library contains the full implementation of the command-line application via [XmlDocMarkdownApp.Run](https://ejball.com/XmlDocMarkdown/XmlDocMarkdown.Core/XmlDocMarkdownApp/Run.html).
 
-* [XmlDocGen.csproj](https://github.com/ejball/ArgsReading/blob/master/tools/XmlDocGen/XmlDocGen.csproj)
-* [XmlDocGenApp.cs](https://github.com/ejball/ArgsReading/blob/master/tools/XmlDocGen/XmlDocGenApp.cs)
+Example `XmlDocGen.csproj`:
 
-Depending on the type of console application that you build, you can run `XmlDocGen.exe` directly or run `dotnet path-to-XmlDocGen.dll`.
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
 
-If your dependencies are simple enough, you can use the standard .NET tool (`xmldocmd`), console app (`XmlDocMarkdown`), or Cake addin (`Cake.XmlDocMarkdown`), all documented below.
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RelativePathTo\MyLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="XmlDocMarkdown.Core" Version="2.9.0" />
+  </ItemGroup>
+
+</Project>
+```
+
+Example `Program.cs`:
+
+```csharp
+using XmlDocMarkdown.Core;
+
+return XmlDocMarkdownApp.Run(args);
+```
+
+Build and run `XmlDocGen` like you would any console app, specifying the arguments and options as documented below. For example, from the same directory as `XmlDocGen.csproj`, you can generate documentation for the `MyLibrary` assembly into the `docs` folder:
+
+```sh
+> dotnet run MyLibrary docs
+```
 
 ### Arguments
 
-The command-line tool accepts the name or path of the input assembly, the path of the output directory, and a number of options. (Use the name of the input assembly if you have built your own command-line tool, as recommended above.)
-
-The XML documentation file should be in the same directory as the input assembly.
+The command-line tool accepts the name of the input assembly, the path of the output directory, and a number of options.
 
 The output directory will be created if necessary.
 
-For example, `xmldocmd MyLibrary.dll docs` generates Markdown documentation in the `docs` directory for the `MyLibrary.dll` assembly. The compiler-generated `MyLibrary.xml` file should be in the same directory as `MyLibrary.dll`.
+For example, the arguments `MyLibrary docs` will generate Markdown documentation in the `docs` directory for the `MyLibrary` assembly. The compiler-generated `MyLibrary.xml` file must be in the same directory as `MyLibrary.dll`.
 
 ### Options
 
@@ -60,11 +86,17 @@ To use the library directly, call [`XmlDocMarkdownGenerator.Generate`](XmlDocMar
 
 [![NuGet](https://img.shields.io/nuget/v/xmldocmd.svg)](https://www.nuget.org/packages/xmldocmd)
 
+If you are documenting a modern .NET library and your dependencies are simple enough, you may be able to use this prebuilt .NET tool, but building your own command-line tool is recommended and documented above.
+
 To install `xmldocmd`: `dotnet tool install xmldocmd -g`
+
+Use the path of the input assembly as the first argument. The XML documentation file should be in the same directory as the input assembly.
 
 ### XmlDocMarkdown (.NET Framework console app)
 
 [![NuGet](https://img.shields.io/nuget/v/XmlDocMarkdown.svg)](https://www.nuget.org/packages/XmlDocMarkdown)
+
+If you are documenting a .NET Framework library and your dependencies are simple enough, you may be able to use this prebuilt .NET Framework console app, but building your own command-line tool is recommended and documented above.
 
 `nuget install XmlDocMarkdown -excludeversion` will download the latest version of `XmlDocMarkdown.exe` into `XmlDocMarkdown/tools`.
 
@@ -75,5 +107,7 @@ The command-line arguments and options are the same as `xmldocmd` above.
 ### Cake.XmlDocMarkdown (Cake addin)
 
 [![NuGet](https://img.shields.io/nuget/v/Cake.XmlDocMarkdown.svg)](https://www.nuget.org/packages/Cake.XmlDocMarkdown)
+
+If your dependencies are simple enough, you may be able to use this Cake addin, but building your own command-line tool is recommended and documented above.
 
 See [https://cakebuild.net/extensions/cake-xmldocmarkdown/](https://cakebuild.net/extensions/cake-xmldocmarkdown/).
