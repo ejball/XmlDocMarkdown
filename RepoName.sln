@@ -3,28 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectName", "src\ProjectName\ProjectName.csproj", "{E1BF8BA1-9E9D-4E27-83FC-777B8D14F806}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectName", "src\ProjectName\ProjectName.csproj", "{1F75E8CE-F59A-4738-81EC-17B71C125A06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectName.Tests", "tests\ProjectName.Tests\ProjectName.Tests.csproj", "{DF559AD1-5287-43B1-AB47-61B6F342B0FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectName.Tests", "tests\ProjectName.Tests\ProjectName.Tests.csproj", "{3506DA15-B470-42E7-B897-D436451CBC32}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{028A6C6D-8F8F-4A91-A063-45FFCF892109}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Build", "tools\Build\Build.csproj", "{9BB3C85C-100E-4128-A9AF-8F697D753538}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocGen", "tools\XmlDocGen\XmlDocGen.csproj", "{0A5C4B36-610E-4451-BD56-86E5C8A52C42}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A21957E2-3EB8-4CA5-8537-04F60C9F98D5}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		build.ps1 = build.ps1
-		.github\workflows\build.yaml = .github\workflows\build.yaml
+		CONTRIBUTING.md = CONTRIBUTING.md
 		Directory.Build.props = Directory.Build.props
-		dotnet-tools.json = dotnet-tools.json
+		Directory.Packages.props = Directory.Packages.props
+		global.json = global.json
 		LICENSE = LICENSE
 		nuget.config = nuget.config
 		README.md = README.md
 		ReleaseNotes.md = ReleaseNotes.md
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Build", "tools\Build\Build.csproj", "{CBD807B4-F49F-4DD1-BC9A-359E90EA913F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlDocGen", "tools\XmlDocGen\XmlDocGen.csproj", "{EC2B2484-B209-41A2-94E5-4203A9740983}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,27 +33,27 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E1BF8BA1-9E9D-4E27-83FC-777B8D14F806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E1BF8BA1-9E9D-4E27-83FC-777B8D14F806}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E1BF8BA1-9E9D-4E27-83FC-777B8D14F806}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E1BF8BA1-9E9D-4E27-83FC-777B8D14F806}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF559AD1-5287-43B1-AB47-61B6F342B0FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF559AD1-5287-43B1-AB47-61B6F342B0FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF559AD1-5287-43B1-AB47-61B6F342B0FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF559AD1-5287-43B1-AB47-61B6F342B0FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CBD807B4-F49F-4DD1-BC9A-359E90EA913F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CBD807B4-F49F-4DD1-BC9A-359E90EA913F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CBD807B4-F49F-4DD1-BC9A-359E90EA913F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CBD807B4-F49F-4DD1-BC9A-359E90EA913F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EC2B2484-B209-41A2-94E5-4203A9740983}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC2B2484-B209-41A2-94E5-4203A9740983}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC2B2484-B209-41A2-94E5-4203A9740983}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC2B2484-B209-41A2-94E5-4203A9740983}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F75E8CE-F59A-4738-81EC-17B71C125A06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F75E8CE-F59A-4738-81EC-17B71C125A06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F75E8CE-F59A-4738-81EC-17B71C125A06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F75E8CE-F59A-4738-81EC-17B71C125A06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3506DA15-B470-42E7-B897-D436451CBC32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3506DA15-B470-42E7-B897-D436451CBC32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3506DA15-B470-42E7-B897-D436451CBC32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3506DA15-B470-42E7-B897-D436451CBC32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BB3C85C-100E-4128-A9AF-8F697D753538}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BB3C85C-100E-4128-A9AF-8F697D753538}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BB3C85C-100E-4128-A9AF-8F697D753538}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BB3C85C-100E-4128-A9AF-8F697D753538}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A5C4B36-610E-4451-BD56-86E5C8A52C42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A5C4B36-610E-4451-BD56-86E5C8A52C42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A5C4B36-610E-4451-BD56-86E5C8A52C42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A5C4B36-610E-4451-BD56-86E5C8A52C42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {6D621D28-8AB2-41C2-AA99-AE2225542E17}
+		SolutionGuid = {28CD7BF1-0965-4088-8597-4C08C20C814C}
 	EndGlobalSection
 EndGlobal

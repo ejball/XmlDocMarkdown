@@ -13,6 +13,9 @@ resharper_comment_typo_highlighting = none
 resharper_identifier_typo_highlighting = none
 resharper_string_literal_typo_highlighting = none
 
+[Directory.Packages.props]
+insert_final_newline = false
+
 [dotnet-tools.json]
 insert_final_newline = false
 
@@ -83,6 +86,7 @@ csharp_style_prefer_local_over_anonymous_function = true : suggestion
 csharp_style_prefer_not_pattern = true : suggestion
 csharp_style_prefer_null_check_over_type_check = true : suggestion
 csharp_style_prefer_pattern_matching = true : suggestion
+csharp_style_prefer_primary_constructors = true : suggestion
 csharp_style_prefer_range_operator = true : suggestion
 csharp_style_prefer_switch_expression = true : suggestion
 csharp_style_prefer_tuple_swap = true : warning
@@ -199,6 +203,7 @@ dotnet_diagnostic.IDE0160.severity = suggestion
 dotnet_diagnostic.IDE0161.severity = suggestion
 dotnet_diagnostic.IDE0170.severity = suggestion
 dotnet_diagnostic.IDE0180.severity = warning
+dotnet_diagnostic.IDE0290.severity = suggestion
 dotnet_diagnostic.IDE1005.severity = suggestion
 dotnet_diagnostic.SA0001.severity = none
 dotnet_diagnostic.SA1003.severity = none
@@ -322,6 +327,7 @@ resharper_arrange_missing_parentheses_highlighting = hint
 resharper_arrange_trailing_comma_in_multiline_lists_highlighting = warning
 resharper_comment_typo_highlighting = none
 resharper_compare_of_floats_by_equality_operator_highlighting = suggestion
+resharper_convert_to_primary_constructor_highlighting = hint
 resharper_csharp_align_first_arg_by_paren = false
 resharper_csharp_align_linq_query = false
 resharper_csharp_align_multiline_argument = false
