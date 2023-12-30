@@ -2166,7 +2166,7 @@ namespace XmlDocMarkdown.Core
 				{
 					if (block.IsCode)
 					{
-						yield return "```csharp";
+						yield return "``` " + block.CodeLanguage;
 						foreach (var inline in block.Inlines)
 							yield return inline.Text!.Replace(Environment.NewLine, ActualNewLine);
 						yield return "```";

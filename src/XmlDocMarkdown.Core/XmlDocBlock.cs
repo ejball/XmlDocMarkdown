@@ -8,6 +8,8 @@ namespace XmlDocMarkdown.Core
 
 		public bool IsCode { get; set; }
 
+		public string CodeLanguage { get; set; } = "csharp";
+
 		public XmlDocListKind? ListKind { get; set; }
 
 		public int ListDepth { get; set; }
