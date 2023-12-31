@@ -5,7 +5,7 @@
     <Description>ProjectName class library.</Description>
     <PackageTags></PackageTags>
     <IsPackable>true</IsPackable>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EnablePackageValidation>true</EnablePackageValidation>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
