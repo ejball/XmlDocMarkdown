@@ -996,12 +996,12 @@ namespace XmlDocMarkdown.Core
 			var setVisibility = setMethod == null ? XmlDocVisibilityLevel.Private : GetMethodVisibility(setMethod);
 
 			if (getMethod != null && (setMethod == null || IsMorePrivateThan(setVisibility, Visibility)))
-				return " { get; }";
+				return " \\{ get; }";
 			if (getMethod == null || IsMorePrivateThan(getVisibility, Visibility))
-				return " { set; }";
+				return " \\{ set; }";
 
 			if (getVisibility == setVisibility)
-				return " { get; set; }";
+				return " \\{ get; set; }";
 			if (IsMorePrivateThan(getVisibility, setVisibility))
 				return $" {{ {GetAccessModifier(getMethod)} get; set; }}";
 			return $" {{ get; {GetAccessModifier(setMethod!)} set; }}";
