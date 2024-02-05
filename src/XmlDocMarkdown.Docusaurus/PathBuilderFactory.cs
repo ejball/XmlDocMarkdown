@@ -2,7 +2,7 @@ using XmlDocMarkdown.Core;
 
 namespace XmlDocMarkdown.Docusaurus;
 
-internal class PathBuilderFactory : IPathBuilderFactory
+internal sealed class PathBuilderFactory : IPathBuilderFactory
 {
 	public IPathBuilder Create() => new DocusaurusPathBuilder();
 }

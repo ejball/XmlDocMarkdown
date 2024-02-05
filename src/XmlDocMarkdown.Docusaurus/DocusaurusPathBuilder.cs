@@ -3,7 +3,7 @@ using XmlDocMarkdown.Core;
 
 namespace XmlDocMarkdown.Docusaurus;
 
-internal class DocusaurusPathBuilder : IPathBuilder
+internal sealed class DocusaurusPathBuilder : IPathBuilder
 {
 	private string? @namespace;
 	private string? typeName;
