@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -14,6 +10,7 @@ namespace XmlDocMarkdown.Core
 {
 	internal sealed class MarkdownGenerator
 	{
+		private readonly IPathBuilderFactory pathBuilderFactory;
 		public string? NewLine { get; set; }
 
 		public string? SourceCodePath { get; set; }
@@ -33,6 +30,13 @@ namespace XmlDocMarkdown.Core
 		public XmlDocVisibilityLevel Visibility { get; set; }
 
 		public IReadOnlyList<ExternalDocumentation>? ExternalDocs { get; set; }
+
+		public bool UseTypeFolders { get; set; }
+
+		public MarkdownGenerator(IPathBuilderFactory pathBuilderFactory)
+		{
+			this.pathBuilderFactory = pathBuilderFactory;
+		}
 
 		public IReadOnlyList<NamedText> GenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly) =>
 			DoGenerateOutput(assembly, xmlDocAssembly).ToList();
@@ -118,11 +122,19 @@ namespace XmlDocMarkdown.Core
 						writer.WriteLine("| --- | --- |");
 						foreach (var typeInfo in typeGroup)
 						{
-							var relative = GetPermalink(typeInfo.Path);
-							var safeRelative = GetSafeName(relative);
+							var builder = pathBuilderFactory
+								.Create()
+								.WithNamespace(group.Namespace)
+								.WithType(typeInfo.TypeInfo);
+
+							if (UseTypeFolders)
+								builder.WithTypeFolders();
+
 							if (PermalinkPretty)
-								safeRelative += "Type";
-							var rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}");
+								builder.WithPermalinkPretty();
+
+							var rel = builder.Build();
+
 							var typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
 							var summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
 							writer.WriteLine($"| {typeText} | {summaryText} |");
@@ -161,11 +173,19 @@ namespace XmlDocMarkdown.Core
 							writer.WriteLine("| --- | --- |");
 							foreach (var typeInfo in typeGroup)
 							{
-								var relative = GetPermalink(typeInfo.Path);
-								var safeRelative = GetSafeName(relative);
+								var builder =
+									pathBuilderFactory
+										.Create()
+										.WithNamespace(group.Namespace)
+										.WithType(typeInfo.TypeInfo);
+
+								if (UseTypeFolders)
+									builder.WithTypeFolders();
+
 								if (PermalinkPretty)
-									safeRelative += "Type";
-								var rel = MakeRelative(context.PageLocation, $"{GetNamespaceUriName(group.Namespace)}/{safeRelative}");
+									builder.WithPermalinkPretty();
+
+								var rel = builder.Build();
 								var typeText = GetShortSignatureMarkdown(typeInfo.ShortSignature, rel);
 								var summaryText = GetShortSummaryMarkdown(xmlDocAssembly, typeInfo.TypeInfo, context);
 								writer.WriteLine($"| {typeText} | {summaryText} |");
@@ -181,11 +201,19 @@ namespace XmlDocMarkdown.Core
 				{
 					if (visibleTypeRecord.Namespace == group.Namespace)
 					{
-						var relative = GetPermalink(visibleTypeRecord.Path);
-						var safeRelative = GetSafeName(relative);
+						var builder = pathBuilderFactory
+							.Create()
+							.WithNamespace(visibleTypeRecord.Namespace)
+							.WithType(visibleTypeRecord.TypeInfo);
+
+						if (UseTypeFolders)
+							builder.WithTypeFolders();
+
 						if (PermalinkPretty)
-							safeRelative += "Type.md";
-						var typePage = $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{safeRelative}";
+							builder.WithPermalinkPretty();
+
+						var typePage = builder.Build();
+
 						yield return WriteMemberPage(
 							path: typePage,
 							title: GetFullMemberName(visibleTypeRecord.TypeInfo),
@@ -209,8 +237,15 @@ namespace XmlDocMarkdown.Core
 
 							foreach (var memberGroup in memberGroups)
 							{
+								var path = pathBuilderFactory
+									.Create()
+									.WithNamespace(visibleTypeRecord.Namespace)
+									.WithType(visibleTypeRecord.TypeInfo)
+									.WithMemberName(memberGroup.MemberUriName)
+									.Build();
+
 								yield return WriteMemberPage(
-									path: $"{GetNamespaceUriName(visibleTypeRecord.Namespace)}/{GetTypeUriName(visibleTypeRecord.TypeInfo)}/{memberGroup.MemberUriName}.md",
+									path: path,
 									parent: typePage,
 									title: memberGroup.MemberUriName,
 									memberGroup: memberGroup.Members,
@@ -476,7 +511,8 @@ namespace XmlDocMarkdown.Core
 								{
 									var innerMembers = innerMemberGroup.Members;
 									var firstInnerMember = innerMembers[0];
-									var memberPath = firstInnerMember is TypeInfo ?
+
+									var memberPath = firstInnerMember is TypeInfo || UseTypeFolders ?
 										$"{GetMemberUriName(firstInnerMember)}{extension}" :
 										$"{GetTypeUriName(typeInfo)}/{GetMemberUriName(firstInnerMember)}{extension}";
 									var memberText = GetShortSignatureMarkdown(innerMemberGroup.ShortSignature, memberPath);
@@ -582,7 +618,7 @@ namespace XmlDocMarkdown.Core
 					}
 					else
 					{
-						writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo!)}](../{(typeInfo != null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo!).Assembly)}{extension})");
+						writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo!)}](../{(typeInfo != null ? (UseTypeFolders ? "../" : "") : "../")}{GetAssemblyUriName((declaringType ?? typeInfo!).Assembly)}{extension})");
 					}
 
 					if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))
@@ -965,12 +1001,12 @@ namespace XmlDocMarkdown.Core
 			var setVisibility = setMethod == null ? XmlDocVisibilityLevel.Private : GetMethodVisibility(setMethod);
 
 			if (getMethod != null && (setMethod == null || IsMorePrivateThan(setVisibility, Visibility)))
-				return " { get; }";
+				return " \\{ get; }";
 			if (getMethod == null || IsMorePrivateThan(getVisibility, Visibility))
-				return " { set; }";
+				return " \\{ set; }";
 
 			if (getVisibility == setVisibility)
-				return " { get; set; }";
+				return " \\{ get; set; }";
 			if (IsMorePrivateThan(getVisibility, setVisibility))
 				return $" {{ {GetAccessModifier(getMethod)} get; set; }}";
 			return $" {{ get; {GetAccessModifier(setMethod!)} set; }}";
@@ -2072,21 +2108,21 @@ namespace XmlDocMarkdown.Core
 				if (context.MemberInfo != null)
 				{
 					if (typeInfo != null)
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{(UseTypeFolders ? "/" + GetSafeTypeUriName(typeInfo) : "")}{extension}";
 					else
 						path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 				}
 				else if (context.TypeInfo != null)
 				{
 					if (typeInfo != null)
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{(UseTypeFolders ? "/" + GetSafeTypeUriName(typeInfo) : "")}{extension}";
 					else
 						path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 				}
 				else
 				{
 					if (typeInfo != null)
-						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
+						path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{(UseTypeFolders ? "/" + GetSafeTypeUriName(typeInfo) : "")}{extension}";
 					else
 						path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 				}

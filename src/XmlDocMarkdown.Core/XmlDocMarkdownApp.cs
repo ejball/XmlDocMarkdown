@@ -14,8 +14,9 @@ namespace XmlDocMarkdown.Core
 		/// Run the command-line application.
 		/// </summary>
 		/// <param name="args">The command-line arguments.</param>
+		/// <param name="pathBuilderFactory">The factory to create a Path Builder.</param>
 		/// <returns>The exit code.</returns>
-		public static int Run(IReadOnlyList<string> args)
+		public static int Run(IReadOnlyList<string> args, IPathBuilderFactory? pathBuilderFactory = null)
 		{
 			try
 			{
@@ -45,6 +46,7 @@ namespace XmlDocMarkdown.Core
 					GenerateToc = argsReader.ReadTocFlag(),
 					TocPrefix = argsReader.ReadTocPrefix(),
 					NamespacePages = argsReader.ReadNamespacePagesFlag(),
+					UseTypeFolders = argsReader.ReadUseTypeFoldersFlag(),
 				};
 
 				var externalDocs = new List<ExternalDocumentation>();
@@ -67,7 +69,7 @@ namespace XmlDocMarkdown.Core
 
 				argsReader.VerifyComplete();
 
-				var result = XmlDocMarkdownGenerator.Generate(input, outputPath, settings);
+				var result = XmlDocMarkdownGenerator.Generate(input, outputPath, settings, pathBuilderFactory);
 
 				foreach (var message in result.Messages)
 					Console.WriteLine(message);
@@ -143,6 +145,8 @@ namespace XmlDocMarkdown.Core
 			textWriter.WriteLine("      File containing table of contents in .yml format.");
 			textWriter.WriteLine("   --newline (auto|lf|crlf)");
 			textWriter.WriteLine("      The newline used in the output (default auto).");
+			textWriter.WriteLine("   --type-folders");
+			textWriter.WriteLine("      Type markdown will be inside the same folder has it's members.");
 		}
 	}
 }
