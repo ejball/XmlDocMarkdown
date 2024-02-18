@@ -3,14 +3,14 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageVersion Include="NUnit" Version="4.0.1" />
     <PackageVersion Include="NUnit3TestAdapter" Version="4.5.0" />
     <PackageVersion Include="XmlDocMarkdown.Core" Version="2.9.0" />
   </ItemGroup>
   <ItemGroup>
     <GlobalPackageReference Include="Faithlife.Analyzers" Version="1.4.0" />
-    <GlobalPackageReference Include="NUnit.Analyzers" Version="3.10.0" />
-    <GlobalPackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507" />
+    <GlobalPackageReference Include="NUnit.Analyzers" Version="4.0.1" />
+    <GlobalPackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
   </ItemGroup>
 </Project>
