@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 
@@ -65,10 +61,7 @@ namespace XmlDocMarkdown.Core
 
 			XmlDocAssembly xmlDocAssembly;
 
-			var assembly = input.Assembly;
-			if (assembly == null)
-				assembly = Assembly.LoadFrom(input.AssemblyPath);
-
+			var assembly = input.Assembly ?? Assembly.LoadFrom(input.AssemblyPath);
 			var xmlDocPath = input.XmlDocPath;
 			if (xmlDocPath == null)
 			{
@@ -191,7 +184,7 @@ namespace XmlDocMarkdown.Core
 
 		private static IEnumerable<string> FindNamesMatchingPattern(DirectoryInfo directoryInfo, string namePattern, string requiredSubstring)
 		{
-			var parts = namePattern.Split(new[] { '/' }, 2);
+			var parts = namePattern.Split(['/'], 2);
 			if (parts[0].Length == 0)
 				throw new InvalidOperationException("Invalid name pattern.");
 

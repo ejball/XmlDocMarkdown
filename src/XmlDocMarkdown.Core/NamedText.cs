@@ -1,5 +1,3 @@
-using System;
-
 namespace XmlDocMarkdown.Core
 {
 	internal sealed class NamedText

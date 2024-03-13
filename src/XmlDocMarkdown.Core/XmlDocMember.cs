@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core
@@ -77,7 +74,7 @@ namespace XmlDocMarkdown.Core
 
 		public override string ToString() => XmlDocName ?? "";
 
-		private static void AddBlocks(XElement xElement, ICollection<XmlDocBlock> blocks)
+		private static void AddBlocks(XElement xElement, Collection<XmlDocBlock> blocks)
 		{
 			var generator = new BlockGenerator();
 			generator.AddNodes(xElement.Nodes());
@@ -85,14 +82,14 @@ namespace XmlDocMarkdown.Core
 				blocks.Add(block);
 		}
 
-		private static void AddParameter(XElement xElement, ICollection<XmlDocParameter> parameters)
+		private static void AddParameter(XElement xElement, Collection<XmlDocParameter> parameters)
 		{
 			var parameter = new XmlDocParameter { Name = xElement.Attribute("name")?.Value };
 			AddBlocks(xElement, parameter.Description);
 			parameters.Add(parameter);
 		}
 
-		private static void AddException(XElement xElement, ICollection<XmlDocException> exceptions)
+		private static void AddException(XElement xElement, Collection<XmlDocException> exceptions)
 		{
 			var exception = new XmlDocException { ExceptionTypeRef = xElement.Attribute("cref")?.Value };
 			AddBlocks(xElement, exception.Condition);
@@ -120,7 +117,7 @@ namespace XmlDocMarkdown.Core
 					AddNode(xNode);
 			}
 
-			public IReadOnlyList<XmlDocBlock> GetBlocks()
+			public List<XmlDocBlock> GetBlocks()
 			{
 				NextBlock();
 

@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -309,12 +305,12 @@ namespace XmlDocMarkdown.Core
 
 		private static string SurroundCode(string value)
 		{
-			var backticks = new string('`', Regex.Matches(value, "`+").Cast<Match>().Select(x => x.Length).Concat(new[] { 0 }).Max() + 1);
+			var backticks = new string('`', Regex.Matches(value, "`+").Cast<Match>().Select(x => x.Length).Concat([0]).Max() + 1);
 			return backticks + value + backticks;
 		}
 
 		private NamedText WriteMemberPage(string path, string parent, string title, MemberInfo memberInfo, MarkdownContext context) =>
-			WriteMemberPage(path, parent, title, new[] { memberInfo }, context);
+			WriteMemberPage(path, parent, title, [memberInfo], context);
 
 		private string GetFileExtension() => PermalinkPretty ? "" : ".md";
 
@@ -688,7 +684,7 @@ namespace XmlDocMarkdown.Core
 
 		private static string GetMemberHeading(IReadOnlyList<MemberInfo> membersInfos, int index)
 		{
-			var heading = $"{GetFullMemberName(membersInfos[index])} {GetMemberGroupNoun(new[] { membersInfos[index] })}";
+			var heading = $"{GetFullMemberName(membersInfos[index])} {GetMemberGroupNoun([membersInfos[index]])}";
 			if (membersInfos.Count > 1)
 				heading += $" ({index + 1} of {membersInfos.Count})";
 			return heading;
@@ -1373,13 +1369,13 @@ namespace XmlDocMarkdown.Core
 		private static byte[] GetNullableContextFlags(IEnumerable<Attribute> attributes)
 		{
 			var attribute = attributes.FirstOrDefault(x => x.GetType().FullName == "System.Runtime.CompilerServices.NullableContextAttribute");
-			return attribute is null ? Array.Empty<byte>() : new[] { (byte) attribute.GetType().GetField("Flag").GetValue(attribute) };
+			return attribute is null ? [] : [(byte) attribute.GetType().GetField("Flag").GetValue(attribute)];
 		}
 
 		private static byte[] GetNullableFlags(IEnumerable<Attribute> attributes)
 		{
 			var attribute = attributes.FirstOrDefault(x => x.GetType().FullName == "System.Runtime.CompilerServices.NullableAttribute");
-			return ((byte[]?) attribute?.GetType().GetField("NullableFlags").GetValue(attribute)) ?? Array.Empty<byte>();
+			return ((byte[]?) attribute?.GetType().GetField("NullableFlags").GetValue(attribute)) ?? [];
 		}
 
 		private static bool ParameterHasDefaultValue(ParameterInfo parameterInfo)
@@ -1418,7 +1414,7 @@ namespace XmlDocMarkdown.Core
 			if (type.GetTypeInfo().IsEnum)
 			{
 				return string.Join(" | ", value.ToString()
-					.Split(new[] { ", " }, StringSplitOptions.None)
+					.Split([", "], StringSplitOptions.None)
 					.Select(x => $"{type.Name}.{x}"));
 			}
 
@@ -1491,12 +1487,12 @@ namespace XmlDocMarkdown.Core
 
 		private static string RenderTypeName(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso = null, IReadOnlyList<Attribute>? attributes = null, byte[]? nullableContextFlags = null)
 		{
-			attributes ??= Array.Empty<Attribute>();
+			attributes ??= [];
 			var tupleNames = GetTupleNames(attributes);
 			var tupleNameIndex = 0;
 			var nullableFlags = GetNullableFlags(attributes);
 			if (nullableFlags.Length == 0)
-				nullableFlags = nullableContextFlags ?? Array.Empty<byte>();
+				nullableFlags = nullableContextFlags ?? [];
 			var nullableFlagIndex = 0;
 			return RenderTypeName(typeInfo, seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex);
 		}
@@ -1535,7 +1531,7 @@ namespace XmlDocMarkdown.Core
 			return GetShortName(typeInfo) + RenderGenericArguments(typeInfo.GenericTypeArguments, seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex) + nullableSuffix;
 		}
 
-		private static IReadOnlyList<string> RenderTupleTypes(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex, byte[] nullableFlags, ref int nullableFlagIndex)
+		private static List<string> RenderTupleTypes(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex, byte[] nullableFlags, ref int nullableFlagIndex)
 		{
 			var renderedTupleTypes = new List<string>();
 
@@ -1572,13 +1568,13 @@ namespace XmlDocMarkdown.Core
 			typeInfo.GenericTypeArguments.Length < 8 ? typeInfo.GenericTypeArguments.Length : 7 + CountTupleItems(typeInfo.GenericTypeArguments[7].GetTypeInfo());
 
 		private static IReadOnlyList<string?> GetTupleNames(IEnumerable<Attribute> attributes) =>
-			attributes.OfType<TupleElementNamesAttribute>().FirstOrDefault()?.TransformNames as IReadOnlyList<string?> ?? Array.Empty<string?>();
+			attributes.OfType<TupleElementNamesAttribute>().FirstOrDefault()?.TransformNames as IReadOnlyList<string?> ?? [];
 
 		private static string RenderGenericArguments(Type[]? genericArguments, ICollection<MemberInfo>? seeAlso = null)
 		{
 			var tupleNameIndex = 0;
 			var nullableFlagIndex = 0;
-			return RenderGenericArguments(genericArguments, seeAlso, Array.Empty<string?>(), ref tupleNameIndex, Array.Empty<byte>(), ref nullableFlagIndex);
+			return RenderGenericArguments(genericArguments, seeAlso, [], ref tupleNameIndex, [], ref nullableFlagIndex);
 		}
 
 		private static string RenderGenericArguments(Type[]? genericArguments, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex, byte[] nullableFlags, ref int nullableFlagIndex)
@@ -1754,7 +1750,7 @@ namespace XmlDocMarkdown.Core
 			{
 				MethodInfo method => method.Name is "<Clone>$" or "Deconstruct" or "Equals" or "GetHashCode" or "op_Equality" or "op_Inequality" or "PrintMembers" or "ToString",
 				PropertyInfo property => property.Name is "EqualityContract",
-				ConstructorInfo constructor => !constructor.IsPublic && constructor.GetParameters().Select(x => x.ParameterType).SequenceEqual(new[] { declaringType }),
+				ConstructorInfo constructor => !constructor.IsPublic && constructor.GetParameters().Select(x => x.ParameterType).SequenceEqual([declaringType]),
 				_ => false,
 			};
 		}
@@ -2182,7 +2178,7 @@ namespace XmlDocMarkdown.Core
 			}
 		}
 
-		private class MarkdownContext
+		private sealed class MarkdownContext
 		{
 			public MarkdownContext(XmlDocAssembly xmlDocAssembly, IReadOnlyDictionary<string, MemberInfo> membersByXmlDocName, string assemblyFileName, string? sourceCodePath, string rootNamespace, string pageLocation)
 			{

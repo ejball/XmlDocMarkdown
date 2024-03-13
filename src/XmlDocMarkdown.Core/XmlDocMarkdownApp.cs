@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 
 namespace XmlDocMarkdown.Core
@@ -53,18 +50,12 @@ namespace XmlDocMarkdown.Core
 				if (externalDocs.Count != 0)
 					settings.ExternalDocs = externalDocs;
 
-				var inputPath = argsReader.ReadArgument();
-				if (inputPath == null)
-					throw new ArgsReaderException("Missing input path.");
-
+				var inputPath = argsReader.ReadArgument() ?? throw new ArgsReaderException("Missing input path.");
 				var input = File.Exists(inputPath)
 					? new XmlDocInput { AssemblyPath = inputPath }
 					: new XmlDocInput { Assembly = Assembly.Load(inputPath) };
 
-				var outputPath = argsReader.ReadArgument();
-				if (outputPath == null)
-					throw new ArgsReaderException("Missing output path.");
-
+				var outputPath = argsReader.ReadArgument() ?? throw new ArgsReaderException("Missing output path.");
 				argsReader.VerifyComplete();
 
 				var result = XmlDocMarkdownGenerator.Generate(input, outputPath, settings);

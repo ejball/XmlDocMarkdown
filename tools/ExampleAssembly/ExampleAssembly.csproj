@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CA1024;CA1711;CA2217</NoWarn>
+    <NoWarn>$(NoWarn);CA1024;CA1711;CA1852;CA2217</NoWarn>
   </PropertyGroup>
 
 </Project>

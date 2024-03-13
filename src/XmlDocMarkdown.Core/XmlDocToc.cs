@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace XmlDocMarkdown.Core
@@ -28,10 +24,7 @@ namespace XmlDocMarkdown.Core
 				return;
 			}
 
-			var parentItem = FindParent(parent);
-			if (parentItem == null)
-				throw new InvalidOperationException($"Parent '{parent}' not found?");
-
+			var parentItem = FindParent(parent) ?? throw new InvalidOperationException($"Parent '{parent}' not found?");
 			parentItem.GetOrCreate(path, title);
 		}
 
