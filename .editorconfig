@@ -350,6 +350,7 @@ resharper_csharp_indent_anonymous_method_block = false
 resharper_csharp_indent_nested_for_stmt = true
 resharper_csharp_indent_nested_foreach_stmt = true
 resharper_csharp_indent_nested_while_stmt = true
+resharper_csharp_indent_raw_literal_string = indent
 resharper_csharp_int_align = false
 resharper_csharp_keep_existing_arrangement = true
 resharper_csharp_nested_ternary_style = simple_wrap
