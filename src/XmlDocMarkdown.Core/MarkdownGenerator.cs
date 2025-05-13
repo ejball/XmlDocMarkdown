@@ -1974,7 +1974,7 @@ namespace XmlDocMarkdown.Core
 				return type.GenericTypeParameters;
 
 			var method = memberInfo as MethodInfo;
-			return method?.GetGenericArguments() ?? Array.Empty<Type>();
+			return method?.GetGenericArguments() ?? [];
 		}
 
 		private static ParameterInfo[] GetParameters(MemberInfo memberInfo)
@@ -1988,7 +1988,7 @@ namespace XmlDocMarkdown.Core
 				return propertyInfo.GetIndexParameters();
 
 			var method = memberInfo as MethodBase;
-			return method?.GetParameters() ?? Array.Empty<ParameterInfo>();
+			return method?.GetParameters() ?? [];
 		}
 
 		private static string GetParameterShortNames(MemberInfo memberInfo) =>
