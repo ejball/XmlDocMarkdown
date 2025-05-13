@@ -47,10 +47,8 @@ namespace XmlDocMarkdown.Core
 				if (externalDocs.Count != 0)
 					settings.ExternalDocs = externalDocs;
 
-				var inputPath = argsReader.ReadArgument() ?? throw new ArgsReaderException("Missing input path.");
-				var input = File.Exists(inputPath)
-					? new XmlDocInput { AssemblyPath = inputPath }
-					: new XmlDocInput { Assembly = Assembly.Load(inputPath) };
+				var assemblyName = argsReader.ReadArgument() ?? throw new ArgsReaderException("Missing assembly name.");
+				var input = new XmlDocInput { Assembly = Assembly.Load(assemblyName) };
 
 				var outputPath = argsReader.ReadArgument() ?? throw new ArgsReaderException("Missing output path.");
 				argsReader.VerifyComplete();
@@ -91,7 +89,7 @@ namespace XmlDocMarkdown.Core
 			textWriter.WriteLine($"Usage: {Assembly.GetEntryAssembly()?.GetName().Name} input output [options]");
 			textWriter.WriteLine();
 			textWriter.WriteLine("   input");
-			textWriter.WriteLine("      The path or name of the input assembly.");
+			textWriter.WriteLine("      The name of the input assembly.");
 			textWriter.WriteLine("   output");
 			textWriter.WriteLine("      The path of the output directory.");
 			textWriter.WriteLine();
