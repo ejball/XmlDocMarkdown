@@ -11,9 +11,9 @@ namespace XmlDocMarkdown.Core
 		/// Run the command-line application.
 		/// </summary>
 		/// <param name="args">The command-line arguments.</param>
-		/// <param name="settings">The settings.</param>
+		/// <param name="configure">Called to configure the settings.</param>
 		/// <returns>The exit code.</returns>
-		public static int Run(IReadOnlyList<string> args, XmlDocMarkdownSettings settings)
+		public static int Run(IReadOnlyList<string> args, Action<string, XmlDocMarkdownSettings>? configure = null)
 		{
 			try
 			{
@@ -26,20 +26,23 @@ namespace XmlDocMarkdown.Core
 
 				var isVerify = argsReader.ReadVerifyFlag();
 
-				settings.SourceCodePath = argsReader.ReadSourceOption();
-				settings.RootNamespace = argsReader.ReadNamespaceOption();
-				settings.IncludeObsolete = argsReader.ReadObsoleteFlag();
-				settings.SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag();
-				settings.SkipCompilerGenerated = argsReader.ReadSkipCompilerGeneratedFlag();
-				settings.VisibilityLevel = argsReader.ReadVisibilityOption();
-				settings.ShouldClean = argsReader.ReadCleanFlag();
-				settings.IsQuiet = argsReader.ReadQuietFlag();
-				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag();
-				settings.FrontMatter = argsReader.ReadFrontMatter();
-				settings.PermalinkStyle = argsReader.ReadPermalinkStyle();
-				settings.GenerateToc = argsReader.ReadTocFlag();
-				settings.TocPrefix = argsReader.ReadTocPrefix();
-				settings.NamespacePages = argsReader.ReadNamespacePagesFlag();
+				var settings = new XmlDocMarkdownSettings
+				{
+					SourceCodePath = argsReader.ReadSourceOption(),
+					RootNamespace = argsReader.ReadNamespaceOption(),
+					IncludeObsolete = argsReader.ReadObsoleteFlag(),
+					SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag(),
+					SkipCompilerGenerated = argsReader.ReadSkipCompilerGeneratedFlag(),
+					VisibilityLevel = argsReader.ReadVisibilityOption(),
+					ShouldClean = argsReader.ReadCleanFlag(),
+					IsQuiet = argsReader.ReadQuietFlag(),
+					IsDryRun = isVerify || argsReader.ReadDryRunFlag(),
+					FrontMatter = argsReader.ReadFrontMatter(),
+					PermalinkStyle = argsReader.ReadPermalinkStyle(),
+					GenerateToc = argsReader.ReadTocFlag(),
+					TocPrefix = argsReader.ReadTocPrefix(),
+					NamespacePages = argsReader.ReadNamespacePagesFlag(),
+				};
 
 				var externalDocs = new List<ExternalDocumentation>();
 				while (argsReader.ReadExternalOption() is { } externalOption)
@@ -48,6 +51,8 @@ namespace XmlDocMarkdown.Core
 					settings.ExternalDocs = externalDocs;
 
 				var assemblyName = argsReader.ReadArgument() ?? throw new ArgsReaderException("Missing assembly name.");
+				configure?.Invoke(assemblyName, settings);
+
 				var input = new XmlDocInput { Assembly = Assembly.Load(assemblyName) };
 
 				var outputPath = argsReader.ReadArgument() ?? throw new ArgsReaderException("Missing output path.");

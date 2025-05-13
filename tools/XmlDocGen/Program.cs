@@ -1,7 +1,7 @@
 using XmlDocMarkdown.Core;
 
 return XmlDocMarkdownApp.Run(args,
-	new XmlDocMarkdownSettings
+	(assembly, settings) =>
 	{
-		NewLine = "\n",
+		settings.NewLine = "\n";
 	});
