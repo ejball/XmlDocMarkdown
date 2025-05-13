@@ -11,8 +11,9 @@ namespace XmlDocMarkdown.Core
 		/// Run the command-line application.
 		/// </summary>
 		/// <param name="args">The command-line arguments.</param>
+		/// <param name="settings">The settings.</param>
 		/// <returns>The exit code.</returns>
-		public static int Run(IReadOnlyList<string> args)
+		public static int Run(IReadOnlyList<string> args, XmlDocMarkdownSettings settings)
 		{
 			try
 			{
@@ -25,24 +26,20 @@ namespace XmlDocMarkdown.Core
 
 				var isVerify = argsReader.ReadVerifyFlag();
 
-				var settings = new XmlDocMarkdownSettings
-				{
-					NewLine = argsReader.ReadNewLineOption(),
-					SourceCodePath = argsReader.ReadSourceOption(),
-					RootNamespace = argsReader.ReadNamespaceOption(),
-					IncludeObsolete = argsReader.ReadObsoleteFlag(),
-					SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag(),
-					SkipCompilerGenerated = argsReader.ReadSkipCompilerGeneratedFlag(),
-					VisibilityLevel = argsReader.ReadVisibilityOption(),
-					ShouldClean = argsReader.ReadCleanFlag(),
-					IsQuiet = argsReader.ReadQuietFlag(),
-					IsDryRun = isVerify || argsReader.ReadDryRunFlag(),
-					FrontMatter = argsReader.ReadFrontMatter(),
-					PermalinkStyle = argsReader.ReadPermalinkStyle(),
-					GenerateToc = argsReader.ReadTocFlag(),
-					TocPrefix = argsReader.ReadTocPrefix(),
-					NamespacePages = argsReader.ReadNamespacePagesFlag(),
-				};
+				settings.SourceCodePath = argsReader.ReadSourceOption();
+				settings.RootNamespace = argsReader.ReadNamespaceOption();
+				settings.IncludeObsolete = argsReader.ReadObsoleteFlag();
+				settings.SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag();
+				settings.SkipCompilerGenerated = argsReader.ReadSkipCompilerGeneratedFlag();
+				settings.VisibilityLevel = argsReader.ReadVisibilityOption();
+				settings.ShouldClean = argsReader.ReadCleanFlag();
+				settings.IsQuiet = argsReader.ReadQuietFlag();
+				settings.IsDryRun = isVerify || argsReader.ReadDryRunFlag();
+				settings.FrontMatter = argsReader.ReadFrontMatter();
+				settings.PermalinkStyle = argsReader.ReadPermalinkStyle();
+				settings.GenerateToc = argsReader.ReadTocFlag();
+				settings.TocPrefix = argsReader.ReadTocPrefix();
+				settings.NamespacePages = argsReader.ReadNamespacePagesFlag();
 
 				var externalDocs = new List<ExternalDocumentation>();
 				while (argsReader.ReadExternalOption() is { } externalOption)
@@ -132,8 +129,6 @@ namespace XmlDocMarkdown.Core
 			textWriter.WriteLine("      Generate separate pages for each namespace, listing types in each.");
 			textWriter.WriteLine("   --toc");
 			textWriter.WriteLine("      File containing table of contents in .yml format.");
-			textWriter.WriteLine("   --newline (auto|lf|crlf)");
-			textWriter.WriteLine("      The newline used in the output (default auto).");
 		}
 	}
 }

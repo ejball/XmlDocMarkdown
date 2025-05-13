@@ -37,6 +37,6 @@ return BuildRunner.Execute(args, build =>
 		};
 		var xmlDocGenPath = FindFiles($"tools/XmlDocGen/bin/{configuration}/net8.0/XmlDocGen.dll").First();
 		foreach (var (assembly, sourcePath) in projects)
-			RunDotNet(xmlDocGenPath, assembly, "docs", verify ? "--verify" : null, "--source", sourcePath, "--newline", "lf", "--clean");
+			RunDotNet(xmlDocGenPath, assembly, "docs", verify ? "--verify" : null, "--source", sourcePath, "--clean");
 	}
 });

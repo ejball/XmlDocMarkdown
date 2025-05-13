@@ -47,18 +47,5 @@ namespace XmlDocMarkdown.Core
 		public static bool ReadTocFlag(this ArgsReader args) => args.ReadFlag("toc");
 
 		public static string? ReadTocPrefix(this ArgsReader args) => args.ReadOption("toc-prefix");
-
-		public static string? ReadNewLineOption(this ArgsReader args)
-		{
-			var value = args.ReadOption("newline");
-			return value switch
-			{
-				"auto" => null,
-				"lf" => "\n",
-				"crlf" => "\r\n",
-				null => null,
-				_ => throw new ArgsReaderException($"Invalid new line '{value}'. (Should be 'auto', 'lf', or 'crlf'.)"),
-			};
-		}
 	}
 }
