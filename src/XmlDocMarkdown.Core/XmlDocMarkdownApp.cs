@@ -28,26 +28,11 @@ namespace XmlDocMarkdown.Core
 
 				var settings = new XmlDocMarkdownSettings
 				{
-					RootNamespace = argsReader.ReadNamespaceOption(),
-					IncludeObsolete = argsReader.ReadObsoleteFlag(),
-					SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag(),
-					SkipCompilerGenerated = argsReader.ReadSkipCompilerGeneratedFlag(),
 					VisibilityLevel = argsReader.ReadVisibilityOption(),
 					ShouldClean = argsReader.ReadCleanFlag(),
 					IsQuiet = argsReader.ReadQuietFlag(),
 					IsDryRun = isVerify || argsReader.ReadDryRunFlag(),
-					FrontMatter = argsReader.ReadFrontMatter(),
-					PermalinkStyle = argsReader.ReadPermalinkStyle(),
-					GenerateToc = argsReader.ReadTocFlag(),
-					TocPrefix = argsReader.ReadTocPrefix(),
-					NamespacePages = argsReader.ReadNamespacePagesFlag(),
 				};
-
-				var externalDocs = new List<ExternalDocumentation>();
-				while (argsReader.ReadExternalOption() is { } externalOption)
-					externalDocs.Add(new ExternalDocumentation { Namespace = externalOption });
-				if (externalDocs.Count != 0)
-					settings.ExternalDocs = externalDocs;
 
 				var assemblyName = argsReader.ReadArgument() ?? throw new ArgsReaderException("Missing assembly name.");
 				configure?.Invoke(assemblyName, settings);
@@ -97,16 +82,8 @@ namespace XmlDocMarkdown.Core
 			textWriter.WriteLine("   output");
 			textWriter.WriteLine("      The path of the output directory.");
 			textWriter.WriteLine();
-			textWriter.WriteLine("   --namespace <ns>");
-			textWriter.WriteLine("      The root namespace of the input assembly. (optional)");
 			textWriter.WriteLine("   --visibility (public|protected|internal|private)");
 			textWriter.WriteLine("      The minimum visibility of documented members. (default 'protected')");
-			textWriter.WriteLine("   --obsolete");
-			textWriter.WriteLine("      Generates documentation for obsolete types and members.");
-			textWriter.WriteLine("   --skip-unbrowsable");
-			textWriter.WriteLine("      Skips documentation for types that are marked with System.ComponentModel.EditorBrowsable Never.");
-			textWriter.WriteLine("   --skip-compiler-generated");
-			textWriter.WriteLine("      Skips documentation for types that are marked with System.Runtime.CompilerServices.CompilerGenerated.");
 			textWriter.WriteLine("   --clean");
 			textWriter.WriteLine("      Deletes previously generated files that are no longer used.");
 			textWriter.WriteLine("   --verify");
@@ -115,19 +92,6 @@ namespace XmlDocMarkdown.Core
 			textWriter.WriteLine("      Executes the tool without making changes to the file system.");
 			textWriter.WriteLine("   --quiet");
 			textWriter.WriteLine("      Suppresses normal console output.");
-			textWriter.WriteLine("   --front-matter");
-			textWriter.WriteLine("      File containing the Jekyll front matter template you want in each generated page.");
-			textWriter.WriteLine("      The front matter can use $title argument and $rel for permalinks.");
-			textWriter.WriteLine("      When front matter is defined the .md extension is dropped in all generated links.");
-			textWriter.WriteLine("   --permalink");
-			textWriter.WriteLine("      Specify permalink style, 'none' or 'pretty' (default 'none').");
-			textWriter.WriteLine("      'pretty' permalinks do not contain file extensions, and when you select this option.");
-			textWriter.WriteLine("      periods have to be removed from file names, for example, 'System.Console' would have to be 'SystemConsole'.");
-			textWriter.WriteLine("      since the removal of the '.md' extension would make Jekyll think .Console is a file extension which doesn't work.");
-			textWriter.WriteLine("   --namespace-pages");
-			textWriter.WriteLine("      Generate separate pages for each namespace, listing types in each.");
-			textWriter.WriteLine("   --toc");
-			textWriter.WriteLine("      File containing table of contents in .yml format.");
 		}
 	}
 }
