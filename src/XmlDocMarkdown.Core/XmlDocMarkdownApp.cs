@@ -28,7 +28,6 @@ namespace XmlDocMarkdown.Core
 
 				var settings = new XmlDocMarkdownSettings
 				{
-					VisibilityLevel = argsReader.ReadVisibilityOption(),
 					ShouldClean = argsReader.ReadCleanFlag(),
 					IsQuiet = argsReader.ReadQuietFlag(),
 					IsDryRun = isVerify || argsReader.ReadDryRunFlag(),
@@ -57,7 +56,7 @@ namespace XmlDocMarkdown.Core
 					WriteUsage(Console.Error);
 					return 2;
 				}
-				else if (exception is ApplicationException || exception is IOException || exception is UnauthorizedAccessException)
+				else if (exception is ApplicationException or IOException or UnauthorizedAccessException)
 				{
 					Console.Error.WriteLine(exception.Message);
 					return 3;
@@ -81,16 +80,14 @@ namespace XmlDocMarkdown.Core
 			textWriter.WriteLine("   output");
 			textWriter.WriteLine("      The path of the output directory.");
 			textWriter.WriteLine();
-			textWriter.WriteLine("   --visibility (public|protected|internal|private)");
-			textWriter.WriteLine("      The minimum visibility of documented members. (default 'protected')");
 			textWriter.WriteLine("   --clean");
 			textWriter.WriteLine("      Deletes previously generated files that are no longer used.");
-			textWriter.WriteLine("   --verify");
-			textWriter.WriteLine("      Exits with error code 1 if changes to the file system are needed.");
 			textWriter.WriteLine("   --dryrun");
 			textWriter.WriteLine("      Executes the tool without making changes to the file system.");
 			textWriter.WriteLine("   --quiet");
 			textWriter.WriteLine("      Suppresses normal console output.");
+			textWriter.WriteLine("   --verify");
+			textWriter.WriteLine("      Exits with error code 1 if changes to the file system are needed.");
 		}
 	}
 }
