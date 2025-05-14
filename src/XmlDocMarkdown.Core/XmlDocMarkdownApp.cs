@@ -35,13 +35,12 @@ namespace XmlDocMarkdown.Core
 				};
 
 				var assemblyName = argsReader.ReadArgument() ?? throw new ArgsReaderException("Missing assembly name.");
-				configure?.Invoke(assemblyName, settings);
-
-				var input = new XmlDocInput { Assembly = Assembly.Load(assemblyName) };
-
 				var outputPath = argsReader.ReadArgument() ?? throw new ArgsReaderException("Missing output path.");
 				argsReader.VerifyComplete();
 
+				configure?.Invoke(assemblyName, settings);
+
+				var input = new XmlDocInput { Assembly = Assembly.Load(assemblyName) };
 				var result = XmlDocMarkdownGenerator.Generate(input, outputPath, settings);
 
 				foreach (var message in result.Messages)
