@@ -1,60 +1,7 @@
-using System.Text.RegularExpressions;
-
 namespace XmlDocMarkdown.Core;
 
-/// <summary>
-/// Helps process command-line arguments.
-/// </summary>
-/// <remarks>To use this class, construct an <c>ArgsReader</c> with the command-line arguments from <c>Main</c>,
-/// read the supported options one at a time with <see cref="ReadFlag" /> and <see cref="ReadOption"/>,
-/// read any normal arguments with <see cref="ReadArgument"/>, and finally call <see cref="VerifyComplete"/>,
-/// which throws an <see cref="ArgsReaderException"/> if any unsupported options or arguments haven't been read.</remarks>
-internal sealed class ArgsReader
+internal sealed class ArgsReader(IEnumerable<string> args)
 {
-	/// <summary>
-	/// Creates a reader for the specified command-line arguments.
-	/// </summary>
-	/// <param name="args">The command-line arguments from <c>Main</c>.</param>
-	/// <exception cref="ArgumentNullException"><c>args</c> is <c>null</c>.</exception>
-	public ArgsReader(IEnumerable<string> args)
-	{
-		m_args = (args ?? throw new ArgumentNullException(nameof(args))).ToList();
-	}
-
-	/// <summary>
-	/// True if short options (e.g. <c>-h</c>) should ignore case. (Default false.)
-	/// </summary>
-	public bool ShortOptionIgnoreCase { get; set; }
-
-	/// <summary>
-	/// True if long options (e.g. <c>--help</c>) should ignore case. (Default false.)
-	/// </summary>
-	public bool LongOptionIgnoreCase { get; set; }
-
-	/// <summary>
-	/// True if long options (e.g. <c>--dry-run</c>) should ignore "kebab case", i.e. allow <c>--dryrun</c>. (Default false.)
-	/// </summary>
-	public bool LongOptionIgnoreKebabCase { get; set; }
-
-	/// <summary>
-	/// True if <c>--</c> is ignored and all following arguments are not read as options. (Default false.)
-	/// </summary>
-	public bool NoOptionsAfterDoubleDash { get; set; }
-
-	/// <summary>
-	/// Reads the specified flag, returning true if it is found.
-	/// </summary>
-	/// <param name="name">The name of the specified flag.</param>
-	/// <returns>True if the specified flag was found on the command line.</returns>
-	/// <remarks><para>If the flag is found, the method returns <c>true</c> and the flag is
-	/// removed. If <c>ReadFlag</c> is called again with the same name, it will return <c>false</c>,
-	/// unless the same flag appears twice on the command line.</para>
-	/// <para>To support multiple names for the same flag, use a <c>|</c> to separate them,
-	/// e.g. use <c>help|h|?</c> to support three different names for a help flag.</para>
-	/// <para>Single-character names use a single hyphen, e.g. <c>-h</c>. Longer names
-	/// use a double hyphen, e.g. <c>--help</c>.</para></remarks>
-	/// <exception cref="ArgumentNullException"><c>name</c> is <c>null</c>.</exception>
-	/// <exception cref="ArgumentException">One of the names is empty.</exception>
 	public bool ReadFlag(string name)
 	{
 		if (name == null)
@@ -74,21 +21,6 @@ internal sealed class ArgsReader
 		return true;
 	}
 
-	/// <summary>
-	/// Reads the value of the specified option, if any.
-	/// </summary>
-	/// <param name="name">The name of the specified option.</param>
-	/// <returns>The specified option if it was found on the command line; <c>null</c> otherwise.</returns>
-	/// <remarks><para>If the option is found, the method returns the command-line argument
-	/// after the option and both arguments are removed. If <c>ReadOption</c> is called again with the
-	/// same name, it will return <c>null</c>, unless the same option appears twice on the command line.</para>
-	/// <para>To support multiple names for the same option, use a vertical bar (<c>|</c>) to separate them,
-	/// e.g. use <c>n|name</c> to support two different names for a module option.</para>
-	/// <para>Single-character names use a single hyphen, e.g. <c>-n example</c>. Longer names use a
-	/// double hyphen, e.g. <c>--name example</c>.</para></remarks>
-	/// <exception cref="ArgumentNullException"><c>name</c> is <c>null</c>.</exception>
-	/// <exception cref="ArgumentException">One of the names is empty.</exception>
-	/// <exception cref="ArgsReaderException">The argument that must follow the option is missing.</exception>
 	public string? ReadOption(string name)
 	{
 		if (name == null)
@@ -113,14 +45,6 @@ internal sealed class ArgsReader
 		return value;
 	}
 
-	/// <summary>
-	/// Reads the next non-option argument.
-	/// </summary>
-	/// <returns>The next non-option argument, or null if none remain.</returns>
-	/// <remarks><para>If the next argument is an option, this method throws an exception.
-	/// If options can appear before normal arguments, be sure to read all options before reading
-	/// any normal arguments.</para></remarks>
-	/// <exception cref="ArgsReaderException">The next argument is an option.</exception>
 	public string? ReadArgument()
 	{
 		if (m_args.Count == 0)
@@ -128,44 +52,13 @@ internal sealed class ArgsReader
 
 		var value = m_args[0];
 
-		if (NoOptionsAfterDoubleDash && value == "--")
-		{
-			m_args.RemoveAt(0);
-			m_noMoreOptions = true;
-			return ReadArgument();
-		}
-
-		if (!m_noMoreOptions && IsOption(value))
+		if (IsOption(value))
 			throw new ArgsReaderException($"Unexpected option '{value}'.");
 
 		m_args.RemoveAt(0);
 		return value;
 	}
 
-	/// <summary>
-	/// Reads any remaining non-option arguments.
-	/// </summary>
-	/// <returns>The remaining non-option arguments, if any.</returns>
-	/// <remarks><para>If any remaining arguments are options, this method throws an exception.
-	/// If options can appear before normal arguments, be sure to read all options before reading
-	/// any normal arguments.</para></remarks>
-	/// <exception cref="ArgsReaderException">A remaining argument is an option.</exception>
-	public IReadOnlyList<string> ReadArguments()
-	{
-		var arguments = new List<string>();
-		while (true)
-		{
-			var argument = ReadArgument();
-			if (argument == null)
-				return arguments;
-			arguments.Add(argument);
-		}
-	}
-
-	/// <summary>
-	/// Confirms that all arguments were processed.
-	/// </summary>
-	/// <exception cref="ArgsReaderException">A command-line argument was not read.</exception>
 	public void VerifyComplete()
 	{
 		if (m_args.Count != 0)
@@ -176,32 +69,13 @@ internal sealed class ArgsReader
 
 	private static string RenderOption(string name) => name.Length == 1 ? $"-{name}" : $"--{name}";
 
-	private bool IsOptionArgument(string optionName, string argument)
-	{
-		var renderedOption = RenderOption(optionName);
-		if (optionName.Length == 1)
-		{
-			return string.Equals(argument, renderedOption, ShortOptionIgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
-		}
-		else
-		{
-			if (LongOptionIgnoreKebabCase)
-			{
-				argument = Regex.Replace(argument, @"\b-\b", "");
-				renderedOption = Regex.Replace(renderedOption, @"\b-\b", "");
-			}
-
-			return string.Equals(argument, renderedOption, LongOptionIgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
-		}
-	}
+	private static bool IsOptionArgument(string optionName, string argument) => string.Equals(argument, RenderOption(optionName), StringComparison.Ordinal);
 
 	private int FindOptionArgumentIndex(string optionName)
 	{
 		for (var index = 0; index < m_args.Count; index++)
 		{
 			var arg = m_args[index];
-			if (NoOptionsAfterDoubleDash && arg == "--")
-				break;
 			if (IsOptionArgument(optionName, arg))
 				return index;
 		}
@@ -209,6 +83,5 @@ internal sealed class ArgsReader
 		return -1;
 	}
 
-	private readonly List<string> m_args;
-	private bool m_noMoreOptions;
+	private readonly List<string> m_args = (args ?? throw new ArgumentNullException(nameof(args))).ToList();
 }
