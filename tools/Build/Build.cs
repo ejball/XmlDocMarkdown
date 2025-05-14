@@ -30,13 +30,8 @@ return BuildRunner.Execute(args, build =>
 	void GenerateDocs(bool verify)
 	{
 		var configuration = dotNetBuildSettings.GetConfiguration();
-		var projects = new[]
-		{
-			("XmlDocMarkdown.Core", "../src/XmlDocMarkdown.Core"),
-			("ExampleAssembly", "../tests/ExampleAssembly"),
-		};
 		var xmlDocGenPath = FindFiles($"tools/XmlDocGen/bin/{configuration}/net8.0/XmlDocGen.dll").First();
-		foreach (var (assembly, sourcePath) in projects)
-			RunDotNet(xmlDocGenPath, assembly, "docs", verify ? "--verify" : null, "--source", sourcePath, "--clean");
+		RunDotNet(xmlDocGenPath, "ExampleAssembly", "docs", verify ? "--verify" : null, "--clean");
+		RunDotNet(xmlDocGenPath, "XmlDocMarkdown.Core", "docs", verify ? "--verify" : null, "--clean");
 	}
 });

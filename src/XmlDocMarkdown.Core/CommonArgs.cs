@@ -2,8 +2,6 @@ namespace XmlDocMarkdown.Core
 {
 	internal static class CommonArgs
 	{
-		public static string? ReadSourceOption(this ArgsReader args) => args.ReadOption("source");
-
 		public static string? ReadNamespaceOption(this ArgsReader args) => args.ReadOption("namespace");
 
 		public static XmlDocVisibilityLevel? ReadVisibilityOption(this ArgsReader args)

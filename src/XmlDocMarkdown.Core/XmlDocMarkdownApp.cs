@@ -28,7 +28,6 @@ namespace XmlDocMarkdown.Core
 
 				var settings = new XmlDocMarkdownSettings
 				{
-					SourceCodePath = argsReader.ReadSourceOption(),
 					RootNamespace = argsReader.ReadNamespaceOption(),
 					IncludeObsolete = argsReader.ReadObsoleteFlag(),
 					SkipUnbrowsable = argsReader.ReadSkipUnbrowsableFlag(),
@@ -98,9 +97,6 @@ namespace XmlDocMarkdown.Core
 			textWriter.WriteLine("   output");
 			textWriter.WriteLine("      The path of the output directory.");
 			textWriter.WriteLine();
-			textWriter.WriteLine("   --source <url>");
-			textWriter.WriteLine("      The URL (absolute or relative) of the folder containing the source");
-			textWriter.WriteLine("      code of the assembly, e.g. at GitHub. (optional)");
 			textWriter.WriteLine("   --namespace <ns>");
 			textWriter.WriteLine("      The root namespace of the input assembly. (optional)");
 			textWriter.WriteLine("   --visibility (public|protected|internal|private)");
