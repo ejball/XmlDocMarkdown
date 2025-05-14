@@ -17,10 +17,8 @@ public static class XmlDocMarkdownGenerator
 	/// <returns>The names of files that were added, changed, or removed.</returns>
 	public static XmlDocMarkdownResult Generate(Assembly assembly, string outputPath, XmlDocMarkdownSettings? settings)
 	{
-		if (assembly == null)
-			throw new ArgumentNullException(nameof(assembly));
-		if (outputPath == null)
-			throw new ArgumentNullException(nameof(outputPath));
+		ArgumentNullException.ThrowIfNull(assembly);
+		ArgumentNullException.ThrowIfNull(outputPath);
 
 		var result = new XmlDocMarkdownResult();
 
@@ -71,7 +69,7 @@ public static class XmlDocMarkdownGenerator
 			if (File.Exists(existingFilePath))
 			{
 				// ignore CR when comparing files
-				if (namedText.Text.Replace("\r", "") != File.ReadAllText(existingFilePath).Replace("\r", ""))
+				if (namedText.Text.Replace("\r", "", StringComparison.Ordinal) != File.ReadAllText(existingFilePath).Replace("\r", "", StringComparison.Ordinal))
 				{
 					namedTextsToWrite.Add(namedText);
 					result.Changed.Add(namedText.Name);
@@ -115,7 +113,7 @@ public static class XmlDocMarkdownGenerator
 				var assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
 				var assemblyFolder = Path.GetFileNameWithoutExtension(assemblyFileName);
 				var patterns = new[] { $"{assemblyFolder}/*.md", $"{assemblyFolder}/*/*.md" };
-				var codeGenComment = MarkdownGenerator.GetCodeGenComment(assemblyFileName);
+				var codeGenComment = MarkdownGenerator.GetCodeGenComment(assemblyFileName ?? "");
 
 				foreach (var nameMatchingPattern in FindNamesMatchingPatterns(directoryInfo, patterns, codeGenComment))
 				{
@@ -172,7 +170,7 @@ public static class XmlDocMarkdownGenerator
 		{
 			foreach (var fileInfo in directoryInfo.GetFiles(parts[0]))
 			{
-				if (File.ReadAllText(fileInfo.FullName).Contains(requiredSubstring))
+				if (File.ReadAllText(fileInfo.FullName).Contains(requiredSubstring, StringComparison.Ordinal))
 					yield return fileInfo.Name;
 			}
 		}

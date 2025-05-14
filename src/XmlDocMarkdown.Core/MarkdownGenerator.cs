@@ -44,7 +44,7 @@ internal sealed class MarkdownGenerator
 	private IEnumerable<NamedText> DoGenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 	{
 		var extension = GetFileExtension();
-		var assemblyName = assembly.GetName().Name;
+		var assemblyName = assembly.GetName().Name!;
 		var assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
 		var assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
 
@@ -91,7 +91,7 @@ internal sealed class MarkdownGenerator
 		var rootPath = GetAssemblyUriName(assembly);
 		var safeAssemblyName = GetSafeName(rootPath);
 		var rootNamespace = RootNamespace ??
-			visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0);
+			visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0) ?? "";
 		RootPageLocation = $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly.md" : ".md");
 		var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation);
 		yield return CreateNamedText(context.PageLocation, null, assemblyName, writer =>
@@ -224,7 +224,7 @@ internal sealed class MarkdownGenerator
 			return null;
 
 		var contents = File.ReadAllText(FrontMatter);
-		return contents.Replace("$title", title).Replace("$ref", relativeLink);
+		return contents.Replace("$title", title, StringComparison.Ordinal).Replace("$ref", relativeLink, StringComparison.Ordinal);
 	}
 
 	private NamedText CreateNamedText(string name, string? parent, string title, Action<MarkdownWriter> writeTo)
@@ -286,7 +286,7 @@ internal sealed class MarkdownGenerator
 	private string GetSafeName(string name)
 	{
 		if (PermalinkPretty)
-			return name.Replace(".", ""); // Jekyll can't handle dots in file name.
+			return name.Replace(".", "", StringComparison.Ordinal); // Jekyll can't handle dots in file name.
 
 		return name;
 	}
@@ -301,7 +301,7 @@ internal sealed class MarkdownGenerator
 		EscapeHtml($"{shortSignature.Prefix}[{shortSignature.Name}]({path}){shortSignature.Suffix}");
 
 	private static string EscapeHtml(string value) =>
-		value.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("|", "&#x7C;");
+		value.Replace("&", "&amp;", StringComparison.Ordinal).Replace("<", "&lt;", StringComparison.Ordinal).Replace(">", "&gt;", StringComparison.Ordinal).Replace("|", "&#x7C;", StringComparison.Ordinal);
 
 	private static string SurroundCode(string value)
 	{
@@ -323,7 +323,7 @@ internal sealed class MarkdownGenerator
 			if (pos > 0)
 				path = path.Substring(0, pos);
 		}
-		return path.Replace("\\", "/");
+		return path.Replace("\\", "/", StringComparison.Ordinal);
 	}
 
 	private NamedText WriteMemberPage(string path, string parent, string title, IReadOnlyList<MemberInfo> memberGroup, MarkdownContext context)
@@ -611,7 +611,7 @@ internal sealed class MarkdownGenerator
 		if (memberInfo == null)
 			return null;
 
-		var namespaceName = (memberInfo as TypeInfo ?? memberInfo.DeclaringType.GetTypeInfo()).Namespace;
+		var namespaceName = (memberInfo as TypeInfo ?? memberInfo.DeclaringType!.GetTypeInfo()).Namespace;
 		return ExternalDocs?.FirstOrDefault(x => x.Namespace == namespaceName);
 	}
 
@@ -739,12 +739,12 @@ internal sealed class MarkdownGenerator
 	{
 		var name = memberInfo.Name;
 
-		var tickIndex = name.IndexOf('`');
+		var tickIndex = name.IndexOf('`', StringComparison.Ordinal);
 		if (tickIndex != -1)
 			name = name.Substring(0, tickIndex);
 
 		if (name == ".ctor" || name == ".cctor")
-			name = GetShortName(memberInfo.DeclaringType.GetTypeInfo());
+			name = GetShortName(memberInfo.DeclaringType!.GetTypeInfo());
 		else if (name == "op_UnaryPlus")
 			name = "op_Addition";
 		else if (name == "op_UnaryNegation")
@@ -792,13 +792,13 @@ internal sealed class MarkdownGenerator
 			return GetFullTypeName(type, t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters));
 
 		if (memberInfo is ConstructorInfo || (memberInfo as PropertyInfo)?.GetIndexParameters().Length > 0)
-			return GetFullTypeName(memberInfo.DeclaringType.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters));
+			return GetFullTypeName(memberInfo.DeclaringType!.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters));
 
 		var methodName = (memberInfo as MethodInfo)?.Name;
 		if (methodName?.StartsWith("op_", StringComparison.Ordinal) == true)
-			return GetFullTypeName(memberInfo.DeclaringType.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters)) + " " + methodName.Substring(3);
+			return string.Concat(GetFullTypeName(memberInfo.DeclaringType!.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters)), " ", methodName.AsSpan(3));
 
-		return GetFullTypeName(memberInfo.DeclaringType.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters)) + "." +
+		return GetFullTypeName(memberInfo.DeclaringType!.GetTypeInfo(), t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters)) + "." +
 			GetShortName(memberInfo) + RenderShortGenericParameters(GetGenericArguments(memberInfo));
 	}
 
@@ -829,7 +829,7 @@ internal sealed class MarkdownGenerator
 
 		public override bool Equals(object? obj) => Equals(obj as ShortSignature);
 
-		public override int GetHashCode() => ToString().GetHashCode();
+		public override int GetHashCode() => ToString().GetHashCode(StringComparison.Ordinal);
 
 		public override string ToString() => Prefix + Name + Suffix;
 	}
@@ -1174,7 +1174,7 @@ internal sealed class MarkdownGenerator
 			{
 				yield return " : ";
 				yield return "";
-				yield return RenderTypeName(typeInfo.BaseType.GetTypeInfo(), seeAlsoMembers);
+				yield return RenderTypeName(typeInfo.BaseType!.GetTypeInfo(), seeAlsoMembers);
 				isFirstBase = false;
 			}
 
@@ -1254,7 +1254,7 @@ internal sealed class MarkdownGenerator
 					nullableContextFlags: nullableContextFlags);
 
 				yield return " ";
-				if (IsKeyword(parameterInfo.Name))
+				if (IsKeyword(parameterInfo.Name!))
 					yield return "@";
 				yield return parameterInfo.Name ?? "P_" + index.ToString(CultureInfo.InvariantCulture); // default as per ILSpy if null
 
@@ -1262,7 +1262,7 @@ internal sealed class MarkdownGenerator
 				{
 					yield return " = ";
 					if (CanRenderParameterConstant(parameterInfo))
-						yield return RenderConstant(parameterInfo.DefaultValue);
+						yield return RenderConstant(parameterInfo.DefaultValue!);
 					else if (parameterInfo.ParameterType.GetTypeInfo().IsValueType || parameterInfo.ParameterType.IsGenericParameter)
 						yield return "default";
 					else
@@ -1349,7 +1349,7 @@ internal sealed class MarkdownGenerator
 	{
 		var eventInfo = member as EventInfo;
 		if (eventInfo != null)
-			return (eventInfo.EventHandlerType.GetTypeInfo(), eventInfo.GetCustomAttributes().ToList());
+			return (eventInfo.EventHandlerType!.GetTypeInfo(), eventInfo.GetCustomAttributes().ToList());
 
 		var propertyInfo = member as PropertyInfo;
 		if (propertyInfo != null)
@@ -1369,13 +1369,13 @@ internal sealed class MarkdownGenerator
 	private static byte[] GetNullableContextFlags(IEnumerable<Attribute> attributes)
 	{
 		var attribute = attributes.FirstOrDefault(x => x.GetType().FullName == "System.Runtime.CompilerServices.NullableContextAttribute");
-		return attribute is null ? [] : [(byte) attribute.GetType().GetField("Flag").GetValue(attribute)];
+		return attribute is null ? [] : [(byte) attribute.GetType().GetField("Flag")!.GetValue(attribute)!];
 	}
 
 	private static byte[] GetNullableFlags(IEnumerable<Attribute> attributes)
 	{
 		var attribute = attributes.FirstOrDefault(x => x.GetType().FullName == "System.Runtime.CompilerServices.NullableAttribute");
-		return ((byte[]?) attribute?.GetType().GetField("NullableFlags").GetValue(attribute)) ?? [];
+		return ((byte[]?) attribute?.GetType().GetField("NullableFlags")!.GetValue(attribute)!) ?? [];
 	}
 
 	private static bool ParameterHasDefaultValue(ParameterInfo parameterInfo)
@@ -1413,12 +1413,12 @@ internal sealed class MarkdownGenerator
 		var type = value.GetType();
 		if (type.GetTypeInfo().IsEnum)
 		{
-			return string.Join(" | ", value.ToString()
+			return string.Join(" | ", value.ToString()!
 				.Split([", "], StringSplitOptions.None)
 				.Select(x => $"{type.Name}.{x}"));
 		}
 
-		var rendered = Convert.ToString(value, CultureInfo.InvariantCulture);
+		var rendered = Convert.ToString(value, CultureInfo.InvariantCulture)!;
 
 		if (value is double)
 			rendered += "m";
@@ -1500,7 +1500,7 @@ internal sealed class MarkdownGenerator
 	private static string RenderTypeName(TypeInfo typeInfo, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex, byte[] nullableFlags, ref int nullableFlagIndex)
 	{
 		if (typeInfo.IsByRef)
-			return RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex);
+			return RenderTypeName(typeInfo.GetElementType()!.GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex);
 
 		var nullableOfType = Nullable.GetUnderlyingType(typeInfo.AsType());
 		if (nullableOfType != null)
@@ -1516,7 +1516,7 @@ internal sealed class MarkdownGenerator
 		}
 
 		if (typeInfo.IsArray)
-			return $"{RenderTypeName(typeInfo.GetElementType().GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex)}[]" + nullableSuffix;
+			return $"{RenderTypeName(typeInfo.GetElementType()!.GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex)}[]" + nullableSuffix;
 
 		var builtIn = TryGetBuiltInTypeName(typeInfo.AsType());
 		if (builtIn != null)
@@ -1594,7 +1594,7 @@ internal sealed class MarkdownGenerator
 		return stringBuilder.ToString();
 	}
 
-	private static string? TryGetBuiltInTypeName(Type type)
+	private static string? TryGetBuiltInTypeName(Type? type)
 	{
 		if (type == typeof(void))
 			return "void";
@@ -1639,7 +1639,7 @@ internal sealed class MarkdownGenerator
 
 		var eventInfo = memberInfo as EventInfo;
 		if (eventInfo != null)
-			return eventInfo.AddMethod.IsStatic;
+			return eventInfo.AddMethod?.IsStatic is true;
 
 		var propertyInfo = memberInfo as PropertyInfo;
 		if (propertyInfo != null)
@@ -1701,7 +1701,7 @@ internal sealed class MarkdownGenerator
 
 		var methodInfo = memberInfo as MethodInfo;
 		if (methodInfo != null)
-			return methodInfo.IsVirtual && !methodInfo.IsFinal && methodInfo.GetRuntimeBaseDefinition().DeclaringType == methodInfo.DeclaringType;
+			return methodInfo.IsVirtual && !methodInfo.IsFinal && methodInfo.GetRuntimeBaseDefinition()!.DeclaringType == methodInfo.DeclaringType;
 
 		return false;
 	}
@@ -1724,7 +1724,7 @@ internal sealed class MarkdownGenerator
 
 		var methodInfo = memberInfo as MethodInfo;
 		if (methodInfo != null)
-			return methodInfo.IsVirtual && !methodInfo.IsFinal && methodInfo.GetRuntimeBaseDefinition().DeclaringType != methodInfo.DeclaringType;
+			return methodInfo.IsVirtual && !methodInfo.IsFinal && methodInfo.GetRuntimeBaseDefinition()!.DeclaringType != methodInfo.DeclaringType;
 
 		return false;
 	}
@@ -1763,12 +1763,12 @@ internal sealed class MarkdownGenerator
 		if (typeInfo != null)
 		{
 			var visibility = GetTypeVisibility(typeInfo);
-			return typeInfo.IsNested ? GetMostPrivate(visibility, GetTypeVisibility(typeInfo.DeclaringType.GetTypeInfo(), protectedInternal)) : visibility;
+			return typeInfo.IsNested ? GetMostPrivate(visibility, GetTypeVisibility(typeInfo.DeclaringType!.GetTypeInfo(), protectedInternal)) : visibility;
 		}
 
 		var eventInfo = memberInfo as EventInfo;
 		if (eventInfo != null)
-			return GetMethodVisibility(eventInfo.AddMethod, protectedInternal);
+			return GetMethodVisibility(eventInfo.AddMethod!, protectedInternal);
 
 		var propertyInfo = memberInfo as PropertyInfo;
 		if (propertyInfo != null)
@@ -1821,11 +1821,11 @@ internal sealed class MarkdownGenerator
 		if (getMethod != null && setMethod == null)
 			return GetMethodVisibility(getMethod);
 		if (getMethod == null)
-			return GetMethodVisibility(setMethod);
+			return GetMethodVisibility(setMethod!);
 
 		return GetMostPublic(
-			GetMethodVisibility(propertyInfo.GetMethod, protectedInternal),
-			GetMethodVisibility(propertyInfo.SetMethod, protectedInternal));
+			GetMethodVisibility(propertyInfo.GetMethod!, protectedInternal),
+			GetMethodVisibility(propertyInfo.SetMethod!, protectedInternal));
 	}
 
 	private static XmlDocVisibilityLevel GetFieldVisibility(FieldInfo fieldInfo, XmlDocVisibilityLevel protectedInternal = XmlDocVisibilityLevel.Protected)
@@ -1916,7 +1916,7 @@ internal sealed class MarkdownGenerator
 
 	private static MemberOrder GetPropertyOrder(PropertyInfo propertyInfo)
 	{
-		var method = propertyInfo.GetMethod ?? propertyInfo.SetMethod;
+		var method = propertyInfo.GetMethod ?? propertyInfo.SetMethod!;
 		if (!method.IsStatic)
 			return MemberOrder.InstanceProperty;
 		if (propertyInfo.PropertyType == propertyInfo.DeclaringType)
@@ -1926,7 +1926,7 @@ internal sealed class MarkdownGenerator
 
 	private static MemberOrder GetEventOrder(EventInfo eventInfo)
 	{
-		var method = eventInfo.AddMethod ?? eventInfo.RemoveMethod;
+		var method = eventInfo.AddMethod ?? eventInfo.RemoveMethod!;
 		if (!method.IsStatic)
 			return MemberOrder.InstanceEvent;
 		return MemberOrder.StaticEvent;
@@ -2070,21 +2070,21 @@ internal sealed class MarkdownGenerator
 				if (typeInfo != null)
 					path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
 				else
-					path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
+					path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType!.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 			}
 			else if (context.TypeInfo != null)
 			{
 				if (typeInfo != null)
 					path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
 				else
-					path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
+					path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType!.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 			}
 			else
 			{
 				if (typeInfo != null)
 					path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
 				else
-					path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
+					path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType!.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 			}
 
 			if (!string.IsNullOrEmpty(context.PageLocation))
@@ -2164,7 +2164,7 @@ internal sealed class MarkdownGenerator
 				{
 					yield return "```csharp";
 					foreach (var inline in block.Inlines)
-						yield return inline.Text!.Replace(Environment.NewLine, ActualNewLine);
+						yield return inline.Text!.Replace(Environment.NewLine, ActualNewLine, StringComparison.Ordinal);
 					yield return "```";
 				}
 				else
@@ -2206,7 +2206,7 @@ internal sealed class MarkdownGenerator
 			}
 			else if (memberInfo != null)
 			{
-				TypeInfo = memberInfo.DeclaringType.GetTypeInfo();
+				TypeInfo = memberInfo.DeclaringType!.GetTypeInfo();
 				MemberInfo = memberInfo;
 			}
 		}

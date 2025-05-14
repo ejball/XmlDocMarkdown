@@ -52,12 +52,12 @@ internal static class XmlDocUtility
 
 		if (typeInfo.IsArray)
 		{
-			stringBuilder.Append(GetXmlDocTypePart(typeInfo.GetElementType().GetTypeInfo()));
+			stringBuilder.Append(GetXmlDocTypePart(typeInfo.GetElementType()!.GetTypeInfo()));
 			stringBuilder.Append("[]");
 		}
 		else if (typeInfo.IsByRef)
 		{
-			stringBuilder.Append(GetXmlDocTypePart(typeInfo.GetElementType().GetTypeInfo()));
+			stringBuilder.Append(GetXmlDocTypePart(typeInfo.GetElementType()!.GetTypeInfo()));
 			stringBuilder.Append('@');
 		}
 		else if (!typeInfo.IsGenericParameter)
@@ -67,10 +67,10 @@ internal static class XmlDocUtility
 			else if (!string.IsNullOrEmpty(typeInfo.Namespace))
 				stringBuilder.Append(typeInfo.Namespace + ".");
 
-			var tickIndex = typeInfo.Name.IndexOf('`');
+			var tickIndex = typeInfo.Name.IndexOf('`', StringComparison.Ordinal);
 			if (typeInfo is { IsGenericType: true, IsGenericTypeDefinition: false } && tickIndex != -1)
 			{
-				stringBuilder.Append(typeInfo.Name.Substring(0, tickIndex));
+				stringBuilder.Append(typeInfo.Name.AsSpan(0, tickIndex));
 				stringBuilder.Append('{');
 				stringBuilder.Append(string.Join(",", typeInfo.GenericTypeArguments.Select(x => GetXmlDocTypePart(x.GetTypeInfo()))));
 				stringBuilder.Append('}');
@@ -90,7 +90,7 @@ internal static class XmlDocUtility
 		}
 		else
 		{
-			var genericTypeIndex = typeInfo.DeclaringType.GetTypeInfo().GenericTypeParameters.ToList().IndexOf(typeInfo.AsType());
+			var genericTypeIndex = typeInfo.DeclaringType!.GetTypeInfo().GenericTypeParameters.ToList().IndexOf(typeInfo.AsType());
 			if (genericTypeIndex == -1)
 				throw new InvalidOperationException("Unexpected type: " + typeInfo);
 
@@ -104,7 +104,7 @@ internal static class XmlDocUtility
 	}
 
 	private static string GetXmlDocMemberPart(MemberInfo memberInfo) =>
-		GetXmlDocTypePart(memberInfo.DeclaringType.GetTypeInfo()) +
+		GetXmlDocTypePart(memberInfo.DeclaringType!.GetTypeInfo()) +
 		"." +
 		memberInfo.Name.Replace('.', '#');
 

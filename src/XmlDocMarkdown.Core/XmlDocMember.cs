@@ -201,11 +201,11 @@ internal sealed class XmlDocMember
 					break;
 
 				case "paramref":
-					m_block?.Inlines.Add(new XmlDocInline { Text = (string) xElement.Attribute("name"), IsParamRef = true });
+					m_block?.Inlines.Add(new XmlDocInline { Text = (string?) xElement.Attribute("name"), IsParamRef = true });
 					break;
 
 				case "typeparamref":
-					m_block?.Inlines.Add(new XmlDocInline { Text = (string) xElement.Attribute("name"), IsTypeParamRef = true });
+					m_block?.Inlines.Add(new XmlDocInline { Text = (string?) xElement.Attribute("name"), IsTypeParamRef = true });
 					break;
 
 				default:

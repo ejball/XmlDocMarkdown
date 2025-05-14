@@ -4,8 +4,7 @@ internal sealed class ArgsReader(IEnumerable<string> args)
 {
 	public bool ReadFlag(string name)
 	{
-		if (name == null)
-			throw new ArgumentNullException(nameof(name));
+		ArgumentNullException.ThrowIfNull(name);
 		if (name.Length == 0)
 			throw new ArgumentException("Flag name must not be empty.", nameof(name));
 
@@ -23,8 +22,7 @@ internal sealed class ArgsReader(IEnumerable<string> args)
 
 	public string? ReadOption(string name)
 	{
-		if (name == null)
-			throw new ArgumentNullException(nameof(name));
+		ArgumentNullException.ThrowIfNull(name);
 		if (name.Length == 0)
 			throw new ArgumentException("Option name must not be empty.", nameof(name));
 
