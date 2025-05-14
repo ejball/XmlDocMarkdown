@@ -12,10 +12,6 @@ internal sealed class MarkdownGenerator
 {
 	public string? NewLine { get; set; }
 
-	public string? SourceCodePath { get; set; }
-
-	public string? RootNamespace { get; set; }
-
 	public bool IncludeObsolete { get; set; }
 
 	public bool SkipUnbrowsable { get; set; }
@@ -87,13 +83,10 @@ internal sealed class MarkdownGenerator
 			.OrderBy(x => x.Namespace, StringComparer.OrdinalIgnoreCase)
 			.ToList();
 
-		var sourceCodePath = SourceCodePath?.Trim('/');
 		var rootPath = GetAssemblyUriName(assembly);
 		var safeAssemblyName = GetSafeName(rootPath);
-		var rootNamespace = RootNamespace ??
-			visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0) ?? "";
 		RootPageLocation = $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly.md" : ".md");
-		var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation);
+		var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, RootPageLocation);
 		yield return CreateNamedText(context.PageLocation, writer =>
 		{
 			var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly" : "") + extension);
@@ -579,19 +572,6 @@ internal sealed class MarkdownGenerator
 				else
 				{
 					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo!)}](../{(typeInfo != null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo!).Assembly)}{extension})");
-				}
-
-				if (typeInfo != null && declaringType == null && !string.IsNullOrEmpty(context.SourceCodePath) && !string.IsNullOrEmpty(context.RootNamespace))
-				{
-					var namespaceName = GetNamespaceName(typeInfo);
-					if (namespaceName.StartsWith(context.RootNamespace, StringComparison.Ordinal))
-					{
-						var directoryPath = context.SourceCodePath + namespaceName.Substring(context.RootNamespace.Length).Replace('.', '/');
-						if (!Uri.TryCreate(directoryPath, UriKind.Absolute, out _))
-							directoryPath = "../" + directoryPath;
-						var fileName = GetShortName(typeInfo) + ".cs";
-						writer.WriteLine($"* [{fileName}]({directoryPath}/{fileName})");
-					}
 				}
 
 				if (memberIndex < memberGroup.Count - 1)
@@ -2180,13 +2160,11 @@ internal sealed class MarkdownGenerator
 
 	private sealed class MarkdownContext
 	{
-		public MarkdownContext(XmlDocAssembly xmlDocAssembly, IReadOnlyDictionary<string, MemberInfo> membersByXmlDocName, string assemblyFileName, string? sourceCodePath, string rootNamespace, string pageLocation)
+		public MarkdownContext(XmlDocAssembly xmlDocAssembly, IReadOnlyDictionary<string, MemberInfo> membersByXmlDocName, string assemblyFileName, string pageLocation)
 		{
 			XmlDocAssembly = xmlDocAssembly;
 			MembersByXmlDocName = membersByXmlDocName;
 			AssemblyFileName = assemblyFileName;
-			SourceCodePath = sourceCodePath;
-			RootNamespace = rootNamespace;
 			PageLocation = pageLocation;
 		}
 
@@ -2195,8 +2173,6 @@ internal sealed class MarkdownGenerator
 			XmlDocAssembly = context.XmlDocAssembly;
 			MembersByXmlDocName = context.MembersByXmlDocName;
 			AssemblyFileName = context.AssemblyFileName;
-			SourceCodePath = context.SourceCodePath;
-			RootNamespace = context.RootNamespace;
 			PageLocation = pageLocation;
 
 			var typeInfo = memberInfo as TypeInfo;
@@ -2220,10 +2196,6 @@ internal sealed class MarkdownGenerator
 		public IReadOnlyDictionary<string, MemberInfo> MembersByXmlDocName { get; }
 
 		public string AssemblyFileName { get; }
-
-		public string? SourceCodePath { get; }
-
-		public string RootNamespace { get; }
 
 		public string PageLocation { get; }
 	}

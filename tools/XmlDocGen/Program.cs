@@ -5,10 +5,4 @@ return XmlDocMarkdownApp.Run(args,
 	{
 		settings.NewLine = "\n";
 		settings.ShouldClean = true;
-		settings.SourceCodePath = assembly switch
-		{
-			"ExampleAssembly" => "../tests/ExampleAssembly",
-			"XmlDocMarkdown.Core" => "../src/XmlDocMarkdown.Core",
-			_ => throw new InvalidOperationException($"Unexpected assembly: {assembly}"),
-		};
 	});

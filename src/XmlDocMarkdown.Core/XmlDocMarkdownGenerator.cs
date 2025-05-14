@@ -27,8 +27,6 @@ public static class XmlDocMarkdownGenerator
 		var generator = new MarkdownGenerator
 		{
 			NewLine = settings.NewLine,
-			SourceCodePath = settings.SourceCodePath,
-			RootNamespace = settings.RootNamespace,
 			IncludeObsolete = settings.IncludeObsolete,
 			SkipUnbrowsable = settings.SkipUnbrowsable,
 			SkipCompilerGenerated = settings.SkipCompilerGenerated,

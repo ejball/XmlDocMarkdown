@@ -13,13 +13,6 @@ public class XmlDocMarkdownSettings
 	public string? SourceCodePath { get; set; }
 
 	/// <summary>
-	/// The root namespace of the input assembly.
-	/// </summary>
-	/// <remarks>Used to generate source code links in the See Also sections for types.
-	/// If omitted, the tool guesses the root namespace from the exported types.</remarks>
-	public string? RootNamespace { get; set; }
-
-	/// <summary>
 	/// If true, generates documentation for obsolete types and members. (Default false.)
 	/// </summary>
 	public bool IncludeObsolete { get; set; }
