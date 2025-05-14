@@ -19,7 +19,6 @@ public class XmlDocMarkdownSettings
 | [NamespacePages](XmlDocMarkdownSettings/NamespacePages.md) { get; set; } | Generate separate pages for each namespace containing list of types in each. |
 | [NewLine](XmlDocMarkdownSettings/NewLine.md) { get; set; } | Indicates the newline used in the output. |
 | [PermalinkStyle](XmlDocMarkdownSettings/PermalinkStyle.md) { get; set; } | Specify permalink style, 'none' or 'pretty' (default 'none'). 'pretty' permalinks do not contain file extensions, and when you select this option periods have to be removed from file names, for example, 'System.Console' would have to be 'SystemConsole'. since the removal of the '.md' extension would make Jekyll think '.Console' is a file extension which doesn't work. |
-| [RootNamespace](XmlDocMarkdownSettings/RootNamespace.md) { get; set; } | The root namespace of the input assembly. |
 | [ShouldClean](XmlDocMarkdownSettings/ShouldClean.md) { get; set; } | If true, deletes previously generated files that are no longer used. |
 | [SkipCompilerGenerated](XmlDocMarkdownSettings/SkipCompilerGenerated.md) { get; set; } | If true, skips documentation for types and members with `[CompilerGenerated]`. |
 | [SkipUnbrowsable](XmlDocMarkdownSettings/SkipUnbrowsable.md) { get; set; } | If true, skips documentation for types and members with `[EditorBrowsable(EditorBrowsableState.Never)]`. |
