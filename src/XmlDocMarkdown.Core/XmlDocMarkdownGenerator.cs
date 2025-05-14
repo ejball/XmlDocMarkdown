@@ -11,29 +11,14 @@ public static class XmlDocMarkdownGenerator
 	/// <summary>
 	/// Generates Markdown from .NET XML documentation comments.
 	/// </summary>
-	/// <param name="inputPath">The input assembly.</param>
+	/// <param name="assembly">The input assembly.</param>
 	/// <param name="outputPath">The output directory.</param>
 	/// <param name="settings">The settings.</param>
 	/// <returns>The names of files that were added, changed, or removed.</returns>
-	public static XmlDocMarkdownResult Generate(string inputPath, string outputPath, XmlDocMarkdownSettings? settings)
+	public static XmlDocMarkdownResult Generate(Assembly assembly, string outputPath, XmlDocMarkdownSettings? settings)
 	{
-		if (inputPath == null)
-			throw new ArgumentNullException(nameof(inputPath));
-
-		return Generate(new XmlDocInput { AssemblyPath = inputPath }, outputPath, settings);
-	}
-
-	/// <summary>
-	/// Generates Markdown from .NET XML documentation comments.
-	/// </summary>
-	/// <param name="input">The input.</param>
-	/// <param name="outputPath">The output directory.</param>
-	/// <param name="settings">The settings.</param>
-	/// <returns>The names of files that were added, changed, or removed.</returns>
-	public static XmlDocMarkdownResult Generate(XmlDocInput input, string outputPath, XmlDocMarkdownSettings? settings)
-	{
-		if (input == null)
-			throw new ArgumentNullException(nameof(input));
+		if (assembly == null)
+			throw new ArgumentNullException(nameof(assembly));
 		if (outputPath == null)
 			throw new ArgumentNullException(nameof(outputPath));
 
@@ -61,16 +46,11 @@ public static class XmlDocMarkdownGenerator
 
 		XmlDocAssembly xmlDocAssembly;
 
-		var assembly = input.Assembly ?? Assembly.LoadFrom(input.AssemblyPath);
-		var xmlDocPath = input.XmlDocPath;
-		if (xmlDocPath == null)
-		{
-			var assemblyPath = input.AssemblyPath ?? assembly.Location;
+		var assemblyPath = assembly.Location;
 
-			xmlDocPath = Path.ChangeExtension(assemblyPath, ".xml");
-			if (!File.Exists(xmlDocPath))
-				xmlDocPath = Path.ChangeExtension(assemblyPath, ".XML");
-		}
+		var xmlDocPath = Path.ChangeExtension(assemblyPath, ".xml");
+		if (!File.Exists(xmlDocPath))
+			xmlDocPath = Path.ChangeExtension(assemblyPath, ".XML");
 
 		if (xmlDocPath != null && File.Exists(xmlDocPath))
 		{

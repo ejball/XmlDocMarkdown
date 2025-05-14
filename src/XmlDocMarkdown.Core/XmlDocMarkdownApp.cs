@@ -39,8 +39,8 @@ public sealed class XmlDocMarkdownApp
 
 			configure?.Invoke(assemblyName, settings);
 
-			var input = new XmlDocInput { Assembly = Assembly.Load(assemblyName) };
-			var result = XmlDocMarkdownGenerator.Generate(input, outputPath, settings);
+			var assembly = Assembly.Load(assemblyName);
+			var result = XmlDocMarkdownGenerator.Generate(assembly, outputPath, settings);
 
 			foreach (var message in result.Messages)
 				Console.WriteLine(message);
