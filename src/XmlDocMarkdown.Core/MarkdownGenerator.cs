@@ -16,8 +16,6 @@ internal sealed class MarkdownGenerator
 
 	public string? RootNamespace { get; set; }
 
-	public string? RootPageLocation { get; set; }
-
 	public bool IncludeObsolete { get; set; }
 
 	public bool SkipUnbrowsable { get; set; }
@@ -30,6 +28,8 @@ internal sealed class MarkdownGenerator
 
 	public IReadOnlyList<ExternalDocumentation>? ExternalDocs { get; set; }
 
+	public string? FrontMatter { get; internal set; }
+
 	public IReadOnlyList<NamedText> GenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly) =>
 		DoGenerateOutput(assembly, xmlDocAssembly).ToList();
 
@@ -37,9 +37,9 @@ internal sealed class MarkdownGenerator
 
 	private string ActualNewLine => NewLine ?? Environment.NewLine;
 
-	public string? FrontMatter { get; internal set; }
-
 	public bool PermalinkPretty { get; internal set; }
+
+	public string? RootPageLocation { get; set; }
 
 	private IEnumerable<NamedText> DoGenerateOutput(Assembly assembly, XmlDocAssembly xmlDocAssembly)
 	{

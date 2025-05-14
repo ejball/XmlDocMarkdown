@@ -19,7 +19,7 @@ internal sealed class XmlDocAssembly
 		}
 	}
 
-	public Collection<XmlDocMember> Members { get; } = new();
+	public Collection<XmlDocMember> Members { get; } = [];
 
 	public XmlDocMember? FindMember(string? xmlDocName) => Members.FirstOrDefault(x => x.XmlDocName == xmlDocName);
 }

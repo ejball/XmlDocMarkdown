@@ -26,23 +26,20 @@ public static class XmlDocMarkdownGenerator
 
 		var generator = new MarkdownGenerator
 		{
+			NewLine = settings.NewLine,
 			SourceCodePath = settings.SourceCodePath,
 			RootNamespace = settings.RootNamespace,
 			IncludeObsolete = settings.IncludeObsolete,
 			SkipUnbrowsable = settings.SkipUnbrowsable,
 			SkipCompilerGenerated = settings.SkipCompilerGenerated,
+			NamespacePages = settings.NamespacePages,
 			Visibility = settings.VisibilityLevel ?? XmlDocVisibilityLevel.Protected,
 			ExternalDocs = settings.ExternalDocs,
-			NamespacePages = settings.NamespacePages,
 			FrontMatter = settings.FrontMatter,
 		};
-		if (settings.NewLine != null)
-			generator.NewLine = settings.NewLine;
 
 		if (string.Equals(settings.PermalinkStyle, "pretty", StringComparison.OrdinalIgnoreCase))
 			generator.PermalinkPretty = true;
-
-		XmlDocAssembly xmlDocAssembly;
 
 		var assemblyPath = assembly.Location;
 
@@ -50,7 +47,8 @@ public static class XmlDocMarkdownGenerator
 		if (!File.Exists(xmlDocPath))
 			xmlDocPath = Path.ChangeExtension(assemblyPath, ".XML");
 
-		if (xmlDocPath != null && File.Exists(xmlDocPath))
+		XmlDocAssembly xmlDocAssembly;
+		if (File.Exists(xmlDocPath))
 		{
 			var xDocument = XDocument.Load(xmlDocPath);
 			xmlDocAssembly = new XmlDocAssembly(xDocument);
@@ -91,7 +89,7 @@ public static class XmlDocMarkdownGenerator
 			var tocPath = Path.Combine(outputPath, "toc.yml");
 
 			var root = namedTexts.FirstOrDefault();
-			if (root != null)
+			if (root is not null)
 			{
 				var toc = new XmlDocToc { Path = root.Name, Title = root.Title, Prefix = settings.TocPrefix };
 
@@ -110,7 +108,7 @@ public static class XmlDocMarkdownGenerator
 			{
 				var assemblyName = assembly.GetName().Name;
 				var assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
-				var assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
+				var assemblyFileName = assemblyFilePath is not null ? Path.GetFileName(assemblyFilePath) : assemblyName;
 				var assemblyFolder = Path.GetFileNameWithoutExtension(assemblyFileName);
 				var patterns = new[] { $"{assemblyFolder}/*.md", $"{assemblyFolder}/*/*.md" };
 				var codeGenComment = MarkdownGenerator.GetCodeGenComment(assemblyFileName ?? "");
@@ -138,7 +136,7 @@ public static class XmlDocMarkdownGenerator
 				var outputFilePath = Path.Combine(outputPath, namedText.Name);
 
 				var outputFileDirectoryPath = Path.GetDirectoryName(outputFilePath);
-				if (outputFileDirectoryPath != null && outputFileDirectoryPath != outputPath && !Directory.Exists(outputFileDirectoryPath))
+				if (outputFileDirectoryPath is not null && outputFileDirectoryPath != outputPath && !Directory.Exists(outputFileDirectoryPath))
 					Directory.CreateDirectory(outputFileDirectoryPath);
 
 				File.WriteAllText(outputFilePath, namedText.Text);

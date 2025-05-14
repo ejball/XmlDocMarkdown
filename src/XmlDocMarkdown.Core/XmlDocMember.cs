@@ -54,23 +54,23 @@ internal sealed class XmlDocMember
 
 	public string? XmlDocName { get; set; }
 
-	public Collection<XmlDocBlock> Summary { get; } = new();
+	public Collection<XmlDocBlock> Summary { get; } = [];
 
-	public Collection<XmlDocParameter> TypeParameters { get; } = new();
+	public Collection<XmlDocParameter> TypeParameters { get; } = [];
 
-	public Collection<XmlDocParameter> Parameters { get; } = new();
+	public Collection<XmlDocParameter> Parameters { get; } = [];
 
-	public Collection<XmlDocBlock> ReturnValue { get; } = new();
+	public Collection<XmlDocBlock> ReturnValue { get; } = [];
 
-	public Collection<XmlDocBlock> PropertyValue { get; } = new();
+	public Collection<XmlDocBlock> PropertyValue { get; } = [];
 
-	public Collection<XmlDocException> Exceptions { get; } = new();
+	public Collection<XmlDocException> Exceptions { get; } = [];
 
-	public Collection<XmlDocBlock> Remarks { get; } = new();
+	public Collection<XmlDocBlock> Remarks { get; } = [];
 
-	public Collection<XmlDocBlock> Examples { get; } = new();
+	public Collection<XmlDocBlock> Examples { get; } = [];
 
-	public Collection<XmlDocSeeAlso> SeeAlso { get; } = new();
+	public Collection<XmlDocSeeAlso> SeeAlso { get; } = [];
 
 	public override string ToString() => XmlDocName ?? "";
 
@@ -241,11 +241,11 @@ internal sealed class XmlDocMember
 		private static string TrimCode(string text)
 		{
 			// trimming logic adapted from https://github.com/kzu/NuDoq
-			var lines = text.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.None).ToList();
+			var lines = text.Split([Environment.NewLine, "\n"], StringSplitOptions.None).ToList();
 
 			if (lines.Count != 0 && lines[0].Trim().Length == 0)
 				lines.RemoveAt(0);
-			if (lines.Count != 0 && lines[lines.Count - 1].Trim().Length == 0)
+			if (lines.Count != 0 && lines[^1].Trim().Length == 0)
 				lines.RemoveAt(lines.Count - 1);
 
 			if (lines.Count == 0)

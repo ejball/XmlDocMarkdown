@@ -4,7 +4,7 @@ namespace XmlDocMarkdown.Core;
 
 internal sealed class XmlDocBlock
 {
-	public Collection<XmlDocInline> Inlines { get; } = new();
+	public Collection<XmlDocInline> Inlines { get; } = [];
 
 	public bool IsCode { get; set; }
 

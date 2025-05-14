@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace XmlDocMarkdown.Core;
 
-internal static class XmlDocUtility
+internal static partial class XmlDocUtility
 {
 	public static string? GetXmlDocRef(MemberInfo? memberInfo)
 	{
@@ -42,7 +42,7 @@ internal static class XmlDocUtility
 
 	public static string GetShortNameForXmlDocRef(string xmlDocRef)
 	{
-		var match = Regex.Match(xmlDocRef, @"^[A-Z]:([^\.]+\.)*(?'name'[^\.\(\{`]+)", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
+		var match = XmlDocNameRegex().Match(xmlDocRef);
 		return match.Success ? match.Groups["name"].Value : xmlDocRef;
 	}
 
@@ -117,4 +117,7 @@ internal static class XmlDocUtility
 			string.Join(",", parameters.Select(x => GetXmlDocTypePart(x.ParameterType.GetTypeInfo()))) +
 			")";
 	}
+
+	[GeneratedRegex(@"^[A-Z]:([^\.]+\.)*(?'name'[^\.\(\{`]+)", RegexOptions.ExplicitCapture | RegexOptions.CultureInvariant)]
+	private static partial Regex XmlDocNameRegex();
 }
