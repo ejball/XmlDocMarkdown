@@ -13,7 +13,6 @@ public class XmlDocMarkdownSettings
 | [XmlDocMarkdownSettings](XmlDocMarkdownSettings/XmlDocMarkdownSettings.md)() | The default constructor. |
 | [ExternalDocs](XmlDocMarkdownSettings/ExternalDocs.md) { get; set; } | Configures external documentation. |
 | [FrontMatter](XmlDocMarkdownSettings/FrontMatter.md) { get; set; } | If non-null, contains the path to a file that contains the Jekyll front matter template. |
-| [GenerateToc](XmlDocMarkdownSettings/GenerateToc.md) { get; set; } | If true, generates a .yml file that can be used in a Jekyll based site. |
 | [IncludeObsolete](XmlDocMarkdownSettings/IncludeObsolete.md) { get; set; } | If true, generates documentation for obsolete types and members. (Default false.) |
 | [IsDryRun](XmlDocMarkdownSettings/IsDryRun.md) { get; set; } | If true, executes without making changes to the file system. |
 | [IsQuiet](XmlDocMarkdownSettings/IsQuiet.md) { get; set; } | If true, suppresses normal console output. |
@@ -25,7 +24,6 @@ public class XmlDocMarkdownSettings
 | [SkipCompilerGenerated](XmlDocMarkdownSettings/SkipCompilerGenerated.md) { get; set; } | If true, skips documentation for types and members with `[CompilerGenerated]`. |
 | [SkipUnbrowsable](XmlDocMarkdownSettings/SkipUnbrowsable.md) { get; set; } | If true, skips documentation for types and members with `[EditorBrowsable(EditorBrowsableState.Never)]`. |
 | [SourceCodePath](XmlDocMarkdownSettings/SourceCodePath.md) { get; set; } | The URL of the folder containing the source code of the assembly, e.g. at GitHub. |
-| [TocPrefix](XmlDocMarkdownSettings/TocPrefix.md) { get; set; } | A path prefix to add to all links in the table of contents .yml file. |
 | [VisibilityLevel](XmlDocMarkdownSettings/VisibilityLevel.md) { get; set; } | The minimum visibility for documented types and members. |
 
 ## See Also

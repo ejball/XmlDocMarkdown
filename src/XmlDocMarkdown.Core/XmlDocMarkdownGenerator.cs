@@ -84,22 +84,6 @@ public static class XmlDocMarkdownGenerator
 			}
 		}
 
-		if (settings.GenerateToc)
-		{
-			var tocPath = Path.Combine(outputPath, "toc.yml");
-
-			var root = namedTexts.FirstOrDefault();
-			if (root is not null)
-			{
-				var toc = new XmlDocToc { Path = root.Name, Title = root.Title, Prefix = settings.TocPrefix };
-
-				foreach (var namedText in namedTexts.Skip(1))
-					toc.AddChild(namedText.Name, namedText.Parent, namedText.Title);
-
-				toc.Save(tocPath);
-			}
-		}
-
 		var namesToDelete = new List<string>();
 		if (settings.ShouldClean)
 		{

@@ -52,19 +52,9 @@ public class XmlDocMarkdownSettings
 	public bool ShouldClean { get; set; }
 
 	/// <summary>
-	/// If true, generates a .yml file that can be used in a Jekyll based site.
-	/// </summary>
-	public bool GenerateToc { get; set; }
-
-	/// <summary>
 	/// Generate separate pages for each namespace containing list of types in each.
 	/// </summary>
 	public bool NamespacePages { get; set; }
-
-	/// <summary>
-	/// A path prefix to add to all links in the table of contents .yml file.
-	/// </summary>
-	public string? TocPrefix { get; set; }
 
 	/// <summary>
 	/// If true, suppresses normal console output.

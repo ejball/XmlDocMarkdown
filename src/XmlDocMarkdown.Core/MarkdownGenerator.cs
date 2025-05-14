@@ -94,7 +94,7 @@ internal sealed class MarkdownGenerator
 			visibleNamespaceRecords.OrderBy(x => x.Namespace.Length).ThenByDescending(x => x.Types.Count).Select(x => x.Namespace).FirstOrDefault(x => x.Length != 0) ?? "";
 		RootPageLocation = $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly.md" : ".md");
 		var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, sourceCodePath, rootNamespace, RootPageLocation);
-		yield return CreateNamedText(context.PageLocation, null, assemblyName, writer =>
+		yield return CreateNamedText(context.PageLocation, writer =>
 		{
 			var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly" : "") + extension);
 			if (!string.IsNullOrEmpty(front))
@@ -142,7 +142,7 @@ internal sealed class MarkdownGenerator
 				var safeNamespacePath = GetSafeName(namespacePath);
 				parentPageLocation = $"{safeNamespacePath}Namespace.md";
 				parentContext = new MarkdownContext(context, null, parentPageLocation);
-				yield return CreateNamedText(parentPageLocation, context.PageLocation, group.Namespace, writer =>
+				yield return CreateNamedText(parentPageLocation, writer =>
 				{
 					var front = GetFrontMatter(namespacePath, $"{safeNamespacePath}Namespace");
 					if (!string.IsNullOrEmpty(front))
@@ -227,7 +227,7 @@ internal sealed class MarkdownGenerator
 		return contents.Replace("$title", title, StringComparison.Ordinal).Replace("$ref", relativeLink, StringComparison.Ordinal);
 	}
 
-	private NamedText CreateNamedText(string name, string? parent, string title, Action<MarkdownWriter> writeTo)
+	private NamedText CreateNamedText(string name, Action<MarkdownWriter> writeTo)
 	{
 		using var stringWriter = new StringWriter();
 		if (NewLine != null)
@@ -235,7 +235,7 @@ internal sealed class MarkdownGenerator
 
 		var code = new MarkdownWriter(stringWriter);
 		writeTo(code);
-		return new NamedText(name, parent, title, stringWriter.ToString());
+		return new NamedText(name, stringWriter.ToString());
 	}
 
 	private static Collection<XmlDocBlock>? GetSummary(XmlDocAssembly xmlDocAssembly, MemberInfo member) =>
@@ -330,7 +330,7 @@ internal sealed class MarkdownGenerator
 	{
 		var extension = GetFileExtension();
 
-		return CreateNamedText(path, parent, title, writer =>
+		return CreateNamedText(path, writer =>
 		{
 			var relative = $"{GetPermalink(path)}";
 			var front = GetFrontMatter(title, relative);
