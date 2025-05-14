@@ -1,10 +1,9 @@
-namespace XmlDocMarkdown.Core
+namespace XmlDocMarkdown.Core;
+
+internal enum XmlDocListKind
 {
-	internal enum XmlDocListKind
-	{
-		Bullet,
-		Number,
-		Table,
-		Other,
-	}
+	Bullet,
+	Number,
+	Table,
+	Other,
 }

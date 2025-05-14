@@ -1,13 +1,12 @@
-namespace ExampleAssembly
+namespace ExampleAssembly;
+
+/// <summary>
+/// An interface.
+/// </summary>
+public interface IExampleInterface
 {
 	/// <summary>
-	/// An interface.
+	/// An interface method.
 	/// </summary>
-	public interface IExampleInterface
-	{
-		/// <summary>
-		/// An interface method.
-		/// </summary>
-		int ExampleMethod(string value);
-	}
+	int ExampleMethod(string value);
 }

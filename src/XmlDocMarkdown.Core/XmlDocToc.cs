@@ -1,120 +1,119 @@
 using System.Text;
 
-namespace XmlDocMarkdown.Core
+namespace XmlDocMarkdown.Core;
+
+/// <summary>
+/// This class builds a .yml table of contents along the lines of what you see here:
+/// https://jekyllrb.com/tutorials/navigation/#scenario-4-three-level-navigation-list
+/// </summary>
+internal sealed class XmlDocToc
 {
-	/// <summary>
-	/// This class builds a .yml table of contents along the lines of what you see here:
-	/// https://jekyllrb.com/tutorials/navigation/#scenario-4-three-level-navigation-list
-	/// </summary>
-	internal sealed class XmlDocToc
+	public string? Prefix { get; set; }
+
+	public string? Path { get; set; }
+
+	public string? Title { get; set; }
+
+	public List<XmlDocToc>? Children { get; set; }
+
+	public void AddChild(string path, string? parent, string title)
 	{
-		public string? Prefix { get; set; }
-
-		public string? Path { get; set; }
-
-		public string? Title { get; set; }
-
-		public List<XmlDocToc>? Children { get; set; }
-
-		public void AddChild(string path, string? parent, string title)
+		if (parent == null || parent == Path)
 		{
-			if (parent == null || parent == Path)
-			{
-				GetOrCreate(path, title);
-				return;
-			}
-
-			var parentItem = FindParent(parent) ?? throw new InvalidOperationException($"Parent '{parent}' not found?");
-			parentItem.GetOrCreate(path, title);
+			GetOrCreate(path, title);
+			return;
 		}
 
-		private XmlDocToc? FindParent(string parent)
-		{
-			if (Children == null)
-			{
-				return null;
-			}
+		var parentItem = FindParent(parent) ?? throw new InvalidOperationException($"Parent '{parent}' not found?");
+		parentItem.GetOrCreate(path, title);
+	}
 
-			foreach (var item in Children)
-			{
-				if (item.Path == parent)
-				{
-					return item;
-				}
-				var result = item.FindParent(parent);
-				if (result != null)
-				{
-					return result;
-				}
-			}
+	private XmlDocToc? FindParent(string parent)
+	{
+		if (Children == null)
+		{
 			return null;
 		}
 
-		private XmlDocToc GetOrCreate(string path, string title)
+		foreach (var item in Children)
 		{
-			if (Children == null)
+			if (item.Path == parent)
 			{
-				Children = new List<XmlDocToc>();
+				return item;
 			}
-			var item = (from i in Children where i.Path == path select i).FirstOrDefault();
-			if (item == null)
+			var result = item.FindParent(parent);
+			if (result != null)
 			{
-				item = new XmlDocToc() { Path = path, Title = title, Prefix = Prefix };
-				Children.Add(item);
-			}
-			return item;
-		}
-
-		internal void Save(string tocPath)
-		{
-			Directory.CreateDirectory(System.IO.Path.GetDirectoryName(tocPath)!);
-			using (var writer = new StreamWriter(tocPath, false, Encoding.UTF8))
-			{
-				writer.WriteLine("toc:");
-				Save(writer, "  ");
+				return result;
 			}
 		}
+		return null;
+	}
 
-		internal void Save(StreamWriter writer, string indent)
+	private XmlDocToc GetOrCreate(string path, string title)
+	{
+		if (Children == null)
 		{
-			/*
-			toc:
-			- title: ...
-			  link: relative link to the permalink
-			  subfolderitems:
-				- name: ...
-				  link: ...
-			*/
+			Children = new List<XmlDocToc>();
+		}
+		var item = (from i in Children where i.Path == path select i).FirstOrDefault();
+		if (item == null)
+		{
+			item = new XmlDocToc() { Path = path, Title = title, Prefix = Prefix };
+			Children.Add(item);
+		}
+		return item;
+	}
 
-			var p = Path!;
-			if (p.EndsWith(".md", StringComparison.Ordinal))
-			{
-				var pos = p.LastIndexOf('.');
-				if (pos > 0)
-				{
-					p = p.Substring(0, pos);
-				}
-			}
+	internal void Save(string tocPath)
+	{
+		Directory.CreateDirectory(System.IO.Path.GetDirectoryName(tocPath)!);
+		using (var writer = new StreamWriter(tocPath, false, Encoding.UTF8))
+		{
+			writer.WriteLine("toc:");
+			Save(writer, "  ");
+		}
+	}
 
-			writer.Write(indent);
-			writer.WriteLine("- name: {0}", Title);
-			writer.Write(indent);
-			if (!string.IsNullOrEmpty(Prefix))
+	internal void Save(StreamWriter writer, string indent)
+	{
+		/*
+		toc:
+		- title: ...
+		  link: relative link to the permalink
+		  subfolderitems:
+			- name: ...
+			  link: ...
+		*/
+
+		var p = Path!;
+		if (p.EndsWith(".md", StringComparison.Ordinal))
+		{
+			var pos = p.LastIndexOf('.');
+			if (pos > 0)
 			{
-				writer.WriteLine("  link: {0}/{1}", Prefix, p);
+				p = p.Substring(0, pos);
 			}
-			else
+		}
+
+		writer.Write(indent);
+		writer.WriteLine("- name: {0}", Title);
+		writer.Write(indent);
+		if (!string.IsNullOrEmpty(Prefix))
+		{
+			writer.WriteLine("  link: {0}/{1}", Prefix, p);
+		}
+		else
+		{
+			writer.WriteLine("  link: {0}", p);
+		}
+		if (Children != null && Children.Count > 0)
+		{
+			writer.Write(indent);
+			writer.WriteLine("  subfolderitems:");
+			foreach (var item in Children)
 			{
-				writer.WriteLine("  link: {0}", p);
-			}
-			if (Children != null && Children.Count > 0)
-			{
-				writer.Write(indent);
-				writer.WriteLine("  subfolderitems:");
-				foreach (var item in Children)
-				{
-					item.Save(writer, indent + "  ");
-				}
+				item.Save(writer, indent + "  ");
 			}
 		}
 	}

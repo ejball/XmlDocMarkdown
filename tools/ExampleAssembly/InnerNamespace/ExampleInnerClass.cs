@@ -1,15 +1,14 @@
-namespace ExampleAssembly.InnerNamespace
+namespace ExampleAssembly.InnerNamespace;
+
+/// <summary>
+/// A class in an inner namespace.
+/// </summary>
+public class ExampleInnerClass
 {
 	/// <summary>
-	/// A class in an inner namespace.
+	/// An explicit default constructor.
 	/// </summary>
-	public class ExampleInnerClass
+	public ExampleInnerClass()
 	{
-		/// <summary>
-		/// An explicit default constructor.
-		/// </summary>
-		public ExampleInnerClass()
-		{
-		}
 	}
 }
