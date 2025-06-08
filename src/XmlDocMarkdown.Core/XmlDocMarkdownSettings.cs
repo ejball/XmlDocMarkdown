@@ -6,13 +6,6 @@ namespace XmlDocMarkdown.Core;
 public class XmlDocMarkdownSettings
 {
 	/// <summary>
-	/// The URL of the folder containing the source code of the assembly, e.g. at GitHub.
-	/// </summary>
-	/// <remarks>The URL may be absolute or relative. Required to generate source code
-	/// links in the See Also sections for types.</remarks>
-	public string? SourceCodePath { get; set; }
-
-	/// <summary>
 	/// If true, generates documentation for obsolete types and members. (Default false.)
 	/// </summary>
 	public bool IncludeObsolete { get; set; }
