@@ -96,10 +96,8 @@ internal sealed class XmlDocMember
 		exceptions.Add(exception);
 	}
 
-	private void AddSeeAlso(XElement xElement, Collection<XmlDocSeeAlso> seeAlso)
-	{
+	private static void AddSeeAlso(XElement xElement, Collection<XmlDocSeeAlso> seeAlso) =>
 		seeAlso.Add(new XmlDocSeeAlso { Ref = xElement.Attribute("cref")?.Value });
-	}
 
 	private sealed class BlockGenerator
 	{

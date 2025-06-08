@@ -28,14 +28,14 @@ internal sealed class ArgsReader(IEnumerable<string> args)
 
 		var names = name.Split('|');
 		if (names.Length > 1)
-			return names.Select(ReadOption).FirstOrDefault(x => x != null);
+			return names.Select(ReadOption).FirstOrDefault(x => x is not null);
 
 		var index = FindOptionArgumentIndex(name);
 		if (index == -1)
 			return null;
 
 		var value = index + 1 < m_args.Count ? m_args[index + 1] : null;
-		if (value == null || IsOption(value))
+		if (value is null || IsOption(value))
 			throw new ArgsReaderException($"Missing value after '{RenderOption(name)}'.");
 
 		m_args.RemoveAt(index);

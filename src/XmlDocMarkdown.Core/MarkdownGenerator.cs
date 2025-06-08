@@ -42,7 +42,7 @@ internal sealed class MarkdownGenerator
 		var extension = GetFileExtension();
 		var assemblyName = assembly.GetName().Name!;
 		var assemblyFilePath = assembly.Modules.FirstOrDefault()?.FullyQualifiedName;
-		var assemblyFileName = assemblyFilePath != null ? Path.GetFileName(assemblyFilePath) : assemblyName;
+		var assemblyFileName = assemblyFilePath is not null ? Path.GetFileName(assemblyFilePath) : assemblyName;
 
 		var visibleTypes = assembly
 			.DefinedTypes
@@ -52,7 +52,7 @@ internal sealed class MarkdownGenerator
 		var membersByXmlDocName = visibleTypes
 			.Where(x => new[] { TypeKind.Record, TypeKind.Class, TypeKind.Struct, TypeKind.Interface }.Contains(GetTypeKind(x)))
 			.SelectMany(x => x.DeclaredMembers)
-			.Where(x => !(x is TypeInfo) && IsVisible(x))
+			.Where(x => x is not TypeInfo && IsVisible(x))
 			.Concat(visibleTypes)
 			.GroupBy(XmlDocUtility.GetXmlDocRef)
 			.ToDictionary(x => x.Key!, x => x.Single());
@@ -70,7 +70,7 @@ internal sealed class MarkdownGenerator
 			.ToList();
 
 		var visibleNamespaceRecords = visibleTypeRecords
-			.Where(x => x.TypeInfo.DeclaringType == null)
+			.Where(x => x.TypeInfo.DeclaringType is null)
 			.GroupBy(x => x.Namespace)
 			.Select(ng => new
 			{
@@ -89,7 +89,7 @@ internal sealed class MarkdownGenerator
 		var context = new MarkdownContext(xmlDocAssembly, membersByXmlDocName, assemblyFileName, RootPageLocation);
 		yield return CreateNamedText(context.PageLocation, writer =>
 		{
-			var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}" + (PermalinkPretty ? "Assembly" : "") + extension);
+			var front = GetFrontMatter(assemblyName, $"{safeAssemblyName}{(PermalinkPretty ? "Assembly" : "")}{extension}");
 			if (!string.IsNullOrEmpty(front))
 				writer.WriteLine(front!);
 
@@ -223,7 +223,7 @@ internal sealed class MarkdownGenerator
 	private NamedText CreateNamedText(string name, Action<MarkdownWriter> writeTo)
 	{
 		using var stringWriter = new StringWriter();
-		if (NewLine != null)
+		if (NewLine is not null)
 			stringWriter.NewLine = NewLine;
 
 		var code = new MarkdownWriter(stringWriter);
@@ -238,10 +238,10 @@ internal sealed class MarkdownGenerator
 	{
 		var summary = xmlDocMember?.Summary;
 
-		if (summary == null || summary.Count == 0)
+		if (summary is null || summary.Count == 0)
 		{
 			var constructorInfo = member as ConstructorInfo;
-			if (constructorInfo != null && !constructorInfo.IsStatic && constructorInfo.GetParameters().Length == 0)
+			if (constructorInfo is not null && !constructorInfo.IsStatic && constructorInfo.GetParameters().Length == 0)
 				summary = new Collection<XmlDocBlock> { new() { Inlines = { new XmlDocInline { Text = "The default constructor." } } } };
 		}
 
@@ -284,11 +284,8 @@ internal sealed class MarkdownGenerator
 		return name;
 	}
 
-	private string GetMemberUriName(MemberInfo memberInfo)
-	{
-		var typeInfo = memberInfo as TypeInfo;
-		return typeInfo != null ? $"{GetSafeTypeUriName(typeInfo)}" : GetShortName(memberInfo);
-	}
+	private string GetMemberUriName(MemberInfo memberInfo) =>
+		memberInfo is TypeInfo typeInfo ? GetSafeTypeUriName(typeInfo) : GetShortName(memberInfo);
 
 	private static string GetShortSignatureMarkdown(ShortSignature shortSignature, string path) =>
 		EscapeHtml($"{shortSignature.Prefix}[{shortSignature.Name}]({path}){shortSignature.Suffix}");
@@ -298,7 +295,7 @@ internal sealed class MarkdownGenerator
 
 	private static string SurroundCode(string value)
 	{
-		var backticks = new string('`', Regex.Matches(value, "`+").Cast<Match>().Select(x => x.Length).Concat([0]).Max() + 1);
+		var backticks = new string('`', Regex.Matches(value, "`+").Select(x => x.Length).Concat([0]).Max() + 1);
 		return backticks + value + backticks;
 	}
 
@@ -325,7 +322,7 @@ internal sealed class MarkdownGenerator
 
 		return CreateNamedText(path, writer =>
 		{
-			var relative = $"{GetPermalink(path)}";
+			var relative = GetPermalink(path);
 			var front = GetFrontMatter(title, relative);
 			if (!string.IsNullOrEmpty(front))
 				writer.WriteLine(front!);
@@ -335,7 +332,7 @@ internal sealed class MarkdownGenerator
 				var memberInfo = memberGroup[memberIndex];
 				var memberContext = new MarkdownContext(context, memberInfo, path);
 				var typeInfo = memberInfo as TypeInfo;
-				var typeKind = typeInfo == null ? default(TypeKind?) : GetTypeKind(typeInfo);
+				var typeKind = typeInfo is null ? default(TypeKind?) : GetTypeKind(typeInfo);
 
 				if (memberIndex != 0)
 					writer.WriteLine();
@@ -346,19 +343,19 @@ internal sealed class MarkdownGenerator
 				var xmlDocMember = memberContext.XmlDocAssembly.FindMember(xmlDocRef);
 
 				var summary = GetSummary(xmlDocMember, memberInfo);
-				if (summary != null && summary.Count != 0)
+				if (summary is not null && summary.Count != 0)
 				{
 					writer.WriteLine();
 					writer.WriteLines(ToMarkdown(summary, memberContext));
 				}
 
 				var seeAlsoMembers = new List<MemberInfo>();
-				if (xmlDocMember != null)
+				if (xmlDocMember is not null)
 				{
 					foreach (var seeAlsoInfo in xmlDocMember.SeeAlso)
 					{
 						var xmlDocName = seeAlsoInfo.Ref;
-						if (xmlDocName != null && memberContext.MembersByXmlDocName.TryGetValue(xmlDocName, out var seeAlsoMember))
+						if (xmlDocName is not null && memberContext.MembersByXmlDocName.TryGetValue(xmlDocName, out var seeAlsoMember))
 							seeAlsoMembers.Add(seeAlsoMember);
 					}
 				}
@@ -368,7 +365,7 @@ internal sealed class MarkdownGenerator
 				writer.WriteLine(GetFullSignature(memberInfo, seeAlsoMembers));
 				writer.WriteLine("```");
 
-				if (xmlDocMember != null)
+				if (xmlDocMember is not null)
 				{
 					var typeParameters = xmlDocMember.TypeParameters;
 					var parameters = xmlDocMember.Parameters;
@@ -480,7 +477,7 @@ internal sealed class MarkdownGenerator
 				}
 
 				var returnValue = xmlDocMember?.ReturnValue;
-				if (returnValue != null && returnValue.Count != 0)
+				if (returnValue is not null && returnValue.Count != 0)
 				{
 					writer.WriteLine();
 					writer.WriteLine("## Return Value");
@@ -489,7 +486,7 @@ internal sealed class MarkdownGenerator
 				}
 
 				var propertyValue = xmlDocMember?.PropertyValue;
-				if (propertyValue != null && propertyValue.Count != 0)
+				if (propertyValue is not null && propertyValue.Count != 0)
 				{
 					writer.WriteLine();
 					writer.WriteLine("## Property Value");
@@ -498,7 +495,7 @@ internal sealed class MarkdownGenerator
 				}
 
 				var exceptions = xmlDocMember?.Exceptions;
-				if (exceptions != null && exceptions.Count != 0)
+				if (exceptions is not null && exceptions.Count != 0)
 				{
 					writer.WriteLine();
 					writer.WriteLine("## Exceptions");
@@ -509,16 +506,16 @@ internal sealed class MarkdownGenerator
 					foreach (var exception in exceptions)
 					{
 						MemberInfo? exceptionMemberInfo = null;
-						if (exception.ExceptionTypeRef != null)
+						if (exception.ExceptionTypeRef is not null)
 							memberContext.MembersByXmlDocName.TryGetValue(exception.ExceptionTypeRef, out exceptionMemberInfo);
-						var text = exceptionMemberInfo != null ? GetShortName(exceptionMemberInfo) : exception.ExceptionTypeRef != null ? XmlDocUtility.GetShortNameForXmlDocRef(exception.ExceptionTypeRef) : "";
+						var text = exceptionMemberInfo is not null ? GetShortName(exceptionMemberInfo) : exception.ExceptionTypeRef is not null ? XmlDocUtility.GetShortNameForXmlDocRef(exception.ExceptionTypeRef) : "";
 						var link = WrapMarkdownRefLink(text, exceptionMemberInfo, memberContext);
 						writer.WriteLine($"| {link} | {ToMarkdown(exception.Condition.FirstOrDefault()?.Inlines, memberContext) ?? ""} |");
 					}
 				}
 
 				var remarks = xmlDocMember?.Remarks;
-				if (remarks != null && remarks.Count != 0)
+				if (remarks is not null && remarks.Count != 0)
 				{
 					writer.WriteLine();
 					writer.WriteLine("## Remarks");
@@ -527,7 +524,7 @@ internal sealed class MarkdownGenerator
 				}
 
 				var examples = xmlDocMember?.Examples;
-				if (examples != null && examples.Count != 0)
+				if (examples is not null && examples.Count != 0)
 				{
 					writer.WriteLine();
 					writer.WriteLine("## Examples");
@@ -540,8 +537,8 @@ internal sealed class MarkdownGenerator
 				writer.WriteLine();
 
 				var declaringType = memberInfo.DeclaringType?.GetTypeInfo();
-				var declaringTypeXmlDocName = declaringType == null ? null : XmlDocUtility.GetXmlDocRef(declaringType);
-				if (declaringType != null)
+				var declaringTypeXmlDocName = declaringType is null ? null : XmlDocUtility.GetXmlDocRef(declaringType);
+				if (declaringType is not null)
 					seeAlsoMembers.Add(declaringType);
 
 				foreach (var seeAlso in seeAlsoMembers
@@ -552,7 +549,7 @@ internal sealed class MarkdownGenerator
 					.OrderBy(x => x.XmlDocName == declaringTypeXmlDocName))
 				{
 					if (memberContext.MembersByXmlDocName.ContainsKey(seeAlso.XmlDocName!) ||
-						FindExternalDocumentation(seeAlso.Member) != null)
+						FindExternalDocumentation(seeAlso.Member) is not null)
 					{
 						var shortSignature = GetShortSignature(seeAlso.Member, forSeeAlso: true);
 						writer.WriteLine("* " + shortSignature.Prefix +
@@ -571,7 +568,7 @@ internal sealed class MarkdownGenerator
 				}
 				else
 				{
-					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo!)}](../{(typeInfo != null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo!).Assembly)}{extension})");
+					writer.WriteLine("* " + $"namespace\u00A0[{GetNamespaceName(declaringType ?? typeInfo!)}](../{(typeInfo is not null ? "" : "../")}{GetAssemblyUriName((declaringType ?? typeInfo!).Assembly)}{extension})");
 				}
 
 				if (memberIndex < memberGroup.Count - 1)
@@ -588,7 +585,7 @@ internal sealed class MarkdownGenerator
 
 	private ExternalDocumentation? FindExternalDocumentation(MemberInfo? memberInfo)
 	{
-		if (memberInfo == null)
+		if (memberInfo is null)
 			return null;
 
 		var namespaceName = (memberInfo as TypeInfo ?? memberInfo.DeclaringType!.GetTypeInfo()).Namespace;
@@ -597,12 +594,10 @@ internal sealed class MarkdownGenerator
 
 	private MemberInfo GetGenericDefinition(MemberInfo memberInfo)
 	{
-		var typeInfo = memberInfo as TypeInfo;
-		if (typeInfo != null)
+		if (memberInfo is TypeInfo typeInfo)
 			return typeInfo.IsGenericType ? typeInfo.GetGenericTypeDefinition().GetTypeInfo() : typeInfo;
 
-		var methodInfo = memberInfo as MethodInfo;
-		if (methodInfo != null)
+		if (memberInfo is MethodInfo methodInfo)
 			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
 
 		return memberInfo;
@@ -620,9 +615,6 @@ internal sealed class MarkdownGenerator
 		if (!IncludeObsolete && memberInfo.GetCustomAttributes<ObsoleteAttribute>().Any())
 			return false;
 
-		if (memberInfo.GetCustomAttributes<CompilerGeneratedAttribute>().Any())
-			return false;
-
 		if (SkipUnbrowsable && memberInfo.GetCustomAttributes<EditorBrowsableAttribute>().Any(x => x.State == EditorBrowsableState.Never))
 			return false;
 
@@ -634,14 +626,13 @@ internal sealed class MarkdownGenerator
 			return false;
 
 		// nested types of invisible types are invisible
-		if (memberInfo.DeclaringType != null && !IsVisible(memberInfo.DeclaringType))
+		if (memberInfo.DeclaringType is { } declaringType && !IsVisible(declaringType))
 			return false;
 
 		if (memberInfo is TypeInfo)
 			return true;
 
-		var methodBase = memberInfo as MethodBase;
-		if (methodBase == null)
+		if (memberInfo is not MethodBase methodBase)
 			return true;
 
 		if (memberInfo is ConstructorInfo)
@@ -721,9 +712,9 @@ internal sealed class MarkdownGenerator
 
 		var tickIndex = name.IndexOf('`', StringComparison.Ordinal);
 		if (tickIndex != -1)
-			name = name.Substring(0, tickIndex);
+			name = name[..tickIndex];
 
-		if (name == ".ctor" || name == ".cctor")
+		if (name is ".ctor" or ".cctor")
 			name = GetShortName(memberInfo.DeclaringType!.GetTypeInfo());
 		else if (name == "op_UnaryPlus")
 			name = "op_Addition";
@@ -767,8 +758,7 @@ internal sealed class MarkdownGenerator
 
 	private static string GetFullMemberName(MemberInfo memberInfo)
 	{
-		var type = memberInfo as TypeInfo;
-		if (type != null)
+		if (memberInfo is TypeInfo type)
 			return GetFullTypeName(type, t => GetShortName(t) + RenderShortGenericParameters(t.GenericTypeParameters));
 
 		if (memberInfo is ConstructorInfo || (memberInfo as PropertyInfo)?.GetIndexParameters().Length > 0)
@@ -785,7 +775,7 @@ internal sealed class MarkdownGenerator
 	private static string GetFullTypeName(TypeInfo typeInfo, Func<TypeInfo, string> render)
 	{
 		var name = render(typeInfo);
-		if (typeInfo.DeclaringType != null)
+		if (typeInfo.DeclaringType is not null)
 			name = $"{GetFullTypeName(typeInfo.DeclaringType.GetTypeInfo(), render)}.{name}";
 		return name;
 	}
@@ -805,7 +795,7 @@ internal sealed class MarkdownGenerator
 
 		public string Suffix { get; }
 
-		public bool Equals(ShortSignature? other) => other != null && other.ToString() == ToString();
+		public bool Equals(ShortSignature? other) => other is not null && other.ToString() == ToString();
 
 		public override bool Equals(object? obj) => Equals(obj as ShortSignature);
 
@@ -820,8 +810,7 @@ internal sealed class MarkdownGenerator
 		var prefix = "";
 		var suffix = "";
 
-		var typeInfo = memberInfo as TypeInfo;
-		if (typeInfo != null)
+		if (memberInfo is TypeInfo typeInfo)
 		{
 			name += RenderShortGenericParameters(typeInfo.GenericTypeParameters);
 
@@ -850,81 +839,73 @@ internal sealed class MarkdownGenerator
 					prefix = "override " + prefix;
 			}
 		}
-		else
+		else if (memberInfo is EventInfo eventInfo)
 		{
-			var eventInfo = memberInfo as EventInfo;
-			var propertyInfo = memberInfo as PropertyInfo;
-			var fieldInfo = memberInfo as FieldInfo;
-			var methodBase = memberInfo as MethodBase;
-
-			if (eventInfo != null)
+			prefix = "event ";
+			if (!forSeeAlso)
 			{
-				prefix = "event ";
-				if (!forSeeAlso)
-				{
-					if (IsStatic(eventInfo))
-						prefix = "static " + prefix;
-					else if (IsAbstract(eventInfo))
-						prefix = "abstract " + prefix;
-					else if (IsVirtual(eventInfo))
-						prefix = "virtual " + prefix;
-					else if (IsOverride(eventInfo))
-						prefix = "override " + prefix;
-				}
-			}
-			else if (propertyInfo != null)
-			{
-				if (!forSeeAlso)
-					suffix = GetPropertyGetSet(propertyInfo);
-
-				if (forSeeAlso)
-					prefix = "property ";
-				else if (IsStatic(propertyInfo))
-					prefix = "static ";
-				else if (IsAbstract(propertyInfo))
-					prefix = "abstract ";
-				else if (IsVirtual(propertyInfo))
-					prefix = "virtual ";
-				else if (IsOverride(propertyInfo))
-					prefix = "override ";
-			}
-			else if (fieldInfo != null)
-			{
-				if (forSeeAlso)
-				{
-					prefix = "field ";
-				}
-				else
-				{
-					if (IsConst(fieldInfo))
-						prefix += "const ";
-					if (IsStatic(fieldInfo))
-						prefix = "static ";
-					if (IsReadOnly(fieldInfo))
-						prefix += "readonly ";
-				}
-			}
-			else if (methodBase != null)
-			{
-				var isOperator = methodBase.Name.StartsWith("op_", StringComparison.Ordinal);
-
-				if (methodBase is MethodInfo)
-					name += RenderShortGenericParameters(methodBase.GetGenericArguments());
-
-				if (!forSeeAlso && !isOperator)
-					suffix += methodBase.GetParameters().Length == 0 ? "()" : "(…)";
-
-				if (forSeeAlso)
-					prefix = "method ";
-				else if (IsStatic(methodBase) && !isOperator)
+				if (IsStatic(eventInfo))
 					prefix = "static " + prefix;
-				else if (IsAbstract(methodBase))
+				else if (IsAbstract(eventInfo))
 					prefix = "abstract " + prefix;
-				else if (IsVirtual(methodBase))
+				else if (IsVirtual(eventInfo))
 					prefix = "virtual " + prefix;
-				else if (IsOverride(methodBase))
+				else if (IsOverride(eventInfo))
 					prefix = "override " + prefix;
 			}
+		}
+		else if (memberInfo is PropertyInfo propertyInfo)
+		{
+			if (!forSeeAlso)
+				suffix = GetPropertyGetSet(propertyInfo);
+
+			if (forSeeAlso)
+				prefix = "property ";
+			else if (IsStatic(propertyInfo))
+				prefix = "static ";
+			else if (IsAbstract(propertyInfo))
+				prefix = "abstract ";
+			else if (IsVirtual(propertyInfo))
+				prefix = "virtual ";
+			else if (IsOverride(propertyInfo))
+				prefix = "override ";
+		}
+		else if (memberInfo is FieldInfo fieldInfo)
+		{
+			if (forSeeAlso)
+			{
+				prefix = "field ";
+			}
+			else
+			{
+				if (IsConst(fieldInfo))
+					prefix += "const ";
+				if (IsStatic(fieldInfo))
+					prefix = "static ";
+				if (IsReadOnly(fieldInfo))
+					prefix += "readonly ";
+			}
+		}
+		else if (memberInfo is MethodBase methodBase)
+		{
+			var isOperator = methodBase.Name.StartsWith("op_", StringComparison.Ordinal);
+
+			if (methodBase is MethodInfo)
+				name += RenderShortGenericParameters(methodBase.GetGenericArguments());
+
+			if (!forSeeAlso && !isOperator)
+				suffix += methodBase.GetParameters().Length == 0 ? "()" : "(…)";
+
+			if (forSeeAlso)
+				prefix = "method ";
+			else if (IsStatic(methodBase) && !isOperator)
+				prefix = "static " + prefix;
+			else if (IsAbstract(methodBase))
+				prefix = "abstract " + prefix;
+			else if (IsVirtual(methodBase))
+				prefix = "virtual " + prefix;
+			else if (IsOverride(methodBase))
+				prefix = "override " + prefix;
 		}
 
 		return new ShortSignature(prefix: prefix.Replace(' ', '\u00A0'), name: name, suffix: suffix.Replace(' ', '\u00A0'));
@@ -934,15 +915,15 @@ internal sealed class MarkdownGenerator
 	{
 		var getMethod = propertyInfo.GetMethod;
 		var setMethod = propertyInfo.SetMethod;
-		if (getMethod == null && setMethod == null)
+		if (getMethod is null && setMethod is null)
 			throw new InvalidOperationException();
 
-		var getVisibility = getMethod == null ? XmlDocVisibilityLevel.Private : GetMethodVisibility(getMethod);
-		var setVisibility = setMethod == null ? XmlDocVisibilityLevel.Private : GetMethodVisibility(setMethod);
+		var getVisibility = getMethod is null ? XmlDocVisibilityLevel.Private : GetMethodVisibility(getMethod);
+		var setVisibility = setMethod is null ? XmlDocVisibilityLevel.Private : GetMethodVisibility(setMethod);
 
-		if (getMethod != null && (setMethod == null || IsMorePrivateThan(setVisibility, Visibility)))
+		if (getMethod is not null && (setMethod is null || IsMorePrivateThan(setVisibility, Visibility)))
 			return " { get; }";
-		if (getMethod == null || IsMorePrivateThan(getVisibility, Visibility))
+		if (getMethod is null || IsMorePrivateThan(getVisibility, Visibility))
 			return " { set; }";
 
 		if (getVisibility == setVisibility)
@@ -1001,10 +982,10 @@ internal sealed class MarkdownGenerator
 	private IEnumerable<string> GetFullSignatureParts(MemberInfo memberInfo, ICollection<MemberInfo> seeAlsoMembers)
 	{
 		var typeInfo = memberInfo as TypeInfo;
-		var typeKind = typeInfo == null ? default(TypeKind?) : GetTypeKind(typeInfo);
+		var typeKind = typeInfo is null ? default(TypeKind?) : GetTypeKind(typeInfo);
 
 		var obsoleteAttribute = memberInfo.GetCustomAttribute<ObsoleteAttribute>();
-		if (obsoleteAttribute != null)
+		if (obsoleteAttribute is not null)
 		{
 			var message = obsoleteAttribute.Message;
 			if (string.IsNullOrWhiteSpace(message))
@@ -1021,7 +1002,7 @@ internal sealed class MarkdownGenerator
 		}
 
 		var browsableAttribute = memberInfo.GetCustomAttribute<EditorBrowsableAttribute>();
-		if (browsableAttribute != null && browsableAttribute.State != EditorBrowsableState.Always)
+		if (browsableAttribute is not null && browsableAttribute.State != EditorBrowsableState.Always)
 		{
 			yield return "[EditorBrowsable(";
 			yield return RenderConstant(browsableAttribute.State);
@@ -1030,7 +1011,7 @@ internal sealed class MarkdownGenerator
 		}
 
 		var attributeUsage = memberInfo.GetCustomAttribute<AttributeUsageAttribute>();
-		if (attributeUsage != null)
+		if (attributeUsage is not null)
 		{
 			yield return "[AttributeUsage(";
 
@@ -1107,7 +1088,7 @@ internal sealed class MarkdownGenerator
 		if (shortName == "Item" && memberInfo is PropertyInfo)
 			shortName = "this";
 
-		var isConversion = shortName == "explicit operator" || shortName == "implicit operator";
+		var isConversion = shortName is "explicit operator" or "implicit operator";
 
 		var nullableContextFlags = GetNullableContextFlags(memberInfo.GetCustomAttributes());
 		if (nullableContextFlags.Length == 0)
@@ -1125,13 +1106,13 @@ internal sealed class MarkdownGenerator
 		}
 
 		var (valueType, valueAttributes) = GetValueType(memberInfo);
-		if (valueType != null && !isConversion)
+		if (valueType is not null && !isConversion)
 		{
 			yield return RenderTypeName(valueType, seeAlsoMembers, valueAttributes, nullableContextFlags);
 			yield return " ";
 		}
 
-		if (valueType != null && isConversion)
+		if (valueType is not null && isConversion)
 		{
 			yield return shortName;
 			yield return " ";
@@ -1188,7 +1169,7 @@ internal sealed class MarkdownGenerator
 		ParameterInfo[]? parameterInfos = null;
 
 		var propertyInfo = memberInfo as PropertyInfo;
-		if (propertyInfo != null)
+		if (propertyInfo is not null)
 		{
 			parameterInfos = GetParameters(propertyInfo);
 			if (parameterInfos.Length == 0)
@@ -1196,12 +1177,12 @@ internal sealed class MarkdownGenerator
 		}
 
 		var methodInfo = memberInfo as MethodBase ?? TryGetDelegateInvoke(memberInfo);
-		if (methodInfo != null)
+		if (methodInfo is not null)
 			parameterInfos = GetParameters(methodInfo);
 
-		if (parameterInfos != null)
+		if (parameterInfos is not null)
 		{
-			yield return propertyInfo != null ? "[" : "(";
+			yield return propertyInfo is not null ? "[" : "(";
 			yield return "";
 
 			var isFirstParameter = true;
@@ -1242,7 +1223,7 @@ internal sealed class MarkdownGenerator
 				{
 					yield return " = ";
 					if (CanRenderParameterConstant(parameterInfo))
-						yield return RenderConstant(parameterInfo.DefaultValue!);
+						yield return RenderConstant(parameterInfo.DefaultValue);
 					else if (parameterInfo.ParameterType.GetTypeInfo().IsValueType || parameterInfo.ParameterType.IsGenericParameter)
 						yield return "default";
 					else
@@ -1252,10 +1233,10 @@ internal sealed class MarkdownGenerator
 				isFirstParameter = false;
 			}
 
-			yield return propertyInfo != null ? "]" : ")";
+			yield return propertyInfo is not null ? "]" : ")";
 		}
 
-		if (propertyInfo != null)
+		if (propertyInfo is not null)
 			yield return GetPropertyGetSet(propertyInfo);
 
 		foreach (var genericParameter in genericParameters)
@@ -1327,20 +1308,17 @@ internal sealed class MarkdownGenerator
 
 	private static (TypeInfo? Type, IReadOnlyList<Attribute>? Attributes) GetValueType(MemberInfo member)
 	{
-		var eventInfo = member as EventInfo;
-		if (eventInfo != null)
+		if (member is EventInfo eventInfo)
 			return (eventInfo.EventHandlerType!.GetTypeInfo(), eventInfo.GetCustomAttributes().ToList());
 
-		var propertyInfo = member as PropertyInfo;
-		if (propertyInfo != null)
+		if (member is PropertyInfo propertyInfo)
 			return (propertyInfo.PropertyType.GetTypeInfo(), propertyInfo.GetCustomAttributes().ToList());
 
-		var fieldInfo = member as FieldInfo;
-		if (fieldInfo != null)
+		if (member is FieldInfo fieldInfo)
 			return (fieldInfo.FieldType.GetTypeInfo(), fieldInfo.GetCustomAttributes().ToList());
 
 		var methodInfo = member as MethodInfo ?? TryGetDelegateInvoke(member);
-		if (methodInfo != null)
+		if (methodInfo is not null)
 			return (methodInfo.ReturnType.GetTypeInfo(), methodInfo.ReturnTypeCustomAttributes.GetCustomAttributes(inherit: false).OfType<Attribute>().ToList());
 
 		return default;
@@ -1371,14 +1349,14 @@ internal sealed class MarkdownGenerator
 
 	private static bool CanRenderParameterConstant(ParameterInfo parameterInfo)
 	{
-		return TryGetBuiltInTypeName(parameterInfo.ParameterType) != null ||
-			TryGetBuiltInTypeName(Nullable.GetUnderlyingType(parameterInfo.ParameterType)) != null ||
+		return TryGetBuiltInTypeName(parameterInfo.ParameterType) is not null ||
+			TryGetBuiltInTypeName(Nullable.GetUnderlyingType(parameterInfo.ParameterType)) is not null ||
 			parameterInfo.ParameterType.GetTypeInfo().IsEnum;
 	}
 
-	private static string RenderConstant(object value)
+	private static string RenderConstant(object? value)
 	{
-		if (value == null)
+		if (value is null)
 			return "null";
 
 		if (value is bool valueAsBool)
@@ -1450,9 +1428,6 @@ internal sealed class MarkdownGenerator
 
 	private static string RenderShortGenericParameters(Type[] genericParameters)
 	{
-		if (genericParameters == null)
-			return "";
-
 		var stringBuilder = new StringBuilder();
 		for (var index = 0; index < genericParameters.Length; index++)
 		{
@@ -1483,7 +1458,7 @@ internal sealed class MarkdownGenerator
 			return RenderTypeName(typeInfo.GetElementType()!.GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex);
 
 		var nullableOfType = Nullable.GetUnderlyingType(typeInfo.AsType());
-		if (nullableOfType != null)
+		if (nullableOfType is not null)
 			return $"{RenderTypeName(nullableOfType.GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex)}?";
 
 		var nullableSuffix = "";
@@ -1499,7 +1474,7 @@ internal sealed class MarkdownGenerator
 			return $"{RenderTypeName(typeInfo.GetElementType()!.GetTypeInfo(), seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex)}[]" + nullableSuffix;
 
 		var builtIn = TryGetBuiltInTypeName(typeInfo.AsType());
-		if (builtIn != null)
+		if (builtIn is not null)
 			return builtIn + nullableSuffix;
 
 		var renderedTupleTypes = RenderTupleTypes(typeInfo, seeAlso, tupleNames, ref tupleNameIndex, nullableFlags, ref nullableFlagIndex);
@@ -1559,7 +1534,7 @@ internal sealed class MarkdownGenerator
 
 	private static string RenderGenericArguments(Type[]? genericArguments, ICollection<MemberInfo>? seeAlso, IReadOnlyList<string?> tupleNames, ref int tupleNameIndex, byte[] nullableFlags, ref int nullableFlagIndex)
 	{
-		if (genericArguments == null)
+		if (genericArguments is null)
 			return "";
 
 		var stringBuilder = new StringBuilder();
@@ -1613,24 +1588,19 @@ internal sealed class MarkdownGenerator
 
 	private static bool IsStatic(MemberInfo memberInfo)
 	{
-		var typeInfo = memberInfo as TypeInfo;
-		if (typeInfo != null)
-			return typeInfo.IsClass && typeInfo.IsAbstract && typeInfo.IsSealed;
+		if (memberInfo is TypeInfo typeInfo)
+			return typeInfo is { IsClass: true, IsAbstract: true, IsSealed: true };
 
-		var eventInfo = memberInfo as EventInfo;
-		if (eventInfo != null)
+		if (memberInfo is EventInfo eventInfo)
 			return eventInfo.AddMethod?.IsStatic is true;
 
-		var propertyInfo = memberInfo as PropertyInfo;
-		if (propertyInfo != null)
+		if (memberInfo is PropertyInfo propertyInfo)
 			return (propertyInfo.GetMethod ?? propertyInfo.SetMethod)?.IsStatic ?? false;
 
-		var fieldInfo = memberInfo as FieldInfo;
-		if (fieldInfo != null)
-			return fieldInfo.IsStatic && !fieldInfo.IsLiteral;
+		if (memberInfo is FieldInfo fieldInfo)
+			return fieldInfo is { IsStatic: true, IsLiteral: false };
 
-		var methodBase = memberInfo as MethodBase;
-		if (methodBase != null)
+		if (memberInfo is MethodBase methodBase)
 			return methodBase.IsStatic;
 
 		return false;
@@ -1638,26 +1608,22 @@ internal sealed class MarkdownGenerator
 
 	private static bool IsAbstract(MemberInfo memberInfo)
 	{
-		var typeInfo = memberInfo as TypeInfo;
-		if (typeInfo != null && !typeInfo.IsInterface)
+		if (memberInfo is TypeInfo { IsInterface: false } typeInfo)
 			return typeInfo.IsAbstract;
 
 		if (memberInfo.DeclaringType?.GetTypeInfo().IsInterface == true)
 			return false;
 
-		var eventInfo = memberInfo as EventInfo;
-		if (eventInfo != null)
-			return eventInfo.AddMethod != null && IsAbstract(eventInfo.AddMethod);
+		if (memberInfo is EventInfo eventInfo)
+			return eventInfo.AddMethod is not null && IsAbstract(eventInfo.AddMethod);
 
-		var propertyInfo = memberInfo as PropertyInfo;
-		if (propertyInfo != null)
+		if (memberInfo is PropertyInfo propertyInfo)
 		{
-			return (propertyInfo.GetMethod != null && IsAbstract(propertyInfo.GetMethod)) ||
-				(propertyInfo.SetMethod != null && IsAbstract(propertyInfo.SetMethod));
+			return (propertyInfo.GetMethod is not null && IsAbstract(propertyInfo.GetMethod)) ||
+				(propertyInfo.SetMethod is not null && IsAbstract(propertyInfo.SetMethod));
 		}
 
-		var methodBase = memberInfo as MethodBase;
-		if (methodBase != null)
+		if (memberInfo is MethodBase methodBase)
 			return methodBase.IsAbstract;
 
 		return false;
@@ -1668,20 +1634,17 @@ internal sealed class MarkdownGenerator
 		if (memberInfo.DeclaringType?.GetTypeInfo().IsInterface == true)
 			return false;
 
-		var eventInfo = memberInfo as EventInfo;
-		if (eventInfo != null)
-			return eventInfo.AddMethod != null && IsVirtual(eventInfo.AddMethod);
+		if (memberInfo is EventInfo eventInfo)
+			return eventInfo.AddMethod is not null && IsVirtual(eventInfo.AddMethod);
 
-		var propertyInfo = memberInfo as PropertyInfo;
-		if (propertyInfo != null)
+		if (memberInfo is PropertyInfo propertyInfo)
 		{
-			return (propertyInfo.GetMethod != null && IsVirtual(propertyInfo.GetMethod)) ||
-				(propertyInfo.SetMethod != null && IsVirtual(propertyInfo.SetMethod));
+			return (propertyInfo.GetMethod is not null && IsVirtual(propertyInfo.GetMethod)) ||
+				(propertyInfo.SetMethod is not null && IsVirtual(propertyInfo.SetMethod));
 		}
 
-		var methodInfo = memberInfo as MethodInfo;
-		if (methodInfo != null)
-			return methodInfo.IsVirtual && !methodInfo.IsFinal && methodInfo.GetRuntimeBaseDefinition()!.DeclaringType == methodInfo.DeclaringType;
+		if (memberInfo is MethodInfo methodInfo)
+			return methodInfo is { IsVirtual: true, IsFinal: false } && methodInfo.GetRuntimeBaseDefinition()!.DeclaringType == methodInfo.DeclaringType;
 
 		return false;
 	}
@@ -1691,20 +1654,17 @@ internal sealed class MarkdownGenerator
 		if (memberInfo.DeclaringType?.GetTypeInfo().IsInterface == true)
 			return false;
 
-		var eventInfo = memberInfo as EventInfo;
-		if (eventInfo != null)
-			return eventInfo.AddMethod != null && IsOverride(eventInfo.AddMethod);
+		if (memberInfo is EventInfo eventInfo)
+			return eventInfo.AddMethod is not null && IsOverride(eventInfo.AddMethod);
 
-		var propertyInfo = memberInfo as PropertyInfo;
-		if (propertyInfo != null)
+		if (memberInfo is PropertyInfo propertyInfo)
 		{
-			return (propertyInfo.GetMethod != null && IsOverride(propertyInfo.GetMethod)) ||
-				(propertyInfo.SetMethod != null && IsOverride(propertyInfo.SetMethod));
+			return (propertyInfo.GetMethod is not null && IsOverride(propertyInfo.GetMethod)) ||
+				(propertyInfo.SetMethod is not null && IsOverride(propertyInfo.SetMethod));
 		}
 
-		var methodInfo = memberInfo as MethodInfo;
-		if (methodInfo != null)
-			return methodInfo.IsVirtual && !methodInfo.IsFinal && methodInfo.GetRuntimeBaseDefinition()!.DeclaringType != methodInfo.DeclaringType;
+		if (memberInfo is MethodInfo methodInfo)
+			return methodInfo is { IsVirtual: true, IsFinal: false } && methodInfo.GetRuntimeBaseDefinition()!.DeclaringType != methodInfo.DeclaringType;
 
 		return false;
 	}
@@ -1713,17 +1673,14 @@ internal sealed class MarkdownGenerator
 
 	private static bool IsReadOnly(MemberInfo memberInfo) => (memberInfo as FieldInfo)?.IsInitOnly ?? false;
 
-	private static bool IsFlagsEnum(MemberInfo memberInfo)
-	{
-		var type = memberInfo as TypeInfo;
-		return type != null && type.IsEnum && type.GetCustomAttributes<FlagsAttribute>().Any();
-	}
+	private static bool IsFlagsEnum(MemberInfo memberInfo) =>
+		memberInfo is TypeInfo { IsEnum: true } type && type.GetCustomAttributes<FlagsAttribute>().Any();
 
-	private static bool IsRecord(Type type) => type.GetMethod("<Clone>$") != null;
+	private static bool IsRecord(Type type) => type.GetMethod("<Clone>$") is not null;
 
 	private static bool IsBuiltInRecordMember(MemberInfo memberInfo)
 	{
-		if (memberInfo.DeclaringType is not Type declaringType || !IsRecord(declaringType))
+		if (memberInfo.DeclaringType is not { } declaringType || !IsRecord(declaringType))
 			return false;
 
 		return memberInfo switch
@@ -1739,27 +1696,22 @@ internal sealed class MarkdownGenerator
 
 	private static XmlDocVisibilityLevel GetVisibility(MemberInfo memberInfo, XmlDocVisibilityLevel protectedInternal)
 	{
-		var typeInfo = memberInfo as TypeInfo;
-		if (typeInfo != null)
+		if (memberInfo is TypeInfo typeInfo)
 		{
 			var visibility = GetTypeVisibility(typeInfo);
 			return typeInfo.IsNested ? GetMostPrivate(visibility, GetTypeVisibility(typeInfo.DeclaringType!.GetTypeInfo(), protectedInternal)) : visibility;
 		}
 
-		var eventInfo = memberInfo as EventInfo;
-		if (eventInfo != null)
+		if (memberInfo is EventInfo eventInfo)
 			return GetMethodVisibility(eventInfo.AddMethod!, protectedInternal);
 
-		var propertyInfo = memberInfo as PropertyInfo;
-		if (propertyInfo != null)
+		if (memberInfo is PropertyInfo propertyInfo)
 			return GetPropertyVisibility(propertyInfo, protectedInternal);
 
-		var fieldInfo = memberInfo as FieldInfo;
-		if (fieldInfo != null)
+		if (memberInfo is FieldInfo fieldInfo)
 			return GetFieldVisibility(fieldInfo, protectedInternal);
 
-		var methodBase = memberInfo as MethodBase;
-		if (methodBase != null)
+		if (memberInfo is MethodBase methodBase)
 			return GetMethodVisibility(methodBase, protectedInternal);
 
 		return XmlDocVisibilityLevel.Private;
@@ -1795,17 +1747,17 @@ internal sealed class MarkdownGenerator
 	{
 		var getMethod = propertyInfo.GetMethod;
 		var setMethod = propertyInfo.SetMethod;
-		if (getMethod == null && setMethod == null)
+		if (getMethod is null && setMethod is null)
 			throw new InvalidOperationException();
 
-		if (getMethod != null && setMethod == null)
+		if (getMethod is not null && setMethod is null)
 			return GetMethodVisibility(getMethod);
-		if (getMethod == null)
+		if (getMethod is null)
 			return GetMethodVisibility(setMethod!);
 
 		return GetMostPublic(
-			GetMethodVisibility(propertyInfo.GetMethod!, protectedInternal),
-			GetMethodVisibility(propertyInfo.SetMethod!, protectedInternal));
+			GetMethodVisibility(getMethod, protectedInternal),
+			GetMethodVisibility(setMethod!, protectedInternal));
 	}
 
 	private static XmlDocVisibilityLevel GetFieldVisibility(FieldInfo fieldInfo, XmlDocVisibilityLevel protectedInternal = XmlDocVisibilityLevel.Protected)
@@ -1932,43 +1884,34 @@ internal sealed class MarkdownGenerator
 		return MemberOrder.StaticField;
 	}
 
-	private static IEnumerable<T> OrderMembers<T>(IEnumerable<T> items, Func<T, MemberInfo> getMemberInfo)
-	{
-		return items.OrderBy(x => (int) GetMemberOrder(getMemberInfo(x)))
+	private static IEnumerable<T> OrderMembers<T>(IEnumerable<T> items, Func<T, MemberInfo> getMemberInfo) =>
+		items.OrderBy(x => (int) GetMemberOrder(getMemberInfo(x)))
 			.ThenBy(x => GetShortName(getMemberInfo(x)).ToString(), StringComparer.OrdinalIgnoreCase)
 			.ThenBy(x => GetGenericArguments(getMemberInfo(x)).Length)
 			.ThenBy(x => GetParameters(getMemberInfo(x)).Length)
 			.ThenBy(x => GetParameterShortNames(getMemberInfo(x)), StringComparer.OrdinalIgnoreCase);
-	}
 
-	private static MethodInfo? TryGetDelegateInvoke(MemberInfo memberInfo)
-	{
-		var typeInfo = memberInfo as TypeInfo;
-		return typeInfo != null && typeof(Delegate).GetTypeInfo().IsAssignableFrom(typeInfo) ? typeInfo.DeclaredMethods.FirstOrDefault(x => x.Name == "Invoke") : null;
-	}
+	private static MethodInfo? TryGetDelegateInvoke(MemberInfo memberInfo) =>
+		memberInfo is TypeInfo typeInfo &&
+		typeof(Delegate).GetTypeInfo().IsAssignableFrom(typeInfo) ? typeInfo.DeclaredMethods.FirstOrDefault(x => x.Name == "Invoke") : null;
 
 	private static Type[] GetGenericArguments(MemberInfo memberInfo)
 	{
-		var type = memberInfo as TypeInfo;
-		if (type != null)
+		if (memberInfo is TypeInfo type)
 			return type.GenericTypeParameters;
 
-		var method = memberInfo as MethodInfo;
-		return method?.GetGenericArguments() ?? [];
+		return (memberInfo as MethodInfo)?.GetGenericArguments() ?? [];
 	}
 
 	private static ParameterInfo[] GetParameters(MemberInfo memberInfo)
 	{
-		var delegateInvoke = TryGetDelegateInvoke(memberInfo);
-		if (delegateInvoke != null)
+		if (TryGetDelegateInvoke(memberInfo) is { } delegateInvoke)
 			return GetParameters(delegateInvoke);
 
-		var propertyInfo = memberInfo as PropertyInfo;
-		if (propertyInfo != null)
+		if (memberInfo is PropertyInfo propertyInfo)
 			return propertyInfo.GetIndexParameters();
 
-		var method = memberInfo as MethodBase;
-		return method?.GetParameters() ?? [];
+		return (memberInfo as MethodBase)?.GetParameters() ?? [];
 	}
 
 	private static string GetParameterShortNames(MemberInfo memberInfo) =>
@@ -2002,24 +1945,24 @@ internal sealed class MarkdownGenerator
 		var text = inline.Text ?? "";
 
 		MemberInfo? seeMemberInfo = null;
-		if (inline.SeeRef != null)
+		if (inline.SeeRef is not null)
 			context.MembersByXmlDocName.TryGetValue(inline.SeeRef, out seeMemberInfo);
 
 		if (text.Length == 0)
 		{
-			if (seeMemberInfo != null)
+			if (seeMemberInfo is not null)
 				text = GetOperatorKeywordName(GetShortName(seeMemberInfo));
-			else if (inline.SeeRef != null)
+			else if (inline.SeeRef is not null)
 				text = XmlDocUtility.GetShortNameForXmlDocRef(inline.SeeRef);
-			else if (inline.LinkUrl != null)
+			else if (inline.LinkUrl is not null)
 				text = inline.LinkUrl;
-			else if (inline.LangWord != null)
+			else if (inline.LangWord is not null)
 				text = SurroundCode(inline.LangWord);
 		}
 
 		if (text.Length != 0)
 		{
-			var isCode = inline.IsCode || seeMemberInfo != null;
+			var isCode = inline.IsCode || seeMemberInfo is not null;
 			if (isCode)
 				text = SurroundCode(text);
 
@@ -2037,31 +1980,31 @@ internal sealed class MarkdownGenerator
 	private string WrapMarkdownRefLink(string text, MemberInfo? memberInfo, MarkdownContext context, bool isCode = false, string? linkUrl = null)
 	{
 		var extension = GetFileExtension();
-		var xmlDocRef = memberInfo == null ? null : XmlDocUtility.GetXmlDocRef(memberInfo);
-		var isLocal = xmlDocRef != null && context.MembersByXmlDocName.ContainsKey(xmlDocRef);
-		var externalDoc = isLocal || xmlDocRef == null ? null : FindExternalDocumentation(memberInfo);
-		if (memberInfo != null && xmlDocRef != XmlDocUtility.GetXmlDocRef(context.MemberInfo) && (isLocal || externalDoc != null))
+		var xmlDocRef = memberInfo is null ? null : XmlDocUtility.GetXmlDocRef(memberInfo);
+		var isLocal = xmlDocRef is not null && context.MembersByXmlDocName.ContainsKey(xmlDocRef);
+		var externalDoc = isLocal || xmlDocRef is null ? null : FindExternalDocumentation(memberInfo);
+		if (memberInfo is not null && xmlDocRef != XmlDocUtility.GetXmlDocRef(context.MemberInfo) && (isLocal || externalDoc is not null))
 		{
 			string path;
 
 			var typeInfo = memberInfo as TypeInfo;
-			if (context.MemberInfo != null)
+			if (context.MemberInfo is not null)
 			{
-				if (typeInfo != null)
+				if (typeInfo is not null)
 					path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
 				else
 					path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType!.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 			}
-			else if (context.TypeInfo != null)
+			else if (context.TypeInfo is not null)
 			{
-				if (typeInfo != null)
+				if (typeInfo is not null)
 					path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
 				else
 					path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType!.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
 			}
 			else
 			{
-				if (typeInfo != null)
+				if (typeInfo is not null)
 					path = $"{GetNamespaceUriName(typeInfo.Namespace)}/{GetSafeTypeUriName(typeInfo)}{extension}";
 				else
 					path = $"{GetNamespaceUriName(memberInfo.DeclaringType?.Namespace)}/{GetTypeUriName(memberInfo.DeclaringType!.GetTypeInfo())}/{GetMemberUriName(memberInfo)}{extension}";
@@ -2072,7 +2015,7 @@ internal sealed class MarkdownGenerator
 
 			text = $"[{text}]({path})";
 		}
-		else if (linkUrl != null)
+		else if (linkUrl is not null)
 		{
 			text = $"[{text}]({linkUrl})";
 		}
@@ -2097,7 +2040,7 @@ internal sealed class MarkdownGenerator
 	}
 
 	private string? ToMarkdown(IEnumerable<XmlDocInline>? inlines, MarkdownContext context) =>
-		inlines == null ? null : string.Concat(inlines.Select(x => ToMarkdown(x, context))).Trim();
+		inlines is null ? null : string.Concat(inlines.Select(x => ToMarkdown(x, context))).Trim();
 
 	private IEnumerable<string> ToMarkdown(IReadOnlyList<XmlDocBlock> blocks, MarkdownContext context)
 	{
@@ -2108,7 +2051,7 @@ internal sealed class MarkdownGenerator
 
 			var block = blocks[index];
 
-			if (block.ListKind == XmlDocListKind.Bullet || block.ListKind == XmlDocListKind.Number)
+			if (block.ListKind is XmlDocListKind.Bullet or XmlDocListKind.Number)
 			{
 				var number = 0;
 				while (true)
@@ -2121,7 +2064,7 @@ internal sealed class MarkdownGenerator
 						markdown = $"**{markdown}**";
 
 						var afterTermBlock = index + 1 < blocks.Count ? blocks[index + 1] : null;
-						if (afterTermBlock != null && afterTermBlock.ListKind == block.ListKind && afterTermBlock.ListDepth == block.ListDepth && !afterTermBlock.IsListTerm)
+						if (afterTermBlock is not null && afterTermBlock.ListKind == block.ListKind && afterTermBlock.ListDepth == block.ListDepth && !afterTermBlock.IsListTerm)
 						{
 							markdown += " – " + ToMarkdown(afterTermBlock.Inlines, context);
 							index++;
@@ -2131,7 +2074,7 @@ internal sealed class MarkdownGenerator
 					yield return prefix + markdown;
 
 					var nextBlock = index + 1 < blocks.Count ? blocks[index + 1] : null;
-					if (nextBlock == null || nextBlock.ListKind != block.ListKind)
+					if (nextBlock is null || nextBlock.ListKind != block.ListKind)
 						break;
 
 					block = nextBlock;
@@ -2175,12 +2118,11 @@ internal sealed class MarkdownGenerator
 			AssemblyFileName = context.AssemblyFileName;
 			PageLocation = pageLocation;
 
-			var typeInfo = memberInfo as TypeInfo;
-			if (typeInfo != null)
+			if (memberInfo is TypeInfo typeInfo)
 			{
 				TypeInfo = typeInfo;
 			}
-			else if (memberInfo != null)
+			else if (memberInfo is not null)
 			{
 				TypeInfo = memberInfo.DeclaringType!.GetTypeInfo();
 				MemberInfo = memberInfo;
@@ -2200,8 +2142,8 @@ internal sealed class MarkdownGenerator
 		public string PageLocation { get; }
 	}
 
-	private static readonly HashSet<string> s_keywords = new()
-	{
+	private static readonly HashSet<string> s_keywords =
+	[
 		"abstract",
 		"as",
 		"base",
@@ -2279,5 +2221,5 @@ internal sealed class MarkdownGenerator
 		"void",
 		"volatile",
 		"while",
-	};
+	];
 }
