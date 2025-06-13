@@ -103,9 +103,8 @@ internal sealed class XmlDocMember
 	{
 		public BlockGenerator()
 		{
-			m_blocks = new List<XmlDocBlock>();
 			m_listKinds = new Stack<XmlDocListKind>();
-
+			m_blocks = [];
 			NextBlock();
 		}
 
@@ -214,7 +213,7 @@ internal sealed class XmlDocMember
 
 		private void NextBlock()
 		{
-			if (m_blocks != null && m_block != null && m_block.Inlines.Count != 0)
+			if (m_blocks is not null && m_block is not null && m_block.Inlines.Count != 0)
 				m_blocks.Add(m_block);
 			m_block = new XmlDocBlock();
 
@@ -258,9 +257,9 @@ internal sealed class XmlDocMember
 			return text;
 		}
 
+		private readonly Stack<XmlDocListKind> m_listKinds;
 		private List<XmlDocBlock>? m_blocks;
 		private XmlDocBlock? m_block;
-		private readonly Stack<XmlDocListKind> m_listKinds;
 		private bool m_isListHeader;
 		private bool m_isListTerm;
 	}

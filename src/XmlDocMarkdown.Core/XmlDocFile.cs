@@ -3,18 +3,17 @@ using System.Xml.Linq;
 
 namespace XmlDocMarkdown.Core;
 
-internal sealed class XmlDocAssembly
+internal sealed class XmlDocFile
 {
-	public XmlDocAssembly()
+	public XmlDocFile()
 	{
 	}
 
-	public XmlDocAssembly(XDocument xDocument)
+	public XmlDocFile(XDocument xDocument)
 	{
-		var xElement = xDocument?.Root;
-		if (xElement != null)
+		if (xDocument.Root is { } xElement)
 		{
-			foreach (var xMember in xElement.Elements("members").Elements("member").Where(x => x.Attribute("name") != null))
+			foreach (var xMember in xElement.Elements("members").Elements("member").Where(x => x.Attribute("name") is not null))
 				Members.Add(new XmlDocMember(xMember));
 		}
 	}

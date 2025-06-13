@@ -45,18 +45,18 @@ public static class XmlDocMarkdownGenerator
 		if (!File.Exists(xmlDocPath))
 			xmlDocPath = Path.ChangeExtension(assemblyPath, ".XML");
 
-		XmlDocAssembly xmlDocAssembly;
+		XmlDocFile xmlDocFile;
 		if (File.Exists(xmlDocPath))
 		{
 			var xDocument = XDocument.Load(xmlDocPath);
-			xmlDocAssembly = new XmlDocAssembly(xDocument);
+			xmlDocFile = new XmlDocFile(xDocument);
 		}
 		else
 		{
-			xmlDocAssembly = new XmlDocAssembly();
+			xmlDocFile = new XmlDocFile();
 		}
 
-		var namedTexts = generator.GenerateOutput(assembly, xmlDocAssembly);
+		var namedTexts = generator.GenerateOutput(assembly, xmlDocFile);
 
 		var namedTextsToWrite = new List<NamedText>();
 		foreach (var namedText in namedTexts)
