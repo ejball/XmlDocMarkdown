@@ -43,18 +43,16 @@ public static class XmlDocMarkdownGenerator
 
 		var xmlDocPath = Path.ChangeExtension(assemblyPath, ".xml");
 		if (!File.Exists(xmlDocPath))
-			xmlDocPath = Path.ChangeExtension(assemblyPath, ".XML");
+		{
+			var altXmlDocPath = Path.ChangeExtension(assemblyPath, ".XML");
+			if (File.Exists(altXmlDocPath))
+				xmlDocPath = altXmlDocPath;
+			else
+				throw new ApplicationException($"Missing XML file: {xmlDocPath}");
+		}
 
-		XmlDocFile xmlDocFile;
-		if (File.Exists(xmlDocPath))
-		{
-			var xDocument = XDocument.Load(xmlDocPath);
-			xmlDocFile = new XmlDocFile(xDocument);
-		}
-		else
-		{
-			xmlDocFile = new XmlDocFile();
-		}
+		var xDocument = XDocument.Load(xmlDocPath);
+		var xmlDocFile = new XmlDocFile(xDocument);
 
 		var namedTexts = generator.GenerateOutput(assembly, xmlDocFile);
 
