@@ -18,7 +18,7 @@ namespace XmlDocMarkdown.Core
 		/// <exception cref="ArgumentNullException"><c>args</c> is <c>null</c>.</exception>
 		public ArgsReader(IEnumerable<string> args)
 		{
-			m_args = (args ?? throw new ArgumentNullException(nameof(args))).ToList();
+			m_args = [.. args ?? throw new ArgumentNullException(nameof(args))];
 		}
 
 		/// <summary>

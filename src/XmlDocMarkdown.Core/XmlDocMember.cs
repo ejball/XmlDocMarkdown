@@ -208,6 +208,15 @@ namespace XmlDocMarkdown.Core
 						m_block?.Inlines.Add(new XmlDocInline { Text = (string) xElement.Attribute("name"), IsTypeParamRef = true });
 						break;
 
+					case "table":
+						// Insert the raw table
+						m_listKinds.Push(XmlDocListKind.Table);
+						NextBlock();
+						m_block?.Inlines.Add(new XmlDocInline { Text = xElement.ToString() });
+						m_listKinds.Pop();
+						NextBlock();
+						break;
+
 					default:
 						AddNodes(xElement.Nodes());
 						break;
@@ -241,7 +250,7 @@ namespace XmlDocMarkdown.Core
 			private static string TrimCode(string text)
 			{
 				// trimming logic adapted from https://github.com/kzu/NuDoq
-				var lines = text.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.None).ToList();
+				var lines = text.Split([Environment.NewLine, "\n"], StringSplitOptions.None).ToList();
 
 				if (lines.Count != 0 && lines[0].Trim().Length == 0)
 					lines.RemoveAt(0);

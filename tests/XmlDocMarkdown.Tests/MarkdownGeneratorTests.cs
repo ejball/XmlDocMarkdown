@@ -5,7 +5,7 @@ using XmlDocMarkdown.Core;
 
 namespace XmlDocMarkdown.Tests
 {
-	public class MarkdownGeneratorTests
+	internal sealed class MarkdownGeneratorTests
 	{
 		[Test]
 		public void ExampleAssembly()

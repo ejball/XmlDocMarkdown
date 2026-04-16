@@ -67,7 +67,7 @@ namespace XmlDocMarkdown.Core
 
 		internal void Save(string tocPath)
 		{
-			Directory.CreateDirectory(System.IO.Path.GetDirectoryName(tocPath)!);
+			Directory.CreateDirectory(System.IO.Path.GetDirectoryName(tocPath) ?? "");
 			using (var writer = new StreamWriter(tocPath, false, Encoding.UTF8))
 			{
 				writer.WriteLine("toc:");
