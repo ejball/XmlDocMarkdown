@@ -7,7 +7,7 @@
     <NoWarn>$(NoWarn);1591;1998;CA2201;NU1507;NU5105</NoWarn>
     <GitHubOrganization>ejball</GitHubOrganization>
     <RepositoryName>XmlDocMarkdown</RepositoryName>
-    <PackageProjectUrl>https://ejball.com/$(RepositoryName)</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors>Ed Ball</Authors>
   </PropertyGroup>
 

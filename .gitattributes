@@ -1,9 +1,5 @@
 * text=auto eol=lf
 
-# DO NOT EDIT: gitattributes-csharp convention
-*.cs text diff=csharp
-# END DO NOT EDIT
-
 # DO NOT EDIT: csharp convention
 *.cs text diff=csharp
 # END DO NOT EDIT
