@@ -392,3 +392,9 @@ indent_size = tab
 indent_style = tab
 insert_final_newline = true
 # END DO NOT EDIT
+
+# DO NOT EDIT: yaml convention
+[*.{yml,yaml}]
+indent_size = 2
+indent_style = space
+# END DO NOT EDIT
