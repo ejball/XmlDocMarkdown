@@ -378,3 +378,10 @@ resharper_unused_member_local_highlighting = suggestion
 indent_size = 2
 indent_style = space
 # END DO NOT EDIT
+
+# DO NOT EDIT: md convention
+[*.md]
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+# END DO NOT EDIT
