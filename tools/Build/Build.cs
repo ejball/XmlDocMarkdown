@@ -30,7 +30,7 @@ return BuildRunner.Execute(args, build =>
 	void GenerateDocs(bool verify)
 	{
 		var configuration = dotNetBuildSettings.GetConfiguration();
-		var xmlDocGenPath = FindFiles($"tools/XmlDocGen/bin/{configuration}/net8.0/XmlDocGen.dll").First();
+		var xmlDocGenPath = FindFiles($"artifacts/bin/XmlDocGen/{configuration}/XmlDocGen.dll").First();
 		RunDotNet(xmlDocGenPath, "ExampleAssembly", "docs", verify ? "--verify" : null);
 		RunDotNet(xmlDocGenPath, "XmlDocMarkdown.Core", "docs", verify ? "--verify" : null);
 	}
