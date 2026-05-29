@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.0.0
+
+* Update build and repository conventions.
+
 ## 2.9.0
 
 * Add `--skip-compiler-generated`. (Thanks [SteveGilham](https://github.com/SteveGilham)!)

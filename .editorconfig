@@ -1,12 +1,11 @@
+# DO NOT EDIT: root convention
 root = true
 
 [*]
 charset = utf-8
 end_of_line = lf
-indent_size = 2
-indent_style = space
-insert_final_newline = true
 trim_trailing_whitespace = true
+# END DO NOT EDIT
 
 [*.json]
 resharper_comment_typo_highlighting = none
@@ -19,10 +18,43 @@ insert_final_newline = false
 [dotnet-tools.json]
 insert_final_newline = false
 
-[*.cs]
+# DO NOT EDIT: json convention
+[*.json]
+indent_size = 2
+indent_style = space
+# END DO NOT EDIT
+
+# DO NOT EDIT: md convention
+[*.md]
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+# END DO NOT EDIT
+
+# DO NOT EDIT: ps1 convention
+[*.ps1]
+indent_size = tab
+indent_style = tab
+insert_final_newline = true
+# END DO NOT EDIT
+
+# DO NOT EDIT: yaml convention
+[*.{yml,yaml}]
+indent_size = 2
+indent_style = space
+# END DO NOT EDIT
+
+# DO NOT EDIT: csharp convention
+# generated from https://github.com/Faithlife/CodingGuidelines/blob/master/sections/csharp/editorconfig.md
+[*.{csproj,props,slnx,targets}]
+indent_size = 2
+indent_style = space
+
+[*.{cs,cshtml,razor}]
 indent_size = tab
 indent_style = tab
 tab_width = 4
+insert_final_newline = true
 csharp_indent_block_contents = true
 csharp_indent_braces = false
 csharp_indent_case_contents = true
@@ -122,6 +154,8 @@ dotnet_diagnostic.CA1819.severity = suggestion
 dotnet_diagnostic.CA1822.severity = suggestion
 dotnet_diagnostic.CA1826.severity = suggestion
 dotnet_diagnostic.CA1848.severity = suggestion
+dotnet_diagnostic.CA1861.severity = suggestion
+dotnet_diagnostic.CA1873.severity = suggestion
 dotnet_diagnostic.CA2000.severity = none
 dotnet_diagnostic.CA2227.severity = none
 dotnet_diagnostic.CA2234.severity = none
@@ -204,6 +238,13 @@ dotnet_diagnostic.IDE0161.severity = suggestion
 dotnet_diagnostic.IDE0170.severity = suggestion
 dotnet_diagnostic.IDE0180.severity = warning
 dotnet_diagnostic.IDE0290.severity = suggestion
+dotnet_diagnostic.IDE0300.severity = suggestion
+dotnet_diagnostic.IDE0301.severity = suggestion
+dotnet_diagnostic.IDE0305.severity = suggestion
+dotnet_diagnostic.IDE0306.severity = suggestion
+dotnet_diagnostic.IDE0370.severity = suggestion
+dotnet_diagnostic.IDE0390.severity = suggestion
+dotnet_diagnostic.IDE0391.severity = suggestion
 dotnet_diagnostic.IDE1005.severity = suggestion
 dotnet_diagnostic.NUnit2045.severity = suggestion
 dotnet_diagnostic.SA0001.severity = none
@@ -373,3 +414,4 @@ resharper_unused_auto_property_accessor_global_highlighting = none
 resharper_unused_auto_property_accessor_local_highlighting = suggestion
 resharper_unused_member_global_highlighting = none
 resharper_unused_member_local_highlighting = suggestion
+# END DO NOT EDIT

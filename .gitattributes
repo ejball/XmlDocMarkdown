@@ -1,5 +1,5 @@
 * text=auto eol=lf
 
+# DO NOT EDIT: csharp convention
 *.cs text diff=csharp
-*.csproj text merge=union
-*.sln text merge=union
+# END DO NOT EDIT

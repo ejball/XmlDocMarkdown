@@ -1,0 +1,40 @@
+name: Apply Repository Conventions
+
+on:
+  schedule:
+  - cron: '31 9 * * 1-5'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  apply:
+    name: Apply
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          # full history needed for git merge-base in repo-conventions tool
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "ejball-bot"
+          git config user.email "ejball-bot@users.noreply.github.com"
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v5
+
+      - name: Install APM
+        uses: microsoft/apm-action@v1
+        with:
+          setup-only: true
+
+      - name: Apply repository conventions
+        env:
+          GH_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        run: |
+          dnx -y repo-conventions apply --open-pr

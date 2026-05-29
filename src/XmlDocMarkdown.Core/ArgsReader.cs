@@ -67,7 +67,7 @@ internal sealed class ArgsReader(IEnumerable<string> args)
 
 	private static string RenderOption(string name) => name.Length == 1 ? $"-{name}" : $"--{name}";
 
-	private static bool IsOptionArgument(string optionName, string argument) => string.Equals(argument, RenderOption(optionName), StringComparison.Ordinal);
+	private static bool IsOptionArgument(string optionName, string argument) => argument == RenderOption(optionName);
 
 	private int FindOptionArgumentIndex(string optionName)
 	{
@@ -81,5 +81,5 @@ internal sealed class ArgsReader(IEnumerable<string> args)
 		return -1;
 	}
 
-	private readonly List<string> m_args = (args ?? throw new ArgumentNullException(nameof(args))).ToList();
+	private readonly List<string> m_args = [.. args ?? throw new ArgumentNullException(nameof(args))];
 }
