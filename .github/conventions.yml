@@ -1,11 +1,7 @@
 conventions:
-  - path: Faithlife/CodingGuidelines/conventions/dotnet-common
-  - path: Faithlife/CodingGuidelines/conventions/nuget-config
-  - path: Faithlife/CodingGuidelines/conventions/gitignore-common
-  - path: Faithlife/CodingGuidelines/conventions/gitignore-dotnet
-  - path: Faithlife/CodingGuidelines/conventions/gitignore-ide
-  - path: Faithlife/CodingGuidelines/conventions/dotnet-common-contributing
-  - path: Faithlife/CodingGuidelines/conventions/dotnet-common-props
-  - path: Faithlife/CodingGuidelines/conventions/license-mit
-    settings:
-      copyright-holder: Ed Ball
+  - path: ejball/ejball-common/conventions/ejball-dotnet-package
+  - path: ejball/ejball-common/conventions/ejball-dotnet-package-workflows
+
+pull-request:
+  reviewers:
+    - ejball
