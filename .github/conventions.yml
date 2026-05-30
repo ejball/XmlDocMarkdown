@@ -1,6 +1,7 @@
 conventions:
   - path: ejball/ejball-common/conventions/ejball-dotnet-package
   - path: ejball/ejball-common/conventions/ejball-dotnet-package-workflows
+  - path: Faithlife/CodingGuidelines/conventions/dotnet-common-contributing
 
 pull-request:
   reviewers:
