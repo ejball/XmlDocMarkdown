@@ -127,5 +127,5 @@ return BuildRunner.Execute(args, build =>
 		return builder.ToString();
 	}
 
-	static string NormalizeSampleText(string sampleName, string text) => sampleName == "Samples.SourceLinks" ? Regex.Replace(text, "/blob/[0-9a-f]{40}/", "/blob/{commit}/", RegexOptions.IgnoreCase) : text;
+	static string NormalizeSampleText(string sampleName, string text) => sampleName == "Samples.SourceLinks" ? Regex.Replace(text, "(XmlDocMarkdown/)[0-9a-f]{40}/", "$1{commit}/", RegexOptions.IgnoreCase) : text;
 });

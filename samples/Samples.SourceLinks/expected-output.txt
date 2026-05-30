@@ -1,6 +1,6 @@
 sample: Samples.SourceLinks
 files: 206
-sha256: 1ccf662b87cfde4766711504e848a80f6946e0ef517a93f1a311e78385df3488
+sha256: cb4838dbe09d89fb57f192b08a8e408de044c0d6fb5a5984a648423c811c335a
 preview:
 - ExampleAssembly.md
 - ExampleAssembly/ExampleAssembly.InnerNamespace.md
