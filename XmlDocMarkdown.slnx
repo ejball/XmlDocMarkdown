@@ -5,4 +5,3 @@
   <Project Path="tools/XmlDocGen/XmlDocGen.csproj" />
   <Project Path="tools/Build/Build.csproj" />
 </Solution>
-
