@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Description>A layered library for generating documentation from .NET XML documentation comments.</Description>
+    <PackageTags>.NET XML documentation comments Markdown documentation</PackageTags>
+    <IsPackable>true</IsPackable>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RewritePackageReadmeLinks>true</RewritePackageReadmeLinks>
+    <NoWarn>$(NoWarn);IDE0005;IDE0055;SA1402;SA1514;SA1518;SA1649;CA1002;CA1711;CA1859</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

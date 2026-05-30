@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\XmlDocMarkdown.Core\XmlDocMarkdown.Core.csproj" />
+    <ProjectReference Include="..\..\src\XmlDocGen.Core\XmlDocGen.Core.csproj" />
     <ProjectReference Include="..\..\tools\ExampleAssembly\ExampleAssembly.csproj" />
   </ItemGroup>
 

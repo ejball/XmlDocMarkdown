@@ -1,8 +1,8 @@
-using XmlDocMarkdown.Core;
+using XmlDocGen.Core;
 
-return XmlDocMarkdownApp.Run(args,
-	(assembly, settings) =>
+return XmlDocGenApp.Run(args,
+	context =>
 	{
-		settings.NewLine = "\n";
-		settings.ShouldClean = true;
+		context.NewLine = "\n";
+		context.WriterSettings.ShouldClean = true;
 	});

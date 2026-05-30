@@ -1,7 +1,7 @@
 using System.Reflection;
-using ExampleAssembly;
 using NUnit.Framework;
-using XmlDocMarkdown.Core;
+using XmlDocGen.Core;
+using ExampleClass = ExampleAssembly.ExampleClass;
 
 namespace XmlDocMarkdown.Tests;
 
@@ -10,9 +10,13 @@ internal sealed class MarkdownGeneratorTests
 	[Test]
 	public void ExampleAssembly()
 	{
-		XmlDocMarkdownGenerator.Generate(
-			typeof(ExampleClass).GetTypeInfo().Assembly,
-			Path.Combine(Path.GetTempPath(), "MarkdownGeneratorTests"),
-			new XmlDocMarkdownSettings { IsDryRun = true });
+		var exitCode = XmlDocGenApp.Run(
+			[
+				typeof(ExampleClass).GetTypeInfo().Assembly.GetName().Name!,
+				Path.Combine(Path.GetTempPath(), "MarkdownGeneratorTests"),
+				"--dryrun",
+			]);
+
+		Assert.That(exitCode, Is.Zero);
 	}
 }

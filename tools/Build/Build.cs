@@ -29,6 +29,6 @@ return BuildRunner.Execute(args, build =>
 		var configuration = dotNetBuildSettings.GetConfiguration();
 		var xmlDocGenPath = FindFiles($"artifacts/bin/XmlDocGen/{configuration}/XmlDocGen.dll").First();
 		RunDotNet(xmlDocGenPath, "ExampleAssembly", "docs", verify ? "--verify" : null);
-		RunDotNet(xmlDocGenPath, "XmlDocMarkdown.Core", "docs", verify ? "--verify" : null);
+		RunDotNet(xmlDocGenPath, "XmlDocGen.Core", "docs", verify ? "--verify" : null);
 	}
 });
