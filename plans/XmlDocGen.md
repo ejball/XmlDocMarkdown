@@ -5,9 +5,10 @@ layered library named **XmlDocGen**, published to a new repository. No backward 
 required.
 
 The goal is a clean, **layered** API where each layer has a single responsibility and lives in its own
-namespace. Every layer is **public and self-sufficient**: a client can take any layer and build their
-own higher layers on top of it, or replace a layer entirely, without code duplication. The library
-still makes it trivially easy to generate a GitHub/Docusaurus-friendly Markdown site by default.
+namespace. Every layer is **public and self-sufficient**: a client in a different assembly can take any
+layer and build their own higher layers on top of it, or replace a layer entirely, without code
+duplication. The library still makes it trivially easy to generate a GitHub/Docusaurus-friendly
+Markdown site by default.
 
 ## Goals
 
@@ -22,10 +23,24 @@ still makes it trivially easy to generate a GitHub/Docusaurus-friendly Markdown 
 - A rich, reflection-backed object model (`XmlDocNode` and friends) is the single source of truth that
   all output formats render from, and it spans **multiple assemblies**.
 - Filtering is first-class via a composable `XmlDocNodeVisibility`.
-- Cross-references (including to types/members **outside** the documented assemblies) and path→URL
-  mapping are customizable extension points.
-- **Every layer is customizable** without rewriting the layers around it: page partitioning, signature
-  formatting, link resolution, and per-section rendering are all override points.
+- Linking to types/members **outside** the documented assemblies, and mapping paths to URLs, are
+  customizable extension points.
+- **Every layer is customizable** without rewriting the layers around it: page mapping, signature
+  formatting, link resolution, and per-section rendering are all extension points.
+
+## Conventions
+
+- **XML documentation is required on every public and protected member.** This is enforced as a build
+  warning-as-error and verified by a doc-coverage test (see Testing Plan).
+- **Prefer abstract methods over virtual methods.** Contract methods that a subclass must supply are
+  `abstract`; ready-made behavior is provided by concrete sealed subclasses rather than virtual
+  defaults on a base class. The one deliberate exception is the **renderer/builder section methods**
+  (e.g. `MarkdownRenderer.RenderSummary`), which are `virtual` precisely so a client can override one
+  section and reuse the rest — that is their entire purpose.
+- **"Writer"/"writing" is reserved for I/O.** In-memory producers are "builders" (e.g.
+  `CSharpSignatureBuilder`), not writers. The only exception is `MarkdownWriter`, a low-level text
+  emitter, which writes to an in-memory `TextWriter`.
+- **Settings, not Options.** Configuration objects are uniformly named `...Settings`.
 
 ## Namespaces
 
@@ -34,29 +49,29 @@ The root namespace matches the assembly name, `XmlDocGen.Core`, and each layer i
 | Layer | Namespace | Responsibility | I/O? |
 |-------|-----------|----------------|------|
 | XML file | `XmlDocGen.Core.Xml` | Parse compiler-emitted XML; `XmlDocRef` value type. | In memory |
-| Object model | `XmlDocGen.Core.Model` | Join reflection + XML into the `XmlDocNode` tree across assemblies; filtering. | In memory |
-| C# signatures | `XmlDocGen.Core.CSharp` | Produce structured C# signatures/tokens from model nodes. | In memory |
-| Pages | `XmlDocGen.Core.Pages` | Partition the model into pages; abstract page rendering. | In memory |
-| Sites | `XmlDocGen.Core.Sites` | Assemble pages into a site; URL mapping; link resolution. | In memory |
-| Markdown | `XmlDocGen.Core.Markdown` | Markdown building blocks + Markdown page renderer/site builder. | In memory |
-| Writing | `XmlDocGen.Core.Writing` | Write a site to the file system (diff, clean, dry-run, verify). | **File system** |
+| Object model | `XmlDocGen.Core.Nodes` | Join reflection + XML into the `XmlDocNode` tree across assemblies; filtering. | In memory |
+| C# signatures | `XmlDocGen.Core.CSharp` | Produce structured C# signatures/tokens from nodes. | In memory |
+| Pages | `XmlDocGen.Core.Pages` | Map nodes to pages; resolve links/URLs; abstract page rendering. | In memory |
+| Sites | `XmlDocGen.Core.Sites` | Assemble rendered pages into an in-memory site. | In memory |
+| Markdown | `XmlDocGen.Core.Markdown` | Markdown building blocks + Markdown page/site rendering. | In memory |
+| IO | `XmlDocGen.Core.IO` | Write a site to the file system (diff, clean, dry-run, verify). | **File system** |
 | Application | `XmlDocGen.Core` (root) | CLI entry point wiring it all together. | Console + file system |
 
 Dependency rule: a namespace may reference those above it in the table but never those below it. All
-disk access lives in `XmlDocGen.Core.Writing` and the root app; everything else is pure in-memory work.
+disk access lives in `XmlDocGen.Core.IO` and the root app; everything else is pure in-memory work.
 
 ```mermaid
 graph TD
-    App["XmlDocGen.Core (XmlDocGenApp)"] --> Writing["Writing (XmlDocSiteWriter)"]
+    App["XmlDocGen.Core (XmlDocGenApp)"] --> IO["IO (XmlDocSiteWriter)"]
     App --> Markdown["Markdown (MarkdownSiteBuilder)"]
-    Writing --> Sites["Sites (XmlDocSite, XmlDocSiteBuilder)"]
+    IO --> Sites["Sites (XmlDocSite, XmlDocSiteBuilder)"]
     Markdown --> Sites
-    Markdown --> Pages["Pages (XmlDocPage, XmlDocPageRenderer)"]
+    Markdown --> Pages["Pages (XmlDocPageMap, XmlDocPageRenderer)"]
     Markdown --> CSharp["CSharp (CSharpSignature)"]
     Sites --> Pages
-    Pages --> Model["Model (XmlDocModel, XmlDocNode)"]
-    CSharp --> Model
-    Model --> Xml["Xml (XmlDocXmlFile, XmlDocRef)"]
+    Pages --> Nodes["Nodes (XmlDocTree, XmlDocNode)"]
+    CSharp --> Nodes
+    Nodes --> Xml["Xml (XmlDocXmlFile, XmlDocRef)"]
 ```
 
 ---
@@ -66,7 +81,8 @@ graph TD
 Pure parsing of the compiler-emitted `.xml` file plus the `XmlDocRef` value type. No reflection; no file
 system beyond opt-in convenience loaders. This is today's `XmlDocFile`/`XmlDocMember`/`XmlDocBlock`
 model, made public, moved to its own namespace, and renamed with an `XmlDocXml` prefix to avoid
-collisions with higher-layer "file"/"site" concepts.
+collisions with higher-layer "file"/"site" concepts. The inline model is public so a non-Markdown
+renderer in another assembly can format it.
 
 ```csharp
 namespace XmlDocGen.Core.Xml;
@@ -74,6 +90,7 @@ namespace XmlDocGen.Core.Xml;
 /// <summary>An XML documentation identifier, e.g. "T:My.Type" or "M:My.Type.Method(System.Int32)".</summary>
 public readonly struct XmlDocRef : IEquatable<XmlDocRef>
 {
+    /// <summary>Wraps an identifier string (basic prefix validation only).</summary>
     public XmlDocRef(string value);
 
     /// <summary>The raw identifier string (e.g. "T:My.Type").</summary>
@@ -114,7 +131,7 @@ public sealed class XmlDocXmlFile
 /// <summary>The parsed XML documentation for a single member.</summary>
 public sealed class XmlDocXmlMember
 {
-    public XmlDocRef Ref { get; }                            // was XmlDocName (string)
+    public XmlDocRef Ref { get; }
     public IReadOnlyList<XmlDocXmlBlock> Summary { get; }
     public IReadOnlyList<XmlDocXmlParameter> TypeParameters { get; }
     public IReadOnlyList<XmlDocXmlParameter> Parameters { get; }
@@ -124,14 +141,18 @@ public sealed class XmlDocXmlMember
     public IReadOnlyList<XmlDocXmlBlock> Remarks { get; }
     public IReadOnlyList<XmlDocXmlBlock> Examples { get; }
     public IReadOnlyList<XmlDocXmlSeeAlso> SeeAlso { get; }
+
+    /// <summary>The raw &lt;inheritdoc&gt; directive, if present, for the Nodes layer to resolve.</summary>
+    public XmlDocXmlInheritDoc? InheritDoc { get; }
 }
 
-public sealed class XmlDocXmlBlock { /* inlines + list kind */ }
-public sealed class XmlDocXmlInline { /* text, code, see-ref (XmlDocRef), paramref, etc. */ }
+public sealed class XmlDocXmlBlock { /* inlines + optional list kind */ }
+public sealed class XmlDocXmlInline { /* text, code, see (XmlDocRef/href/langword), paramref, typeparamref */ }
 public sealed class XmlDocXmlParameter { /* name + blocks */ }
 public sealed class XmlDocXmlException { /* XmlDocRef + blocks */ }
-public sealed class XmlDocXmlSeeAlso { /* XmlDocRef + text */ }
-public enum XmlDocXmlListKind { Bullet, Number, Table }
+public sealed class XmlDocXmlSeeAlso { /* XmlDocRef or href + text */ }
+public sealed class XmlDocXmlInheritDoc { /* optional cref + optional path */ }
+public enum XmlDocXmlListKind { Bullet, Number, Table, Definition }
 ```
 
 ### Examples
@@ -148,35 +169,35 @@ XmlDocRef widgetRef = XmlDocRef.ForType(typeof(MyLib.Widget));
 XmlDocRef methodRef = XmlDocRef.ForMember(typeof(MyLib.Widget).GetMethod("Spin")!);
 ```
 
-### Proposed additions
-- `XmlDocRef.TryParse(string, out XmlDocRef)` and a `Name`/`Namespace` decomposition helper.
-- An overload `XmlDocRef.ForType(Type, includeTypeArguments: bool)` to control constructed-generic refs.
-
-### Open questions
-- Should `XmlDocRef` normalize/validate input in its constructor, or stay a thin wrapper?
-- Keep `XmlDocXmlInline` as one class with a kind discriminator, or split into a small inline hierarchy?
-- Expose the inline model publicly now, or keep inlines internal until a non-Markdown renderer needs them?
+### Design decisions
+- `XmlDocXmlInline` stays a single class with a kind discriminator; the public docs explain the kinds.
+- The inline model and `XmlDocRef` are fully public so other assemblies can render XML doc content.
+- The constructor does only basic prefix validation; it does not parse the full identifier grammar.
 
 ---
 
-## Model Layer (`XmlDocGen.Core.Model`)
+## Nodes Layer (`XmlDocGen.Core.Nodes`)
 
 The heart of the redesign: everything from **reflection**, joined with the matching `XmlDocXmlMember`
-content, as an `XmlDocNode` tree spanning **multiple assemblies**. All downstream layers read from this
-tree, so feature support (records, `required`, `ref struct`, etc.) is added here once.
+content, as an `XmlDocNode` tree (`XmlDocTree`) spanning **multiple assemblies**. All downstream layers
+read from this tree, so feature support (records, `required`, `ref struct`, etc.) is added here once.
 
 ```csharp
-namespace XmlDocGen.Core.Model;
+namespace XmlDocGen.Core.Nodes;
 
-/// <summary>A documentation model built from one or more assemblies.</summary>
-public sealed class XmlDocModel
+/// <summary>A documentation tree built from one or more assemblies.</summary>
+public sealed class XmlDocTree
 {
-    public static XmlDocModel Create(IEnumerable<XmlDocAssemblyNode> assemblies);
+    public static XmlDocTree Create(IEnumerable<XmlDocAssemblyNode> assemblies);
+    public static XmlDocTree Create(IEnumerable<(Assembly Assembly, XmlDocXmlFile Xml)> inputs);
 
     public IReadOnlyList<XmlDocAssemblyNode> Assemblies { get; }
 
-    /// <summary>Find any node in the model by reference (across all assemblies).</summary>
+    /// <summary>Find any node in the tree by reference (across all assemblies).</summary>
     public XmlDocNode? FindNode(XmlDocRef reference);
+
+    /// <summary>Find the node documenting a reflection type or member, if it is in the tree.</summary>
+    public XmlDocNode? FindNode(MemberInfo member);
 }
 
 /// <summary>Base class for any documentable node (assembly, namespace, type, or member).</summary>
@@ -187,24 +208,30 @@ public abstract class XmlDocNode
 
     public XmlDocNode? Parent { get; }                      // null for assembly roots
     public XmlDocAssemblyNode Assembly { get; }             // owning assembly node
-    public XmlDocXmlMember? Documentation { get; }          // joined XML doc, if any
+    public XmlDocXmlMember? XmlMember { get; }              // joined XML doc, if any (inheritdoc resolved)
 
     public bool IsObsolete { get; }
     public bool IsBrowsable { get; }
     public bool IsCompilerGenerated { get; }
     public XmlDocVisibility Visibility { get; }
 
-    public IReadOnlyList<XmlDocNode> Children { get; }      // unfiltered
+    public IReadOnlyList<XmlDocNode> Children { get; }      // unfiltered, in declaration order
     public IEnumerable<XmlDocNode> GetChildren(XmlDocNodeVisibility visibility);
+
+    /// <summary>This node and all descendants that pass the filter (depth-first, declaration order).</summary>
+    public IEnumerable<XmlDocNode> DescendantsAndSelf(XmlDocNodeVisibility visibility);
+
+    /// <summary>Surface an attribute for custom filtering/rendering, if applied to this node.</summary>
+    public bool TryGetAttribute<T>(out T attribute) where T : Attribute;
 }
 
 public sealed class XmlDocAssemblyNode : XmlDocNode
 {
     /// <summary>Build a single-assembly node by joining reflection with parsed XML documentation.</summary>
-    public static XmlDocAssemblyNode Create(Assembly assembly, XmlDocXmlFile xmlFile);
+    public static XmlDocAssemblyNode Create(Assembly assembly, XmlDocXmlFile xml);
 
     public Assembly Assembly { get; }                       // the reflected assembly
-    public XmlDocXmlFile XmlFile { get; }                   // the parsed XML doc file
+    public XmlDocXmlFile Xml { get; }                       // the parsed XML doc file
     public IReadOnlyList<XmlDocNamespaceNode> Namespaces { get; }
 }
 
@@ -229,25 +256,27 @@ public sealed class XmlDocMemberNode : XmlDocNode
     // structural signature data: parameters, return type, accessors, modifiers
 }
 
+/// <summary>Visibility ordered from least to most visible, so comparisons (&gt;=) work directly.</summary>
 public enum XmlDocVisibility { Private, Internal, ProtectedInternal, Protected, Public }
 public enum XmlDocTypeKind { Class, Struct, Interface, Enum, Delegate, Record, RecordStruct }
 public enum XmlDocMemberKind { Constructor, Method, Property, Field, Event, Operator }
 ```
 
 Notes:
-- `XmlDocVisibility` replaces today's `XmlDocVisibilityLevel`, framed as "the node's own visibility"
-  rather than "the minimum to document." Filtering is done by `XmlDocNodeVisibility` (below).
-- The tree exposes **structural** signature data so any formatter (C#, Markdown, HTML) can build
-  signatures itself; the canonical C# text is produced by the `CSharp` layer.
+- `XmlMember` is the joined XML doc for a node (renamed from `Documentation`), with any
+  `<inheritdoc>` already resolved against base types/interfaces during tree construction.
+- `XmlDocVisibility` replaces today's `XmlDocVisibilityLevel`, framed as "the node's own visibility."
+  The enum is ordered, so a custom generator can compare visibilities directly.
+- The tree exposes **structural** signature data so any formatter can build signatures; canonical C#
+  text is produced by the `CSharp` layer.
 
 ### Visibility / filtering
 
-`XmlDocNodeVisibility` is an abstract base with one conceptual method, `IsVisible(XmlDocNode)`, plus a
-static property per visibility level and a small set of fluent exclusions. `Include`/`And` are
-intentionally omitted to keep the surface minimal.
+`XmlDocNodeVisibility` is an abstract base with one abstract method, `IsVisible(XmlDocNode)`, plus a
+static property per visibility level and a small set of fluent exclusions.
 
 ```csharp
-namespace XmlDocGen.Core.Model;
+namespace XmlDocGen.Core.Nodes;
 
 public abstract class XmlDocNodeVisibility
 {
@@ -260,7 +289,6 @@ public abstract class XmlDocNodeVisibility
     public static XmlDocNodeVisibility Internal { get; }
     public static XmlDocNodeVisibility Private { get; }              // includes everything
 
-    /// <summary>Equivalent to the matching static property.</summary>
     public static XmlDocNodeVisibility Create(XmlDocVisibility minimum);
 
     // Fluent, composable refinements (each returns a new XmlDocNodeVisibility):
@@ -274,14 +302,16 @@ public abstract class XmlDocNodeVisibility
 ### Examples
 
 ```csharp
-// Build a multi-assembly model directly from reflection + XML, no higher layers.
-var widgets = XmlDocAssemblyNode.Create(typeof(Widget).Assembly, XmlDocXmlFile.Load("Widgets.xml"));
-var gadgets = XmlDocAssemblyNode.Create(typeof(Gadget).Assembly, XmlDocXmlFile.Load("Gadgets.xml"));
-var model = XmlDocModel.Create([widgets, gadgets]);
+// Build a multi-assembly tree directly from reflection + XML, no higher layers.
+var tree = XmlDocTree.Create(
+[
+    (typeof(Widget).Assembly, XmlDocXmlFile.Load("Widgets.xml")),
+    (typeof(Gadget).Assembly, XmlDocXmlFile.Load("Gadgets.xml")),
+]);
 
 // Walk visible public types and print their names.
 var visibility = XmlDocNodeVisibility.Public.ExcludeObsolete().ExcludeCompilerGenerated();
-foreach (var assembly in model.Assemblies)
+foreach (var assembly in tree.Assemblies)
     foreach (var ns in assembly.Namespaces)
         foreach (var type in ns.GetChildren(visibility))
             Console.WriteLine(type.Name);
@@ -293,24 +323,24 @@ sealed class TestApiVisibility : XmlDocNodeVisibility
 }
 ```
 
-### Proposed additions
-- `XmlDocModel.Create(IEnumerable<(Assembly, XmlDocXmlFile)>)` convenience overload.
-- `XmlDocNode.DescendantsAndSelf(XmlDocNodeVisibility)` for easy whole-tree traversal.
-- `XmlDocNode.TryGetAttribute<T>()` to surface arbitrary attributes for advanced filtering/rendering.
-
-### Open questions
-- Should `XmlDocModel` own cross-assembly de-duplication/forwarding (type forwards, `InternalsVisibleTo`)?
-- Should `GetChildren` be recursive-aware (a parent hidden by visibility hiding its children), or do
-  callers compose that themselves?
-- Do we expose `XmlDocVisibility` ordering helpers (e.g. `>=`) or keep comparisons internal?
+### Design decisions
+- **Cross-assembly behavior**: `XmlDocTree` documents each assembly from its own metadata and XML.
+  `FindNode` resolves references across all assemblies in the tree, so a type in one example assembly
+  can link to a type in the other. Type forwarding and `InternalsVisibleTo` are **out of scope**: a
+  forwarded type is documented only if its defining assembly is included. This keeps the tree a faithful
+  per-assembly view and avoids surprising merges.
+- `GetChildren` filters immediate children only; callers compose traversal via `DescendantsAndSelf`.
+  Visibility does not implicitly cascade (a visible type can still expose its visible members even if an
+  enclosing namespace were filtered), which matches how documentation is actually consumed.
 
 ---
 
 ## CSharp Layer (`XmlDocGen.Core.CSharp`)
 
-C# signature generation as an independent, testable layer. It turns model nodes into **structured
-signatures** (a token list) so any output format can render them — Markdown can hyperlink type tokens,
-HTML can wrap them in spans, and plain text can ignore the structure.
+C# signature generation as an independent, testable layer. It turns nodes into **structured signatures**
+(a token list) so any output format can render them — Markdown can hyperlink type tokens, HTML can wrap
+them in spans, plain text can ignore the structure. Each linkable token carries the **reflection
+target** it refers to, so the linking layer never deals with raw reference strings.
 
 ```csharp
 namespace XmlDocGen.Core.CSharp;
@@ -323,8 +353,8 @@ public readonly struct CSharpToken
     public CSharpTokenKind Kind { get; }
     public string Text { get; }
 
-    /// <summary>For TypeName/Identifier tokens that refer to a documentable entity, its reference.</summary>
-    public XmlDocRef? Reference { get; }
+    /// <summary>For tokens that refer to a type or member, the reflection target to link to (Type is a MemberInfo).</summary>
+    public MemberInfo? LinkTarget { get; }
 }
 
 /// <summary>A structured C# signature.</summary>
@@ -334,18 +364,17 @@ public sealed class CSharpSignature
     public override string ToString();                      // concatenated token text
 }
 
-public sealed class CSharpSignatureOptions
+public sealed class CSharpSignatureSettings
 {
     public bool IncludeAccessModifiers { get; set; } = true;
     public bool IncludeParameterNames { get; set; } = true;
     public bool FullyQualifyTypes { get; set; }
-    // ...future knobs (e.g. nullable annotations, default values)
 }
 
-/// <summary>Builds C# signatures from model nodes. Virtual methods are override points.</summary>
-public class CSharpSignatureWriter
+/// <summary>Builds C# signatures from nodes.</summary>
+public class CSharpSignatureBuilder
 {
-    public CSharpSignatureWriter(CSharpSignatureOptions? options = null);
+    public CSharpSignatureBuilder(CSharpSignatureSettings? settings = null);
 
     public virtual CSharpSignature GetTypeSignature(XmlDocTypeNode type);
     public virtual CSharpSignature GetMemberSignature(XmlDocMemberNode member);
@@ -359,119 +388,167 @@ public class CSharpSignatureWriter
 
 ```csharp
 // Render a type's signature as plain C#, no Markdown involved.
-var type = (XmlDocTypeNode) model.FindNode(XmlDocRef.ForType(typeof(Widget)))!;
-CSharpSignature sig = new CSharpSignatureWriter().GetTypeSignature(type);
+var type = (XmlDocTypeNode) tree.FindNode(typeof(Widget))!;
+CSharpSignature sig = new CSharpSignatureBuilder().GetTypeSignature(type);
 Console.WriteLine(sig.ToString());   // "public sealed class Widget : IWidget"
 
 // Inspect the tokens to build your own hyperlinked output.
 foreach (var token in sig.Tokens)
-    if (token.Kind == CSharpTokenKind.TypeName && token.Reference is { } r)
-        Console.WriteLine($"links to {r}");
+    if (token.LinkTarget is { } target)
+        Console.WriteLine($"links to {target}");
 ```
 
-### Proposed additions
-- A `CSharpKeywords` helper exposing the language keyword set for syntax highlighting.
-- Optional XML-doc-style display of constructed generics and tuple element names.
-
-### Open questions
-- Token granularity: one token per syntactic atom (more flexible) vs. coarser chunks (simpler)?
-- Should this layer also produce the file-name-safe **identifier** for a node, or does that belong to
-  the page/URL layer? (Leaning: page layer owns paths; CSharp owns signatures only.)
+### Design decisions
+- Token granularity stays fine (one token per syntactic atom); today's model works well and gives
+  renderers full control.
+- The file-name-safe identifier/path for a node belongs to the Pages layer (`XmlDocPageMap`), not here;
+  this layer produces signatures only.
 
 ---
 
 ## Pages Layer (`XmlDocGen.Core.Pages`)
 
-Page building, cleanly separated from site building. This layer decides **which nodes go on which page**
-(the layout) and defines the **abstract page renderer** that formats one page. Whether namespaces get
-their own page is a property of the layout here — not a global setting.
+Page mapping, link resolution, and the abstract page renderer. The simplest way to build pages is a
+**node → path mapping**: every node that maps to the same path is documented on the same page. This
+layer also owns URL mapping and external link resolution, because linking is part of rendering a page.
 
 ```csharp
 namespace XmlDocGen.Core.Pages;
 
+/// <summary>Maps each documentable node to the logical page path (no extension) where it is documented.</summary>
+public abstract class XmlDocPageMap
+{
+    /// <summary>The site-relative logical path (no extension). Nodes sharing a path share a page.</summary>
+    public abstract string GetPagePath(XmlDocNode node);
+
+    /// <summary>A stable intra-page anchor for the node, used for same-page links.</summary>
+    public virtual string GetAnchor(XmlDocNode node);
+
+    /// <summary>The default mapping (assembly page, a page per type, a page per member).</summary>
+    public static XmlDocPageMap Create(XmlDocPageMapSettings? settings = null);
+}
+
+public sealed class XmlDocPageMapSettings
+{
+    /// <summary>Give each namespace its own page (otherwise namespaces are listed on the assembly page).</summary>
+    public bool NamespacePages { get; set; }
+
+    /// <summary>Give each member its own page (otherwise members are documented on the type page).</summary>
+    public bool MemberPages { get; set; } = true;
+}
+
 /// <summary>A logical page: the nodes documented together in one output file.</summary>
 public sealed class XmlDocPage
 {
-    public XmlDocPage(string path, XmlDocNode primaryNode, IEnumerable<XmlDocNode> nodes);
+    public XmlDocPage(string path, IEnumerable<XmlDocNode> nodes);
 
-    public string Path { get; }                             // site-relative, '/'-separated, no extension
-    public XmlDocNode PrimaryNode { get; }                  // the page's subject
-    public IReadOnlyList<XmlDocNode> Nodes { get; }         // all nodes documented on the page
+    public string Path { get; }                             // site-relative, '/'-separated, WITH extension
+    public IReadOnlyList<XmlDocNode> Nodes { get; }         // the first node is the page's subject
 }
 
-/// <summary>Partitions a model into pages and assigns each page a path. Override points are virtual.</summary>
-public class XmlDocPageLayout
+/// <summary>Builds the page set by grouping visible nodes by their mapped path.</summary>
+public static class XmlDocPageBuilder
 {
-    public XmlDocPageLayout(XmlDocPageLayoutOptions? options = null);
-
-    public virtual IReadOnlyList<XmlDocPage> CreatePages(XmlDocModel model, XmlDocNodeVisibility visibility);
-
-    /// <summary>Compute the site-relative path (no extension) for a node's page.</summary>
-    protected virtual string GetPagePath(XmlDocNode node);
-}
-
-public sealed class XmlDocPageLayoutOptions
-{
-    /// <summary>Generate a separate page per namespace (replaces the old NamespacePages setting).</summary>
-    public bool NamespacePages { get; set; }
-
-    /// <summary>Give each member its own page (vs. documenting members inline on the type page).</summary>
-    public bool MemberPages { get; set; } = true;
+    /// <summary>Group visible nodes by <see cref="XmlDocPageMap.GetPagePath"/>, appending the renderer's extension.</summary>
+    public static IReadOnlyList<XmlDocPage> CreatePages(
+        XmlDocTree tree, XmlDocNodeVisibility visibility, XmlDocPageMap map, string fileExtension);
 }
 
 /// <summary>Renders a single page to file text. Format-specific subclasses implement this.</summary>
 public abstract class XmlDocPageRenderer
 {
-    /// <summary>The output file extension (e.g. ".md", ".html").</summary>
+    /// <summary>The output file extension (e.g. ".md", ".html"). The page builder appends it to mapped paths.</summary>
     public abstract string FileExtension { get; }
 
     /// <summary>Render the page using cross-page context (link resolution, sibling pages).</summary>
     public abstract string RenderPage(XmlDocPage page, XmlDocPageContext context);
 }
 
-/// <summary>Context available while rendering a page: link resolution and page lookup.</summary>
+/// <summary>Maps a target page path (+ optional anchor) to a URL relative to the current page.</summary>
+public abstract class XmlDocUrlMapper
+{
+    public abstract string GetUrl(string fromPath, string targetPath, string? anchor = null);
+    public static XmlDocUrlMapper GitHub { get; }           // relative ".md" links (default)
+    public static XmlDocUrlMapper Docusaurus { get; }       // extensionless, slugged links
+}
+
+/// <summary>Resolves links to types/members OUTSIDE the documented assemblies (reflection-based).</summary>
+public abstract class XmlDocExternalLinks
+{
+    /// <summary>An absolute URL for a type or member not in the tree, or null if unknown.</summary>
+    public abstract string? TryGetUrl(MemberInfo member);   // Type is a MemberInfo
+
+    public static XmlDocExternalLinks DotNetApi { get; }                 // Microsoft Learn for System.*
+    public static XmlDocExternalLinks UrlPattern(string urlFormat);      // custom external source
+    public static XmlDocExternalLinks Combine(params XmlDocExternalLinks[] sources);
+}
+
+/// <summary>Context available while rendering a page: page lookup and unified link resolution.</summary>
 public sealed class XmlDocPageContext
 {
-    public XmlDocModel Model { get; }
-    public XmlDocPage Page { get; }
-    public IReadOnlyList<XmlDocPage> AllPages { get; }
-    public XmlDocLinkResolver Links { get; }
+    public XmlDocTree Tree { get; }
+    public XmlDocPage Page { get; }                         // the page being rendered
+    public IReadOnlyList<XmlDocPage> Pages { get; }
 
-    /// <summary>Find the page that documents a node, for cross-page links.</summary>
     public XmlDocPage? FindPage(XmlDocNode node);
     public XmlDocPage? FindPage(XmlDocRef reference);
+
+    /// <summary>
+    /// Resolve a type/member to a URL relative to the current page: an internal page link (with an
+    /// anchor when the target shares a page) if it is in the tree; otherwise an external link; otherwise null.
+    /// </summary>
+    public string? GetLinkUrl(MemberInfo member);
 }
 ```
+
+### Linking and anchors (design)
+
+Internal and external linking are **separate abstractions**, and external links are only consulted when
+an internal link is impossible:
+
+1. `XmlDocPageContext.GetLinkUrl(member)` looks up the member's node in the tree.
+2. If found (internal), it finds the target page, computes the anchor (`GetAnchor`, used only when the
+   target shares a page with another node), and asks the `XmlDocUrlMapper` for a URL **relative to the
+   current page** — this is why the mapper takes `fromPath` (the page being rendered) and `targetPath`.
+3. If not found (external), it consults `XmlDocExternalLinks.TryGetUrl(member)`.
+4. Otherwise it returns null (render as plain text).
+
+Callers never pass `fromPath` themselves; the context supplies the current page. Same-page member links
+become `#anchor` (empty relative path + anchor), which the `XmlDocUrlMapper` produces.
 
 ### Examples
 
 ```csharp
-// Compute the page set for a model without building a site or writing files.
-var layout = new XmlDocPageLayout(new XmlDocPageLayoutOptions { NamespacePages = true });
-IReadOnlyList<XmlDocPage> pages = layout.CreatePages(model, XmlDocNodeVisibility.Public);
+// Compute the page set for a tree without rendering or writing files.
+var map = XmlDocPageMap.Create(new XmlDocPageMapSettings { NamespacePages = true });
+var pages = XmlDocPageBuilder.CreatePages(tree, XmlDocNodeVisibility.Public, map, ".md");
 foreach (var page in pages)
-    Console.WriteLine($"{page.Path} <- {page.PrimaryNode.Name}");
+    Console.WriteLine($"{page.Path} <- {page.Nodes[0].Name}");
 
-// A custom layout that flattens everything onto one page per type (no member pages).
-var flat = new XmlDocPageLayout(new XmlDocPageLayoutOptions { MemberPages = false });
+// A custom mapping: one page per type, no member pages.
+sealed class FlatPageMap : XmlDocPageMap
+{
+    public override string GetPagePath(XmlDocNode node) =>
+        node is XmlDocMemberNode m ? GetPagePath(m.Parent!) : $"{node.Assembly.Name}/{node.Name}";
+}
 ```
 
-### Proposed additions
-- `XmlDocPageLayout.GetAnchor(XmlDocNode)` for intra-page anchors when members share a type page.
-- A `OnePageLayout` and `PerTypeLayout` ready-made subclass for common shapes.
+### Design decisions
+- `XmlDocPage.Path` **includes** the extension; the page builder forms it by appending the renderer's
+  `FileExtension` to the map's logical path. This is `FileExtension`'s sole purpose.
+- The page map is purely structural and does not know the `XmlDocUrlMapper`; URL style is applied later.
+- The page's subject is simply `Nodes[0]`; there is no separate "primary node" concept.
 
 ### Open questions
-- Should `XmlDocPage.Path` include or exclude the extension? (Leaning: exclude; the renderer adds it.)
-- Does the layout need to know the `XmlDocUrlMapper`, or is path assignment purely structural and the
-  mapper applied later in the Sites layer? (Leaning: structural here, mapping in Sites.)
+- Anchor slugs for overloaded members (same name, different parameters) need a disambiguation scheme —
+  proposal: append a short parameter-type hash, matching how member page file names are disambiguated today.
 
 ---
 
 ## Sites Layer (`XmlDocGen.Core.Sites`)
 
-Site building: assemble rendered pages into a complete in-memory site, resolve cross-references
-(including **outside** the documented assemblies), and map paths to URLs. Format-agnostic — it takes an
-`XmlDocPageRenderer` and is unaware of Markdown vs HTML.
+Site building: combine a tree, page map, renderer, URL mapper, and external links into a complete
+in-memory site. Format-agnostic — it takes an `XmlDocPageRenderer` and is unaware of Markdown vs HTML.
 
 ```csharp
 namespace XmlDocGen.Core.Sites;
@@ -480,7 +557,8 @@ namespace XmlDocGen.Core.Sites;
 public sealed class XmlDocSite
 {
     public XmlDocSite(IEnumerable<XmlDocSiteFile> files);
-    public IReadOnlyList<XmlDocSiteFile> Files { get; }
+    public IReadOnlyList<XmlDocSiteFile> Files { get; }     // stable ordering for deterministic output
+    public XmlDocSiteFile? FindFile(string path);
 }
 
 /// <summary>A single generated output file (formerly NamedText).</summary>
@@ -491,61 +569,27 @@ public sealed class XmlDocSiteFile
     public string Text { get; }
 }
 
-/// <summary>Maps a page path to the relative URL used to link to it from another page.</summary>
-public abstract class XmlDocUrlMapper
-{
-    public abstract string GetUrl(string fromPath, string targetPath);
-    public static XmlDocUrlMapper GitHub { get; }           // relative ".md" links (default)
-    public static XmlDocUrlMapper Docusaurus { get; }       // extensionless, slugged links
-}
-
-/// <summary>The result of resolving a reference to a link.</summary>
-public readonly struct XmlDocLink
-{
-    public XmlDocLink(string url, string? text = null);
-    public string Url { get; }                              // relative (in-site) or absolute (external)
-    public string? Text { get; }                            // optional display text
-}
-
-/// <summary>
-/// Resolves a reference to a link. Replaces the old "external documentation" concept with a single
-/// abstraction that covers both in-site links and links to types/members outside the documented set.
-/// </summary>
-public abstract class XmlDocLinkResolver
-{
-    public abstract XmlDocLink? ResolveLink(XmlDocRef reference, string fromPath);
-
-    /// <summary>Try each resolver in order; first non-null wins.</summary>
-    public static XmlDocLinkResolver Combine(params XmlDocLinkResolver[] resolvers);
-}
-
-/// <summary>Links references found in the site to their generated pages (via an XmlDocUrlMapper).</summary>
-public sealed class XmlDocSiteLinkResolver : XmlDocLinkResolver { /* ctor(pages, urlMapper) */ }
-
-/// <summary>Links framework/BCL references (System.*, etc.) to Microsoft Learn.</summary>
-public sealed class DotNetApiLinkResolver : XmlDocLinkResolver { /* configurable base URL */ }
-
 /// <summary>Builds a site by rendering each page with a page renderer.</summary>
 public class XmlDocSiteBuilder
 {
     public XmlDocSiteBuilder(XmlDocPageRenderer renderer, XmlDocSiteBuilderSettings? settings = null);
 
-    public XmlDocSite Build(XmlDocModel model);
+    public XmlDocSite Build(XmlDocTree tree);
 }
 
 public sealed class XmlDocSiteBuilderSettings
 {
     public XmlDocNodeVisibility? Visibility { get; set; }   // default: Protected
-    public XmlDocPageLayout? Layout { get; set; }           // default: new XmlDocPageLayout()
+    public XmlDocPageMap? PageMap { get; set; }             // default: XmlDocPageMap.Create()
     public XmlDocUrlMapper? UrlMapper { get; set; }         // default: GitHub
-    public XmlDocLinkResolver? ExternalLinks { get; set; }  // default: DotNetApiLinkResolver
+    public XmlDocExternalLinks? ExternalLinks { get; set; } // default: DotNetApi
     public string? NewLine { get; set; }
 }
 ```
 
-The builder composes the link resolver: an `XmlDocSiteLinkResolver` for in-site references combined with
-the configured external resolver (default `DotNetApiLinkResolver`), so renderers get one unified
-`XmlDocLinkResolver` and never special-case "external" links.
+`Build` creates the page set (`XmlDocPageBuilder`), constructs an `XmlDocPageContext` per page (wired
+with the page set, URL mapper, and external links), renders each page, and collects the results into an
+`XmlDocSite`.
 
 ### Examples
 
@@ -555,40 +599,34 @@ sealed class JsonPageRenderer : XmlDocPageRenderer
 {
     public override string FileExtension => ".json";
     public override string RenderPage(XmlDocPage page, XmlDocPageContext context) =>
-        JsonSerializer.Serialize(new { page.Path, primary = page.PrimaryNode.Name });
+        JsonSerializer.Serialize(new { page.Path, subject = page.Nodes[0].Name });
 }
 
-var site = new XmlDocSiteBuilder(new JsonPageRenderer()).Build(model);
+var site = new XmlDocSiteBuilder(new JsonPageRenderer()).Build(tree);
 foreach (var file in site.Files)
     Console.WriteLine(file.Path);
 
-// Link to System types on Microsoft Learn, everything else within the site.
-var resolver = XmlDocLinkResolver.Combine(
-    new DotNetApiLinkResolver(),
-    /* site resolver supplied internally by the builder */ null!);
+// Document framework types via Microsoft Learn; everything else links within the site.
+var settings = new XmlDocSiteBuilderSettings { ExternalLinks = XmlDocExternalLinks.DotNetApi };
 ```
 
-### Proposed additions
-- A `MicrosoftDocsLinkResolver` vs. a generic `UrlPatternLinkResolver` for arbitrary external sources.
-- `XmlDocSite.FindFile(string path)` and stable ordering guarantees for deterministic output.
-
-### Open questions
-- Should `XmlDocLinkResolver` receive the `fromPath` (current design) or return an abstract target that
-  the URL mapper later turns into a relative URL? The latter decouples resolution from URL style.
-- Where does anchor handling live when multiple nodes share a page — in the link resolver or the renderer?
+### Design decisions
+- Internal links are resolved entirely from the tree/page set; `XmlDocExternalLinks` is consulted only
+  when a target is not in the tree. The two concerns stay separate abstractions.
 
 ---
 
 ## Markdown Layer (`XmlDocGen.Core.Markdown`)
 
 Markdown generation as an independent, testable layer exposed as **building blocks**. This is the only
-place Markdown syntax lives. The page renderer is composed of small virtual methods so a client can
-override a single section (e.g. how parameters render) without duplicating the rest.
+place Markdown syntax lives. The renderer is composed of small `virtual` section methods (the deliberate
+exception to the abstract-over-virtual convention) so a client can override one section without
+duplicating the rest. Section methods write into a shared `MarkdownWriter` for easy composition.
 
 ```csharp
 namespace XmlDocGen.Core.Markdown;
 
-/// <summary>Low-level Markdown emit helpers (formerly MarkdownWriter).</summary>
+/// <summary>Low-level Markdown emit helpers (formerly MarkdownWriter); writes to an in-memory TextWriter.</summary>
 public sealed class MarkdownWriter
 {
     public MarkdownWriter(TextWriter writer);
@@ -601,43 +639,50 @@ public sealed class MarkdownWriter
     // ...code spans, fenced blocks, etc.
 }
 
-/// <summary>Renders model content as Markdown fragments. Reusable building blocks; all virtual.</summary>
+/// <summary>Renders node/XML content as Markdown building blocks; override a method to customize one section.</summary>
 public class MarkdownRenderer
 {
-    public MarkdownRenderer(CSharpSignatureWriter? signatures = null);
+    public MarkdownRenderer(CSharpSignatureBuilder? signatures = null);
 
-    public virtual string RenderSignature(XmlDocNode node, XmlDocPageContext context);   // links type tokens
-    public virtual string RenderSummary(XmlDocNode node, XmlDocPageContext context);
-    public virtual string RenderRemarks(XmlDocNode node, XmlDocPageContext context);
-    public virtual string RenderParameters(XmlDocMemberNode member, XmlDocPageContext context);
-    public virtual string RenderSeeAlso(XmlDocNode node, XmlDocPageContext context);
-    public virtual string RenderInlines(IEnumerable<XmlDocXmlInline> inlines, XmlDocPageContext context);
+    public virtual void WriteSignature(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context);
+    public virtual void WriteSummary(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context);
+    public virtual void WriteRemarks(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context);
+    public virtual void WriteParameters(MarkdownWriter writer, XmlDocMemberNode member, XmlDocPageContext context);
+    public virtual void WriteSeeAlso(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context);
+    public virtual void WriteInlines(MarkdownWriter writer, IEnumerable<XmlDocXmlInline> inlines, XmlDocPageContext context);
 }
 
-/// <summary>A page renderer that emits Markdown. Override points map to MarkdownRenderer blocks.</summary>
+/// <summary>A page renderer that emits Markdown. Override the section hooks to customize layout.</summary>
 public class MarkdownPageRenderer : XmlDocPageRenderer
 {
-    public MarkdownPageRenderer(MarkdownPageRendererOptions? options = null);
+    public MarkdownPageRenderer(MarkdownPageRendererSettings? settings = null);
 
     public override string FileExtension => ".md";
     public override string RenderPage(XmlDocPage page, XmlDocPageContext context);
 
-    protected MarkdownRenderer Renderer { get; }            // reuse/override individual blocks
+    protected MarkdownRenderer Renderer { get; }
     protected virtual void WriteFrontMatter(MarkdownWriter writer, XmlDocPage page);
     protected virtual void WriteHeader(MarkdownWriter writer, XmlDocPage page, XmlDocPageContext context);
     protected virtual void WriteBody(MarkdownWriter writer, XmlDocPage page, XmlDocPageContext context);
 }
 
-public sealed class MarkdownPageRendererOptions
+public sealed class MarkdownPageRendererSettings
 {
-    public string? FrontMatter { get; set; }                // optional Jekyll/Docusaurus front matter
+    /// <summary>Optional structured front matter (rendered as YAML for Jekyll/Docusaurus).</summary>
+    public MarkdownFrontMatter? FrontMatter { get; set; }
+}
+
+/// <summary>Structured front matter rendered as a YAML block at the top of each page.</summary>
+public sealed class MarkdownFrontMatter
+{
+    public IDictionary<string, string> Fields { get; }      // e.g. { "title": "Widget", "layout": "doc" }
 }
 
 /// <summary>Convenience: an XmlDocSiteBuilder preconfigured with a MarkdownPageRenderer.</summary>
 public sealed class MarkdownSiteBuilder
 {
-    public MarkdownSiteBuilder(XmlDocSiteBuilderSettings? settings = null, MarkdownPageRendererOptions? markdown = null);
-    public XmlDocSite Build(XmlDocModel model);
+    public MarkdownSiteBuilder(XmlDocSiteBuilderSettings? settings = null, MarkdownPageRendererSettings? markdown = null);
+    public XmlDocSite Build(XmlDocTree tree);
 }
 ```
 
@@ -647,45 +692,39 @@ and analogous building blocks, reusing every lower layer unchanged.
 ### Examples
 
 ```csharp
-// Render a single page to Markdown without writing files.
-var pages = new XmlDocPageLayout().CreatePages(model, XmlDocNodeVisibility.Public);
-var renderer = new MarkdownPageRenderer();
-var context = /* obtained from XmlDocSiteBuilder, or constructed for a unit test */;
-string markdown = renderer.RenderPage(pages[0], context);
-
 // Customize only the parameter table, reusing every other block.
 sealed class MyRenderer : MarkdownRenderer
 {
-    public override string RenderParameters(XmlDocMemberNode m, XmlDocPageContext c) =>
-        "> custom params\n" + base.RenderParameters(m, c);
+    public override void WriteParameters(MarkdownWriter writer, XmlDocMemberNode m, XmlDocPageContext c)
+    {
+        writer.WriteLine("> custom params");
+        base.WriteParameters(writer, m, c);
+    }
 }
 
 // Use the building blocks directly to assemble a bespoke page.
 using var sw = new StringWriter();
 var md = new MarkdownWriter(sw);
 md.WriteHeading(1, "Widget");
-md.WriteLine(new MarkdownRenderer().RenderSummary(widgetNode, context));
+new MarkdownRenderer().WriteSummary(md, widgetNode, context);
 ```
 
-### Proposed additions
-- A `MarkdownInlineRenderer` extension point so `<see>`/`<paramref>` handling is overridable in isolation.
-- Pluggable table styles (GitHub pipe tables vs. HTML tables inside Markdown).
-
-### Open questions
-- Should `MarkdownRenderer` return strings (simple) or write into a shared `MarkdownWriter` (less
-  allocation, easier composition)? Leaning toward writer-based with string overloads for convenience.
-- Front matter as a raw template string vs. a small structured front-matter model?
+### Design decisions
+- Section methods are writer-based (compose without intermediate strings); this is the intentional
+  exception to abstract-over-virtual.
+- Front matter is a small **structured model** (`MarkdownFrontMatter`) rendered as YAML, not a raw
+  template string.
 
 ---
 
-## Writing Layer (`XmlDocGen.Core.Writing`)
+## IO Layer (`XmlDocGen.Core.IO`)
 
 The only layer (besides the app) that touches the file system. Takes an already-built `XmlDocSite` and
 writes it with diffing, clean, dry-run, and verify semantics. Adapted from the I/O half of today's
 `XmlDocMarkdownGenerator.Generate`.
 
 ```csharp
-namespace XmlDocGen.Core.Writing;
+namespace XmlDocGen.Core.IO;
 
 public sealed class XmlDocSiteWriter
 {
@@ -701,8 +740,22 @@ public sealed class XmlDocSiteWriterSettings
     public bool IsDryRun { get; set; }                      // compute result without writing
     public bool IsQuiet { get; set; }                       // suppress per-file messages
 
-    /// <summary>Marks files this tool owns so --clean only deletes generated files (default: code-gen marker).</summary>
-    public string? GeneratedMarker { get; set; }
+    /// <summary>Abstracts the file system so writing/diffing can be unit-tested without a temp dir.</summary>
+    public IXmlDocFileSystem? FileSystem { get; set; }      // default: the real file system
+
+    /// <summary>How to normalize newlines before comparing existing vs. generated content.</summary>
+    public XmlDocNewLineComparison NewLineComparison { get; set; }   // default: Ignore
+}
+
+public enum XmlDocNewLineComparison { Ignore, Exact }       // Ignore = normalize CRLF/LF before compare
+
+public interface IXmlDocFileSystem
+{
+    bool FileExists(string path);
+    string ReadAllText(string path);
+    void WriteAllText(string path, string text);
+    void DeleteFile(string path);
+    IEnumerable<string> EnumerateFiles(string directory);
 }
 
 public sealed class XmlDocSiteWriteResult
@@ -714,6 +767,14 @@ public sealed class XmlDocSiteWriteResult
     public bool HasChanges => Added.Count + Changed.Count + Removed.Count != 0;
 }
 ```
+
+### Clean detection (design)
+
+Today `--clean` finds stale files by scanning for a "DO NOT EDIT" marker. A **manifest** is safer and is
+the proposed approach: on each write, the writer emits a small manifest (e.g. `.xmldocgen-manifest`)
+listing the files it generated. On the next run, `--clean` deletes only files listed in the previous
+manifest that are no longer generated, never touching hand-authored files. The marker scan is kept as a
+fallback when no manifest exists (first run after migration).
 
 ### Examples
 
@@ -728,14 +789,6 @@ foreach (var message in result.Messages)
 var check = new XmlDocSiteWriter(new XmlDocSiteWriterSettings { IsDryRun = true }).Write(site, "docs");
 return check.HasChanges ? 1 : 0;
 ```
-
-### Proposed additions
-- A pluggable file system abstraction (`IFileSystem`) so writing can be unit-tested without a temp dir.
-- An option to control newline normalization on write independent of the builder.
-
-### Open questions
-- Should the CR-insensitive comparison be configurable, or always normalize newlines before comparing?
-- Should `--clean` detection rely on the marker, a manifest file, or both?
 
 ---
 
@@ -759,10 +812,10 @@ public sealed class XmlDocGenAppContext
     public string OutputPath { get; }
 
     public XmlDocNodeVisibility Visibility { get; set; }            // default: Protected.ExcludeObsolete()...
-    public XmlDocPageLayout Layout { get; set; }                    // default: new XmlDocPageLayout()
+    public XmlDocPageMap PageMap { get; set; }                     // default: XmlDocPageMap.Create()
     public XmlDocPageRenderer Renderer { get; set; }               // default: MarkdownPageRenderer
-    public XmlDocUrlMapper UrlMapper { get; set; }                  // default: GitHub
-    public XmlDocLinkResolver ExternalLinks { get; set; }          // default: DotNetApiLinkResolver
+    public XmlDocUrlMapper UrlMapper { get; set; }                 // default: GitHub
+    public XmlDocExternalLinks ExternalLinks { get; set; }         // default: DotNetApi
     public XmlDocSiteWriterSettings WriterSettings { get; }        // clean/dryrun/quiet/verify from CLI
 }
 ```
@@ -780,10 +833,10 @@ Usage: XmlDocGen <input-assembly>... <output-dir> [options]
 
 Internally `Run`:
 1. Parses args (reuse `ArgsReader`); supports multiple input assemblies.
-2. For each assembly, loads it by name and its sibling `.xml`/`.XML`, building `XmlDocAssemblyNode`s,
-   then `XmlDocModel.Create(...)`.
-3. Builds defaults (Markdown renderer, default layout/URL mapper/external links), invokes `configure`.
-4. `new XmlDocSiteBuilder(renderer, settings).Build(model)` → `XmlDocSite`.
+2. For each assembly, loads it **by name** and its sibling `.xml`/`.XML` (project/package references
+   ensure loading works), then `XmlDocTree.Create(...)`.
+3. Builds defaults (Markdown renderer, default map/URL mapper/external links), invokes `configure`.
+4. `new XmlDocSiteBuilder(renderer, settings).Build(tree)` → `XmlDocSite`.
 5. `new XmlDocSiteWriter(writerSettings).Write(site, outputPath)` → result; prints; returns exit code.
 
 ### Examples
@@ -800,9 +853,39 @@ return XmlDocGenApp.Run(args, ctx =>
 });
 ```
 
-### Open questions
-- How are per-assembly settings (e.g. different visibility per assembly) expressed, if needed?
-- Should the app accept assembly **paths** as well as names, or stay name-only as in current v3?
+### Design decisions
+- The app loads assemblies **by name only**; project/package references in the host tool guarantee the
+  assemblies (and their dependencies) resolve. Per-assembly settings are not supported.
+
+---
+
+## Missing Functionality (vs. the current implementation)
+
+Gaps to close in the new library, independent of the API shape. Each gets example types and tests.
+
+### XML documentation features
+- `<inheritdoc>` resolution (with optional `cref` and `path`) against base types and interfaces.
+- `<see langword="..."/>` and `<see href="..."/>` in addition to `<see cref="..."/>`.
+- `<paramref>` and `<typeparamref>` rendered as links to the relevant parameter.
+- `<list type="bullet|number|table">` including tables and definition lists.
+- `<c>` inline code and `<code lang="...">` fenced blocks with language hints.
+- `<para>`, `<value>`, `<example>`, `<exception>`, `<returns>`, `<remarks>` (verify all are handled).
+- `<include>` to merge external doc fragments.
+- `cref` to overloaded members and to constructed generic types.
+
+### C# syntax
+- `record`, `record struct`, `readonly record struct`.
+- `readonly struct`, `ref struct`, `readonly ref struct`, and `allows ref struct` anti-constraint.
+- `required` members and `init` accessors.
+- `in`, `ref readonly`, and `scoped` parameters and returns.
+- Function pointer types.
+- `static abstract` and `static virtual` interface members; `sealed` interface members.
+- Checked operators and the unsigned right-shift operator (`>>>`).
+- Newer generic constraints: `notnull`, `unmanaged`, `default`, nullable-qualified `class`.
+- Primary constructors (including the record case) and compiler-emitted members.
+- Nullable reference type annotations.
+- Default parameter values, `params`, and `params` collections.
+- Tuple element names; `nint`/`nuint` native integers.
 
 ---
 
@@ -811,18 +894,18 @@ return XmlDocGenApp.Run(args, ctx =>
 | Current type | New type | Namespace |
 |---|---|---|
 | `XmlDocFile`, `XmlDocMember`, `XmlDocBlock`, `XmlDocInline`, `XmlDocParameter`, `XmlDocSeeAlso`, `XmlDocException`, `XmlDocListKind` | `XmlDocXmlFile`, `XmlDocXmlMember`, … (`XmlDocXml` prefix), public | `XmlDocGen.Core.Xml` |
-| `XmlDocUtility.GetXmlDocRef` | `XmlDocRef` (readonly struct + `ForType`/`ForMember`) | `XmlDocGen.Core.Xml` |
-| `XmlDocVisibilityLevel` | `XmlDocVisibility` + `XmlDocNodeVisibility` | `XmlDocGen.Core.Model` |
-| reflection logic in `MarkdownGenerator` (`IsVisible`, `GetTypeKind`, tree walk) | `XmlDocNode` tree + `XmlDocModel` (multi-assembly) | `XmlDocGen.Core.Model` |
-| signature building in `MarkdownGenerator` | `CSharpSignatureWriter`, `CSharpSignature`, `CSharpToken` | `XmlDocGen.Core.CSharp` |
-| paging/path logic in `MarkdownGenerator`, `NamespacePages` | `XmlDocPageLayout` (+ options), `XmlDocPage` | `XmlDocGen.Core.Pages` |
+| `XmlDocUtility.GetXmlDocRef` | `XmlDocRef` (readonly struct + `ForType`/`ForMember`/`ForNamespace`) | `XmlDocGen.Core.Xml` |
+| `XmlDocVisibilityLevel` | `XmlDocVisibility` + `XmlDocNodeVisibility` | `XmlDocGen.Core.Nodes` |
+| reflection logic in `MarkdownGenerator` (`IsVisible`, `GetTypeKind`, tree walk) | `XmlDocNode` tree + `XmlDocTree` (multi-assembly) | `XmlDocGen.Core.Nodes` |
+| signature building in `MarkdownGenerator` | `CSharpSignatureBuilder`, `CSharpSignature`, `CSharpToken` | `XmlDocGen.Core.CSharp` |
+| paging/path logic in `MarkdownGenerator`, `NamespacePages` | `XmlDocPageMap` (+ settings), `XmlDocPage`, `XmlDocPageBuilder` | `XmlDocGen.Core.Pages` |
+| permalink/`MakeRelative`/`GetSafeName`/`GetPermalink`, `PermalinkStyle` | `XmlDocUrlMapper` (GitHub/Docusaurus) | `XmlDocGen.Core.Pages` |
+| `ExternalDocumentation` | **removed**; replaced by in-tree internal links + `XmlDocExternalLinks` (`DotNetApi`) | `XmlDocGen.Core.Pages` |
 | `NamedText` | `XmlDocSiteFile` (+ `XmlDocSite`) | `XmlDocGen.Core.Sites` |
-| permalink/`MakeRelative`/`GetSafeName`/`GetPermalink`, `PermalinkStyle` | `XmlDocUrlMapper` (GitHub/Docusaurus) | `XmlDocGen.Core.Sites` |
-| `ExternalDocumentation` | **removed**; replaced by `XmlDocLinkResolver` + `DotNetApiLinkResolver` | `XmlDocGen.Core.Sites` |
 | `MarkdownGenerator` orchestration | `XmlDocSiteBuilder` (format-agnostic) | `XmlDocGen.Core.Sites` |
 | `MarkdownGenerator` rendering, `MarkdownWriter` | `MarkdownPageRenderer`, `MarkdownRenderer`, `MarkdownWriter` | `XmlDocGen.Core.Markdown` |
-| `XmlDocMarkdownSettings` | split across builder/layout/renderer/writer settings | various |
-| I/O half of `XmlDocMarkdownGenerator.Generate`, `XmlDocMarkdownResult` | `XmlDocSiteWriter`, `XmlDocSiteWriteResult` | `XmlDocGen.Core.Writing` |
+| `XmlDocMarkdownSettings` | split across site-builder / page-map / renderer / writer settings | various |
+| I/O half of `XmlDocMarkdownGenerator.Generate`, `XmlDocMarkdownResult` | `XmlDocSiteWriter`, `XmlDocSiteWriteResult` | `XmlDocGen.Core.IO` |
 | `XmlDocMarkdownApp` | `XmlDocGenApp` (+ `XmlDocGenAppContext`) | `XmlDocGen.Core` (root) |
 | `ArgsReader`, `ArgsReaderException`, `CommonArgs` | reused, internal | (internal) |
 
@@ -833,128 +916,120 @@ return XmlDocGenApp.Run(args, ctx =>
 - New repo, new package id `XmlDocGen.Core` (root namespace `XmlDocGen.Core`).
 - Target the current LTS (`net8.0`), C# 12, nullable enabled, central package management — carry over
   the existing build template, `Directory.Build.props`, `Directory.Packages.props`, `build.ps1`.
+- **All layers ship in one `XmlDocGen.Core` assembly**, separated by namespace.
 - Projects:
   - `src/XmlDocGen.Core` — the library (all layers/namespaces).
   - `tests/XmlDocGen.Core.Tests` — unit + integration tests.
-  - `tools/ExampleAssembly` (and a second example assembly) — example types per language feature.
+  - `tools/ExampleAssembly` and a second example assembly — example types per feature.
   - `tools/XmlDocGen` — the local host tool used to regenerate this repo's own docs.
 - Carry over the docs-verification build target (regenerate `docs/` and fail on diff).
-- Open question: ship all layers in one `XmlDocGen.Core` assembly (current plan) vs. splitting
-  Markdown/HTML into add-on packages later. Plan assumes one assembly with namespace separation.
+- Enforce "XML docs required on public/protected members" as warning-as-error.
 
 ---
 
 ## Example Assemblies
 
-The example assembly can be reorganized to make tests clearer. Proposed structure:
+Reorganized to make tests clearer:
 
-- **Two assemblies** so multi-assembly model and cross-assembly linking are exercised end to end.
+- **Two assemblies** so multi-assembly trees and cross-assembly linking are exercised end to end.
 - Group example types by **theme**, each in its own namespace, so tests can target a focused subset:
   - `Features.Records`, `Features.Structs`, `Features.Generics`, `Features.Operators`,
-    `Features.Members`, `Features.Modifiers` — one type (or a few) per modern C# feature.
+    `Features.Members`, `Features.Modifiers` — one type (or a few) per modern C# feature above.
   - `Visibility.*` — types/members at every visibility level for filtering tests.
   - `Filtering.*` — obsolete, unbrowsable, and compiler-generated examples.
-  - `Linking.*` — types that reference BCL types and types in the *other* example assembly.
-  - `Docs.*` — rich XML doc comments (summary/remarks/params/exceptions/seealso/lists/code) for
-    renderer snapshot tests.
-- Each example type carries an assertion (model-level) and, where relevant, a checked-in expected
-  signature and rendered page.
+  - `Linking.*` — types referencing BCL types and types in the *other* example assembly.
+  - `Docs.*` — rich XML doc comments (summary/remarks/params/exceptions/seealso/lists/code/inheritdoc)
+    for renderer snapshot tests.
+- Each example type carries a model-level assertion and, where relevant, a checked-in expected signature
+  and rendered page.
 
 ---
 
 ## Testing Plan
 
-A primary goal is comprehensive coverage. The layering lets us unit-test each layer in isolation, with
-end-to-end integration tests on top.
+The layering lets us unit-test each layer in isolation, with end-to-end integration tests on top.
 
 ### Xml layer
 - Parse representative fragments: summary, remarks, params, typeparams, returns, value, exceptions,
-  examples, seealso, nested `<list>`/`<code>`/`<see>`/`<paramref>` inlines.
+  examples, seealso, `inheritdoc`, nested `<list>`/`<code>`/`<see>`/`<paramref>`/`<typeparamref>` inlines.
 - Malformed/partial XML handled gracefully; unknown elements ignored.
 - `XmlDocRef`: `ForType`/`ForMember`/`ForNamespace` against `ExampleAssembly` produce the exact strings
-  the compiler emits; equality and `Kind` parsing; round-trip `new XmlDocRef(x.Value)`.
+  the compiler emits; equality and `Kind`; round-trip `new XmlDocRef(x.Value)`.
 - `FindMember(XmlDocRef)` lookups; `AssemblyName` extraction.
 
-### Model layer
-- `XmlDocAssemblyNode.Create`: tree shape/counts, nesting, `Assembly`/`XmlFile` exposed correctly.
-- `XmlDocModel.Create` over **two** assemblies; `FindNode` resolves cross-assembly refs.
-- `Documentation` join: each node maps to the right `XmlDocXmlMember` by `Ref`.
-- Correct `Visibility`, `IsObsolete`, `IsBrowsable`, `IsCompilerGenerated`, `Kind`, `MemberKind`.
-- `XmlDocNodeVisibility`: each static level property; `ExcludeObsolete`/`ExcludeUnbrowsable`/
+### Nodes layer
+- `XmlDocAssemblyNode.Create`: tree shape/counts, nesting, `Assembly`/`Xml` exposed correctly.
+- `XmlDocTree.Create` over **two** assemblies; `FindNode(ref)` and `FindNode(MemberInfo)` resolve
+  cross-assembly; `<inheritdoc>` resolution merges base/interface docs.
+- `XmlMember` join: each node maps to the right `XmlDocXmlMember` by `Ref`.
+- Correct `Visibility`, `IsObsolete`, `IsBrowsable`, `IsCompilerGenerated`, `Kind`, `MemberKind`,
+  `DescendantsAndSelf`, `TryGetAttribute<T>`.
+- `XmlDocNodeVisibility`: each static level; `ExcludeObsolete`/`ExcludeUnbrowsable`/
   `ExcludeCompilerGenerated` alone and combined; `Exclude` predicate; custom subclass.
-- Modern C# feature coverage (table-driven against `Features.*`): records/record structs,
-  readonly/ref struct, required/init, in/ref readonly/scoped, function pointers, static abstract
-  members, checked/`>>>` operators, newer generic constraints, primary constructors.
+- Modern C# feature coverage (table-driven against `Features.*`): every item in **Missing Functionality**.
 
 ### CSharp layer
-- `CSharpSignatureWriter` golden tests: type and member signatures (and short signatures) for each
-  `Features.*` example, asserted as exact token sequences and as `ToString()` text.
-- Type tokens carry the correct `XmlDocRef`; options (`FullyQualifyTypes`, `IncludeParameterNames`).
+- `CSharpSignatureBuilder` golden tests: type/member/short signatures for each `Features.*` example,
+  asserted as exact token sequences and as `ToString()` text.
+- Linkable tokens carry the correct `LinkTarget`; settings (`FullyQualifyTypes`, `IncludeParameterNames`).
 - Subclass override changes one signature shape without affecting others.
 
 ### Pages layer
-- `XmlDocPageLayout.CreatePages`: page set and paths with `NamespacePages` on/off and `MemberPages`
-  on/off; `PrimaryNode` correctness; visibility applied during partitioning.
-- `XmlDocPageContext.FindPage(node/ref)` resolves to the expected page.
-- Custom layout subclass (`GetPagePath` override) changes paths predictably.
+- `XmlDocPageMap.Create`/custom maps: `GetPagePath` groups nodes correctly with `NamespacePages` and
+  `MemberPages` on/off; `GetAnchor` stability and overload disambiguation.
+- `XmlDocPageBuilder.CreatePages`: page set, paths (with extension), subject = `Nodes[0]`, visibility
+  applied during grouping.
+- `XmlDocUrlMapper.GitHub`/`Docusaurus`: relative links across sibling/parent/child/same-page; period
+  and extension handling; global namespace; deep nesting; safe-name escaping; `#anchor` for same page.
+- `XmlDocExternalLinks`: `DotNetApi` maps `System.*` to Learn URLs; `UrlPattern`; `Combine` first-wins.
+- `XmlDocPageContext.GetLinkUrl`: internal target → relative URL (+ anchor when shared page); external
+  target → external URL; unknown → null.
 
 ### Sites layer
-- `XmlDocUrlMapper.GitHub`/`Docusaurus`: relative links across sibling/parent/child/same-page; period
-  and extension handling; global namespace; deep nesting; safe-name escaping.
-- `XmlDocLinkResolver`: `XmlDocSiteLinkResolver` resolves in-site refs to page URLs;
-  `DotNetApiLinkResolver` maps `System.*` to Learn URLs; `Combine` ordering/first-wins.
-- `XmlDocSiteBuilder` with a tiny test renderer (e.g. JSON) proves it is genuinely format-agnostic.
+- `XmlDocSiteBuilder` with a tiny JSON renderer proves it is genuinely format-agnostic.
+- `XmlDocSite` ordering is deterministic; `FindFile`.
 
 ### Markdown layer
 - `MarkdownWriter` primitives (headings, links, table rows, code/fenced blocks).
-- `MarkdownRenderer` block methods over `Docs.*` examples: **approval/snapshot tests** for summary,
-  remarks, parameters, see-also, inline `<see>`/`<paramref>` resolution to links.
+- `MarkdownRenderer` block methods over `Docs.*`: **approval/snapshot tests** for summary, remarks,
+  parameters, see-also, inline `<see>`/`<paramref>` resolution to links; overriding one block changes
+  only that section.
 - `MarkdownPageRenderer` full-page snapshots (assembly/namespace/type/member pages); front matter on/off;
-  `NewLine` honored; overriding one block method changes only that section.
-- Cross-assembly links render correctly between the two example assemblies.
+  `NewLine` honored; cross-assembly links between the two example assemblies.
 
-### Writing layer
-- Write to a temp dir (or `IFileSystem` fake): files created with correct content and `/`→OS paths.
-- Diffing: added/changed/removed classification; CR-insensitive comparison.
-- `--clean` deletes only marked generated files; leaves hand-authored files.
+### IO layer
+- Write via the real file system and via an `IXmlDocFileSystem` fake: files created with correct content
+  and `/`→OS paths.
+- Diffing under both `NewLineComparison` modes; added/changed/removed classification.
+- `--clean` via manifest deletes only previously-generated files; leaves hand-authored files; marker
+  fallback when no manifest exists.
 - `IsDryRun` writes nothing but computes the result; `IsQuiet` suppresses messages; idempotency.
 
 ### Application layer (end-to-end)
 - Arg parsing: missing input/output, multiple inputs, unknown flags, `--help` (exit codes 0/2).
 - Full run over both example assemblies to a temp dir; compare against checked-in expected docs.
 - `--verify` returns 1 when changes needed, 0 when clean; `--dryrun`/`--quiet`/`--clean`.
-- `configure` can swap `Visibility`, `Renderer`, `UrlMapper`, `ExternalLinks`, `Layout`.
+- `configure` can swap `Visibility`, `Renderer`, `UrlMapper`, `ExternalLinks`, `PageMap`.
 - Missing XML doc file → friendly error and non-zero exit.
 
 ### Cross-cutting
-- Keep `docs/` regeneration as an integration test (regenerate, fail on diff), but diagnose rendering
-  via unit + snapshot tests.
-- Add code-coverage collection and a minimum coverage bar for `XmlDocGen.Core`.
-- Run CI on Ubuntu, Windows, and macOS.
+- A **doc-coverage test** asserts every public/protected member of `XmlDocGen.Core` has XML docs.
+- Keep `docs/` regeneration as an integration test (regenerate, fail on diff); diagnose rendering via
+  unit + snapshot tests.
+- Code-coverage collection with a minimum bar for `XmlDocGen.Core`.
+- CI on Ubuntu, Windows, and macOS.
 - Choose a snapshot/approval library (e.g. Verify) or a checked-in-expected-file convention — TBD.
-
----
-
-## Cross-Cutting Open Questions
-
-- **Single assembly vs. multiple packages**: one `XmlDocGen.Core` with namespaces (current plan) vs.
-  splitting Markdown/HTML into add-on packages later.
-- **Renderer return type**: string-returning blocks (simple) vs. `MarkdownWriter`-based (composable).
-- **Link resolution shape**: pass `fromPath` to the resolver vs. return an abstract target mapped to a
-  URL later by `XmlDocUrlMapper`.
-- **Anchors**: how shared-page members get stable intra-page anchors, and which layer owns them.
-- **Front matter**: raw template string vs. structured front-matter model.
 
 ---
 
 ## Suggested Build Order
 
-1. `Xml` — port + make public; `XmlDocRef`; full parser/ref tests.
-2. `Model` — node tree, `XmlDocModel` (multi-assembly), `XmlDocNodeVisibility`; model tests.
+1. `Xml` — port + make public; `XmlDocRef`; parser/ref tests.
+2. `Nodes` — node tree, `XmlDocTree` (multi-assembly), `inheritdoc`, `XmlDocNodeVisibility`; tests.
 3. `CSharp` — structured signatures; golden signature tests.
-4. `Pages` — layout + page model + abstract renderer; layout tests.
-5. `Sites` — site model, URL mapping, link resolution, format-agnostic builder; mapper/resolver tests.
+4. `Pages` — page map + page builder + URL mapper + external links + abstract renderer; tests.
+5. `Sites` — site model + format-agnostic site builder; mapper/resolver tests.
 6. `Markdown` — building blocks + page renderer; snapshot tests; reach output parity with today.
-7. `Writing` — writer + diff/clean; I/O tests.
+7. `IO` — writer + diff/clean (manifest); I/O tests.
 8. `XmlDocGen.Core` app — CLI; end-to-end tests; regenerate `docs/`.
 9. Coverage, CI matrix, README, release notes.
