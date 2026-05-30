@@ -42,11 +42,12 @@ packages instead of hand-rolled algorithms wherever that simplifies the code (se
 - **Prefer abstract methods over virtual methods.** Contract methods that a subclass must supply are
   `abstract`; ready-made behavior is provided by concrete sealed subclasses rather than virtual
   defaults on a base class. The one deliberate exception is the **renderer/builder section methods**
-  (e.g. `MarkdownRenderer.RenderSummary`), which are `virtual` precisely so a client can override one
+  (e.g. `MarkdownRenderer.WriteSummary`), which are `virtual` precisely so a client can override one
   section and reuse the rest — that is their entire purpose.
 - **"Writer"/"writing" is reserved for I/O.** In-memory producers are "builders" (e.g.
-  `CSharpSignatureBuilder`), not writers. The only exception is `MarkdownWriter`, a low-level text
-  emitter, which writes to an in-memory `TextWriter`.
+  `CSharpSignatureBuilder`), not writers. The exception is `MarkdownWriter`, a low-level text
+  emitter that writes to an in-memory `TextWriter`; the `MarkdownRenderer` section methods are named
+  `Write…` because they write *into* that in-memory `MarkdownWriter`, never to the file system.
 - **Settings, not Options.** Configuration objects are uniformly named `...Settings`.
 - **Prefer the platform and well-supported packages over hand-rolled algorithms.** Use current
   .NET 10 APIs and mature NuGet packages where they remove custom string/reflection/file code without
@@ -239,7 +240,7 @@ public sealed class XmlDocAssemblyNode : XmlDocNode
     /// <summary>Build a single-assembly node by joining reflection with parsed XML documentation.</summary>
     public static XmlDocAssemblyNode Create(Assembly assembly, XmlDocXmlFile xml);
 
-    public Assembly Assembly { get; }                       // the reflected assembly
+    public Assembly ReflectionAssembly { get; }             // the reflected assembly
     public XmlDocXmlFile Xml { get; }                       // the parsed XML doc file
     public IReadOnlyList<XmlDocNamespaceNode> Namespaces { get; }
 }
@@ -266,7 +267,7 @@ public sealed class XmlDocMemberNode : XmlDocNode
 }
 
 /// <summary>Visibility ordered from least to most visible, so comparisons (&gt;=) work directly.</summary>
-public enum XmlDocVisibility { Private, Internal, Protected, Public }
+public enum XmlDocVisibility { Private, Internal, ProtectedInternal, Protected, Public }
 public enum XmlDocTypeKind { Class, Struct, Interface, Enum, Delegate, Record, RecordStruct }
 public enum XmlDocMemberKind { Constructor, Method, Property, Field, Event, Operator }
 ```
@@ -275,9 +276,9 @@ Notes:
 - `XmlMember` is the joined XML doc for a node (renamed from `Documentation`), with any
   `<inheritdoc>` already resolved against base types/interfaces during tree construction.
 - `XmlDocVisibility` replaces today's `XmlDocVisibilityLevel`, framed as "the node's own visibility."
-  The enum is ordered, so a custom generator can compare visibilities directly. A `protected internal`
-  member is classified as `Protected` (it is accessible to derived types outside the assembly, which is
-  what matters for documentation); there is no separate `ProtectedInternal` level.
+  The enum is ordered, so a custom generator can compare visibilities directly. It keeps a
+  `ProtectedInternal` level (more visible than `Internal`, less than `Protected`) so a node's exact
+  visibility is reported faithfully.
 - The tree exposes **structural** signature data so any formatter can build signatures; canonical C#
   text is produced by the `CSharp` layer.
 
@@ -299,6 +300,7 @@ public abstract class XmlDocNodeVisibility
     public static XmlDocNodeVisibility Internal { get; }
     public static XmlDocNodeVisibility Private { get; }              // includes everything
 
+    /// <summary>The minimum visibility to include; e.g. Create(ProtectedInternal) when that level is wanted.</summary>
     public static XmlDocNodeVisibility Create(XmlDocVisibility minimum);
 
     // Fluent, composable refinements (each returns a new XmlDocNodeVisibility):
@@ -755,35 +757,25 @@ public class MarkdownRenderer
 /// <summary>A page renderer that emits Markdown. Override the section hooks to customize layout.</summary>
 public class MarkdownPageRenderer : XmlDocPageRenderer
 {
-    public MarkdownPageRenderer(MarkdownPageRendererSettings? settings = null);
+    public MarkdownPageRenderer(MarkdownRenderer? renderer = null);
 
     public override XmlDocRenderedFile RenderPage(XmlDocPage page, XmlDocPageContext context);  // path: page.Path + ".md"
 
     protected MarkdownRenderer Renderer { get; }
+
+    /// <summary>
+    /// Emits front matter for a page. The default writes nothing; override to emit per-page front matter
+    /// (e.g. a "---" fenced YAML block whose values vary by <paramref name="page"/>).
+    /// </summary>
     protected virtual void WriteFrontMatter(MarkdownWriter writer, XmlDocPage page);
     protected virtual void WriteHeader(MarkdownWriter writer, XmlDocPage page, XmlDocPageContext context);
     protected virtual void WriteBody(MarkdownWriter writer, XmlDocPage page, XmlDocPageContext context);
 }
 
-public sealed class MarkdownPageRendererSettings
-{
-    /// <summary>Optional front matter emitted at the top of each page (e.g. for Jekyll/Docusaurus).</summary>
-    public MarkdownFrontMatter? FrontMatter { get; set; }
-}
-
-/// <summary>Front matter emitted verbatim between "---" fences at the top of each page.</summary>
-public sealed class MarkdownFrontMatter
-{
-    public MarkdownFrontMatter(IEnumerable<string> lines);
-
-    /// <summary>The raw front-matter lines, e.g. ["title: Widget", "layout: doc"].</summary>
-    public IReadOnlyList<string> Lines { get; }
-}
-
 /// <summary>Convenience: an XmlDocSiteBuilder preconfigured with a MarkdownPageRenderer.</summary>
 public sealed class MarkdownSiteBuilder
 {
-    public MarkdownSiteBuilder(XmlDocSiteBuilderSettings? settings = null, MarkdownPageRendererSettings? markdown = null);
+    public MarkdownSiteBuilder(XmlDocSiteBuilderSettings? settings = null, MarkdownPageRenderer? renderer = null);
     public XmlDocSite Build(XmlDocTree tree);
 }
 ```
@@ -815,9 +807,10 @@ new MarkdownRenderer().WriteSummary(md, widgetNode, context);
 ### Design decisions
 - Section methods are writer-based (compose without intermediate strings); this is the intentional
   exception to abstract-over-virtual.
-- Front matter is a simple **list of lines** (`MarkdownFrontMatter.Lines`) emitted verbatim between
-  `---` fences — no YAML serializer or structured field model. The consumer supplies whatever lines
-  their site generator expects.
+- Front matter is **per-page and override-based**: a consumer subclasses `MarkdownPageRenderer` and
+  overrides `WriteFrontMatter(writer, page)` to emit whatever their site generator expects, varying it
+  by page. There is no `MarkdownFrontMatter` model or settings property — the override has the page in
+  hand and writes directly, which is both simpler and strictly more flexible.
 
 ---
 
@@ -923,13 +916,13 @@ public sealed class XmlDocGenAppContext
     public IReadOnlyList<string> AssemblyNames { get; }
     public string OutputPath { get; }
 
-    public XmlDocNodeVisibility Visibility { get; set; }            // default: Protected.ExcludeObsolete()...
+    public XmlDocNodeVisibility Visibility { get; set; }            // default: Protected
     public XmlDocPageMap PageMap { get; set; }                     // default: XmlDocPageMap.PerMember
     public XmlDocPageRenderer Renderer { get; set; }               // default: MarkdownPageRenderer
     public XmlDocUrlMapper UrlMapper { get; set; }                 // default: GitHub
     public XmlDocExternalLinkResolver ExternalLinks { get; set; }  // default: DotNetApi
     public XmlDocSourceLinks? SourceLinks { get; set; }            // default: null (off)
-    public XmlDocSiteWriterSettings WriterSettings { get; }        // clean/dryrun/quiet/verify from CLI
+    public XmlDocSiteWriterSettings WriterSettings { get; }        // clean/dryrun/quiet from CLI (--verify = dry-run + HasChanges)
 
     /// <summary>
     /// The argument reader, positioned after the built-in options have been read but before the
@@ -988,11 +981,19 @@ return XmlDocGenApp.Run(args, ctx =>
         ctx.SourceLinks = XmlDocSourceLinks.TryCreate(typeof(Widget).Assembly);
 
     if (ctx.Args.ReadOption("title") is { } title)
-        ctx.Renderer = new MarkdownPageRenderer(new MarkdownPageRendererSettings
-        {
-            FrontMatter = new MarkdownFrontMatter([$"titlePrefix: {title}"]),
-        });
+        ctx.Renderer = new TitledMarkdownPageRenderer(title);
 });
+
+// Per-page front matter is just an override; the page is in hand, so values can vary by page.
+sealed class TitledMarkdownPageRenderer(string titlePrefix) : MarkdownPageRenderer
+{
+    protected override void WriteFrontMatter(MarkdownWriter writer, XmlDocPage page)
+    {
+        writer.WriteLine("---");
+        writer.WriteLine($"title: {titlePrefix}{page.Nodes[0].Name}");
+        writer.WriteLine("---");
+    }
+}
 ```
 
 ### Design decisions
@@ -1136,11 +1137,11 @@ with a one-paragraph README and a checked-in expected-output snapshot (so sample
 | `Samples.PagePerNamespace` | One page per namespace | `ctx.PageMap = XmlDocPageMap.PerNamespace` |
 | `Samples.SinglePage` | Whole API on one page | `ctx.PageMap = XmlDocPageMap.SinglePage` |
 | `Samples.CustomPageMap` | Bespoke page layout/paths | custom `XmlDocPageMap` subclass |
-| `Samples.DocusaurusUrls` | Docusaurus-style URLs/anchors | `ctx.UrlMapper = XmlDocUrlMapper.Docusaurus` |
+| `Samples.DocusaurusUrls` | Docusaurus-style URLs | `ctx.UrlMapper = XmlDocUrlMapper.Docusaurus` |
 | `Samples.CustomUrlMapper` | Hand-rolled permalink scheme | custom `XmlDocUrlMapper` |
 | `Samples.ExternalLinks` | Link BCL/other-package types out | `ctx.ExternalLinks` (`XmlDocExternalLinkResolver`) |
 | `Samples.SourceLinks` | "View source" links via SourceLink | `XmlDocSourceLinks.TryCreate` |
-| `Samples.FrontMatter` | Jekyll/Docusaurus front matter | `MarkdownFrontMatter` lines |
+| `Samples.FrontMatter` | Jekyll/Docusaurus front matter | `WriteFrontMatter` override |
 | `Samples.CustomMarkdown` | Override one Markdown section | `MarkdownRenderer` subclass |
 | `Samples.HtmlRenderer` | Consumer-written HTML output | custom `XmlDocPageRenderer` |
 | `Samples.CustomCliOptions` | Add host-tool CLI options | `ctx.Args` / `ctx.HelpLines` |
@@ -1199,7 +1200,7 @@ group.
 **Proposed API changes:**
 - Records: `XmlDocTypeKind` already adds `Record` and `RecordStruct`; expose `bool IsReadOnly` on
   `XmlDocTypeNode` for `readonly struct`/`readonly record struct`.
-- Ref-ness / modifiers: add a `CSharpTokenKind` is sufficient for rendering, but to drive it structurally
+- Ref-ness / modifiers: a `CSharpTokenKind` is sufficient for rendering, but to drive it structurally
   add to `XmlDocMemberNode` a `XmlDocParameterInfo[]` exposing per-parameter `RefKind { None, Ref, Out,
   In, RefReadOnly }`, `bool IsScoped`, `bool IsParams`, `bool HasDefaultValue`, `object? DefaultValue`,
   and to the type a `bool IsRefStruct` / `bool AllowsRefStruct`. Most modifier rendering (`>>>`, checked,
