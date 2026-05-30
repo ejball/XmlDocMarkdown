@@ -10,12 +10,19 @@ layer and build their own higher layers on top of it, or replace a layer entirel
 duplication. The library still makes it trivially easy to generate a GitHub/Docusaurus-friendly
 Markdown site by default.
 
+The library targets **.NET 10** (C# 14) and uses current platform APIs and well-supported NuGet
+packages instead of hand-rolled algorithms wherever that simplifies the code (see
+[Modern .NET 10 opportunities](#modern-net-10-opportunities)).
+
 ## Goals
 
 - One NuGet package, `XmlDocGen.Core`, consumed by a tiny local host tool (conventionally `XmlDocGen`)
   that references the assemblies to be documented and calls into the library.
 - Markdown generation works out of the box with strong defaults.
-- HTML (or any other output) is achievable by plugging in one component, without touching the rest.
+- **This library does not ship HTML (or any non-Markdown) output.** Instead it guarantees that a
+  *consumer* can produce HTML (or any other format) by plugging in one component — an
+  `XmlDocPageRenderer` — without touching or duplicating any other layer. The HTML examples in this
+  plan illustrate what a consumer would write; they are not part of `XmlDocGen.Core`.
 - The API is layered, with each layer depending only on the layers below it:
   - Layers that perform **I/O** are separate from layers that work purely **in memory**.
   - **C# signature** generation is its own independently usable/testable layer.
@@ -41,6 +48,9 @@ Markdown site by default.
   `CSharpSignatureBuilder`), not writers. The only exception is `MarkdownWriter`, a low-level text
   emitter, which writes to an in-memory `TextWriter`.
 - **Settings, not Options.** Configuration objects are uniformly named `...Settings`.
+- **Prefer the platform and well-supported packages over hand-rolled algorithms.** Use current
+  .NET 10 APIs and mature NuGet packages where they remove custom string/reflection/file code without
+  compromising the layering (see [Modern .NET 10 opportunities](#modern-net-10-opportunities)).
 
 ## Namespaces
 
@@ -418,22 +428,38 @@ namespace XmlDocGen.Core.Pages;
 /// <summary>Maps each documentable node to the logical page path (no extension) where it is documented.</summary>
 public abstract class XmlDocPageMap
 {
-    /// <summary>The site-relative logical path (no extension). Nodes sharing a path share a page.</summary>
+    /// <summary>
+    /// The site-relative logical path (no extension) for the page that documents this node.
+    /// Granularity is decided entirely here: nodes that return the same path share a page, so a node
+    /// gets "its own page" precisely when it maps to a unique path. There is no separate granularity flag.
+    /// </summary>
     public abstract string GetPagePath(XmlDocNode node);
 
     /// <summary>A stable intra-page anchor for the node, used for same-page links.</summary>
     public virtual string GetAnchor(XmlDocNode node);
 
-    /// <summary>The default mapping (assembly page, a page per type, a page per member).</summary>
+    /// <summary>The default mapping: assembly page, a page per type, and a page per member.</summary>
     public static XmlDocPageMap Create(XmlDocPageMapSettings? settings = null);
+
+    // Ready-made granularities (each is just a built-in GetPagePath implementation):
+    public static XmlDocPageMap PerMember { get; }       // member -> own page, type -> own page, etc.
+    public static XmlDocPageMap PerType { get; }         // members folded onto their type's page
+    public static XmlDocPageMap PerNamespace { get; }    // types + members folded onto a namespace page
+    public static XmlDocPageMap PerAssembly { get; }     // everything in one assembly on one page
+    public static XmlDocPageMap SinglePage { get; }      // the entire site on one page
 }
 
+/// <summary>
+/// Tunes ONLY the built-in <see cref="XmlDocPageMap.Create"/> map. These are not a separate concept
+/// from page granularity \u2014 they simply select which built-in <c>GetPagePath</c> the default map uses.
+/// A custom <see cref="XmlDocPageMap"/> ignores these and decides paths directly.
+/// </summary>
 public sealed class XmlDocPageMapSettings
 {
-    /// <summary>Give each namespace its own page (otherwise namespaces are listed on the assembly page).</summary>
+    /// <summary>Fold each namespace's types onto a per-namespace page instead of per-type pages.</summary>
     public bool NamespacePages { get; set; }
 
-    /// <summary>Give each member its own page (otherwise members are documented on the type page).</summary>
+    /// <summary>When false, fold members onto their type's page instead of giving each its own page.</summary>
     public bool MemberPages { get; set; } = true;
 }
 
@@ -483,6 +509,22 @@ public abstract class XmlDocExternalLinks
     public static XmlDocExternalLinks Combine(params XmlDocExternalLinks[] sources);
 }
 
+/// <summary>Resolves a documented member to a URL of its declaration in source control (via SourceLink).</summary>
+public abstract class XmlDocSourceLinks
+{
+    /// <summary>An absolute URL to the member's source (file + line), or null if it cannot be resolved.</summary>
+    public abstract string? TryGetUrl(MemberInfo member);
+
+    /// <summary>
+    /// Reads the assembly's portable PDB: the SourceLink JSON maps local file paths to a raw URL
+    /// template (e.g. GitHub raw), and sequence points give each member's file and starting line.
+    /// </summary>
+    public static XmlDocSourceLinks FromPdb(Assembly assembly);
+
+    /// <summary>No source links (the default).</summary>
+    public static XmlDocSourceLinks None { get; }
+}
+
 /// <summary>Context available while rendering a page: page lookup and unified link resolution.</summary>
 public sealed class XmlDocPageContext
 {
@@ -498,6 +540,9 @@ public sealed class XmlDocPageContext
     /// anchor when the target shares a page) if it is in the tree; otherwise an external link; otherwise null.
     /// </summary>
     public string? GetLinkUrl(MemberInfo member);
+
+    /// <summary>A "view source" URL for a documented member, or null if source links are unavailable.</summary>
+    public string? GetSourceUrl(MemberInfo member);
 }
 ```
 
@@ -515,6 +560,21 @@ an internal link is impossible:
 
 Callers never pass `fromPath` themselves; the context supplies the current page. Same-page member links
 become `#anchor` (empty relative path + anchor), which the `XmlDocUrlMapper` produces.
+
+### Source links via SourceLink (design)
+
+When the documented assemblies are built with **SourceLink** (Microsoft's `Microsoft.SourceLink.*`
+packages, on by default for SDK-style projects with `PublishRepositoryUrl`), the portable PDB embeds:
+
+- a **SourceLink document map** translating each local source path to a raw URL template, and
+- **sequence points** giving every method/member a source file and starting line.
+
+`XmlDocSourceLinks.FromPdb(assembly)` reads both (via `System.Reflection.Metadata` /
+`MetadataReader`, no extra dependency) and produces a "view source" URL per member. The Markdown
+renderer can then emit a `[source](…)` link in each member's header when
+`XmlDocPageContext.GetSourceUrl` returns non-null. This is a pure add-on: if no PDB or no SourceLink is
+present, `GetSourceUrl` returns null and nothing changes. Source linking is wired through
+`XmlDocSiteBuilderSettings.SourceLinks` (default `None`) and exposed on the app context.
 
 ### Examples
 
@@ -538,10 +598,33 @@ sealed class FlatPageMap : XmlDocPageMap
   `FileExtension` to the map's logical path. This is `FileExtension`'s sole purpose.
 - The page map is purely structural and does not know the `XmlDocUrlMapper`; URL style is applied later.
 - The page's subject is simply `Nodes[0]`; there is no separate "primary node" concept.
+- **Page granularity lives entirely in `GetPagePath`.** A node has its own page iff it maps to a unique
+  path; folding a member onto its type's page is just returning the type's path for that member. The
+  built-in presets (`PerMember`/`PerType`/`PerNamespace`/`PerAssembly`/`SinglePage`) are nothing more
+  than different `GetPagePath` implementations, and `XmlDocPageMapSettings` only selects among the
+  `Create(...)` defaults. Custom maps bypass the settings completely. See the
+  [Customization cookbook](#customization-cookbook) for one example of each granularity.
 
-### Open questions
-- Anchor slugs for overloaded members (same name, different parameters) need a disambiguation scheme —
-  proposal: append a short parameter-type hash, matching how member page file names are disambiguated today.
+### Anchor slugs for overloaded members (proposal)
+
+The hard case is that the **anchor is often generated by the Markdown renderer, not by us** (GitHub and
+Docusaurus each slugify headings their own way), so we cannot freely invent anchors and expect links to
+match. Proposal:
+
+- **Default to one page per member** (`PerMember`), where no intra-page anchor is needed: a link targets
+  the page, full stop. This sidesteps the slug-matching problem for the common case and is today's
+  behavior.
+- When members *are* folded onto a shared page, make `GetAnchor` **pluggable per URL style**, because the
+  slug algorithm belongs to the same component that owns link formatting. `XmlDocUrlMapper` gains a
+  `Slugify(string headingText)` so `GitHub` and `Docusaurus` each reproduce their host's exact slug
+  rules; `XmlDocPageMap.GetAnchor` then asks the active mapper to slugify the heading text we actually
+  emit for that member.
+- For **overloads that produce identical heading text**, emit a disambiguating suffix *into the heading
+  itself* (e.g. `Spin(Int32)` vs `Spin(String)`) so the renderer-generated slug is naturally unique,
+  rather than trying to predict a `-1`/`-2` collision suffix the renderer would append. The signature is
+  already available from the CSharp layer, so the heading can carry the parameter list.
+- Document the limitation: anchor links are only guaranteed for the URL styles we model (`GitHub`,
+  `Docusaurus`); a custom renderer with a different slugger must override `Slugify`/`GetAnchor`.
 
 ---
 
@@ -583,6 +666,7 @@ public sealed class XmlDocSiteBuilderSettings
     public XmlDocPageMap? PageMap { get; set; }             // default: XmlDocPageMap.Create()
     public XmlDocUrlMapper? UrlMapper { get; set; }         // default: GitHub
     public XmlDocExternalLinks? ExternalLinks { get; set; } // default: DotNetApi
+    public XmlDocSourceLinks? SourceLinks { get; set; }     // default: None
     public string? NewLine { get; set; }
 }
 ```
@@ -768,13 +852,21 @@ public sealed class XmlDocSiteWriteResult
 }
 ```
 
-### Clean detection (design)
+### Clean detection via manifest (design)
 
-Today `--clean` finds stale files by scanning for a "DO NOT EDIT" marker. A **manifest** is safer and is
-the proposed approach: on each write, the writer emits a small manifest (e.g. `.xmldocgen-manifest`)
-listing the files it generated. On the next run, `--clean` deletes only files listed in the previous
-manifest that are no longer generated, never touching hand-authored files. The marker scan is kept as a
-fallback when no manifest exists (first run after migration).
+`--clean` deletes generated files that are no longer produced, without ever touching hand-authored
+files. The writer maintains a small **manifest** file (e.g. `.xmldocgen-manifest`) listing every file it
+generated on the last run. On each write it:
+
+1. Reads the previous manifest (if any).
+2. Writes the new site and computes the new file list.
+3. Deletes only files that were in the previous manifest but are not in the new list.
+4. Writes the updated manifest.
+
+This is deterministic and safe: files the tool never generated are never listed, so they are never
+deleted. There is **no content marker / "DO NOT EDIT" scan** — the manifest is the single source of
+truth. (On the very first `--clean` run with no manifest, nothing is deleted; the manifest is created
+for subsequent runs.)
 
 ### Examples
 
@@ -816,7 +908,18 @@ public sealed class XmlDocGenAppContext
     public XmlDocPageRenderer Renderer { get; set; }               // default: MarkdownPageRenderer
     public XmlDocUrlMapper UrlMapper { get; set; }                 // default: GitHub
     public XmlDocExternalLinks ExternalLinks { get; set; }         // default: DotNetApi
+    public XmlDocSourceLinks SourceLinks { get; set; }             // default: None
     public XmlDocSiteWriterSettings WriterSettings { get; }        // clean/dryrun/quiet/verify from CLI
+
+    /// <summary>
+    /// The argument reader, positioned after the built-in options have been read but before the
+    /// "no unexpected arguments" check. A consumer reads its OWN options/flags here, so custom
+    /// command-line options compose with the built-in ones.
+    /// </summary>
+    public ArgsReader Args { get; }
+
+    /// <summary>Extra usage lines appended to <c>--help</c> output for the consumer's options.</summary>
+    public IList<string> HelpLines { get; }
 }
 ```
 
@@ -832,12 +935,15 @@ Usage: XmlDocGen <input-assembly>... <output-dir> [options]
 ```
 
 Internally `Run`:
-1. Parses args (reuse `ArgsReader`); supports multiple input assemblies.
+1. Parses the built-in args (reuse `ArgsReader`); supports multiple input assemblies.
 2. For each assembly, loads it **by name** and its sibling `.xml`/`.XML` (project/package references
    ensure loading works), then `XmlDocTree.Create(...)`.
-3. Builds defaults (Markdown renderer, default map/URL mapper/external links), invokes `configure`.
-4. `new XmlDocSiteBuilder(renderer, settings).Build(tree)` → `XmlDocSite`.
-5. `new XmlDocSiteWriter(writerSettings).Write(site, outputPath)` → result; prints; returns exit code.
+3. Builds defaults (Markdown renderer, default map/URL mapper/external links), invokes `configure`
+   **with the still-open `ArgsReader`** so the consumer can read its own options/flags and append
+   `--help` lines.
+4. Verifies no unexpected arguments remain (so unknown flags still error after custom options are read).
+5. `new XmlDocSiteBuilder(renderer, settings).Build(tree)` → `XmlDocSite`.
+6. `new XmlDocSiteWriter(writerSettings).Write(site, outputPath)` → result; prints; returns exit code.
 
 ### Examples
 
@@ -851,45 +957,273 @@ return XmlDocGenApp.Run(args, ctx =>
     ctx.Visibility = XmlDocNodeVisibility.Public.ExcludeObsolete();
     ctx.UrlMapper = XmlDocUrlMapper.Docusaurus;
 });
+
+// Host tool that adds its OWN command-line options on top of the built-in ones.
+return XmlDocGenApp.Run(args, ctx =>
+{
+    ctx.HelpLines.Add("  --source-link   Add 'view source' links using SourceLink.");
+    ctx.HelpLines.Add("  --title <text>  Set the front-matter title prefix.");
+
+    if (ctx.Args.ReadFlag("source-link"))
+        ctx.SourceLinks = XmlDocSourceLinks.FromPdb(typeof(Widget).Assembly);
+
+    if (ctx.Args.ReadOption("title") is { } title)
+        ctx.Renderer = new MarkdownPageRenderer(new MarkdownPageRendererSettings
+        {
+            FrontMatter = new MarkdownFrontMatter { Fields = { ["titlePrefix"] = title } },
+        });
+});
 ```
 
 ### Design decisions
 - The app loads assemblies **by name only**; project/package references in the host tool guarantee the
   assemblies (and their dependencies) resolve. Per-assembly settings are not supported.
+- **Consumers can add their own CLI options.** `configure` runs with the `ArgsReader` still open, so a
+  host tool reads its custom options/flags before the app's leftover-argument check, and contributes
+  `--help` lines. This keeps custom options first-class without the library predefining them.
+
+---
+
+## Customization cookbook
+
+Full, self-contained host-tool examples (each is a complete `Program.cs` body). They show that page
+granularity is just a `XmlDocPageMap` choice, and that output format is just an `XmlDocPageRenderer`
+choice. Markdown renderers ship in `XmlDocGen.Core`; HTML renderers are written by the consumer.
+
+### One file per member (default)
+
+```csharp
+// Each type and each member gets its own page — the out-of-the-box behavior.
+return XmlDocGenApp.Run(args, ctx => ctx.PageMap = XmlDocPageMap.PerMember);
+```
+
+### One file per type
+
+```csharp
+// Members are documented on their declaring type's page; one file per type.
+return XmlDocGenApp.Run(args, ctx => ctx.PageMap = XmlDocPageMap.PerType);
+```
+
+### One file per namespace
+
+```csharp
+// Every type and member in a namespace is documented on a single namespace page.
+return XmlDocGenApp.Run(args, ctx => ctx.PageMap = XmlDocPageMap.PerNamespace);
+```
+
+### One file per assembly
+
+```csharp
+// Each assembly collapses to a single page.
+return XmlDocGenApp.Run(args, ctx => ctx.PageMap = XmlDocPageMap.PerAssembly);
+```
+
+### One file for the entire site
+
+```csharp
+// The whole documentation set on one page (e.g. a single README-style API reference).
+return XmlDocGenApp.Run(args, ctx => ctx.PageMap = XmlDocPageMap.SinglePage);
+```
+
+### A bespoke granularity (custom map)
+
+```csharp
+// One page per type, but group every namespace under a top-level "api/" folder.
+sealed class ApiPageMap : XmlDocPageMap
+{
+    public override string GetPagePath(XmlDocNode node) => node switch
+    {
+        XmlDocMemberNode m => GetPagePath(m.Parent!),              // fold members onto their type
+        XmlDocTypeNode t   => $"api/{t.Assembly.Name}/{t.Name}",   // a page per type
+        _                  => $"api/{node.Assembly.Name}/index",   // assembly/namespace -> index page
+    };
+}
+
+return XmlDocGenApp.Run(args, ctx => ctx.PageMap = new ApiPageMap());
+```
+
+### Markdown (default) vs. a consumer-supplied HTML renderer
+
+Markdown needs no code — it is the default. HTML is produced entirely by a **consumer-written**
+`XmlDocPageRenderer` (this library ships no HTML); every lower layer is reused unchanged.
+
+```csharp
+// Markdown (default).
+return XmlDocGenApp.Run(args);
+
+// HTML — written by the consumer in their own project; XmlDocGen.Core supplies tree, nodes,
+// signatures, page map, link resolution, and the site/IO layers underneath it.
+sealed class HtmlPageRenderer : XmlDocPageRenderer
+{
+    public override string FileExtension => ".html";
+
+    public override string RenderPage(XmlDocPage page, XmlDocPageContext context)
+    {
+        var subject = page.Nodes[0];
+        var sb = new StringBuilder();
+        sb.Append($"<!doctype html><html><head><title>{WebUtility.HtmlEncode(subject.Name)}</title></head><body>");
+        foreach (var node in page.Nodes)
+        {
+            sb.Append($"<h1>{WebUtility.HtmlEncode(node.Name)}</h1>");
+
+            // Reuse the CSharp layer for signatures; hyperlink type tokens via the page context.
+            foreach (var token in new CSharpSignatureBuilder().GetTypeSignature((XmlDocTypeNode) node).Tokens)
+            {
+                var url = token.LinkTarget is { } t ? context.GetLinkUrl(t) : null;
+                var text = WebUtility.HtmlEncode(token.Text);
+                sb.Append(url is null ? text : $"<a href=\"{url}\">{text}</a>");
+            }
+
+            // Reuse the XML inline/summary content (already inheritdoc-resolved by the Nodes layer).
+            if (node.XmlMember is { Summary: var summary })
+                sb.Append($"<p>{WebUtility.HtmlEncode(string.Concat(summary))}</p>");
+
+            if (context.GetSourceUrl(node.Ref is { Kind: 'T' or 'M' } ? ((XmlDocTypeNode) node).Type : null!) is { } src)
+                sb.Append($"<p><a href=\"{src}\">view source</a></p>");
+        }
+        sb.Append("</body></html>");
+        return sb.ToString();
+    }
+}
+
+return XmlDocGenApp.Run(args, ctx => ctx.Renderer = new HtmlPageRenderer());
+```
+
+The HTML example also shows source links (`GetSourceUrl`) and internal/external link reuse
+(`GetLinkUrl`) — none of which the consumer reimplements.
 
 ---
 
 ## Missing Functionality (vs. the current implementation)
 
-Gaps to close in the new library, independent of the API shape. Each gets example types and tests.
+Gaps to close in the new library, independent of the API shape. Each gets example types and tests. Items
+marked **(API)** require additions to the layer APIs above; the proposed additions are listed after each
+group.
 
 ### XML documentation features
-- `<inheritdoc>` resolution (with optional `cref` and `path`) against base types and interfaces.
-- `<see langword="..."/>` and `<see href="..."/>` in addition to `<see cref="..."/>`.
-- `<paramref>` and `<typeparamref>` rendered as links to the relevant parameter.
+- `<inheritdoc>` resolution (with optional `cref` and `path`) against base types and interfaces. **(API)**
+- `<see langword="..."/>` and `<see href="..."/>` in addition to `<see cref="..."/>`. **(API)**
+- `<paramref>` and `<typeparamref>` rendered as links to the relevant parameter. **(API)**
 - `<list type="bullet|number|table">` including tables and definition lists.
-- `<c>` inline code and `<code lang="...">` fenced blocks with language hints.
+- `<c>` inline code and `<code lang="...">` fenced blocks with language hints. **(API)**
 - `<para>`, `<value>`, `<example>`, `<exception>`, `<returns>`, `<remarks>` (verify all are handled).
-- `<include>` to merge external doc fragments.
+- `<include>` to merge external doc fragments. **(API)**
 - `cref` to overloaded members and to constructed generic types.
 
+**Proposed API changes:**
+- `<inheritdoc>`: already covered by `XmlDocXmlMember.InheritDoc` (Xml) and resolution during
+  `XmlDocTree.Create` (Nodes); add `XmlDocXmlInheritDoc { XmlDocRef? Cref; string? Path }`.
+- `<see langword/href>` and `<paramref>`/`<typeparamref>`: extend the inline model with explicit kinds.
+  Add to `XmlDocXmlInline` a `Kind` enum value set `{ Text, Code, SeeCref, SeeHref, SeeLangword,
+  ParamRef, TypeParamRef }` and properties `Href`, `Langword`, `Name` (for the ref name). The Markdown
+  renderer resolves `ParamRef`/`TypeParamRef` against the member's parameters and `SeeCref` via
+  `XmlDocPageContext.GetLinkUrl`.
+- `<code lang>`: add `string? Language` to the block/inline that carries fenced code so the renderer can
+  emit a language hint.
+- `<include>`: add `XmlDocXmlFile.Resolve(Func<string, XDocument> open)` (or a loader hook on
+  `XmlDocXmlFile.Load`) that expands `<include file= path=>` before the Nodes layer consumes it; expansion
+  stays in the Xml layer so no other layer sees `<include>`.
+
 ### C# syntax
-- `record`, `record struct`, `readonly record struct`.
-- `readonly struct`, `ref struct`, `readonly ref struct`, and `allows ref struct` anti-constraint.
-- `required` members and `init` accessors.
-- `in`, `ref readonly`, and `scoped` parameters and returns.
+- `record`, `record struct`, `readonly record struct`. **(API)**
+- `readonly struct`, `ref struct`, `readonly ref struct`, and `allows ref struct` anti-constraint. **(API)**
+- `required` members and `init` accessors. **(API)**
+- `in`, `ref readonly`, and `scoped` parameters and returns. **(API)**
 - Function pointer types.
-- `static abstract` and `static virtual` interface members; `sealed` interface members.
+- `static abstract` and `static virtual` interface members; `sealed` interface members. **(API)**
 - Checked operators and the unsigned right-shift operator (`>>>`).
 - Newer generic constraints: `notnull`, `unmanaged`, `default`, nullable-qualified `class`.
 - Primary constructors (including the record case) and compiler-emitted members.
-- Nullable reference type annotations.
+- Nullable reference type annotations. **(API)**
 - Default parameter values, `params`, and `params` collections.
 - Tuple element names; `nint`/`nuint` native integers.
 
+**Proposed API changes:**
+- Records: `XmlDocTypeKind` already adds `Record` and `RecordStruct`; expose `bool IsReadOnly` on
+  `XmlDocTypeNode` for `readonly struct`/`readonly record struct`.
+- Ref-ness / modifiers: add a `CSharpTokenKind` is sufficient for rendering, but to drive it structurally
+  add to `XmlDocMemberNode` a `XmlDocParameterInfo[]` exposing per-parameter `RefKind { None, Ref, Out,
+  In, RefReadOnly }`, `bool IsScoped`, `bool IsParams`, `bool HasDefaultValue`, `object? DefaultValue`,
+  and to the type a `bool IsRefStruct` / `bool AllowsRefStruct`. Most modifier rendering (`>>>`, checked,
+  function pointers, native ints, tuple names) needs no new node API — it lives in
+  `CSharpSignatureBuilder`, which reads richer reflection/`System.Reflection.Metadata` data directly.
+- `required`/`init`: add `bool IsRequired` to `XmlDocMemberNode` and an accessor descriptor
+  (`bool HasGet`, `bool HasSet`, `bool IsInitOnly`) for properties.
+- `static abstract`/`static virtual`/`sealed` interface members: add `bool IsStatic`, `bool IsAbstract`,
+  `bool IsVirtual`, `bool IsSealed` to `XmlDocMemberNode` (some already implied by reflection but surfaced
+  for renderers).
+- Nullable annotations: add `NullabilityInfo` access (via `NullabilityInfoContext`) on parameter/return
+  descriptors so the signature builder can render `?` and `!` correctly; this is the one feature that
+  genuinely needs structured data because reflection alone does not expose NRT annotations.
+- Generic constraints: add `XmlDocTypeParameterInfo[]` (name, variance, constraint flags) to
+  `XmlDocTypeNode`/`XmlDocMemberNode` so constraints render from structured data rather than ad-hoc.
+
 ---
 
-## Reuse Map (current → new)
+## Modern .NET 10 opportunities
+
+Targeting .NET 10 lets us replace several hand-rolled algorithms in today's code with platform APIs or
+mature NuGet packages. Each item notes the current code it replaces.
+
+### Assembly inspection — `MetadataLoadContext` (NuGet: `System.Reflection.MetadataLoadContext`)
+Today the app loads the target assembly **into the running process** (`assembly.Location`,
+`Assembly.Load`), which executes module initializers and pins dependency versions to the tool's. Switch
+to **`MetadataLoadContext`**, the supported way to inspect assemblies *without running them*: resolve the
+assembly and its references from the output folder, reflect over `Type`/`MemberInfo` exactly as today,
+and avoid load-context conflicts. This also makes multi-assembly trees and cross-framework targets
+robust. `XmlDocTree.Create((Assembly, XmlDocXmlFile))` is unchanged; only how the app obtains the
+`Assembly` changes.
+
+### XML doc identifiers & reading — consider `Namotion.Reflection` / `LoxSmoke.DocXml`
+`XmlDocUtility.GetXmlDocRef` hand-builds `T:`/`M:`/`P:` identifiers (generics, arrays, by-ref,
+`op_Implicit~`, etc.). Mature packages (`Namotion.Reflection`, `LoxSmoke.DocXml`) already compute the
+compiler's XML doc identifier from reflection and read the XML. Proposal: keep our own `XmlDocRef`
+(it's small and central) but **port its identifier algorithm against one of these as a test oracle**, and
+evaluate adopting the package outright for the `Xml` layer's parsing if it covers our inline model.
+
+### Source links — `System.Reflection.Metadata` (in-box)
+`XmlDocSourceLinks.FromPdb` reads the portable PDB's SourceLink JSON and sequence points via the in-box
+`MetadataReader` — no third-party dependency. New capability, no replacement.
+
+### Newline normalization — `string.ReplaceLineEndings`
+The diff in `XmlDocMarkdownGenerator.Generate` compares files via `.Replace("\r", "", …)`. Replace with
+`string.ReplaceLineEndings("\n")` (clearer, handles all newline forms). Backs
+`XmlDocNewLineComparison.Ignore`.
+
+### Fast character scanning — `SearchValues<char>` (.NET 8+)
+`EscapeHtml` and `GetSafeName` call `string.Replace` repeatedly and scan with `Regex`. Use a cached
+`SearchValues<char>` plus `string.AsSpan().IndexOfAny(...)` to skip allocation when no special characters
+are present (the common case), and a single pass otherwise.
+
+### Source-generated regex — `[GeneratedRegex]` (.NET 7+)
+`XmlDocUtility.XmlDocNameRegex()` and `SurroundCode`'s `Regex.Matches(value, "`+")` should be
+`[GeneratedRegex]` partial methods (compile-time, allocation-free) — or, for the backtick run, a tiny
+manual scan, which is even cheaper.
+
+### Grouping & indexing — `GroupBy`, `Enumerable.Index`, `CountBy` (.NET 9)
+`XmlDocPageBuilder.CreatePages` groups nodes by mapped path — a clean `GroupBy`/`ToLookup`. The many
+`for (var i = 0; …)` index loops in the renderer become `foreach (var (i, x) in items.Index())`.
+
+### Deterministic file ordering — `OrderedDictionary<TKey,TValue>` (.NET 9)
+`XmlDocSite.Files` needs stable ordering *and* `FindFile` lookup. Back it with
+`OrderedDictionary<string, XmlDocSiteFile>` for O(1) lookup with insertion order, instead of a list plus
+a side dictionary.
+
+### `params ReadOnlySpan<T>` (.NET 9)
+`MarkdownWriter.WriteTableRow(params string[] cells)` becomes `params ReadOnlySpan<string>` to avoid
+array allocation per row.
+
+### Front matter — `YamlDotNet` (NuGet)
+`MarkdownFrontMatter` renders YAML. Use `YamlDotNet` to serialize the structured model rather than
+hand-emitting YAML (correct escaping/quoting for free).
+
+### Snapshot testing — `Verify` (NuGet)
+The renderer/page snapshot tests use `Verify` (received/verified files), replacing bespoke
+expected-string comparisons.
+
+### SourceLink in our own build — `Microsoft.SourceLink.GitHub` (NuGet)
+Enable SourceLink (and `Deterministic`, `ContinuousIntegrationBuild`) in this repo's build so the package
+itself supports "view source," and so the example assemblies exercise `XmlDocSourceLinks.FromPdb`.
 
 | Current type | New type | Namespace |
 |---|---|---|
@@ -901,12 +1235,14 @@ Gaps to close in the new library, independent of the API shape. Each gets exampl
 | paging/path logic in `MarkdownGenerator`, `NamespacePages` | `XmlDocPageMap` (+ settings), `XmlDocPage`, `XmlDocPageBuilder` | `XmlDocGen.Core.Pages` |
 | permalink/`MakeRelative`/`GetSafeName`/`GetPermalink`, `PermalinkStyle` | `XmlDocUrlMapper` (GitHub/Docusaurus) | `XmlDocGen.Core.Pages` |
 | `ExternalDocumentation` | **removed**; replaced by in-tree internal links + `XmlDocExternalLinks` (`DotNetApi`) | `XmlDocGen.Core.Pages` |
+| (new) | `XmlDocSourceLinks` (SourceLink "view source") | `XmlDocGen.Core.Pages` |
 | `NamedText` | `XmlDocSiteFile` (+ `XmlDocSite`) | `XmlDocGen.Core.Sites` |
 | `MarkdownGenerator` orchestration | `XmlDocSiteBuilder` (format-agnostic) | `XmlDocGen.Core.Sites` |
 | `MarkdownGenerator` rendering, `MarkdownWriter` | `MarkdownPageRenderer`, `MarkdownRenderer`, `MarkdownWriter` | `XmlDocGen.Core.Markdown` |
 | `XmlDocMarkdownSettings` | split across site-builder / page-map / renderer / writer settings | various |
 | I/O half of `XmlDocMarkdownGenerator.Generate`, `XmlDocMarkdownResult` | `XmlDocSiteWriter`, `XmlDocSiteWriteResult` | `XmlDocGen.Core.IO` |
-| `XmlDocMarkdownApp` | `XmlDocGenApp` (+ `XmlDocGenAppContext`) | `XmlDocGen.Core` (root) |
+| `XmlDocMarkdownApp` | `XmlDocGenApp` (+ `XmlDocGenAppContext` with custom-option hook) | `XmlDocGen.Core` (root) |
+| `Assembly.Load`/`assembly.Location` | `MetadataLoadContext` (inspect without loading) | `XmlDocGen.Core` (root) |
 | `ArgsReader`, `ArgsReaderException`, `CommonArgs` | reused, internal | (internal) |
 
 ---
@@ -914,7 +1250,7 @@ Gaps to close in the new library, independent of the API shape. Each gets exampl
 ## Repository & Packaging
 
 - New repo, new package id `XmlDocGen.Core` (root namespace `XmlDocGen.Core`).
-- Target the current LTS (`net8.0`), C# 12, nullable enabled, central package management — carry over
+- Target **.NET 10** (`net10.0`), C# 14, nullable enabled, central package management — carry over
   the existing build template, `Directory.Build.props`, `Directory.Packages.props`, `build.ps1`.
 - **All layers ship in one `XmlDocGen.Core` assembly**, separated by namespace.
 - Projects:
@@ -924,6 +1260,11 @@ Gaps to close in the new library, independent of the API shape. Each gets exampl
   - `tools/XmlDocGen` — the local host tool used to regenerate this repo's own docs.
 - Carry over the docs-verification build target (regenerate `docs/` and fail on diff).
 - Enforce "XML docs required on public/protected members" as warning-as-error.
+- Key dependencies (see [Modern .NET 10 opportunities](#modern-net-10-opportunities)):
+  `System.Reflection.MetadataLoadContext` (inspect assemblies without loading them),
+  `System.Reflection.Metadata` (in-box, for SourceLink PDB reading), optionally `YamlDotNet`
+  (front matter) and `Verify` (snapshot tests). Enable `Microsoft.SourceLink.GitHub`, `Deterministic`,
+  and `ContinuousIntegrationBuild` in this repo's own build.
 
 ---
 
@@ -942,6 +1283,8 @@ Reorganized to make tests clearer:
     for renderer snapshot tests.
 - Each example type carries a model-level assertion and, where relevant, a checked-in expected signature
   and rendered page.
+- Both example assemblies are built with **SourceLink** + a portable PDB so the source-link layer
+  (`XmlDocSourceLinks.FromPdb`) is exercised end to end.
 
 ---
 
@@ -984,6 +1327,8 @@ The layering lets us unit-test each layer in isolation, with end-to-end integrat
 - `XmlDocExternalLinks`: `DotNetApi` maps `System.*` to Learn URLs; `UrlPattern`; `Combine` first-wins.
 - `XmlDocPageContext.GetLinkUrl`: internal target → relative URL (+ anchor when shared page); external
   target → external URL; unknown → null.
+- `XmlDocSourceLinks.FromPdb`: reads SourceLink JSON + sequence points from the example assemblies'
+  PDBs and produces correct source URLs; `None` and missing-PDB cases return null.
 
 ### Sites layer
 - `XmlDocSiteBuilder` with a tiny JSON renderer proves it is genuinely format-agnostic.
@@ -1001,8 +1346,8 @@ The layering lets us unit-test each layer in isolation, with end-to-end integrat
 - Write via the real file system and via an `IXmlDocFileSystem` fake: files created with correct content
   and `/`→OS paths.
 - Diffing under both `NewLineComparison` modes; added/changed/removed classification.
-- `--clean` via manifest deletes only previously-generated files; leaves hand-authored files; marker
-  fallback when no manifest exists.
+- `--clean` via manifest deletes only previously-generated files; leaves hand-authored files; first run
+  with no manifest deletes nothing but writes the manifest.
 - `IsDryRun` writes nothing but computes the result; `IsQuiet` suppresses messages; idempotency.
 
 ### Application layer (end-to-end)
@@ -1010,6 +1355,10 @@ The layering lets us unit-test each layer in isolation, with end-to-end integrat
 - Full run over both example assemblies to a temp dir; compare against checked-in expected docs.
 - `--verify` returns 1 when changes needed, 0 when clean; `--dryrun`/`--quiet`/`--clean`.
 - `configure` can swap `Visibility`, `Renderer`, `UrlMapper`, `ExternalLinks`, `PageMap`.
+- Custom CLI options: a host tool reads its own option/flag via `ctx.Args`; unknown flags still error;
+  custom `--help` lines appear.
+- Each `XmlDocPageMap` preset (`PerMember`/`PerType`/`PerNamespace`/`PerAssembly`/`SinglePage`) produces
+  the expected file count and grouping end to end.
 - Missing XML doc file → friendly error and non-zero exit.
 
 ### Cross-cutting
@@ -1031,5 +1380,6 @@ The layering lets us unit-test each layer in isolation, with end-to-end integrat
 5. `Sites` — site model + format-agnostic site builder; mapper/resolver tests.
 6. `Markdown` — building blocks + page renderer; snapshot tests; reach output parity with today.
 7. `IO` — writer + diff/clean (manifest); I/O tests.
-8. `XmlDocGen.Core` app — CLI; end-to-end tests; regenerate `docs/`.
+8. `XmlDocGen.Core` app — CLI (load assemblies via `MetadataLoadContext`, custom-option hook); source
+   links; end-to-end tests; regenerate `docs/`.
 9. Coverage, CI matrix, README, release notes.
