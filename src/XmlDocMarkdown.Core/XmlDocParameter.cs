@@ -1,11 +1,10 @@
 using System.Collections.ObjectModel;
 
-namespace XmlDocMarkdown.Core
-{
-	internal sealed class XmlDocParameter
-	{
-		public string? Name { get; set; }
+namespace XmlDocMarkdown.Core;
 
-		public Collection<XmlDocBlock> Description { get; } = new();
-	}
+internal sealed class XmlDocParameter
+{
+	public string? Name { get; set; }
+
+	public Collection<XmlDocBlock> Description { get; } = [];
 }

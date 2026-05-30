@@ -1,18 +1,17 @@
-namespace ExampleAssembly
+namespace ExampleAssembly;
+
+/// <summary>
+/// A 64-bit enumeration.
+/// </summary>
+public enum ExampleLongEnum : ulong
 {
 	/// <summary>
-	/// A 64-bit enumeration.
+	/// Backward.
 	/// </summary>
-	public enum ExampleLongEnum : ulong
-	{
-		/// <summary>
-		/// Backward.
-		/// </summary>
-		Backward = ulong.MinValue,
+	Backward = ulong.MinValue,
 
-		/// <summary>
-		/// Forward.
-		/// </summary>
-		Forward = ulong.MaxValue,
-	}
+	/// <summary>
+	/// Forward.
+	/// </summary>
+	Forward = ulong.MaxValue,
 }

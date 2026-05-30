@@ -1,9 +1,8 @@
-namespace ExampleAssembly
+namespace ExampleAssembly;
+
+/// <summary>
+/// An internal interface.
+/// </summary>
+internal interface IExampleInternalInterface
 {
-	/// <summary>
-	/// An internal interface.
-	/// </summary>
-	internal interface IExampleInternalInterface
-	{
-	}
 }

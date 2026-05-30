@@ -1,9 +1,8 @@
-namespace ExampleAssembly
+namespace ExampleAssembly;
+
+/// <summary>
+/// A sealed class.
+/// </summary>
+public sealed class ExampleSealedClass
 {
-	/// <summary>
-	/// A sealed class.
-	/// </summary>
-	public sealed class ExampleSealedClass
-	{
-	}
 }

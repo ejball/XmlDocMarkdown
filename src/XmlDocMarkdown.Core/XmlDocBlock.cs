@@ -1,19 +1,18 @@
 using System.Collections.ObjectModel;
 
-namespace XmlDocMarkdown.Core
+namespace XmlDocMarkdown.Core;
+
+internal sealed class XmlDocBlock
 {
-	internal sealed class XmlDocBlock
-	{
-		public Collection<XmlDocInline> Inlines { get; } = new();
+	public Collection<XmlDocInline> Inlines { get; } = [];
 
-		public bool IsCode { get; set; }
+	public bool IsCode { get; set; }
 
-		public XmlDocListKind? ListKind { get; set; }
+	public XmlDocListKind? ListKind { get; set; }
 
-		public int ListDepth { get; set; }
+	public int ListDepth { get; set; }
 
-		public bool IsListHeader { get; set; }
+	public bool IsListHeader { get; set; }
 
-		public bool IsListTerm { get; set; }
-	}
+	public bool IsListTerm { get; set; }
 }

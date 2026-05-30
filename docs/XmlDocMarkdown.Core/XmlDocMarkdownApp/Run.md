@@ -3,12 +3,14 @@
 Run the command-line application.
 
 ```csharp
-public static int Run(IReadOnlyList<string> args)
+public static int Run(IReadOnlyList<string> args, 
+    Action<string, XmlDocMarkdownSettings>? configure = null)
 ```
 
 | parameter | description |
 | --- | --- |
 | args | The command-line arguments. |
+| configure | Called to configure the settings. |
 
 ## Return Value
 
@@ -16,6 +18,7 @@ The exit code.
 
 ## See Also
 
+* class [XmlDocMarkdownSettings](../XmlDocMarkdownSettings.md)
 * class [XmlDocMarkdownApp](../XmlDocMarkdownApp.md)
 * namespace [XmlDocMarkdown.Core](../../XmlDocMarkdown.Core.md)
 

@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="src/XmlDocMarkdown.Core/XmlDocMarkdown.Core.csproj" />
+  <Project Path="tools/ExampleAssembly/ExampleAssembly.csproj" />
+  <Project Path="tests/XmlDocMarkdown.Tests/XmlDocMarkdown.Tests.csproj" />
+  <Project Path="tools/XmlDocGen/XmlDocGen.csproj" />
+  <Project Path="tools/Build/Build.csproj" />
+</Solution>
+

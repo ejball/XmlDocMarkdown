@@ -1,13 +1,12 @@
-namespace XmlDocMarkdown.Core
+namespace XmlDocMarkdown.Core;
+
+/// <summary>
+/// Configures external documentation.
+/// </summary>
+public sealed class ExternalDocumentation
 {
 	/// <summary>
-	/// Configures external documentation.
+	/// The namespace to configure.
 	/// </summary>
-	public sealed class ExternalDocumentation
-	{
-		/// <summary>
-		/// The namespace to configure.
-		/// </summary>
-		public string? Namespace { get; set; }
-	}
+	public string? Namespace { get; set; }
 }

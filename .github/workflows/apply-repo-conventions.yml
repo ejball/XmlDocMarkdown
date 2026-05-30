@@ -1,0 +1,47 @@
+name: Apply Repository Conventions
+
+on:
+  schedule:
+  - cron: '31 9 * * 1-5'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  apply:
+    name: Apply
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.EJBALL_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.EJBALL_BOT_PRIVATE_KEY }}
+
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          # full history needed for git merge-base in repo-conventions tool
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "ejball-bot[app]"
+          git config user.email "ejball-bot[app]@users.noreply.github.com"
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v5
+
+      - name: Install APM
+        uses: microsoft/apm-action@v1
+        with:
+          setup-only: true
+
+      - name: Apply repository conventions
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          dnx -y repo-conventions apply --open-pr

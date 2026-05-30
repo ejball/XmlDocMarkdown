@@ -1,9 +1,8 @@
-namespace ExampleAssembly
+namespace ExampleAssembly;
+
+/// <summary>
+/// An interface with covariant generic parameters.
+/// </summary>
+public interface IExampleCovariantInterface<out T>
 {
-	/// <summary>
-	/// An interface with covariant generic parameters.
-	/// </summary>
-	public interface IExampleCovariantInterface<out T>
-	{
-	}
 }

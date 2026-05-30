@@ -1,15 +1,14 @@
-namespace ExampleAssembly
+namespace ExampleAssembly;
+
+/// <summary>
+/// An internal class.
+/// </summary>
+internal class ExampleInternalClass
 {
 	/// <summary>
-	/// An internal class.
+	/// A public class nested in an internal class.
 	/// </summary>
-	internal class ExampleInternalClass
+	public class ExamplePublicNestedClass
 	{
-		/// <summary>
-		/// A public class nested in an internal class.
-		/// </summary>
-		public class ExamplePublicNestedClass
-		{
-		}
 	}
 }
