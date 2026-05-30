@@ -1,0 +1,37 @@
+# ExampleAssembly
+
+
+## Types
+| name | kind | summary |
+| --- | --- | --- |
+| [ExampleAbstractClass](./ExampleAssembly/ExampleAbstractClass.md) | class | An abstract class. |
+| [ExampleAttribute](./ExampleAssembly/ExampleAttribute.md) | class | An attribute. |
+| [ExampleClass](./ExampleAssembly/ExampleClass.md) | class | A class. |
+| [ExampleDeepClass](./ExampleAssembly/ExampleDeepClass.md) | class | A class with nested types. |
+| [ExampleDelegate](./ExampleAssembly/ExampleDelegate.md) | delegate | A delegate. |
+| [ExampleDerivedClass](./ExampleAssembly/ExampleDerivedClass.md) | class | A class that derives from [`ExampleClass`](./ExampleAssembly/ExampleClass.md). |
+| [ExampleEnum](./ExampleAssembly/ExampleEnum.md) | enum | An enumeration. |
+| [ExampleException](./ExampleAssembly/ExampleException.md) | class | An example exception. |
+| [ExampleFlagsEnum](./ExampleAssembly/ExampleFlagsEnum.md) | enum | A flags enumeration. |
+| [ExampleGenericClass](./ExampleAssembly/ExampleGenericClass.md) | class | A generic class. |
+| [ExampleGenericDelegate](./ExampleAssembly/ExampleGenericDelegate.md) | delegate | A generic delegate. |
+| [ExampleLongEnum](./ExampleAssembly/ExampleLongEnum.md) | enum | A 64-bit enumeration. |
+| [ExampleLongSummary](./ExampleAssembly/ExampleLongSummary.md) | class | This class has an exceptionally long summary. Even the first paragraph is really long, which is important to test because some documenters put a lot of information in the summary, perhaps not expecting that someone will ever actually generate documentation. With multiple paragraphs. And text weirdly between paragraphs. var someCode = new SomeCode(); someCode.Print(); |
+| [ExampleObsoleteClass](./ExampleAssembly/ExampleObsoleteClass.md) | class | An obsolete class. |
+| [ExampleRecord](./ExampleAssembly/ExampleRecord.md) | record | A C# 9 generic record. |
+| [ExampleRefOutDelegate](./ExampleAssembly/ExampleRefOutDelegate.md) | delegate | A delegate. |
+| [ExampleSealedClass](./ExampleAssembly/ExampleSealedClass.md) | class | A sealed class. |
+| [ExampleSealedRecord](./ExampleAssembly/ExampleSealedRecord.md) | record | A sealed C# 9 record. |
+| [ExampleStaticClass](./ExampleAssembly/ExampleStaticClass.md) | class | A static class. |
+| [ExampleStruct](./ExampleAssembly/ExampleStruct.md) | struct | A structure. |
+| [ExampleTriGenericClass](./ExampleAssembly/ExampleTriGenericClass.md) | class | A generic class with three generic type parameters. |
+| [ExampleTuple](./ExampleAssembly/ExampleTuple.md) | class | A helper class for tuples. |
+| [ExampleTuple](./ExampleAssembly/ExampleTuple.md#exampletuple) | struct | A 1-tuple. |
+| [ExampleTuple](./ExampleAssembly/ExampleTuple.md#exampletuple) | struct | A 2-tuple. |
+| [ExampleTuple](./ExampleAssembly/ExampleTuple.md#exampletuple) | struct | A 3-tuple. |
+| [ExampleTuple](./ExampleAssembly/ExampleTuple.md#exampletuple) | struct | A 4-tuple. |
+| [ExampleUnbrowsableClass](./ExampleAssembly/ExampleUnbrowsableClass.md) | class | An unbrowsable class. |
+| [IExampleContravariantInterface](./ExampleAssembly/IExampleContravariantInterface.md) | interface | An interface with contravariant generic parameters. |
+| [IExampleCovariantInterface](./ExampleAssembly/IExampleCovariantInterface.md) | interface | An interface with covariant generic parameters. |
+| [IExampleDerivedInterface](./ExampleAssembly/IExampleDerivedInterface.md) | interface | A derived interface. |
+| [IExampleInterface](./ExampleAssembly/IExampleInterface.md) | interface | An interface. |

@@ -1,0 +1,16 @@
+# XmlDocXmlListKind
+
+Kinds of XML documentation lists.
+
+```csharp
+public enum XmlDocXmlListKind : IComparable, IConvertible, IFormattable, ISpanFormattable
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Bullet](./XmlDocXmlListKind/Bullet.md) | field | A bullet list. |
+| [Definition](./XmlDocXmlListKind/Definition.md) | field | A definition list. |
+| [Number](./XmlDocXmlListKind/Number.md) | field | A numbered list. |
+| [Table](./XmlDocXmlListKind/Table.md) | field | A table. |
+| [value__](./XmlDocXmlListKind/value__.md) | field |  |

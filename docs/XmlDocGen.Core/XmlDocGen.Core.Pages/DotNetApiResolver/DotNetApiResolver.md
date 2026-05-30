@@ -1,0 +1,6 @@
+# DotNetApiResolver
+
+
+```csharp
+public DotNetApiResolver()
+```

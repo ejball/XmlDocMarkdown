@@ -1,0 +1,17 @@
+# XmlDocArgsReader
+
+Reads command-line arguments.
+
+```csharp
+public sealed class XmlDocArgsReader
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [ReadArgument](./XmlDocArgsReader/ReadArgument.md) | method | Reads one positional argument. |
+| [ReadFlag](./XmlDocArgsReader/ReadFlag.md) | method | Reads a flag by long or short name. |
+| [ReadOption](./XmlDocArgsReader/ReadOption.md) | method | Reads an option value by long or short name. |
+| [ReadRemainingArguments](./XmlDocArgsReader/ReadRemainingArguments.md) | method | Reads remaining positional arguments. |
+| [VerifyComplete](./XmlDocArgsReader/VerifyComplete.md) | method | Verifies that no unread arguments remain. |
+| [XmlDocArgsReader](./XmlDocArgsReader/XmlDocArgsReader.md) | constructor | Initializes a new instance of the [`XmlDocArgsReader`](./XmlDocArgsReader.md) class. |

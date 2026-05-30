@@ -1,0 +1,7 @@
+# IsDryRun
+
+Gets or sets a value indicating whether no file-system changes should be made.
+
+```csharp
+public bool IsDryRun { get; set; }
+```

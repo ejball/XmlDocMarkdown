@@ -1,0 +1,14 @@
+# ExampleLongEnum
+
+A 64-bit enumeration.
+
+```csharp
+public enum ExampleLongEnum : IComparable, IConvertible, IFormattable, ISpanFormattable
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Backward](./ExampleLongEnum/Backward.md) | field | Backward. |
+| [Forward](./ExampleLongEnum/Forward.md) | field | Forward. |
+| [value__](./ExampleLongEnum/value__.md) | field |  |

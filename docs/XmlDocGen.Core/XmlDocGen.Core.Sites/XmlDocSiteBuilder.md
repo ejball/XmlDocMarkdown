@@ -1,0 +1,15 @@
+# XmlDocSiteBuilder
+
+Builds a generated documentation site.
+
+```csharp
+public sealed class XmlDocSiteBuilder
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Build](./XmlDocSiteBuilder/Build.md) | method | Builds a site from a tree. |
+| [Renderer](./XmlDocSiteBuilder/Renderer.md) | property | Gets the page renderer. |
+| [Settings](./XmlDocSiteBuilder/Settings.md) | property | Gets the site-builder settings. |
+| [XmlDocSiteBuilder](./XmlDocSiteBuilder/XmlDocSiteBuilder.md) | constructor | Initializes a new instance of the [`XmlDocSiteBuilder`](./XmlDocSiteBuilder.md) class. |

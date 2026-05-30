@@ -1,0 +1,7 @@
+sample: Samples.PagePerNamespace
+files: 3
+sha256: 93712468fed6b1a4b4452859eedd8bb79428b64c2d272382d3d81049f485e35f
+preview:
+- ExampleAssembly.md
+- ExampleAssembly/ExampleAssembly.InnerNamespace.md
+- ExampleAssembly/ExampleAssembly.md

@@ -1,0 +1,19 @@
+# XmlDocAssemblyNode
+
+An assembly documentation node.
+
+```csharp
+public sealed class XmlDocAssemblyNode : XmlDocNode
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Create](./XmlDocAssemblyNode/Create.md) | method | Creates an assembly node. |
+| [Name](./XmlDocAssemblyNode/Name.md) | property | Gets the simple display name. |
+| [Namespaces](./XmlDocAssemblyNode/Namespaces.md) | property | Gets namespace nodes in this assembly. |
+| [Ref](./XmlDocAssemblyNode/Ref.md) | property | Gets this node&amp;#39;s XML documentation reference. |
+| [ReflectionAssembly](./XmlDocAssemblyNode/ReflectionAssembly.md) | property | Gets the reflected assembly. |
+| [Visibility](./XmlDocAssemblyNode/Visibility.md) | property | Gets the exact visibility of this node. |
+| [Xml](./XmlDocAssemblyNode/Xml.md) | property | Gets the XML documentation file associated with the assembly. |
+| [XmlFile](./XmlDocAssemblyNode/XmlFile.md) | property | Gets the XML documentation file associated with the assembly. |

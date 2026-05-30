@@ -1,0 +1,12 @@
+# ExampleSealedClass
+
+A sealed class.
+
+```csharp
+public sealed class ExampleSealedClass
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [ExampleSealedClass](./ExampleSealedClass/ExampleSealedClass.md) | constructor |  |

@@ -1,0 +1,7 @@
+# XmlDocSite
+
+Initializes a new instance of the [`XmlDocSite`](../XmlDocSite.md) class.
+
+```csharp
+public XmlDocSite(IEnumerable<XmlDocSiteFile> files)
+```

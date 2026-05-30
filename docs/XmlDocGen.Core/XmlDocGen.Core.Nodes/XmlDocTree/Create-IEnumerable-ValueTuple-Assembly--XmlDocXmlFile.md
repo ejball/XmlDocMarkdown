@@ -1,0 +1,7 @@
+# Create
+
+Creates a tree from reflected assemblies and XML documentation files.
+
+```csharp
+public static XmlDocTree Create(IEnumerable<ValueTuple<Assembly, XmlDocXmlFile>> inputs)
+```

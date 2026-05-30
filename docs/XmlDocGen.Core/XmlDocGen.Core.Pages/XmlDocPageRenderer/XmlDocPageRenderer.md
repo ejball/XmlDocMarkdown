@@ -1,0 +1,6 @@
+# XmlDocPageRenderer
+
+
+```csharp
+protected XmlDocPageRenderer()
+```

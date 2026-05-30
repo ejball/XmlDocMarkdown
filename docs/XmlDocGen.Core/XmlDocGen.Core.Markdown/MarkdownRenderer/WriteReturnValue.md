@@ -1,0 +1,7 @@
+# WriteReturnValue
+
+Writes a return-value section.
+
+```csharp
+public virtual void WriteReturnValue(MarkdownWriter writer, XmlDocMemberNode member, XmlDocPageContext context)
+```

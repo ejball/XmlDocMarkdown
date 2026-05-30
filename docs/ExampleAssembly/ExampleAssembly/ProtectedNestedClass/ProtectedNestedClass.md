@@ -1,0 +1,6 @@
+# ProtectedNestedClass
+
+
+```csharp
+public ProtectedNestedClass()
+```

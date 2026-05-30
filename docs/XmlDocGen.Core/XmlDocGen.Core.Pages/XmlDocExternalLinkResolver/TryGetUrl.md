@@ -1,0 +1,7 @@
+# TryGetUrl
+
+Tries to resolve a URL for an external reference.
+
+```csharp
+public abstract string TryGetUrl(XmlDocRef reference, MemberInfo member)
+```

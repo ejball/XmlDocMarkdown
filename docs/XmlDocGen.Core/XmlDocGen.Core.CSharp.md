@@ -1,0 +1,10 @@
+# XmlDocGen.Core.CSharp
+
+
+## Types
+| name | kind | summary |
+| --- | --- | --- |
+| [CSharpSignature](./XmlDocGen.Core.CSharp/CSharpSignature.md) | class | A C# signature and its token stream. |
+| [CSharpSignatureBuilder](./XmlDocGen.Core.CSharp/CSharpSignatureBuilder.md) | class | Builds structured C# signatures from documentation nodes. |
+| [CSharpToken](./XmlDocGen.Core.CSharp/CSharpToken.md) | record | A token in a C# signature. |
+| [CSharpTokenKind](./XmlDocGen.Core.CSharp/CSharpTokenKind.md) | enum | Kinds of C# signature tokens. |

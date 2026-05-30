@@ -1,0 +1,6 @@
+# ExampleDerivedClass
+
+
+```csharp
+public ExampleDerivedClass()
+```

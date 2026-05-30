@@ -1,0 +1,7 @@
+# XmlDocSiteWriter
+
+Initializes a new instance of the [`XmlDocSiteWriter`](../XmlDocSiteWriter.md) class.
+
+```csharp
+public XmlDocSiteWriter(XmlDocSiteWriterSettings settings = null)
+```

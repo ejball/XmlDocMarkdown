@@ -1,0 +1,14 @@
+# XmlDocSite
+
+A generated documentation site.
+
+```csharp
+public sealed class XmlDocSite
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Files](./XmlDocSite/Files.md) | property | Gets generated files in deterministic order. |
+| [FindFile](./XmlDocSite/FindFile.md) | method | Finds a generated file by path. |
+| [XmlDocSite](./XmlDocSite/XmlDocSite.md) | constructor | Initializes a new instance of the [`XmlDocSite`](./XmlDocSite.md) class. |

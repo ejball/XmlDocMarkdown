@@ -1,0 +1,16 @@
+sample: Samples.HtmlRenderer
+files: 188
+sha256: 9644d98a44f6032498f7bee0d121410744e0730431d8a7cde7d3424f9bbbb0ae
+preview:
+- ExampleAssembly.html
+- ExampleAssembly/ExampleAssembly.InnerNamespace.html
+- ExampleAssembly/ExampleAssembly.InnerNamespace/ExampleInnerClass.html
+- ExampleAssembly/ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.html
+- ExampleAssembly/ExampleAssembly.html
+- ExampleAssembly/ExampleAssembly/ExampleAbstractClass.html
+- ExampleAssembly/ExampleAssembly/ExampleAbstractClass/ExampleAbstractClass.html
+- ExampleAssembly/ExampleAssembly/ExampleAbstractClass/ProtectedMethodCore.html
+- ExampleAssembly/ExampleAssembly/ExampleAbstractClass/ProtectedPrivateProperty.html
+- ExampleAssembly/ExampleAssembly/ExampleAbstractClass/ProtectedPropertyCore.html
+- ExampleAssembly/ExampleAssembly/ExampleAbstractClass/PublicMethod.html
+- ExampleAssembly/ExampleAssembly/ExampleAbstractClass/PublicProperty.html

@@ -1,0 +1,6 @@
+# PrivateNestedClass
+
+
+```csharp
+public PrivateNestedClass()
+```

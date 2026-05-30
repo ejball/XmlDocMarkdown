@@ -1,0 +1,6 @@
+# GetUrl
+
+
+```csharp
+public string GetUrl(XmlDocPage fromPage, XmlDocPage targetPage, XmlDocNode targetNode)
+```

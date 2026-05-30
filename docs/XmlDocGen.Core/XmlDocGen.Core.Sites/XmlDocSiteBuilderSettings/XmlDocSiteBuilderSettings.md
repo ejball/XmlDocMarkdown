@@ -1,0 +1,6 @@
+# XmlDocSiteBuilderSettings
+
+
+```csharp
+public XmlDocSiteBuilderSettings()
+```

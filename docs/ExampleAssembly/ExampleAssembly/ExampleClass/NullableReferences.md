@@ -1,0 +1,7 @@
+# NullableReferences
+
+A method with nullable references.
+
+```csharp
+public void NullableReferences<T>(string a, ValueTuple<string, string, string> b, Dictionary<string, string> c, string[] d, string[] e, ValueTuple<T, T> f)
+```

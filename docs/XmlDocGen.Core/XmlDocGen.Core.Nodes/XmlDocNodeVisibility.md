@@ -1,0 +1,25 @@
+# XmlDocNodeVisibility
+
+A composable node-visibility filter.
+
+```csharp
+public abstract class XmlDocNodeVisibility
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [And](./XmlDocNodeVisibility/And.md) | method | Combines this filter with another filter. |
+| [Create](./XmlDocNodeVisibility/Create-XmlDocVisibility.md) | method | Creates a minimum-visibility filter. |
+| [Create](./XmlDocNodeVisibility/Create-Func-XmlDocNode--Boolean.md) | method | Creates a custom predicate filter. |
+| [Exclude](./XmlDocNodeVisibility/Exclude.md) | method | Excludes nodes matching a predicate. |
+| [ExcludeCompilerGenerated](./XmlDocNodeVisibility/ExcludeCompilerGenerated.md) | method | Excludes compiler-generated nodes. |
+| [ExcludeObsolete](./XmlDocNodeVisibility/ExcludeObsolete.md) | method | Excludes obsolete nodes. |
+| [ExcludeUnbrowsable](./XmlDocNodeVisibility/ExcludeUnbrowsable.md) | method | Excludes nodes marked with `Never`. |
+| [Includes](./XmlDocNodeVisibility/Includes.md) | method | Returns true if the node is included. |
+| [Internal](./XmlDocNodeVisibility/Internal.md) | property | Gets a filter that includes public, protected, and internal nodes. |
+| [IsVisible](./XmlDocNodeVisibility/IsVisible.md) | method | Returns true if the node is included. |
+| [Private](./XmlDocNodeVisibility/Private.md) | property | Gets a filter that includes all nodes. |
+| [Protected](./XmlDocNodeVisibility/Protected.md) | property | Gets a filter that includes public and protected nodes. |
+| [Public](./XmlDocNodeVisibility/Public.md) | property | Gets a filter that includes public nodes. |
+| [XmlDocNodeVisibility](./XmlDocNodeVisibility/XmlDocNodeVisibility.md) | constructor |  |

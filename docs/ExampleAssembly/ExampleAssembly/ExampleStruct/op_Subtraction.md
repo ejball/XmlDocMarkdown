@@ -1,0 +1,7 @@
+# op_Subtraction
+
+Subtract.
+
+```csharp
+public static ExampleStruct operator -(ExampleStruct value1, ExampleStruct value2)
+```

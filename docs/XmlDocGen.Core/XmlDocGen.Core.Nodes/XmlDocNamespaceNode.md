@@ -1,0 +1,15 @@
+# XmlDocNamespaceNode
+
+A namespace documentation node.
+
+```csharp
+public sealed class XmlDocNamespaceNode : XmlDocNode
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Name](./XmlDocNamespaceNode/Name.md) | property | Gets the simple display name. |
+| [Ref](./XmlDocNamespaceNode/Ref.md) | property | Gets this node&amp;#39;s XML documentation reference. |
+| [Types](./XmlDocNamespaceNode/Types.md) | property | Gets top-level types in this namespace. |
+| [Visibility](./XmlDocNamespaceNode/Visibility.md) | property | Gets the exact visibility of this node. |

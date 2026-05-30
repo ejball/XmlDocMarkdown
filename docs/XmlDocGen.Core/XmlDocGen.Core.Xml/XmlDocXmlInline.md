@@ -1,0 +1,18 @@
+# XmlDocXmlInline
+
+Parsed inline XML documentation content.
+
+```csharp
+public sealed class XmlDocXmlInline
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Href](./XmlDocXmlInline/Href.md) | property | Gets the linked URL. |
+| [Kind](./XmlDocXmlInline/Kind.md) | property | Gets the inline kind. |
+| [Langword](./XmlDocXmlInline/Langword.md) | property | Gets the language keyword. |
+| [Name](./XmlDocXmlInline/Name.md) | property | Gets the referenced parameter or type parameter name. |
+| [Ref](./XmlDocXmlInline/Ref.md) | property | Gets the referenced XML documentation identifier. |
+| [Text](./XmlDocXmlInline/Text.md) | property | Gets the display text. |
+| [XmlDocXmlInline](./XmlDocXmlInline/XmlDocXmlInline.md) | constructor | Initializes a new instance of the [`XmlDocXmlInline`](./XmlDocXmlInline.md) class. |

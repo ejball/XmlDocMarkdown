@@ -1,0 +1,17 @@
+# XmlDocSiteWriteResult
+
+The result of writing a generated site.
+
+```csharp
+public sealed class XmlDocSiteWriteResult
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Added](./XmlDocSiteWriteResult/Added.md) | property | Gets added files. |
+| [Changed](./XmlDocSiteWriteResult/Changed.md) | property | Gets changed files. |
+| [HasChanges](./XmlDocSiteWriteResult/HasChanges.md) | property | Gets a value indicating whether the write would change files. |
+| [Messages](./XmlDocSiteWriteResult/Messages.md) | property | Gets informational messages. |
+| [Removed](./XmlDocSiteWriteResult/Removed.md) | property | Gets removed files. |
+| [XmlDocSiteWriteResult](./XmlDocSiteWriteResult/XmlDocSiteWriteResult.md) | constructor |  |

@@ -1,0 +1,7 @@
+# Ref
+
+Gets this node&#39;s XML documentation reference.
+
+```csharp
+public XmlDocRef Ref { get; }
+```

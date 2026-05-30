@@ -1,0 +1,7 @@
+# GetUrl
+
+Gets a URL from one page to a target node.
+
+```csharp
+public abstract string GetUrl(XmlDocPage fromPage, XmlDocPage targetPage, XmlDocNode targetNode)
+```

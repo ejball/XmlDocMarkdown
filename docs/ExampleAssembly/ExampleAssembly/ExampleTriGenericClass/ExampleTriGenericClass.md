@@ -1,0 +1,6 @@
+# ExampleTriGenericClass
+
+
+```csharp
+public ExampleTriGenericClass()
+```

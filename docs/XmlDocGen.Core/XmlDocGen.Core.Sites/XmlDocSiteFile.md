@@ -1,0 +1,14 @@
+# XmlDocSiteFile
+
+A single generated output file.
+
+```csharp
+public sealed record XmlDocSiteFile : IEquatable<XmlDocSiteFile>
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Path](./XmlDocSiteFile/Path.md) | property |  |
+| [Text](./XmlDocSiteFile/Text.md) | property |  |
+| [XmlDocSiteFile](./XmlDocSiteFile/XmlDocSiteFile.md) | constructor | A single generated output file. |

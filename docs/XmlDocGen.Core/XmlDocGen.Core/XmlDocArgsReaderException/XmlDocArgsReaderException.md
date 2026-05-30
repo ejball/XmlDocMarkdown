@@ -1,0 +1,7 @@
+# XmlDocArgsReaderException
+
+An exception thrown for invalid command-line arguments.
+
+```csharp
+public XmlDocArgsReaderException(string message)
+```

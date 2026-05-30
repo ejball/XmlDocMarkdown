@@ -1,0 +1,7 @@
+# op_OnesComplement
+
+Bitwise complement.
+
+```csharp
+public static ExampleStruct op_OnesComplement(ExampleStruct value)
+```

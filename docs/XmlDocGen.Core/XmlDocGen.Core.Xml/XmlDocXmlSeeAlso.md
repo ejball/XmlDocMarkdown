@@ -1,0 +1,15 @@
+# XmlDocXmlSeeAlso
+
+Parsed XML documentation for a see-also item.
+
+```csharp
+public sealed class XmlDocXmlSeeAlso
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Href](./XmlDocXmlSeeAlso/Href.md) | property | Gets the external URL. |
+| [Ref](./XmlDocXmlSeeAlso/Ref.md) | property | Gets the referenced XML documentation identifier. |
+| [Text](./XmlDocXmlSeeAlso/Text.md) | property | Gets the display text. |
+| [XmlDocXmlSeeAlso](./XmlDocXmlSeeAlso/XmlDocXmlSeeAlso.md) | constructor | Parsed XML documentation for a see-also item. |

@@ -1,0 +1,14 @@
+# XmlDocXmlParameter
+
+Parsed XML documentation for a parameter.
+
+```csharp
+public sealed class XmlDocXmlParameter
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Description](./XmlDocXmlParameter/Description.md) | property | Gets the parameter description. |
+| [Name](./XmlDocXmlParameter/Name.md) | property | Gets the parameter name. |
+| [XmlDocXmlParameter](./XmlDocXmlParameter/XmlDocXmlParameter.md) | constructor | Parsed XML documentation for a parameter. |

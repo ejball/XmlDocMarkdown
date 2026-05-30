@@ -1,0 +1,18 @@
+# ExampleDeepClass
+
+A class with nested types.
+
+```csharp
+public class ExampleDeepClass
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [ExampleDeepClass](./ExampleDeepClass/ExampleDeepClass.md) | constructor |  |
+| [NestedClass](./NestedClass.md) | class | A nested class. |
+| [NestedDelegate](./NestedDelegate.md) | delegate | A nested delegate. |
+| [ProtectedNestedClass](./ProtectedNestedClass.md) | class | A protected nested class. |
+
+## Remarks
+The [`ExampleDeepClass`](./ExampleDeepClass.md) class has a [`NestedDelegate`](./NestedDelegate.md) and a [`NestedClass`](./NestedClass.md) with a [`VeryNestedStruct`](./VeryNestedStruct.md) and a [`VeryVeryNestedInterface`](./VeryVeryNestedInterface.md). Another type in this namespace is [`ExampleClass`](./ExampleClass.md) with method [`String)`](./ExampleClass/Create-String.md). A type in an inner namespace is [`ExampleInnerClass`](../ExampleAssembly.InnerNamespace/ExampleInnerClass.md), which has a constructor [`#ctor`](../ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md).

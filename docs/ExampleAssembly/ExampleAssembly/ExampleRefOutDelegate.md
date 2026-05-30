@@ -1,0 +1,15 @@
+# ExampleRefOutDelegate
+
+A delegate.
+
+```csharp
+public sealed delegate ExampleRefOutDelegate : ICloneable, ISerializable
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [BeginInvoke](./ExampleRefOutDelegate/BeginInvoke.md) | method |  |
+| [EndInvoke](./ExampleRefOutDelegate/EndInvoke.md) | method |  |
+| [ExampleRefOutDelegate](./ExampleRefOutDelegate/ExampleRefOutDelegate.md) | constructor |  |
+| [Invoke](./ExampleRefOutDelegate/Invoke.md) | method |  |

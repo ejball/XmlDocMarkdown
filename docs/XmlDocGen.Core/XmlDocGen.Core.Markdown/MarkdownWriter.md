@@ -1,0 +1,19 @@
+# MarkdownWriter
+
+Low-level Markdown emit helpers.
+
+```csharp
+public sealed class MarkdownWriter
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [MarkdownWriter](./MarkdownWriter/MarkdownWriter.md) | constructor | Initializes a new instance of the [`MarkdownWriter`](./MarkdownWriter.md) class. |
+| [Write](./MarkdownWriter/Write.md) | method | Writes text. |
+| [WriteHeading](./MarkdownWriter/WriteHeading.md) | method | Writes a Markdown heading. |
+| [WriteLine](./MarkdownWriter/WriteLine.md) | method | Writes a blank line. |
+| [WriteLine](./MarkdownWriter/WriteLine-String.md) | method | Writes a line of text. |
+| [WriteLink](./MarkdownWriter/WriteLink.md) | method | Writes a Markdown link. |
+| [Writer](./MarkdownWriter/Writer.md) | property | Gets the underlying text writer. |
+| [WriteTableRow](./MarkdownWriter/WriteTableRow.md) | method | Writes a Markdown table row. |

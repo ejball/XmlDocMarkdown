@@ -1,7 +1,22 @@
 <Solution>
+  <Project Path="samples/Samples.CustomCliOptions/Samples.CustomCliOptions.csproj" />
+  <Project Path="samples/Samples.CustomMarkdown/Samples.CustomMarkdown.csproj" />
+  <Project Path="samples/Samples.CustomPageMap/Samples.CustomPageMap.csproj" />
+  <Project Path="samples/Samples.CustomUrlMapper/Samples.CustomUrlMapper.csproj" />
+  <Project Path="samples/Samples.Default/Samples.Default.csproj" />
+  <Project Path="samples/Samples.DocusaurusUrls/Samples.DocusaurusUrls.csproj" />
+  <Project Path="samples/Samples.ExternalLinks/Samples.ExternalLinks.csproj" />
+  <Project Path="samples/Samples.FrontMatter/Samples.FrontMatter.csproj" />
+  <Project Path="samples/Samples.HtmlRenderer/Samples.HtmlRenderer.csproj" />
+  <Project Path="samples/Samples.LibraryApi/Samples.LibraryApi.csproj" />
+  <Project Path="samples/Samples.MultiAssembly/Samples.MultiAssembly.csproj" />
+  <Project Path="samples/Samples.PagePerNamespace/Samples.PagePerNamespace.csproj" />
+  <Project Path="samples/Samples.PagePerType/Samples.PagePerType.csproj" />
+  <Project Path="samples/Samples.SinglePage/Samples.SinglePage.csproj" />
+  <Project Path="samples/Samples.SourceLinks/Samples.SourceLinks.csproj" />
   <Project Path="src/XmlDocGen.Core/XmlDocGen.Core.csproj" />
   <Project Path="tools/ExampleAssembly/ExampleAssembly.csproj" />
-  <Project Path="tests/XmlDocMarkdown.Tests/XmlDocMarkdown.Tests.csproj" />
+  <Project Path="tests/XmlDocGen.Tests/XmlDocGen.Tests.csproj" />
   <Project Path="tools/XmlDocGen/XmlDocGen.csproj" />
   <Project Path="tools/Build/Build.csproj" />
 </Solution>

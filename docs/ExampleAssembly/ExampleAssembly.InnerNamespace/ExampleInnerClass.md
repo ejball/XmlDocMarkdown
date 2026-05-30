@@ -1,0 +1,12 @@
+# ExampleInnerClass
+
+A class in an inner namespace.
+
+```csharp
+public class ExampleInnerClass
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [ExampleInnerClass](./ExampleInnerClass/ExampleInnerClass.md) | constructor | An explicit default constructor. |

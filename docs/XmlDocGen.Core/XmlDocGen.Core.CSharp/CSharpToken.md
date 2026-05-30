@@ -1,0 +1,15 @@
+# CSharpToken
+
+A token in a C# signature.
+
+```csharp
+public sealed record CSharpToken : IEquatable<CSharpToken>
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [CSharpToken](./CSharpToken/CSharpToken.md) | constructor | A token in a C# signature. |
+| [Kind](./CSharpToken/Kind.md) | property |  |
+| [LinkTarget](./CSharpToken/LinkTarget.md) | property |  |
+| [Text](./CSharpToken/Text.md) | property |  |

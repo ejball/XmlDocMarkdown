@@ -1,0 +1,6 @@
+# NestedClass
+
+
+```csharp
+public NestedClass()
+```

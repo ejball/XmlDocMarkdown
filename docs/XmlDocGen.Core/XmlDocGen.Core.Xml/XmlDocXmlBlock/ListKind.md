@@ -1,0 +1,7 @@
+# ListKind
+
+Gets or sets the list kind, when this block is part of a list.
+
+```csharp
+public XmlDocXmlListKind? ListKind { get; set; }
+```

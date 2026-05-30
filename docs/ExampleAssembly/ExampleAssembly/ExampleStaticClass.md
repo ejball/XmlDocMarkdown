@@ -1,0 +1,13 @@
+# ExampleStaticClass
+
+A static class.
+
+```csharp
+public static class ExampleStaticClass
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Clone](./ExampleStaticClass/Clone.md) | method | Clones the specified array. |
+| [GetNext](./ExampleStaticClass/GetNext.md) | method | Gets the next enumerated value. |

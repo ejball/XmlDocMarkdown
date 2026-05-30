@@ -1,0 +1,16 @@
+sample: Samples.CustomPageMap
+files: 41
+sha256: 8e6107f03224b56dee2639d5692b33ab5af8411915ba39ecba6555098b861537
+preview:
+- api/index.md
+- api/namespaces/ExampleAssembly.InnerNamespace.md
+- api/namespaces/ExampleAssembly.md
+- api/types/ExampleAbstractClass.md
+- api/types/ExampleAttribute.md
+- api/types/ExampleClass.md
+- api/types/ExampleDeepClass.md
+- api/types/ExampleDelegate.md
+- api/types/ExampleDerivedClass.md
+- api/types/ExampleEnum.md
+- api/types/ExampleException.md
+- api/types/ExampleFlagsEnum.md

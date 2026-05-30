@@ -1,0 +1,7 @@
+# MarkdownPageRenderer
+
+Initializes a new instance of the [`MarkdownPageRenderer`](../MarkdownPageRenderer.md) class.
+
+```csharp
+public MarkdownPageRenderer(MarkdownRenderer renderer = null)
+```

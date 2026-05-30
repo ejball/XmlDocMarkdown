@@ -1,0 +1,10 @@
+# HasHyperlinks
+
+A method whose docs have [hyperlinks](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
+
+```csharp
+public void HasHyperlinks()
+```
+
+## Remarks
+Visit [https://ejball.com/](https://ejball.com/) for [more info](https://ejball.com/).

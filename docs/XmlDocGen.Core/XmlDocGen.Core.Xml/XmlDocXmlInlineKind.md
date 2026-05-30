@@ -1,0 +1,19 @@
+# XmlDocXmlInlineKind
+
+Kinds of inline XML documentation content.
+
+```csharp
+public enum XmlDocXmlInlineKind : IComparable, IConvertible, IFormattable, ISpanFormattable
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Code](./XmlDocXmlInlineKind/Code.md) | field | Inline code. |
+| [ParamRef](./XmlDocXmlInlineKind/ParamRef.md) | field | A parameter reference. |
+| [SeeCref](./XmlDocXmlInlineKind/SeeCref.md) | field | A `see cref` link. |
+| [SeeHref](./XmlDocXmlInlineKind/SeeHref.md) | field | A `see href` link. |
+| [SeeLangword](./XmlDocXmlInlineKind/SeeLangword.md) | field | A `see langword` value. |
+| [Text](./XmlDocXmlInlineKind/Text.md) | field | Plain text. |
+| [TypeParamRef](./XmlDocXmlInlineKind/TypeParamRef.md) | field | A type parameter reference. |
+| [value__](./XmlDocXmlInlineKind/value__.md) | field |  |

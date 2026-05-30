@@ -1,0 +1,19 @@
+# XmlDocTypeKind
+
+Kinds of documented types.
+
+```csharp
+public enum XmlDocTypeKind : IComparable, IConvertible, IFormattable, ISpanFormattable
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Class](./XmlDocTypeKind/Class.md) | field | A class. |
+| [Delegate](./XmlDocTypeKind/Delegate.md) | field | A delegate. |
+| [Enum](./XmlDocTypeKind/Enum.md) | field | An enum. |
+| [Interface](./XmlDocTypeKind/Interface.md) | field | An interface. |
+| [Record](./XmlDocTypeKind/Record.md) | field | A record class. |
+| [RecordStruct](./XmlDocTypeKind/RecordStruct.md) | field | A record struct. |
+| [Struct](./XmlDocTypeKind/Struct.md) | field | A struct. |
+| [value__](./XmlDocTypeKind/value__.md) | field |  |

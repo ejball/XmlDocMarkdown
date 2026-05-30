@@ -1,0 +1,12 @@
+# XmlDocGenApp
+
+Command-line entry point for documentation generation.
+
+```csharp
+public sealed class XmlDocGenApp
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Run](./XmlDocGenApp/Run.md) | method | Runs the command-line application. |

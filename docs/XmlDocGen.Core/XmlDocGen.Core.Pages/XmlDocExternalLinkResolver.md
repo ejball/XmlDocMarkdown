@@ -1,0 +1,16 @@
+# XmlDocExternalLinkResolver
+
+Resolves links to documentation outside the current tree.
+
+```csharp
+public abstract class XmlDocExternalLinkResolver
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Combine](./XmlDocExternalLinkResolver/Combine.md) | method | Combines resolvers, using the first non-null URL. |
+| [DotNetApi](./XmlDocExternalLinkResolver/DotNetApi.md) | property | Gets a resolver for Microsoft Learn .NET API documentation. |
+| [TryGetUrl](./XmlDocExternalLinkResolver/TryGetUrl.md) | method | Tries to resolve a URL for an external reference. |
+| [UrlPattern](./XmlDocExternalLinkResolver/UrlPattern.md) | method | Creates a resolver from a URL format where `{ref}` is the XML documentation reference. |
+| [XmlDocExternalLinkResolver](./XmlDocExternalLinkResolver/XmlDocExternalLinkResolver.md) | constructor |  |

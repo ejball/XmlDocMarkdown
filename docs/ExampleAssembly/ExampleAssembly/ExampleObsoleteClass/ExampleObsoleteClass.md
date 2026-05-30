@@ -1,0 +1,6 @@
+# ExampleObsoleteClass
+
+
+```csharp
+public ExampleObsoleteClass()
+```

@@ -1,0 +1,7 @@
+# Renderer
+
+Gets or sets the page renderer.
+
+```csharp
+public XmlDocPageRenderer Renderer { get; set; }
+```

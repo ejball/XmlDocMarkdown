@@ -1,0 +1,6 @@
+# ExampleUnbrowsableClass
+
+
+```csharp
+public ExampleUnbrowsableClass()
+```

@@ -1,0 +1,6 @@
+# XmlDocSiteWriteResult
+
+
+```csharp
+public XmlDocSiteWriteResult()
+```

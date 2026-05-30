@@ -1,0 +1,11 @@
+# XmlDocGen.Core.IO
+
+
+## Types
+| name | kind | summary |
+| --- | --- | --- |
+| [IXmlDocFileSystem](./XmlDocGen.Core.IO/IXmlDocFileSystem.md) | interface | Abstracts file-system operations. |
+| [XmlDocNewLineComparison](./XmlDocGen.Core.IO/XmlDocNewLineComparison.md) | enum | Controls newline comparison when diffing files. |
+| [XmlDocSiteWriter](./XmlDocGen.Core.IO/XmlDocSiteWriter.md) | class | Writes generated documentation sites to disk. |
+| [XmlDocSiteWriteResult](./XmlDocGen.Core.IO/XmlDocSiteWriteResult.md) | class | The result of writing a generated site. |
+| [XmlDocSiteWriterSettings](./XmlDocGen.Core.IO/XmlDocSiteWriterSettings.md) | class | Settings for writing a generated site. |

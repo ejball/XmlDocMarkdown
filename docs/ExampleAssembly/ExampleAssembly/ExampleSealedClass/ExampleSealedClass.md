@@ -1,0 +1,6 @@
+# ExampleSealedClass
+
+
+```csharp
+public ExampleSealedClass()
+```

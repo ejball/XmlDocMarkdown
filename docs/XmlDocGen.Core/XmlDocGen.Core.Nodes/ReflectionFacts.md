@@ -1,0 +1,20 @@
+# ReflectionFacts
+
+Shared reflection helpers for node construction and rendering.
+
+```csharp
+public static class ReflectionFacts
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [GetDocumentableMembers](./ReflectionFacts/GetDocumentableMembers.md) | method | Gets documentable members declared by the type. |
+| [GetMemberKind](./ReflectionFacts/GetMemberKind.md) | method | Gets the member kind. |
+| [GetShortName](./ReflectionFacts/GetShortName.md) | method | Gets a C#-style short name. |
+| [GetTypeKind](./ReflectionFacts/GetTypeKind.md) | method | Gets the type kind. |
+| [GetVisibility](./ReflectionFacts/GetVisibility-MemberInfo.md) | method | Gets the exact visibility of a reflected member. |
+| [IsAbstract](./ReflectionFacts/IsAbstract.md) | method | Returns true when the member is abstract. |
+| [IsStatic](./ReflectionFacts/IsStatic.md) | method | Returns true when the member is static. |
+| [IsVirtual](./ReflectionFacts/IsVirtual.md) | method | Returns true when the member is virtual. |
+| [ResolveXmlMember](./ReflectionFacts/ResolveXmlMember.md) | method | Gets XML documentation for a member, resolving simple inheritdoc directives. |

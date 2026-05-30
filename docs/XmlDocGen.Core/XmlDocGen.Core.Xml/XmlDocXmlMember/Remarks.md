@@ -1,0 +1,7 @@
+# Remarks
+
+Gets the remarks documentation.
+
+```csharp
+public Collection<XmlDocXmlBlock> Remarks { get; }
+```

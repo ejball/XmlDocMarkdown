@@ -1,0 +1,18 @@
+# NestedDelegate
+
+A nested delegate.
+
+```csharp
+public sealed delegate NestedDelegate : ICloneable, ISerializable
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [BeginInvoke](./NestedDelegate/BeginInvoke.md) | method |  |
+| [EndInvoke](./NestedDelegate/EndInvoke.md) | method |  |
+| [Invoke](./NestedDelegate/Invoke.md) | method |  |
+| [NestedDelegate](./NestedDelegate/NestedDelegate.md) | constructor |  |
+
+## Remarks
+The [`ExampleDeepClass`](./ExampleDeepClass.md) class has a [`NestedDelegate`](./NestedDelegate.md) and a [`NestedClass`](./NestedClass.md) with a [`VeryNestedStruct`](./VeryNestedStruct.md) and a [`VeryVeryNestedInterface`](./VeryVeryNestedInterface.md). Another type in this namespace is [`ExampleClass`](./ExampleClass.md) with method [`String)`](./ExampleClass/Create-String.md). A type in an inner namespace is [`ExampleInnerClass`](../ExampleAssembly.InnerNamespace/ExampleInnerClass.md), which has a constructor [`#ctor`](../ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md).

@@ -1,0 +1,10 @@
+# XmlDocGen.Core.Sites
+
+
+## Types
+| name | kind | summary |
+| --- | --- | --- |
+| [XmlDocSite](./XmlDocGen.Core.Sites/XmlDocSite.md) | class | A generated documentation site. |
+| [XmlDocSiteBuilder](./XmlDocGen.Core.Sites/XmlDocSiteBuilder.md) | class | Builds a generated documentation site. |
+| [XmlDocSiteBuilderSettings](./XmlDocGen.Core.Sites/XmlDocSiteBuilderSettings.md) | class | Settings for building a site. |
+| [XmlDocSiteFile](./XmlDocGen.Core.Sites/XmlDocSiteFile.md) | record | A single generated output file. |

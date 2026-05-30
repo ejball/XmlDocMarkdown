@@ -1,0 +1,12 @@
+# XmlDocPageBuilder
+
+Builds pages from a tree and page map.
+
+```csharp
+public static class XmlDocPageBuilder
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [CreatePages](./XmlDocPageBuilder/CreatePages.md) | method | Groups visible nodes into logical pages. |

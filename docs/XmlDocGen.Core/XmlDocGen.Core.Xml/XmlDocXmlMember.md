@@ -1,0 +1,22 @@
+# XmlDocXmlMember
+
+The parsed XML documentation for a single member.
+
+```csharp
+public sealed class XmlDocXmlMember
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Examples](./XmlDocXmlMember/Examples.md) | property | Gets the example documentation. |
+| [Exceptions](./XmlDocXmlMember/Exceptions.md) | property | Gets the exception documentation. |
+| [InheritDoc](./XmlDocXmlMember/InheritDoc.md) | property | Gets the raw inheritdoc directive, if present. |
+| [Parameters](./XmlDocXmlMember/Parameters.md) | property | Gets the parameter documentation. |
+| [PropertyValue](./XmlDocXmlMember/PropertyValue.md) | property | Gets the property-value documentation. |
+| [Ref](./XmlDocXmlMember/Ref.md) | property | Gets this member&amp;#39;s XML documentation reference. |
+| [Remarks](./XmlDocXmlMember/Remarks.md) | property | Gets the remarks documentation. |
+| [ReturnValue](./XmlDocXmlMember/ReturnValue.md) | property | Gets the return-value documentation. |
+| [SeeAlso](./XmlDocXmlMember/SeeAlso.md) | property | Gets the see-also documentation. |
+| [Summary](./XmlDocXmlMember/Summary.md) | property | Gets the summary blocks. |
+| [TypeParameters](./XmlDocXmlMember/TypeParameters.md) | property | Gets the type parameter documentation. |

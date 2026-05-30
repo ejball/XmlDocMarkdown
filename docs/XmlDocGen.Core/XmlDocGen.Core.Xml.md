@@ -1,0 +1,17 @@
+# XmlDocGen.Core.Xml
+
+
+## Types
+| name | kind | summary |
+| --- | --- | --- |
+| [XmlDocRef](./XmlDocGen.Core.Xml/XmlDocRef.md) | struct | An XML documentation identifier, e.g. `T:My.Type` or `M:My.Type.Method(System.Int32)`. |
+| [XmlDocXmlBlock](./XmlDocGen.Core.Xml/XmlDocXmlBlock.md) | class | A block of parsed XML documentation content. |
+| [XmlDocXmlException](./XmlDocGen.Core.Xml/XmlDocXmlException.md) | class | Parsed XML documentation for an exception. |
+| [XmlDocXmlFile](./XmlDocGen.Core.Xml/XmlDocXmlFile.md) | class | An in-memory representation of a compiler-generated XML documentation file. |
+| [XmlDocXmlInheritDoc](./XmlDocGen.Core.Xml/XmlDocXmlInheritDoc.md) | class | The raw XML inheritdoc directive. |
+| [XmlDocXmlInline](./XmlDocGen.Core.Xml/XmlDocXmlInline.md) | class | Parsed inline XML documentation content. |
+| [XmlDocXmlInlineKind](./XmlDocGen.Core.Xml/XmlDocXmlInlineKind.md) | enum | Kinds of inline XML documentation content. |
+| [XmlDocXmlListKind](./XmlDocGen.Core.Xml/XmlDocXmlListKind.md) | enum | Kinds of XML documentation lists. |
+| [XmlDocXmlMember](./XmlDocGen.Core.Xml/XmlDocXmlMember.md) | class | The parsed XML documentation for a single member. |
+| [XmlDocXmlParameter](./XmlDocGen.Core.Xml/XmlDocXmlParameter.md) | class | Parsed XML documentation for a parameter. |
+| [XmlDocXmlSeeAlso](./XmlDocGen.Core.Xml/XmlDocXmlSeeAlso.md) | class | Parsed XML documentation for a see-also item. |

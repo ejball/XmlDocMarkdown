@@ -1,0 +1,5 @@
+sample: Samples.SinglePage
+files: 1
+sha256: 62ec618108de56f3fd7b121b9b17825e221102f32fcd0ac7124e25254db0f4e0
+preview:
+- index.md

@@ -1,0 +1,7 @@
+# Name
+
+Gets the referenced parameter or type parameter name.
+
+```csharp
+public string Name { get; }
+```

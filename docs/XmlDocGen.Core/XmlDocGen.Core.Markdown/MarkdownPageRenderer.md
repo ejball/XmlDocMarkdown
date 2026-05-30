@@ -1,0 +1,17 @@
+# MarkdownPageRenderer
+
+A page renderer that emits Markdown.
+
+```csharp
+public class MarkdownPageRenderer : XmlDocPageRenderer
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [MarkdownPageRenderer](./MarkdownPageRenderer/MarkdownPageRenderer.md) | constructor | Initializes a new instance of the [`MarkdownPageRenderer`](./MarkdownPageRenderer.md) class. |
+| [Renderer](./MarkdownPageRenderer/Renderer.md) | property | Gets the section renderer. |
+| [RenderPage](./MarkdownPageRenderer/RenderPage.md) | method | Renders a page to a file. |
+| [WriteBody](./MarkdownPageRenderer/WriteBody.md) | method | Writes the page body. |
+| [WriteFrontMatter](./MarkdownPageRenderer/WriteFrontMatter.md) | method | Emits front matter for a page. |
+| [WriteHeader](./MarkdownPageRenderer/WriteHeader.md) | method | Writes the page header. |

@@ -235,10 +235,15 @@ internal static class XmlDocPageHeadings
 
 	public static string GetHeadingText(XmlDocNode node)
 	{
-		return node is XmlDocMemberNode member ? member.Name + GetMemberSuffix(member.Member) : node.Name;
+		return node is XmlDocMemberNode member ? member.Name + GetGenericSuffix(member.Member) + GetParameterSuffix(member.Member) : node.Name;
 	}
 
-	private static string GetMemberSuffix(MemberInfo member)
+	private static string GetGenericSuffix(MemberInfo member)
+	{
+		return member is MethodInfo method && method.GetGenericArguments().Length != 0 ? "<" + string.Join(", ", method.GetGenericArguments().Select(x => x.Name)) + ">" : "";
+	}
+
+	private static string GetParameterSuffix(MemberInfo member)
 	{
 		var parameters = member switch
 		{

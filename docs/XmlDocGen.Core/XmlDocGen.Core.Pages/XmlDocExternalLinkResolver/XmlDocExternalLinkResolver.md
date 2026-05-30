@@ -1,0 +1,6 @@
+# XmlDocExternalLinkResolver
+
+
+```csharp
+protected XmlDocExternalLinkResolver()
+```

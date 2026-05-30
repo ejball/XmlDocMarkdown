@@ -1,0 +1,17 @@
+# ExampleEnum
+
+An enumeration.
+
+```csharp
+public enum ExampleEnum : IComparable, IConvertible, IFormattable, ISpanFormattable
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Max](./ExampleEnum/Max.md) | field | Very positive! |
+| [Min](./ExampleEnum/Min.md) | field | Very negative! |
+| [One](./ExampleEnum/One.md) | field | One! |
+| [Two](./ExampleEnum/Two.md) | field | Two! |
+| [value__](./ExampleEnum/value__.md) | field |  |
+| [Zero](./ExampleEnum/Zero.md) | field | Zero! |

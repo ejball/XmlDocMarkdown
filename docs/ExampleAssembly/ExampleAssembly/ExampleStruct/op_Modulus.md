@@ -1,0 +1,7 @@
+# op_Modulus
+
+Modulus.
+
+```csharp
+public static ExampleStruct op_Modulus(ExampleStruct value1, ExampleStruct value2)
+```

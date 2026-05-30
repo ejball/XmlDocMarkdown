@@ -1,0 +1,15 @@
+# CSharpSignature
+
+A C# signature and its token stream.
+
+```csharp
+public sealed class CSharpSignature
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [CSharpSignature](./CSharpSignature/CSharpSignature.md) | constructor | Initializes a new instance of the [`CSharpSignature`](./CSharpSignature.md) class. |
+| [Text](./CSharpSignature/Text.md) | property | Gets the rendered signature text. |
+| [Tokens](./CSharpSignature/Tokens.md) | property | Gets the signature tokens. |
+| [ToString](./CSharpSignature/ToString.md) | method |  |

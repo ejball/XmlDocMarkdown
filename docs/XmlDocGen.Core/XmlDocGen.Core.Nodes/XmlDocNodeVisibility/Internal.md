@@ -1,0 +1,7 @@
+# Internal
+
+Gets a filter that includes public, protected, and internal nodes.
+
+```csharp
+public static XmlDocNodeVisibility Internal { get; }
+```

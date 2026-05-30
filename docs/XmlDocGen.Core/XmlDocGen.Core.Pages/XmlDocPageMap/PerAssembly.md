@@ -1,0 +1,7 @@
+# PerAssembly
+
+Gets a one-file-per-assembly map.
+
+```csharp
+public static XmlDocPageMap PerAssembly { get; }
+```

@@ -1,0 +1,6 @@
+# ShortCSharpSignatureBuilder
+
+
+```csharp
+public ShortCSharpSignatureBuilder()
+```

@@ -1,0 +1,16 @@
+sample: Samples.CustomCliOptions
+files: 183
+sha256: 57d3440cd7f068848ada814748b08dd3d9c65af9e5fc21de80c26580d36e4450
+preview:
+- ExampleAssembly.md
+- ExampleAssembly/ExampleAssembly.InnerNamespace.md
+- ExampleAssembly/ExampleAssembly.InnerNamespace/ExampleInnerClass.md
+- ExampleAssembly/ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md
+- ExampleAssembly/ExampleAssembly.md
+- ExampleAssembly/ExampleAssembly/ExampleAbstractClass.md
+- ExampleAssembly/ExampleAssembly/ExampleAbstractClass/PublicMethod.md
+- ExampleAssembly/ExampleAssembly/ExampleAbstractClass/PublicProperty.md
+- ExampleAssembly/ExampleAssembly/ExampleAbstractClass/PublicProtectedProperty.md
+- ExampleAssembly/ExampleAssembly/ExampleAttribute.md
+- ExampleAssembly/ExampleAssembly/ExampleAttribute/ExampleAttribute.md
+- ExampleAssembly/ExampleAssembly/ExampleClass.md

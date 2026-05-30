@@ -1,0 +1,6 @@
+# ExampleAbstractClass
+
+
+```csharp
+protected ExampleAbstractClass()
+```

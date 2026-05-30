@@ -1,0 +1,16 @@
+# IXmlDocFileSystem
+
+Abstracts file-system operations.
+
+```csharp
+public interface IXmlDocFileSystem
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [DeleteFile](./IXmlDocFileSystem/DeleteFile.md) | method | Deletes a file. |
+| [EnumerateFiles](./IXmlDocFileSystem/EnumerateFiles.md) | method | Enumerates files under a directory. |
+| [FileExists](./IXmlDocFileSystem/FileExists.md) | method | Returns true if the file exists. |
+| [ReadAllText](./IXmlDocFileSystem/ReadAllText.md) | method | Reads all text from a file. |
+| [WriteAllText](./IXmlDocFileSystem/WriteAllText.md) | method | Writes all text to a file. |

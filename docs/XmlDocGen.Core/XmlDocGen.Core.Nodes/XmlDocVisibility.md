@@ -1,0 +1,17 @@
+# XmlDocVisibility
+
+The exact visibility of a documentation node.
+
+```csharp
+public enum XmlDocVisibility : IComparable, IConvertible, IFormattable, ISpanFormattable
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [Internal](./XmlDocVisibility/Internal.md) | field | Internal. |
+| [Private](./XmlDocVisibility/Private.md) | field | Private. |
+| [Protected](./XmlDocVisibility/Protected.md) | field | Protected. |
+| [ProtectedInternal](./XmlDocVisibility/ProtectedInternal.md) | field | Protected internal. |
+| [Public](./XmlDocVisibility/Public.md) | field | Public. |
+| [value__](./XmlDocVisibility/value__.md) | field |  |

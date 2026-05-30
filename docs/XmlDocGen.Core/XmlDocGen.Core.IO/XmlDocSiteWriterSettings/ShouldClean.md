@@ -1,0 +1,7 @@
+# ShouldClean
+
+Gets or sets a value indicating whether stale generated files are deleted.
+
+```csharp
+public bool ShouldClean { get; set; }
+```

@@ -1,0 +1,16 @@
+# ExampleGenericClass
+
+A generic class.
+
+```csharp
+public class ExampleGenericClass<T>
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [AddTuples](./ExampleGenericClass/AddTuples.md) | method | Adds values. |
+| [AddValues](./ExampleGenericClass/AddValues.md) | method | Adds values. |
+| [ExampleGenericClass](./ExampleGenericClass/ExampleGenericClass.md) | constructor | Creates an instance. |
+| [GetTuple](./ExampleGenericClass/GetTuple.md) | method | Gets an example tuple. |
+| [Value](./ExampleGenericClass/Value.md) | property | The value. |

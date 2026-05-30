@@ -1,0 +1,6 @@
+# CSharpSignatureBuilder
+
+
+```csharp
+protected CSharpSignatureBuilder()
+```

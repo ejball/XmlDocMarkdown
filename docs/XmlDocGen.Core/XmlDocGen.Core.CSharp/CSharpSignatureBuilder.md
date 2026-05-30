@@ -1,0 +1,15 @@
+# CSharpSignatureBuilder
+
+Builds structured C# signatures from documentation nodes.
+
+```csharp
+public abstract class CSharpSignatureBuilder
+```
+
+## Members
+| name | kind | summary |
+| --- | --- | --- |
+| [CSharpSignatureBuilder](./CSharpSignatureBuilder/CSharpSignatureBuilder.md) | constructor |  |
+| [Full](./CSharpSignatureBuilder/Full.md) | property | Gets the default full-signature builder. |
+| [GetSignature](./CSharpSignatureBuilder/GetSignature.md) | method | Builds a C# signature for a node. |
+| [Short](./CSharpSignatureBuilder/Short.md) | property | Gets the default short-signature builder. |

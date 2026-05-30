@@ -1,0 +1,7 @@
+# XmlDocArgsReader
+
+Initializes a new instance of the [`XmlDocArgsReader`](../XmlDocArgsReader.md) class.
+
+```csharp
+public XmlDocArgsReader(IEnumerable<string> args)
+```

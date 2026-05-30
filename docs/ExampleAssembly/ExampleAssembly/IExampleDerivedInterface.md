@@ -1,0 +1,7 @@
+# IExampleDerivedInterface
+
+A derived interface.
+
+```csharp
+public interface IExampleDerivedInterface : ICollection<KeyValuePair<string, IExampleInterface>>, IDictionary<string, IExampleInterface>, IEnumerable<KeyValuePair<string, IExampleInterface>>, IReadOnlyCollection<KeyValuePair<string, IExampleInterface>>, IReadOnlyDictionary<string, IExampleInterface>, IEnumerable
+```

@@ -1,0 +1,6 @@
+# ExampleInternalClass
+
+
+```csharp
+public ExampleInternalClass()
+```
