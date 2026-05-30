@@ -120,6 +120,7 @@ public sealed class XmlDocXmlMember
 {
 	internal XmlDocXmlMember(XElement element)
 	{
+		m_element = new XElement(element);
 		Ref = new XmlDocRef(element.Attribute("name")!.Value);
 
 		foreach (var child in element.Elements())
@@ -193,6 +194,20 @@ public sealed class XmlDocXmlMember
 	/// <summary>Gets the raw inheritdoc directive, if present.</summary>
 	public XmlDocXmlInheritDoc? InheritDoc { get; }
 
+	internal XmlDocXmlMember ApplyInheritDocPath(string? path)
+	{
+		if (string.IsNullOrWhiteSpace(path))
+			return this;
+
+		var selected = SelectElements(path).ToList();
+		if (selected.Count == 0)
+			return this;
+
+		var element = new XElement("member", new XAttribute("name", Ref.Value));
+		element.Add(selected.Select(static x => new XElement(x)));
+		return new XmlDocXmlMember(element);
+	}
+
 	private static void AddBlocks(XElement element, Collection<XmlDocXmlBlock> blocks)
 	{
 		var generator = new BlockGenerator();
@@ -220,6 +235,14 @@ public sealed class XmlDocXmlMember
 	private static XmlDocXmlInheritDoc CreateInheritDoc(XElement element) => new(CreateRef(element.Attribute("cref")?.Value), element.Attribute("path")?.Value);
 
 	private static XmlDocRef? CreateRef(string? value) => string.IsNullOrWhiteSpace(value) ? null : new XmlDocRef(value);
+
+	private IEnumerable<XElement> SelectElements(string path)
+	{
+		var normalizedPath = path.Length != 0 && path[0] == '/' ? "." + path : path;
+		return m_element.XPathSelectElements(normalizedPath);
+	}
+
+	private readonly XElement m_element;
 
 	private sealed class BlockGenerator
 	{

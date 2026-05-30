@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 return BuildRunner.Execute(args, build =>
 {
@@ -110,7 +111,7 @@ return BuildRunner.Execute(args, build =>
 		using var sha256 = SHA256.Create();
 		foreach (var file in files)
 		{
-			var text = File.ReadAllText(Path.Combine(outputPath, file.Replace('/', Path.DirectorySeparatorChar))).ReplaceLineEndings("\n");
+			var text = NormalizeSampleText(sampleName, File.ReadAllText(Path.Combine(outputPath, file.Replace('/', Path.DirectorySeparatorChar))).ReplaceLineEndings("\n"));
 			var bytes = Encoding.UTF8.GetBytes(file + "\n" + text + "\n");
 			sha256.TransformBlock(bytes, 0, bytes.Length, null, 0);
 		}
@@ -125,4 +126,6 @@ return BuildRunner.Execute(args, build =>
 			builder.AppendLine("- " + file);
 		return builder.ToString();
 	}
+
+	static string NormalizeSampleText(string sampleName, string text) => sampleName == "Samples.SourceLinks" ? Regex.Replace(text, "/blob/[0-9a-f]{40}/", "/blob/{commit}/", RegexOptions.IgnoreCase) : text;
 });

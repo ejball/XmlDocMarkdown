@@ -10,4 +10,9 @@ internal sealed class InheritDocDerived : InheritDocBase, IInheritDocFixture
 	public void InterfaceMethod(string value)
 	{
 	}
+
+	/// <inheritdoc cref="InheritDocBase.PathMethod" path="/remarks" />
+	public override void PathMethod()
+	{
+	}
 }

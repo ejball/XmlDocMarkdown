@@ -418,13 +418,13 @@ public static class ReflectionFacts
 			return own;
 
 		if (inheritDoc.Cref is { } inheritedReference)
-			return xml.FindMember(inheritedReference) ?? own;
+			return xml.FindMember(inheritedReference)?.ApplyInheritDocPath(inheritDoc.Path) ?? own;
 
 		var inheritedMember = FindInheritedMember(member);
 		if (inheritedMember is null)
 			return own;
 
-		return xml.FindMember(inheritedMember is TypeInfo inheritedType ? XmlDocRef.ForType(inheritedType) : XmlDocRef.ForMember(inheritedMember)) ?? own;
+		return xml.FindMember(inheritedMember is TypeInfo inheritedType ? XmlDocRef.ForType(inheritedType) : XmlDocRef.ForMember(inheritedMember))?.ApplyInheritDocPath(inheritDoc.Path) ?? own;
 	}
 
 	/// <summary>Gets a C#-style short name.</summary>

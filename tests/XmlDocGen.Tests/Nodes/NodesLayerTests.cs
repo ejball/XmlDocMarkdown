@@ -60,9 +60,12 @@ internal sealed class NodesLayerTests
 		var tree = TestSupport.CreateTestTree();
 		var baseMethod = typeof(InheritDocDerived).GetMethod(nameof(InheritDocDerived.BaseMethod))!;
 		var interfaceMethod = typeof(InheritDocDerived).GetMethod(nameof(InheritDocDerived.InterfaceMethod))!;
+		var pathMethod = typeof(InheritDocDerived).GetMethod(nameof(InheritDocDerived.PathMethod))!;
 
 		Assert.That(tree.FindNode(XmlDocRef.ForMember(baseMethod))!.XmlMember?.Summary.Single().Inlines.Single().Text, Is.EqualTo("Inherited base summary."));
 		Assert.That(tree.FindNode(XmlDocRef.ForMember(interfaceMethod))!.XmlMember?.Summary.Single().Inlines.Single().Text, Is.EqualTo("Inherited interface summary."));
+		Assert.That(tree.FindNode(XmlDocRef.ForMember(pathMethod))!.XmlMember?.Summary, Is.Empty);
+		Assert.That(tree.FindNode(XmlDocRef.ForMember(pathMethod))!.XmlMember?.Remarks.Single().Inlines.Single().Text, Is.EqualTo("Path-filtered remarks."));
 	}
 
 	private sealed class NoMemberVisibility : XmlDocNodeVisibility

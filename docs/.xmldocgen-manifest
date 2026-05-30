@@ -260,10 +260,12 @@ XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownPageRenderer/Renderer.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownPageRenderer/RenderPage.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownPageRenderer/WriteBody.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownPageRenderer/WriteFrontMatter.md
+XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownPageRenderer/WriteGeneratedComment.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownPageRenderer/WriteHeader.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownRenderer.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownRenderer/MarkdownRenderer.md
-XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownRenderer/WriteBlocks.md
+XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownRenderer/WriteBlocks-MarkdownWriter--IEnumerable-XmlDocXmlBlock---XmlDocPageContext--XmlDocNode.md
+XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownRenderer/WriteBlocks-MarkdownWriter--IEnumerable-XmlDocXmlBlock---XmlDocPageContext.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownRenderer/WriteChildren.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownRenderer/WriteExamples.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownRenderer/WriteExceptions.md
@@ -287,8 +289,12 @@ XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownWriter/WriteHeading.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownWriter/WriteLine-String.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownWriter/WriteLine.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownWriter/WriteLink.md
+XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownWriter/WriteMarkdownTableRow.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownWriter/Writer.md
 XmlDocGen.Core/XmlDocGen.Core.Markdown/MarkdownWriter/WriteTableRow.md
+XmlDocGen.Core/XmlDocGen.Core.Markdown/XmlDocListRow/Cells.md
+XmlDocGen.Core/XmlDocGen.Core.Markdown/XmlDocListRow/IsHeader.md
+XmlDocGen.Core/XmlDocGen.Core.Markdown/XmlDocListRow/XmlDocListRow.md
 XmlDocGen.Core/XmlDocGen.Core.md
 XmlDocGen.Core/XmlDocGen.Core.Nodes.md
 XmlDocGen.Core/XmlDocGen.Core.Nodes/PredicateVisibility/IsVisible.md

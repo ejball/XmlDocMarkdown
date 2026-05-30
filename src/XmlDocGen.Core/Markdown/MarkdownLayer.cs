@@ -38,7 +38,12 @@ public sealed class MarkdownWriter
 	/// <summary>Writes a Markdown table row.</summary>
 	public void WriteTableRow(params string[] cells) => WriteLine("| " + string.Join(" | ", cells.Select(Escape)) + " |");
 
+	/// <summary>Writes a Markdown table row whose cells may contain Markdown.</summary>
+	public void WriteMarkdownTableRow(params string[] cells) => WriteLine("| " + string.Join(" | ", cells.Select(EscapeTableCell)) + " |");
+
 	private static string Escape(string value) => WebUtility.HtmlEncode(value).Replace("|", "&#x7C;", StringComparison.Ordinal);
+
+	private static string EscapeTableCell(string value) => value.ReplaceLineEndings(" ").Replace("|", "&#x7C;", StringComparison.Ordinal);
 }
 
 /// <summary>Renders node and XML content as Markdown building blocks.</summary>
@@ -53,7 +58,7 @@ public class MarkdownRenderer
 	}
 
 	/// <summary>Writes a summary section.</summary>
-	public virtual void WriteSummary(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context) => WriteBlocks(writer, node.XmlMember?.Summary, context);
+	public virtual void WriteSummary(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context) => WriteBlocks(writer, node.XmlMember?.Summary, context, node);
 
 	/// <summary>Writes a remarks section.</summary>
 	public virtual void WriteRemarks(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context)
@@ -62,7 +67,8 @@ public class MarkdownRenderer
 		{
 			writer.WriteLine();
 			writer.WriteHeading(2, "Remarks");
-			WriteBlocks(writer, node.XmlMember.Remarks, context);
+			writer.WriteLine();
+			WriteBlocks(writer, node.XmlMember.Remarks, context, node);
 		}
 	}
 
@@ -74,11 +80,10 @@ public class MarkdownRenderer
 		if (typeParameters.Count + parameters.Count == 0)
 			return;
 
-		writer.WriteLine();
-		writer.WriteTableRow("parameter", "description");
-		writer.WriteLine("| --- | --- |");
-		foreach (var parameter in typeParameters.Concat(parameters))
-			writer.WriteTableRow(parameter.Name, RenderBlocksInline(parameter.Description, context));
+		if (typeParameters.Count > 0)
+			WriteParameterTable(writer, member, context, "Type Parameters", "type parameter", "type-parameter", typeParameters);
+		if (parameters.Count > 0)
+			WriteParameterTable(writer, member, context, "Parameters", "parameter", "parameter", parameters);
 	}
 
 	/// <summary>Writes a return-value section.</summary>
@@ -88,7 +93,8 @@ public class MarkdownRenderer
 		{
 			writer.WriteLine();
 			writer.WriteHeading(2, "Returns");
-			WriteBlocks(writer, member.XmlMember.ReturnValue, context);
+			writer.WriteLine();
+			WriteBlocks(writer, member.XmlMember.ReturnValue, context, member);
 		}
 	}
 
@@ -99,7 +105,8 @@ public class MarkdownRenderer
 		{
 			writer.WriteLine();
 			writer.WriteHeading(2, "Property Value");
-			WriteBlocks(writer, member.XmlMember.PropertyValue, context);
+			writer.WriteLine();
+			WriteBlocks(writer, member.XmlMember.PropertyValue, context, member);
 		}
 	}
 
@@ -110,6 +117,7 @@ public class MarkdownRenderer
 		{
 			writer.WriteLine();
 			writer.WriteHeading(2, "Exceptions");
+			writer.WriteLine();
 			writer.WriteTableRow("exception", "condition");
 			writer.WriteLine("| --- | --- |");
 			foreach (var exception in member.XmlMember.Exceptions)
@@ -117,7 +125,7 @@ public class MarkdownRenderer
 				var name = exception.ExceptionTypeRef is null ? "" : XmlDocRefUtility.GetShortNameForXmlDocRef(exception.ExceptionTypeRef.Value);
 				if (exception.ExceptionTypeRef is { } reference && context.GetLinkUrl(reference) is { } url)
 					name = $"[{name}]({url})";
-				writer.WriteTableRow(name, RenderBlocksInline(exception.Condition, context));
+				writer.WriteMarkdownTableRow(name, RenderBlocksInline(exception.Condition, context, member));
 			}
 		}
 	}
@@ -129,7 +137,8 @@ public class MarkdownRenderer
 		{
 			writer.WriteLine();
 			writer.WriteHeading(2, "Examples");
-			WriteBlocks(writer, node.XmlMember.Examples, context);
+			writer.WriteLine();
+			WriteBlocks(writer, node.XmlMember.Examples, context, node);
 		}
 	}
 
@@ -142,13 +151,14 @@ public class MarkdownRenderer
 
 		writer.WriteLine();
 		writer.WriteHeading(2, GetChildrenHeading(node));
+		writer.WriteLine();
 		writer.WriteTableRow("name", "kind", "summary");
 		writer.WriteLine("| --- | --- | --- |");
 		foreach (var child in children)
 		{
 			var page = context.FindPage(child)!;
 			var url = context.UrlMapper.GetUrl(context.Page, page, child);
-			writer.WriteTableRow($"[{child.Name}]({url})", GetKindName(child), RenderBlocksInline(child.XmlMember?.Summary ?? [], context));
+			writer.WriteMarkdownTableRow($"[{child.Name}]({url})", GetKindName(child), RenderBlocksInline(child.XmlMember?.Summary ?? [], context, child));
 		}
 	}
 
@@ -159,6 +169,7 @@ public class MarkdownRenderer
 		{
 			writer.WriteLine();
 			writer.WriteHeading(2, "See Also");
+			writer.WriteLine();
 			foreach (var seeAlso in node.XmlMember.SeeAlso)
 			{
 				var text = seeAlso.Text;
@@ -174,20 +185,23 @@ public class MarkdownRenderer
 	}
 
 	/// <summary>Writes inline XML documentation content.</summary>
-	public virtual void WriteInlines(MarkdownWriter writer, IEnumerable<XmlDocXmlInline> inlines, XmlDocPageContext context) => writer.Write(RenderInlines(inlines, context));
+	public virtual void WriteInlines(MarkdownWriter writer, IEnumerable<XmlDocXmlInline> inlines, XmlDocPageContext context) => writer.Write(RenderInlines(inlines, context, currentNode: null));
 
 	/// <summary>Writes blocks of XML documentation content.</summary>
-	protected void WriteBlocks(MarkdownWriter writer, IEnumerable<XmlDocXmlBlock>? blocks, XmlDocPageContext context)
+	protected void WriteBlocks(MarkdownWriter writer, IEnumerable<XmlDocXmlBlock>? blocks, XmlDocPageContext context) => WriteBlocks(writer, blocks, context, currentNode: null);
+
+	/// <summary>Writes blocks of XML documentation content.</summary>
+	protected void WriteBlocks(MarkdownWriter writer, IEnumerable<XmlDocXmlBlock>? blocks, XmlDocPageContext context, XmlDocNode? currentNode)
 	{
 		if (blocks is null)
 			return;
 
-		var isFirst = true;
-		foreach (var block in blocks)
+		var blockList = blocks.ToList();
+		for (var index = 0; index < blockList.Count; index++)
 		{
-			if (!isFirst)
+			var block = blockList[index];
+			if (index != 0)
 				writer.WriteLine();
-			isFirst = false;
 
 			if (block.IsCode)
 			{
@@ -196,19 +210,120 @@ public class MarkdownRenderer
 					writer.WriteLine(inline.Text ?? "");
 				writer.WriteLine("```");
 			}
+			else if (block.ListKind == XmlDocXmlListKind.Table)
+			{
+				index = WriteTableList(writer, blockList, index, context, currentNode);
+			}
+			else if (block.ListKind == XmlDocXmlListKind.Definition)
+			{
+				index = WriteDefinitionList(writer, blockList, index, context, currentNode);
+			}
 			else if (block.ListKind is XmlDocXmlListKind.Bullet or XmlDocXmlListKind.Number)
 			{
 				var prefix = block.ListKind == XmlDocXmlListKind.Number ? "1. " : "* ";
-				writer.WriteLine(new string(' ', block.ListDepth * 2) + prefix + RenderInlines(block.Inlines, context));
+				writer.WriteLine(new string(' ', block.ListDepth * 2) + prefix + RenderInlines(block.Inlines, context, currentNode));
 			}
 			else
 			{
-				writer.WriteLine(RenderInlines(block.Inlines, context));
+				writer.WriteLine(RenderInlines(block.Inlines, context, currentNode));
 			}
 		}
 	}
 
-	private string RenderBlocksInline(IEnumerable<XmlDocXmlBlock> blocks, XmlDocPageContext context) => string.Join(" ", blocks.Select(x => RenderInlines(x.Inlines, context)));
+	private static void WriteParameterTable(MarkdownWriter writer, XmlDocMemberNode member, XmlDocPageContext context, string heading, string columnName, string anchorPrefix, IEnumerable<XmlDocXmlParameter> parameters)
+	{
+		writer.WriteLine();
+		writer.WriteHeading(2, heading);
+		writer.WriteLine();
+		writer.WriteTableRow(columnName, "description");
+		writer.WriteLine("| --- | --- |");
+		foreach (var parameter in parameters)
+		{
+			var name = $"<a id=\"{CreateParameterAnchor(anchorPrefix, parameter.Name)}\"></a>`{Escape(parameter.Name)}`";
+			writer.WriteMarkdownTableRow(name, RenderBlocksInline(parameter.Description, context, member));
+		}
+	}
+
+	private static int WriteTableList(MarkdownWriter writer, IReadOnlyList<XmlDocXmlBlock> blocks, int startIndex, XmlDocPageContext context, XmlDocNode? currentNode)
+	{
+		var depth = blocks[startIndex].ListDepth;
+		var tableBlocks = ReadListBlocks(blocks, startIndex, XmlDocXmlListKind.Table, depth, out var endIndex);
+		var header = tableBlocks.Where(static x => x.IsListHeader).Select(x => RenderInlines(x.Inlines, context, currentNode)).ToList();
+		if (header.Count == 0)
+			header = ["term", "description"];
+		writer.WriteMarkdownTableRow([.. header]);
+		writer.WriteLine("| " + string.Join(" | ", header.Select(static _ => "---")) + " |");
+
+		var cells = tableBlocks.Where(static x => !x.IsListHeader).Select(x => RenderInlines(x.Inlines, context, currentNode)).ToList();
+		for (var index = 0; index < cells.Count; index += header.Count)
+			writer.WriteMarkdownTableRow([.. PadCells(cells.Skip(index).Take(header.Count).ToList(), header.Count)]);
+		return endIndex;
+	}
+
+	private static IReadOnlyList<XmlDocXmlBlock> ReadListBlocks(IReadOnlyList<XmlDocXmlBlock> blocks, int startIndex, XmlDocXmlListKind listKind, int depth, out int endIndex)
+	{
+		var listBlocks = new List<XmlDocXmlBlock>();
+		endIndex = startIndex;
+		for (var index = startIndex; index < blocks.Count; index++)
+		{
+			var block = blocks[index];
+			if (block.ListKind != listKind || block.ListDepth != depth)
+				break;
+
+			listBlocks.Add(block);
+			endIndex = index;
+		}
+		return listBlocks;
+	}
+
+	private static int WriteDefinitionList(MarkdownWriter writer, IReadOnlyList<XmlDocXmlBlock> blocks, int startIndex, XmlDocPageContext context, XmlDocNode? currentNode)
+	{
+		var depth = blocks[startIndex].ListDepth;
+		var rows = ReadListRows(blocks, startIndex, XmlDocXmlListKind.Definition, depth, context, currentNode, out var endIndex).Where(static x => !x.IsHeader).ToList();
+		foreach (var (row, index) in rows.Select(static (row, index) => (row, index)))
+		{
+			if (index != 0)
+				writer.WriteLine();
+			var term = row.Cells.Count > 0 ? row.Cells[0] : "";
+			var description = row.Cells.Count > 1 ? row.Cells[1] : "";
+			writer.WriteLine("* **" + term + "**" + (description.Length == 0 ? "" : ": " + description));
+		}
+		return endIndex;
+	}
+
+	private static IReadOnlyList<XmlDocListRow> ReadListRows(IReadOnlyList<XmlDocXmlBlock> blocks, int startIndex, XmlDocXmlListKind listKind, int depth, XmlDocPageContext context, XmlDocNode? currentNode, out int endIndex)
+	{
+		var rows = new List<XmlDocListRow>();
+		var cells = new List<string>();
+		var isHeader = blocks[startIndex].IsListHeader;
+		endIndex = startIndex;
+		for (var index = startIndex; index < blocks.Count; index++)
+		{
+			var block = blocks[index];
+			if (block.ListKind != listKind || block.ListDepth != depth)
+				break;
+
+			if ((block.IsListTerm || block.IsListHeader != isHeader) && cells.Count != 0)
+			{
+				rows.Add(new XmlDocListRow(isHeader, [.. cells]));
+				cells.Clear();
+				isHeader = block.IsListHeader;
+			}
+			cells.Add(RenderInlines(block.Inlines, context, currentNode));
+			endIndex = index;
+		}
+		if (cells.Count != 0)
+			rows.Add(new XmlDocListRow(isHeader, [.. cells]));
+		return rows;
+	}
+
+	private static IEnumerable<string> PadCells(IReadOnlyList<string> cells, int count)
+	{
+		for (var index = 0; index < count; index++)
+			yield return index < cells.Count ? cells[index] : "";
+	}
+
+	private static string RenderBlocksInline(IEnumerable<XmlDocXmlBlock> blocks, XmlDocPageContext context, XmlDocNode? currentNode) => string.Join(" ", blocks.Select(x => RenderInlines(x.Inlines, context, currentNode)));
 
 	private static string GetChildrenHeading(XmlDocNode node) => node switch
 	{
@@ -227,9 +342,9 @@ public class MarkdownRenderer
 		_ => "node",
 	};
 
-	private string RenderInlines(IEnumerable<XmlDocXmlInline> inlines, XmlDocPageContext context) => Regex.Replace(string.Concat(inlines.Select(x => RenderInline(x, context))), @"\s+", " ").Trim();
+	private static string RenderInlines(IEnumerable<XmlDocXmlInline> inlines, XmlDocPageContext context, XmlDocNode? currentNode) => Regex.Replace(string.Concat(inlines.Select(x => RenderInline(x, context, currentNode))), @"\s+", " ").Trim();
 
-	private string RenderInline(XmlDocXmlInline inline, XmlDocPageContext context)
+	private static string RenderInline(XmlDocXmlInline inline, XmlDocPageContext context, XmlDocNode? currentNode)
 	{
 		var text = inline.Text ?? "";
 		if (inline.Kind == XmlDocXmlInlineKind.SeeCref && inline.Ref is { } reference)
@@ -245,9 +360,20 @@ public class MarkdownRenderer
 		if (inline.Kind == XmlDocXmlInlineKind.Code)
 			return Code(text);
 		if (inline.Kind is XmlDocXmlInlineKind.ParamRef or XmlDocXmlInlineKind.TypeParamRef)
-			return "*" + Escape(text) + "*";
+		{
+			var anchorPrefix = inline.Kind == XmlDocXmlInlineKind.TypeParamRef ? "type-parameter" : "parameter";
+			if (currentNode is XmlDocMemberNode)
+			{
+				var anchor = CreateParameterAnchor(anchorPrefix, text);
+				var url = context.FindPage(currentNode) is { } targetPage && targetPage != context.Page ? context.UrlMapper.GetUrl(context.Page, targetPage, currentNode) + "#" + anchor : "#" + anchor;
+				return $"[`{Escape(text)}`]({url})";
+			}
+			return Code(text);
+		}
 		return Escape(text);
 	}
+
+	private static string CreateParameterAnchor(string prefix, string name) => prefix + "-" + Regex.Replace(name.ToLowerInvariant(), "[^a-z0-9_-]+", "-").Trim('-');
 
 	private static string Code(string value)
 	{
@@ -256,6 +382,8 @@ public class MarkdownRenderer
 	}
 
 	private static string Escape(string value) => WebUtility.HtmlEncode(value).Replace("|", "&#x7C;", StringComparison.Ordinal);
+
+	private sealed record XmlDocListRow(bool IsHeader, IReadOnlyList<string> Cells);
 }
 
 /// <summary>A page renderer that emits Markdown.</summary>
@@ -278,6 +406,7 @@ public class MarkdownPageRenderer : XmlDocPageRenderer
 		WriteFrontMatter(writer, page);
 		WriteHeader(writer, page, context);
 		WriteBody(writer, page, context);
+		WriteGeneratedComment(writer, page);
 		return new XmlDocRenderedFile(page.Path + ".md", stringWriter.ToString());
 	}
 
@@ -290,6 +419,7 @@ public class MarkdownPageRenderer : XmlDocPageRenderer
 	protected virtual void WriteHeader(MarkdownWriter writer, XmlDocPage page, XmlDocPageContext context)
 	{
 		writer.WriteHeading(1, page.Nodes[0].Name);
+		writer.WriteLine();
 		WriteSourceLink(writer, page.Nodes[0], context);
 	}
 
@@ -326,12 +456,21 @@ public class MarkdownPageRenderer : XmlDocPageRenderer
 		}
 	}
 
+	/// <summary>Writes the generated-file comment.</summary>
+	protected virtual void WriteGeneratedComment(MarkdownWriter writer, XmlDocPage page)
+	{
+		writer.WriteLine();
+		writer.WriteLine($"<!-- DO NOT EDIT: generated by XmlDocGen for {GetGeneratedAssemblyList(page)} -->");
+	}
+
 	private static void WriteSourceLink(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context)
 	{
 		var member = node.MemberInfo;
 		if (member is not null && context.GetSourceUrl(member) is { } sourceUrl)
 			writer.WriteLine($"[source]({sourceUrl})");
 	}
+
+	private static string GetGeneratedAssemblyList(XmlDocPage page) => string.Join(", ", page.Nodes.Select(x => x.Assembly.ReflectionAssembly.GetName().Name + ".dll").Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase));
 }
 
 /// <summary>Convenience builder for Markdown sites.</summary>
