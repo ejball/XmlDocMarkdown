@@ -4,7 +4,7 @@
 Clones the specified array.
 
 ```csharp
-public static T[] Clone<T>(T[] array)
+public static T?[] Clone<T>(T?[] array)
 ```
 
 ## Parameters

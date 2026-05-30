@@ -4,7 +4,7 @@
 A method whose summary references [`T`](#type-parameter-t).
 
 ```csharp
-public void TypeParameterReference<T>(T value)
+public void TypeParameterReference<T>(T? value)
 ```
 
 ## Parameters

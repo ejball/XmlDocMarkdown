@@ -4,7 +4,7 @@
 A method with tuples.
 
 ```csharp
-public void Tuples(params ValueTuple<string, object>[] tuples)
+public void Tuples(params (string, object?)[] tuples)
 ```
 
 ## Parameters

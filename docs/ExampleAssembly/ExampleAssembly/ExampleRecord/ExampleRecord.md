@@ -4,7 +4,7 @@
 A C# 9 generic record.
 
 ```csharp
-public ExampleRecord(string Name, int Age, HashSet<DayOfWeek> Days, T GenericType, Action<T> GenericLambda)
+public ExampleRecord(string Name, int Age, HashSet<DayOfWeek> Days, T? GenericType, Action<T?> GenericLambda)
 ```
 
 ## Type Parameters

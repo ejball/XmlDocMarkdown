@@ -1,6 +1,6 @@
 sample: Samples.HtmlRenderer
-files: 188
-sha256: 9644d98a44f6032498f7bee0d121410744e0730431d8a7cde7d3424f9bbbb0ae
+files: 206
+sha256: df39a5ba9bbb2d63c65e524636689a0370dccd8b47f276b46f4e6421b81dcd97
 preview:
 - ExampleAssembly.html
 - ExampleAssembly/ExampleAssembly.InnerNamespace.html

@@ -1,6 +1,6 @@
 sample: Samples.CustomCliOptions
-files: 183
-sha256: 678c7ae9484723eb5f9bfe119ba7a7ddc159ed580455179e955dce3e05d0af80
+files: 201
+sha256: db3fe6a2152acaf2aeb75c51ce1f37f6d056164d6b4a923e05792bdf4a6d02a0
 preview:
 - ExampleAssembly.md
 - ExampleAssembly/ExampleAssembly.InnerNamespace.md

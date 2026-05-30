@@ -4,7 +4,7 @@
 An overridden method.
 
 ```csharp
-public void Jump()
+public virtual void Jump()
 ```
 
 ## Exceptions

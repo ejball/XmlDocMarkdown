@@ -4,7 +4,7 @@
 Creates an instance.
 
 ```csharp
-public ExampleException(string message, Exception innerException = null)
+public ExampleException(string message, Exception? innerException = null)
 ```
 
 ## Parameters

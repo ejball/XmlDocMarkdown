@@ -4,7 +4,7 @@
 An XML documentation identifier, e.g. `T:My.Type` or `M:My.Type.Method(System.Int32)`.
 
 ```csharp
-public struct XmlDocRef : IEquatable<XmlDocRef>
+public readonly struct XmlDocRef : IEquatable<XmlDocRef>
 ```
 
 ## Members

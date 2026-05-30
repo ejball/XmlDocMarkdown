@@ -1,6 +1,6 @@
 sample: Samples.MultiAssembly
-files: 611
-sha256: b2bdbc500751a50831bbd3bc70711c7c0f68eb6f6e3e8c4e0c0ba67b5a64f339
+files: 629
+sha256: 2fdecf4d2cafdba406cc97b550660037fe45ec7cf66f8cd7e11129909bc41fac
 preview:
 - ExampleAssembly.md
 - ExampleAssembly/ExampleAssembly.InnerNamespace.md

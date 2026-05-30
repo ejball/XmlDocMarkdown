@@ -1,6 +1,6 @@
 sample: Samples.CustomUrlMapper
-files: 188
-sha256: e5f217a50f07c543ab85deb7d8c8587c07401c208d0de4449e7d3013b2bc2e48
+files: 206
+sha256: 49ef9ac5172e9c5865b73e879db890f5959f4157f57f07ccafb110c7d7cf8d8e
 preview:
 - ExampleAssembly.md
 - ExampleAssembly/ExampleAssembly.InnerNamespace.md

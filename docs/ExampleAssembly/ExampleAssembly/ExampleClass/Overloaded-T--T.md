@@ -4,7 +4,7 @@
 An overloaded method.
 
 ```csharp
-public void Overloaded<T>(T x)
+public void Overloaded<T>(T? x)
 ```
 
 ## Type Parameters

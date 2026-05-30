@@ -1,6 +1,6 @@
 sample: Samples.Default
-files: 188
-sha256: 98f197c75df5cb883bfdc3ce1cca76dbbedb20fd82f59f55815db4f53b85f4af
+files: 206
+sha256: cd1fa9697a45041c98e4ea390e188640fe6e3da1aa21cb0484330040b951370e
 preview:
 - ExampleAssembly.md
 - ExampleAssembly/ExampleAssembly.InnerNamespace.md

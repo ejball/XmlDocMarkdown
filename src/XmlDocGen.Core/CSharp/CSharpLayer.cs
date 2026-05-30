@@ -107,8 +107,20 @@ internal static class CSharpSignatureRendering
 			}
 		}
 
+		if (node.IsReadOnly)
+		{
+			yield return Keyword("readonly");
+			yield return Space();
+		}
+		if (node.IsRefStruct)
+		{
+			yield return Keyword("ref");
+			yield return Space();
+		}
 		foreach (var token in RenderTypeKind(node.Kind))
+		{
 			yield return token;
+		}
 		yield return Space();
 		yield return Identifier(ReflectionFacts.GetShortName(node.Type));
 		foreach (var token in RenderGenericParameters(node.TypeInfo.GenericTypeParameters, includeVariance: full))
@@ -134,12 +146,12 @@ internal static class CSharpSignatureRendering
 				yield return Keyword("static");
 				yield return Space();
 			}
-			else if (ReflectionFacts.IsAbstract(member))
+			if (IsAbstractForSignature(member))
 			{
 				yield return Keyword("abstract");
 				yield return Space();
 			}
-			else if (ReflectionFacts.IsVirtual(member))
+			else if (IsVirtualForSignature(member))
 			{
 				yield return Keyword("virtual");
 				yield return Space();
@@ -156,7 +168,9 @@ internal static class CSharpSignatureRendering
 			case MethodInfo method:
 				if (full)
 				{
-					yield return TypeName(RenderTypeName(method.ReturnType.GetTypeInfo()), method.ReturnType.GetTypeInfo());
+					foreach (var token in RenderRefKind(method.ReturnParameter, method.ReturnType))
+						yield return token;
+					yield return TypeName(RenderTypeName(method.ReturnType, s_nullability.Create(method.ReturnParameter), GetTupleElementNames(method.ReturnParameter)), method.ReturnType.GetTypeInfo());
 					yield return Space();
 				}
 				yield return method.Name.StartsWith("op_", StringComparison.Ordinal) ? Operator(GetOperatorKeywordName(ReflectionFacts.GetShortName(method))) : Identifier(GetOperatorKeywordName(ReflectionFacts.GetShortName(method)));
@@ -175,7 +189,9 @@ internal static class CSharpSignatureRendering
 						yield return Keyword("required");
 						yield return Space();
 					}
-					yield return TypeName(RenderTypeName(property.PropertyType.GetTypeInfo()), property.PropertyType.GetTypeInfo());
+					foreach (var token in RenderRefKind(property.GetMethod?.ReturnParameter, property.PropertyType))
+						yield return token;
+					yield return TypeName(RenderTypeName(property.PropertyType, s_nullability.Create(property), GetTupleElementNames(property)), property.PropertyType.GetTypeInfo());
 					yield return Space();
 				}
 				yield return Identifier(property.GetIndexParameters().Length == 0 ? property.Name : "this");
@@ -197,7 +213,7 @@ internal static class CSharpSignatureRendering
 				{
 					yield return Keyword("event");
 					yield return Space();
-					yield return TypeName(RenderTypeName(@event.EventHandlerType!.GetTypeInfo()), @event.EventHandlerType!.GetTypeInfo());
+					yield return TypeName(RenderTypeName(@event.EventHandlerType!, null, []), @event.EventHandlerType!.GetTypeInfo());
 					yield return Space();
 				}
 				yield return Identifier(@event.Name);
@@ -220,7 +236,7 @@ internal static class CSharpSignatureRendering
 						yield return Keyword("readonly");
 						yield return Space();
 					}
-					yield return TypeName(RenderTypeName(field.FieldType.GetTypeInfo()), field.FieldType.GetTypeInfo());
+					yield return TypeName(RenderTypeName(field.FieldType, s_nullability.Create(field), GetTupleElementNames(field)), field.FieldType.GetTypeInfo());
 					yield return Space();
 				}
 				yield return Identifier(field.Name);
@@ -275,7 +291,7 @@ internal static class CSharpSignatureRendering
 				yield return Punctuation(",");
 				yield return Space();
 			}
-			yield return TypeName(RenderTypeName(bases[index].GetTypeInfo()), bases[index].GetTypeInfo());
+			yield return TypeName(RenderTypeName(bases[index], null, []), bases[index].GetTypeInfo());
 		}
 	}
 
@@ -337,13 +353,17 @@ internal static class CSharpSignatureRendering
 	private static IEnumerable<IReadOnlyList<CSharpToken>> GetGenericConstraints(Type parameter)
 	{
 		var attributes = parameter.GetTypeInfo().GenericParameterAttributes;
-		if (attributes.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint))
+		if (HasAttribute(parameter, "System.Runtime.CompilerServices.IsUnmanagedAttribute"))
+			yield return [Keyword("unmanaged")];
+		else if (attributes.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint))
 			yield return [Keyword("struct")];
+		else if (HasNotNullConstraint(parameter))
+			yield return [Keyword("notnull")];
 		else if (attributes.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
-			yield return [Keyword("class")];
+			yield return [Keyword(HasNullableConstraint(parameter) ? "class?" : "class")];
 
 		foreach (var constraint in parameter.GetGenericParameterConstraints().Where(x => x != typeof(ValueType)))
-			yield return [TypeName(RenderTypeName(constraint.GetTypeInfo()), constraint.GetTypeInfo())];
+			yield return [TypeName(RenderTypeName(constraint, null, []), constraint.GetTypeInfo())];
 
 		if (attributes.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint) && !attributes.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint))
 			yield return [Keyword("new"), Punctuation("("), Punctuation(")")];
@@ -369,7 +389,22 @@ internal static class CSharpSignatureRendering
 			}
 			if (parameter.ParameterType.IsByRef)
 			{
-				yield return Keyword(parameter.IsOut ? "out" : parameter.IsIn ? "in" : "ref");
+				if (IsScoped(parameter))
+				{
+					yield return Keyword("scoped");
+					yield return Space();
+				}
+				var byRefKind = GetParameterRefKind(parameter);
+				if (byRefKind == "ref readonly")
+				{
+					yield return Keyword("ref");
+					yield return Space();
+					yield return Keyword("readonly");
+				}
+				else
+				{
+					yield return Keyword(byRefKind);
+				}
 				yield return Space();
 			}
 			if (index == 0 && isExtensionMethod)
@@ -382,7 +417,7 @@ internal static class CSharpSignatureRendering
 				yield return Keyword("params");
 				yield return Space();
 			}
-			yield return TypeName(RenderTypeName(parameter.ParameterType.GetTypeInfo()), parameter.ParameterType.GetTypeInfo());
+			yield return TypeName(RenderTypeName(parameter.ParameterType, s_nullability.Create(parameter), GetTupleElementNames(parameter)), parameter.ParameterType.GetTypeInfo());
 			yield return Space();
 			yield return Identifier(parameter.Name ?? "P_" + index.ToString(CultureInfo.InvariantCulture));
 			if (parameter.HasDefaultValue)
@@ -395,22 +430,100 @@ internal static class CSharpSignatureRendering
 		}
 	}
 
-	private static string RenderTypeName(TypeInfo type)
+	private static IEnumerable<CSharpToken> RenderRefKind(ParameterInfo? parameter, Type type)
 	{
-		if (type.IsByRef)
-			return RenderTypeName(type.GetElementType()!.GetTypeInfo());
-		var nullable = Nullable.GetUnderlyingType(type.AsType());
-		if (nullable is not null)
-			return RenderTypeName(nullable.GetTypeInfo()) + "?";
-		if (type.IsArray)
-			return RenderTypeName(type.GetElementType()!.GetTypeInfo()) + "[]";
-		var builtIn = TryGetBuiltInTypeName(type.AsType());
-		if (builtIn is not null)
-			return builtIn;
-		return ReflectionFacts.GetShortName(type) + RenderGenericArguments(type.GenericTypeArguments);
+		if (!type.IsByRef || parameter is null)
+			yield break;
+
+		var byRefKind = GetParameterRefKind(parameter);
+		if (byRefKind == "ref readonly")
+		{
+			yield return Keyword("ref");
+			yield return Space();
+			yield return Keyword("readonly");
+		}
+		else
+		{
+			yield return Keyword(byRefKind);
+		}
+		yield return Space();
 	}
 
-	private static string RenderGenericArguments(Type[] arguments) => arguments.Length == 0 ? "" : "<" + string.Join(", ", arguments.Select(x => RenderTypeName(x.GetTypeInfo()))) + ">";
+	private static string GetParameterRefKind(ParameterInfo parameter)
+	{
+		if (parameter.IsOut)
+			return "out";
+		if (parameter.IsIn)
+			return "in";
+		if (IsReadOnlyRef(parameter))
+			return "ref readonly";
+		return "ref";
+	}
+
+	private static string RenderTypeName(Type type, NullabilityInfo? nullability, IReadOnlyList<string?> tupleElementNames)
+	{
+		if (type.IsByRef)
+			return RenderTypeName(type.GetElementType()!, nullability?.ElementType, tupleElementNames);
+		if (type.IsPointer)
+			return RenderTypeName(type.GetElementType()!, nullability?.ElementType, []) + "*";
+		if (type.IsFunctionPointer)
+			return RenderFunctionPointerTypeName(type);
+		var nullable = Nullable.GetUnderlyingType(type);
+		if (nullable is not null)
+			return RenderTypeName(nullable, nullability?.GenericTypeArguments.FirstOrDefault(), []) + "?";
+		if (type.IsArray)
+			return RenderTypeName(type.GetElementType()!, nullability?.ElementType, []) + "[]" + GetNullableReferenceSuffix(type, nullability);
+		if (IsValueTuple(type))
+			return RenderTupleTypeName(type, nullability, tupleElementNames) + GetNullableReferenceSuffix(type, nullability);
+		var builtIn = TryGetBuiltInTypeName(type);
+		if (builtIn is not null)
+			return builtIn + GetNullableReferenceSuffix(type, nullability);
+		return ReflectionFacts.GetShortName(type.GetTypeInfo()) + RenderGenericArguments(type.GenericTypeArguments, nullability?.GenericTypeArguments.ToList() ?? []) + GetNullableReferenceSuffix(type, nullability);
+	}
+
+	private static string RenderGenericArguments(Type[] arguments, IReadOnlyList<NullabilityInfo> nullability) => arguments.Length == 0 ? "" : "<" + string.Join(", ", arguments.Select((x, index) => RenderTypeName(x, index < nullability.Count ? nullability[index] : null, []))) + ">";
+
+	private static string RenderFunctionPointerTypeName(Type type)
+	{
+		var parameterTypes = type.GetFunctionPointerParameterTypes();
+		var returnType = type.GetFunctionPointerReturnType();
+		return "delegate*<" + string.Join(", ", parameterTypes.Append(returnType).Select(static x => RenderTypeName(x, null, []))) + ">";
+	}
+
+	private static string RenderTupleTypeName(Type type, NullabilityInfo? nullability, IReadOnlyList<string?> tupleElementNames)
+	{
+		var types = GetValueTupleElementTypes(type).ToList();
+		var nullabilityArguments = nullability?.GenericTypeArguments.ToList() ?? [];
+		var parts = new List<string>();
+		for (var index = 0; index < types.Count; index++)
+		{
+			var elementText = RenderTypeName(types[index], index < nullabilityArguments.Count ? nullabilityArguments[index] : null, []);
+			if (index < tupleElementNames.Count && !string.IsNullOrWhiteSpace(tupleElementNames[index]))
+				elementText += " " + tupleElementNames[index];
+			parts.Add(elementText);
+		}
+		return "(" + string.Join(", ", parts) + ")";
+	}
+
+	private static IEnumerable<Type> GetValueTupleElementTypes(Type type)
+	{
+		foreach (var argument in type.GenericTypeArguments)
+		{
+			if (argument.IsGenericType && argument.GetGenericTypeDefinition() == typeof(ValueTuple<,,,,,,,>))
+			{
+				foreach (var nested in GetValueTupleElementTypes(argument))
+					yield return nested;
+			}
+			else
+			{
+				yield return argument;
+			}
+		}
+	}
+
+	private static bool IsValueTuple(Type type) => type.IsGenericType && type.FullName?.StartsWith("System.ValueTuple`", StringComparison.Ordinal) == true;
+
+	private static string GetNullableReferenceSuffix(Type type, NullabilityInfo? nullability) => !type.IsValueType && nullability?.ReadState == NullabilityState.Nullable ? "?" : "";
 
 	private static string GetPropertyAccessors(PropertyInfo property)
 	{
@@ -492,13 +605,39 @@ internal static class CSharpSignatureRendering
 	private static string GetOperatorKeywordName(string name) => name switch
 	{
 		"op_Addition" => "operator +",
+		"op_CheckedAddition" => "operator checked +",
 		"op_Subtraction" => "operator -",
+		"op_CheckedSubtraction" => "operator checked -",
 		"op_Multiply" => "operator *",
+		"op_CheckedMultiply" => "operator checked *",
 		"op_Division" => "operator /",
+		"op_Modulus" => "operator %",
+		"op_BitwiseAnd" => "operator &",
+		"op_BitwiseOr" => "operator |",
+		"op_ExclusiveOr" => "operator ^",
+		"op_LeftShift" => "operator <<",
+		"op_RightShift" => "operator >>",
+		"op_UnsignedRightShift" => "operator >>>",
 		"op_Equality" => "operator ==",
 		"op_Inequality" => "operator !=",
+		"op_LessThan" => "operator <",
+		"op_LessThanOrEqual" => "operator <=",
+		"op_GreaterThan" => "operator >",
+		"op_GreaterThanOrEqual" => "operator >=",
+		"op_UnaryPlus" => "operator +",
+		"op_UnaryNegation" => "operator -",
+		"op_CheckedUnaryNegation" => "operator checked -",
+		"op_Increment" => "operator ++",
+		"op_CheckedIncrement" => "operator checked ++",
+		"op_Decrement" => "operator --",
+		"op_CheckedDecrement" => "operator checked --",
+		"op_LogicalNot" => "operator !",
+		"op_OnesComplement" => "operator ~",
+		"op_True" => "operator true",
+		"op_False" => "operator false",
 		"op_Implicit" => "implicit operator",
 		"op_Explicit" => "explicit operator",
+		"op_CheckedExplicit" => "explicit operator checked",
 		_ => name,
 	};
 
@@ -520,6 +659,53 @@ internal static class CSharpSignatureRendering
 		if (type == typeof(short)) return "short";
 		if (type == typeof(ushort)) return "ushort";
 		if (type == typeof(string)) return "string";
+		if (type == typeof(IntPtr)) return "nint";
+		if (type == typeof(UIntPtr)) return "nuint";
+		return null;
+	}
+
+	private static IReadOnlyList<string?> GetTupleElementNames(ICustomAttributeProvider provider) => provider.GetCustomAttributes(typeof(TupleElementNamesAttribute), inherit: false).OfType<TupleElementNamesAttribute>().FirstOrDefault()?.TransformNames.ToList() ?? [];
+
+	private static bool IsAbstractForSignature(MemberInfo member) => ReflectionFacts.IsAbstract(member) || member switch
+	{
+		MethodBase method => method.IsAbstract,
+		PropertyInfo property => property.GetMethod?.IsAbstract == true || property.SetMethod?.IsAbstract == true,
+		EventInfo @event => @event.AddMethod?.IsAbstract == true || @event.RemoveMethod?.IsAbstract == true,
+		_ => false,
+	};
+
+	private static bool IsVirtualForSignature(MemberInfo member) => ReflectionFacts.IsVirtual(member) || member switch
+	{
+		MethodInfo method => method is { IsVirtual: true, IsFinal: false, IsAbstract: false },
+		PropertyInfo property => IsVirtualAccessor(property.GetMethod) || IsVirtualAccessor(property.SetMethod),
+		EventInfo @event => IsVirtualAccessor(@event.AddMethod) || IsVirtualAccessor(@event.RemoveMethod),
+		_ => false,
+	};
+
+	private static bool IsVirtualAccessor(MethodInfo? method) => method is { IsVirtual: true, IsFinal: false, IsAbstract: false };
+
+	private static bool IsReadOnlyRef(ParameterInfo parameter) => parameter.GetRequiredCustomModifiers().Contains(typeof(IsReadOnlyAttribute)) || HasAttribute(parameter, "System.Runtime.CompilerServices.IsReadOnlyAttribute");
+
+	private static bool IsScoped(ParameterInfo parameter) => parameter.GetCustomAttributes().Any(static x => x.GetType().FullName == "System.Runtime.CompilerServices.ScopedRefAttribute");
+
+	private static bool HasAttribute(ParameterInfo parameter, string attributeName) => parameter.GetCustomAttributes(inherit: false).Any(x => x.GetType().FullName == attributeName);
+
+	private static bool HasAttribute(Type type, string attributeName) => type.GetCustomAttributes(inherit: false).Any(x => x.GetType().FullName == attributeName);
+
+	private static bool HasNotNullConstraint(Type type) => GetNullableConstraintFlag(type) == 1 && !type.GetTypeInfo().GenericParameterAttributes.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint);
+
+	private static bool HasNullableConstraint(Type type) => GetNullableConstraintFlag(type) == 2;
+
+	private static byte? GetNullableConstraintFlag(Type type)
+	{
+		var attribute = type.GetCustomAttributes(inherit: false).FirstOrDefault(static x => x.GetType().FullName == "System.Runtime.CompilerServices.NullableAttribute");
+		if (attribute is null)
+			return null;
+
+		if (attribute.GetType().GetField("NullableFlag")?.GetValue(attribute) is byte flag)
+			return flag;
+		if (attribute.GetType().GetField("NullableFlags")?.GetValue(attribute) is byte[] flags && flags.Length != 0)
+			return flags[0];
 		return null;
 	}
 
@@ -536,4 +722,5 @@ internal static class CSharpSignatureRendering
 	[
 		"abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else", "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for", "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock", "long", "namespace", "new", "null", "object", "operator", "out", "override", "params", "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "virtual", "void", "volatile", "while",
 	];
+	private static readonly NullabilityInfoContext s_nullability = new();
 }
