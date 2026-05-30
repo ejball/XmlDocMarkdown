@@ -266,7 +266,7 @@ public sealed class XmlDocMemberNode : XmlDocNode
 }
 
 /// <summary>Visibility ordered from least to most visible, so comparisons (&gt;=) work directly.</summary>
-public enum XmlDocVisibility { Private, Internal, ProtectedInternal, Protected, Public }
+public enum XmlDocVisibility { Private, Internal, Protected, Public }
 public enum XmlDocTypeKind { Class, Struct, Interface, Enum, Delegate, Record, RecordStruct }
 public enum XmlDocMemberKind { Constructor, Method, Property, Field, Event, Operator }
 ```
@@ -275,7 +275,9 @@ Notes:
 - `XmlMember` is the joined XML doc for a node (renamed from `Documentation`), with any
   `<inheritdoc>` already resolved against base types/interfaces during tree construction.
 - `XmlDocVisibility` replaces today's `XmlDocVisibilityLevel`, framed as "the node's own visibility."
-  The enum is ordered, so a custom generator can compare visibilities directly.
+  The enum is ordered, so a custom generator can compare visibilities directly. A `protected internal`
+  member is classified as `Protected` (it is accessible to derived types outside the assembly, which is
+  what matters for documentation); there is no separate `ProtectedInternal` level.
 - The tree exposes **structural** signature data so any formatter can build signatures; canonical C#
   text is produced by the `CSharp` layer.
 
@@ -294,7 +296,6 @@ public abstract class XmlDocNodeVisibility
     /// <summary>One ready-made filter per visibility level (each includes that level and above).</summary>
     public static XmlDocNodeVisibility Public { get; }
     public static XmlDocNodeVisibility Protected { get; }            // default
-    public static XmlDocNodeVisibility ProtectedInternal { get; }
     public static XmlDocNodeVisibility Internal { get; }
     public static XmlDocNodeVisibility Private { get; }              // includes everything
 
@@ -373,23 +374,19 @@ public sealed class CSharpSignature
     public override string ToString();                      // concatenated token text
 }
 
-public sealed class CSharpSignatureSettings
+/// <summary>
+/// Builds a structured C# signature from a node (dispatching on type vs. member internally). The
+/// variants we actually use are exposed as static singletons; subclass to produce a custom signature.
+/// </summary>
+public abstract class CSharpSignatureBuilder
 {
-    public bool IncludeAccessModifiers { get; set; } = true;
-    public bool IncludeParameterNames { get; set; } = true;
-    public bool FullyQualifyTypes { get; set; }
-}
+    public abstract CSharpSignature GetSignature(XmlDocNode node);
 
-/// <summary>Builds C# signatures from nodes.</summary>
-public class CSharpSignatureBuilder
-{
-    public CSharpSignatureBuilder(CSharpSignatureSettings? settings = null);
+    /// <summary>Full declaration — access modifiers, modifiers, and parameter names — used in page headings.</summary>
+    public static CSharpSignatureBuilder Full { get; }
 
-    public virtual CSharpSignature GetTypeSignature(XmlDocTypeNode type);
-    public virtual CSharpSignature GetMemberSignature(XmlDocMemberNode member);
-
-    /// <summary>The short, link-friendly signature used in summary tables.</summary>
-    public virtual CSharpSignature GetShortSignature(XmlDocNode node);
+    /// <summary>Brief, link-friendly form — name plus parameter types — used in summary tables.</summary>
+    public static CSharpSignatureBuilder Short { get; }
 }
 ```
 
@@ -398,7 +395,7 @@ public class CSharpSignatureBuilder
 ```csharp
 // Render a type's signature as plain C#, no Markdown involved.
 var type = (XmlDocTypeNode) tree.FindNode(typeof(Widget))!;
-CSharpSignature sig = new CSharpSignatureBuilder().GetTypeSignature(type);
+CSharpSignature sig = CSharpSignatureBuilder.Full.GetSignature(type);
 Console.WriteLine(sig.ToString());   // "public sealed class Widget : IWidget"
 
 // Inspect the tokens to build your own hyperlinked output.
@@ -410,6 +407,10 @@ foreach (var token in sig.Tokens)
 ### Design decisions
 - Token granularity stays fine (one token per syntactic atom); today's model works well and gives
   renderers full control.
+- **One method, two built-in variants.** Rather than a settings object plus separate
+  type/member/short methods, `GetSignature(node)` dispatches on the node kind, and the only
+  combinations we actually emit are the static `Full` (page headings) and `Short` (summary tables)
+  singletons. A consumer who needs something else subclasses `CSharpSignatureBuilder`.
 - The file-name-safe identifier/path for a node belongs to the Pages layer (`XmlDocPageMap`), not here;
   this layer produces signatures only.
 
@@ -428,14 +429,12 @@ namespace XmlDocGen.Core.Pages;
 public abstract class XmlDocPageMap
 {
     /// <summary>
-    /// The site-relative logical path (no extension) for the page that documents this node.
-    /// Granularity is decided entirely here: nodes that return the same path share a page, so a node
-    /// gets "its own page" precisely when it maps to a unique path. There is no separate granularity flag.
+    /// The site-relative logical path (no extension, no leading slash) for the page that documents this
+    /// node. Granularity is decided entirely here: nodes that return the same path share a page, so a
+    /// node gets "its own page" precisely when it maps to a unique path. There is no separate
+    /// granularity flag.
     /// </summary>
     public abstract string GetPagePath(XmlDocNode node);
-
-    /// <summary>A stable intra-page anchor for the node, used for same-page links.</summary>
-    public virtual string GetAnchor(XmlDocNode node);
 
     // Ready-made granularities (each is just a built-in GetPagePath implementation):
     public static XmlDocPageMap PerMember { get; }       // member -> own page, type -> own page (default)
@@ -475,23 +474,37 @@ public abstract class XmlDocPageRenderer
     public abstract XmlDocRenderedFile RenderPage(XmlDocPage page, XmlDocPageContext context);
 }
 
-/// <summary>Maps a target page path (+ optional anchor) to a URL relative to the current page.</summary>
+/// <summary>
+/// Maps a link from one page to a documented node to a URL relative to the current page. The mapper
+/// owns the link format end to end: it computes the relative path between the logical page paths,
+/// appends its format's extension (or none), and — when the target node is not the target page's subject
+/// (i.e. it shares the page) — appends an intra-page fragment it slugifies the same way its host
+/// renderer does. "Anchor" never appears in the public API.
+/// </summary>
 public abstract class XmlDocUrlMapper
 {
-    public abstract string GetUrl(string fromPath, string targetPath, string? anchor = null);
+    /// <summary>The relative URL from <paramref name="fromPage"/> to <paramref name="targetNode"/> on
+    /// <paramref name="targetPage"/>. Both page paths are logical (no extension, no leading slash).</summary>
+    public abstract string GetUrl(XmlDocPage fromPage, XmlDocPage targetPage, XmlDocNode targetNode);
+
     public static XmlDocUrlMapper GitHub { get; }           // relative ".md" links (default)
     public static XmlDocUrlMapper Docusaurus { get; }       // extensionless, slugged links
 }
 
-/// <summary>Resolves links to types/members OUTSIDE the documented assemblies (reflection-based).</summary>
-public abstract class XmlDocExternalLinks
+/// <summary>Resolves links to types, members, or namespaces OUTSIDE the documented assemblies.</summary>
+public abstract class XmlDocExternalLinkResolver
 {
-    /// <summary>An absolute URL for a type or member not in the tree, or null if unknown.</summary>
-    public abstract string? TryGetUrl(MemberInfo member);   // Type is a MemberInfo
+    /// <summary>
+    /// An absolute URL for a target not in the tree, or null if unknown. <paramref name="reference"/> is
+    /// always supplied (a `T:`/`M:`/`P:`/`F:`/`E:`/`N:` identifier, so namespaces resolve too);
+    /// <paramref name="member"/> is the resolved reflection object when one is available (e.g. a loaded
+    /// BCL type or method) and null otherwise (notably for namespaces and unresolved refs).
+    /// </summary>
+    public abstract string? TryGetUrl(XmlDocRef reference, MemberInfo? member);
 
-    public static XmlDocExternalLinks DotNetApi { get; }                 // Microsoft Learn for System.*
-    public static XmlDocExternalLinks UrlPattern(string urlFormat);      // custom external source
-    public static XmlDocExternalLinks Combine(params XmlDocExternalLinks[] sources);
+    public static XmlDocExternalLinkResolver DotNetApi { get; }                       // Microsoft Learn for System.*
+    public static XmlDocExternalLinkResolver UrlPattern(string urlFormat);            // custom external source
+    public static XmlDocExternalLinkResolver Combine(params XmlDocExternalLinkResolver[] resolvers);
 }
 
 /// <summary>Resolves a documented member to a "view source" URL via the assembly's SourceLink PDB.</summary>
@@ -515,30 +528,47 @@ public sealed class XmlDocPageContext
     public XmlDocPage? FindPage(XmlDocRef reference);
 
     /// <summary>
-    /// Resolve a type/member to a URL relative to the current page: an internal page link (with an
-    /// anchor when the target shares a page) if it is in the tree; otherwise an external link; otherwise null.
+    /// Resolve a type or member to a URL relative to the current page: an internal page link (the URL
+    /// mapper adds an intra-page fragment when the target shares a page) if it is in the tree; otherwise
+    /// an external link; otherwise null.
     /// </summary>
     public string? GetLinkUrl(MemberInfo member);
+
+    /// <summary>
+    /// Resolve any reference — type, member, or namespace (`N:`) — to a URL relative to the current
+    /// page, using the tree first and the external resolver second. This is the form used when rendering
+    /// `&lt;see cref&gt;` content, where only the identifier is known.
+    /// </summary>
+    public string? GetLinkUrl(XmlDocRef reference);
 
     /// <summary>A "view source" URL for a documented member, or null if source links are unavailable.</summary>
     public string? GetSourceUrl(MemberInfo member);
 }
 ```
 
-### Linking and anchors (design)
+### Linking (design)
 
-Internal and external linking are **separate abstractions**, and external links are only consulted when
-an internal link is impossible:
+Internal and external linking are **separate abstractions**, and the external resolver is only consulted
+when an internal link is impossible:
 
-1. `XmlDocPageContext.GetLinkUrl(member)` looks up the member's node in the tree.
-2. If found (internal), it finds the target page, computes the anchor (`GetAnchor`, used only when the
-   target shares a page with another node), and asks the `XmlDocUrlMapper` for a URL **relative to the
-   current page** — this is why the mapper takes `fromPath` (the page being rendered) and `targetPath`.
-3. If not found (external), it consults `XmlDocExternalLinks.TryGetUrl(member)`.
+1. `XmlDocPageContext.GetLinkUrl(...)` looks up the target (by `MemberInfo` or `XmlDocRef`) in the tree.
+2. If found (internal), it finds the target page and asks the `XmlDocUrlMapper` for a URL **relative to
+   the current page**, passing the current page, the target page, and the target node. The mapper alone
+   decides whether an intra-page fragment is needed (when the target node is not the target page's
+   subject) and slugifies it to match its host renderer — so the word "anchor" never appears in the API.
+3. If not found (external), it consults `XmlDocExternalLinkResolver.TryGetUrl(reference, member)`. Because
+   the resolver keys on `XmlDocRef`, this path also resolves **namespace** links (`N:` refs), for which
+   no `MemberInfo` exists.
 4. Otherwise it returns null (render as plain text).
 
-Callers never pass `fromPath` themselves; the context supplies the current page. Same-page member links
-become `#anchor` (empty relative path + anchor), which the `XmlDocUrlMapper` produces.
+Callers never pass the current page themselves; the context supplies it. A same-page link is simply the
+mapper returning a fragment-only URL.
+
+> **Open question (flagged for implementation):** exactly what we hold when a link is resolved. Inside
+> rendered XML doc content we always have the `XmlDocRef` from the `cref`; we may or may not have a
+> resolved `MemberInfo` (we do for in-tree targets and loaded BCL types, not for arbitrary external
+> refs or namespaces). The resolver signature `(XmlDocRef reference, MemberInfo? member)` is chosen to
+> degrade gracefully, but may be revisited once the renderer's exact inputs are pinned down.
 
 ### Source links via SourceLink (design)
 
@@ -569,6 +599,12 @@ sealed class FlatPageMap : XmlDocPageMap
 ```
 
 ### Design decisions
+- **Path conventions.** A *logical* path (`XmlDocPage.Path`, `XmlDocPageMap.GetPagePath`) is
+  site-relative, `/`-separated, has **no extension**, and does **not** start with a slash (e.g.
+  `MyLib/Widget`). A *physical* path (`XmlDocRenderedFile.Path`, what the IO layer writes) is the same
+  string with the renderer's extension appended and is likewise relative with **no leading slash** (e.g.
+  `MyLib/Widget.md`). The `XmlDocUrlMapper` consumes **logical** paths (from the two `XmlDocPage`s) and
+  is the one component that knows about extensions/slugs — it produces the final, page-relative link.
 - `XmlDocPage.Path` is **logical (no extension)**; the renderer forms the actual file path by appending
   its own extension when it returns an `XmlDocRenderedFile`. There is no separate `FileExtension`
   property: the renderer already knows its format, so it owns both the text and the filename. Link
@@ -577,6 +613,8 @@ sealed class FlatPageMap : XmlDocPageMap
   `PerAssembly`/`SinglePage` presets, or a custom subclass). There is **no settings object**: a settings
   bag would only re-encode what `GetPagePath` already expresses, so it was removed.
 - The page map is purely structural and does not know the `XmlDocUrlMapper`; URL style is applied later.
+  It maps nodes to **paths only** — intra-page fragments ("anchors") are not its concern; the
+  `XmlDocUrlMapper` derives them when it forms a link, so the page map never sees the word "anchor."
 - The page's subject is simply `Nodes[0]`; there is no separate "primary node" concept.
 - **Page granularity lives entirely in `GetPagePath`.** A node has its own page iff it maps to a unique
   path; folding a member onto its type's page is just returning the type's path for that member. The
@@ -584,32 +622,32 @@ sealed class FlatPageMap : XmlDocPageMap
   than different `GetPagePath` implementations. See the
   [Customization cookbook](#customization-cookbook) for one example of each granularity.
 
-### Anchor slugs for overloaded members (proposal)
+### Intra-page links for overloaded members (proposal)
 
-The hard case is that the **anchor is often generated by the Markdown renderer, not by us** (GitHub and
-Docusaurus each slugify headings their own way), so we cannot freely invent anchors and expect links to
+The hard case is that the **fragment is generated by the Markdown renderer, not by us** (GitHub and
+Docusaurus each slugify headings their own way), so we cannot freely invent fragments and expect links to
 match. Proposal:
 
-- **Default to one page per member** (`PerMember`), where no intra-page anchor is needed: a link targets
-  the page, full stop. This sidesteps the slug-matching problem for the common case and is today's
-  behavior.
-- When members *are* folded onto a shared page, make `GetAnchor` **pluggable per URL style**, because the
-  slug algorithm belongs to the same component that owns link formatting. `XmlDocUrlMapper` gains a
-  `Slugify(string headingText)` so `GitHub` and `Docusaurus` each reproduce their host's exact slug
-  rules; `XmlDocPageMap.GetAnchor` then asks the active mapper to slugify the heading text we actually
-  emit for that member.
+- **Default to one page per member** (`PerMember`), where no intra-page fragment is needed: a link
+  targets the page, full stop. This sidesteps the slug-matching problem for the common case and is
+  today's behavior.
+- When members *are* folded onto a shared page, the fragment is computed **inside the
+  `XmlDocUrlMapper`**, because the slug algorithm belongs to the same component that owns link
+  formatting. `GetUrl(fromPage, targetPage, targetNode)` appends a fragment only when `targetNode` is
+  not `targetPage.Nodes[0]`, slugifying the heading text the way its host (`GitHub`/`Docusaurus`)
+  does. The page map and the rest of the API stay free of the "anchor" concept.
 - For **overloads that produce identical heading text**, emit a disambiguating suffix *into the heading
   itself* (e.g. `Spin(Int32)` vs `Spin(String)`) so the renderer-generated slug is naturally unique,
   rather than trying to predict a `-1`/`-2` collision suffix the renderer would append. The signature is
   already available from the CSharp layer, so the heading can carry the parameter list.
-- Document the limitation: anchor links are only guaranteed for the URL styles we model (`GitHub`,
-  `Docusaurus`); a custom renderer with a different slugger must override `Slugify`/`GetAnchor`.
+- Document the limitation: intra-page links are only guaranteed for the URL styles we model (`GitHub`,
+  `Docusaurus`); a custom renderer with a different slugger must supply a matching `XmlDocUrlMapper`.
 
 ---
 
 ## Sites Layer (`XmlDocGen.Core.Sites`)
 
-Site building: combine a tree, page map, renderer, URL mapper, and external links into a complete
+Site building: combine a tree, page map, renderer, URL mapper, and external link resolver into a complete
 in-memory site. Format-agnostic — it takes an `XmlDocPageRenderer` and is unaware of Markdown vs HTML.
 
 ```csharp
@@ -644,14 +682,14 @@ public sealed class XmlDocSiteBuilderSettings
     public XmlDocNodeVisibility? Visibility { get; set; }   // default: Protected
     public XmlDocPageMap? PageMap { get; set; }             // default: XmlDocPageMap.PerMember
     public XmlDocUrlMapper? UrlMapper { get; set; }         // default: GitHub
-    public XmlDocExternalLinks? ExternalLinks { get; set; } // default: DotNetApi
+    public XmlDocExternalLinkResolver? ExternalLinks { get; set; } // default: DotNetApi
     public XmlDocSourceLinks? SourceLinks { get; set; }     // default: null (off)
     public string? NewLine { get; set; }
 }
 ```
 
 `Build` creates the page set (`XmlDocPageBuilder`), constructs an `XmlDocPageContext` per page (wired
-with the page set, URL mapper, external links, and source links), renders each page into an
+with the page set, URL mapper, external link resolver, and source links), renders each page into an
 `XmlDocRenderedFile`, and collects the results into an `XmlDocSite`.
 
 ### Examples
@@ -669,12 +707,12 @@ foreach (var file in site.Files)
     Console.WriteLine(file.Path);
 
 // Document framework types via Microsoft Learn; everything else links within the site.
-var settings = new XmlDocSiteBuilderSettings { ExternalLinks = XmlDocExternalLinks.DotNetApi };
+var settings = new XmlDocSiteBuilderSettings { ExternalLinks = XmlDocExternalLinkResolver.DotNetApi };
 ```
 
 ### Design decisions
-- Internal links are resolved entirely from the tree/page set; `XmlDocExternalLinks` is consulted only
-  when a target is not in the tree. The two concerns stay separate abstractions.
+- Internal links are resolved entirely from the tree/page set; `XmlDocExternalLinkResolver` is consulted
+  only when a target is not in the tree. The two concerns stay separate abstractions.
 
 ---
 
@@ -704,7 +742,7 @@ public sealed class MarkdownWriter
 /// <summary>Renders node/XML content as Markdown building blocks; override a method to customize one section.</summary>
 public class MarkdownRenderer
 {
-    public MarkdownRenderer(CSharpSignatureBuilder? signatures = null);
+    public MarkdownRenderer();
 
     public virtual void WriteSignature(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context);
     public virtual void WriteSummary(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context);
@@ -886,11 +924,11 @@ public sealed class XmlDocGenAppContext
     public string OutputPath { get; }
 
     public XmlDocNodeVisibility Visibility { get; set; }            // default: Protected.ExcludeObsolete()...
-    public XmlDocPageMap PageMap { get; set; }                     // default: XmlDocPageMap.Create()
+    public XmlDocPageMap PageMap { get; set; }                     // default: XmlDocPageMap.PerMember
     public XmlDocPageRenderer Renderer { get; set; }               // default: MarkdownPageRenderer
     public XmlDocUrlMapper UrlMapper { get; set; }                 // default: GitHub
-    public XmlDocExternalLinks ExternalLinks { get; set; }         // default: DotNetApi
-    public XmlDocSourceLinks SourceLinks { get; set; }             // default: None
+    public XmlDocExternalLinkResolver ExternalLinks { get; set; }  // default: DotNetApi
+    public XmlDocSourceLinks? SourceLinks { get; set; }            // default: null (off)
     public XmlDocSiteWriterSettings WriterSettings { get; }        // clean/dryrun/quiet/verify from CLI
 
     /// <summary>
@@ -1049,7 +1087,7 @@ sealed class HtmlPageRenderer : XmlDocPageRenderer
             // Reuse the CSharp layer for type signatures; hyperlink type tokens via the page context.
             if (node is XmlDocTypeNode type)
             {
-                foreach (var token in new CSharpSignatureBuilder().GetTypeSignature(type).Tokens)
+                foreach (var token in CSharpSignatureBuilder.Full.GetSignature(type).Tokens)
                 {
                     var url = token.LinkTarget is { } t ? context.GetLinkUrl(t) : null;
                     var text = WebUtility.HtmlEncode(token.Text);
@@ -1100,7 +1138,7 @@ with a one-paragraph README and a checked-in expected-output snapshot (so sample
 | `Samples.CustomPageMap` | Bespoke page layout/paths | custom `XmlDocPageMap` subclass |
 | `Samples.DocusaurusUrls` | Docusaurus-style URLs/anchors | `ctx.UrlMapper = XmlDocUrlMapper.Docusaurus` |
 | `Samples.CustomUrlMapper` | Hand-rolled permalink scheme | custom `XmlDocUrlMapper` |
-| `Samples.ExternalLinks` | Link BCL/other-package types out | `ctx.ExternalLinks` (`XmlDocExternalLinks`) |
+| `Samples.ExternalLinks` | Link BCL/other-package types out | `ctx.ExternalLinks` (`XmlDocExternalLinkResolver`) |
 | `Samples.SourceLinks` | "View source" links via SourceLink | `XmlDocSourceLinks.TryCreate` |
 | `Samples.FrontMatter` | Jekyll/Docusaurus front matter | `MarkdownFrontMatter` lines |
 | `Samples.CustomMarkdown` | Override one Markdown section | `MarkdownRenderer` subclass |
@@ -1239,14 +1277,14 @@ array allocation per row.
 | `XmlDocVisibilityLevel` | `XmlDocVisibility` + `XmlDocNodeVisibility` | `XmlDocGen.Core.Nodes` |
 | reflection logic in `MarkdownGenerator` (`IsVisible`, `GetTypeKind`, tree walk) | `XmlDocNode` tree + `XmlDocTree` (multi-assembly) | `XmlDocGen.Core.Nodes` |
 | signature building in `MarkdownGenerator` | `CSharpSignatureBuilder`, `CSharpSignature`, `CSharpToken` | `XmlDocGen.Core.CSharp` |
-| paging/path logic in `MarkdownGenerator`, `NamespacePages` | `XmlDocPageMap` (+ settings), `XmlDocPage`, `XmlDocPageBuilder` | `XmlDocGen.Core.Pages` |
+| paging/path logic in `MarkdownGenerator`, `NamespacePages` | `XmlDocPageMap` (presets + custom), `XmlDocPage`, `XmlDocPageBuilder` | `XmlDocGen.Core.Pages` |
 | permalink/`MakeRelative`/`GetSafeName`/`GetPermalink`, `PermalinkStyle` | `XmlDocUrlMapper` (GitHub/Docusaurus) | `XmlDocGen.Core.Pages` |
-| `ExternalDocumentation` | **removed**; replaced by in-tree internal links + `XmlDocExternalLinks` (`DotNetApi`) | `XmlDocGen.Core.Pages` |
+| `ExternalDocumentation` | **removed**; replaced by in-tree internal links + `XmlDocExternalLinkResolver` (`DotNetApi`, namespaces too) | `XmlDocGen.Core.Pages` |
 | (new) | `XmlDocSourceLinks` (SourceLink "view source") | `XmlDocGen.Core.Pages` |
 | `NamedText` | `XmlDocSiteFile` (+ `XmlDocSite`) | `XmlDocGen.Core.Sites` |
 | `MarkdownGenerator` orchestration | `XmlDocSiteBuilder` (format-agnostic) | `XmlDocGen.Core.Sites` |
 | `MarkdownGenerator` rendering, `MarkdownWriter` | `MarkdownPageRenderer`, `MarkdownRenderer`, `MarkdownWriter` | `XmlDocGen.Core.Markdown` |
-| `XmlDocMarkdownSettings` | split across site-builder / page-map / renderer / writer settings | various |
+| `XmlDocMarkdownSettings` | split across site-builder / renderer / writer settings (no page-map or signature settings) | various |
 | I/O half of `XmlDocMarkdownGenerator.Generate`, `XmlDocMarkdownResult` | `XmlDocSiteWriter`, `XmlDocSiteWriteResult` | `XmlDocGen.Core.IO` |
 | `XmlDocMarkdownApp` | `XmlDocGenApp` (+ `XmlDocGenAppContext` with custom-option hook) | `XmlDocGen.Core` (root) |
 | `Assembly.Load`/`assembly.Location` | reused (load into the running process; `MetadataLoadContext` is a future enhancement) | `XmlDocGen.Core` (root) |
@@ -1319,21 +1357,26 @@ The layering lets us unit-test each layer in isolation, with end-to-end integrat
 - Modern C# feature coverage (table-driven against `Features.*`): every item in **Missing Functionality**.
 
 ### CSharp layer
-- `CSharpSignatureBuilder` golden tests: type/member/short signatures for each `Features.*` example,
+- `CSharpSignatureBuilder` golden tests: `Full` and `Short` signatures for each `Features.*` example,
   asserted as exact token sequences and as `ToString()` text.
-- Linkable tokens carry the correct `LinkTarget`; settings (`FullyQualifyTypes`, `IncludeParameterNames`).
-- Subclass override changes one signature shape without affecting others.
+- Linkable tokens carry the correct `LinkTarget`; `GetSignature` dispatches type vs. member correctly.
+- A custom `CSharpSignatureBuilder` subclass changes one signature shape without affecting the built-ins.
 
 ### Pages layer
-- `XmlDocPageMap.Create`/custom maps: `GetPagePath` groups nodes correctly with `NamespacePages` and
-  `MemberPages` on/off; `GetAnchor` stability and overload disambiguation.
-- `XmlDocPageBuilder.CreatePages`: page set, paths (with extension), subject = `Nodes[0]`, visibility
-  applied during grouping.
-- `XmlDocUrlMapper.GitHub`/`Docusaurus`: relative links across sibling/parent/child/same-page; period
-  and extension handling; global namespace; deep nesting; safe-name escaping; `#anchor` for same page.
-- `XmlDocExternalLinks`: `DotNetApi` maps `System.*` to Learn URLs; `UrlPattern`; `Combine` first-wins.
-- `XmlDocPageContext.GetLinkUrl`: internal target → relative URL (+ anchor when shared page); external
-  target → external URL; unknown → null.
+- Built-in and custom maps: `GetPagePath` groups nodes correctly across the
+  `PerMember`/`PerType`/`PerNamespace`/`PerAssembly`/`SinglePage` presets; logical paths have no leading
+  slash or extension.
+- `XmlDocPageBuilder.CreatePages`: page set, paths, subject = `Nodes[0]`, visibility applied during
+  grouping.
+- `XmlDocUrlMapper.GitHub`/`Docusaurus`: relative links across sibling/parent/child/same-page given
+  `(fromPage, targetPage, targetNode)`; period and extension handling; global namespace; deep nesting;
+  safe-name escaping; fragment appended (and slugged) only when the target node is not the page subject;
+  overload disambiguation produces unique fragments.
+- `XmlDocExternalLinkResolver`: `DotNetApi` maps `System.*` types, members, and namespaces to Learn
+  URLs; `UrlPattern`; `Combine` first-wins.
+- `XmlDocPageContext.GetLinkUrl` (`MemberInfo` and `XmlDocRef`, incl. namespaces): internal target →
+  relative URL (with fragment when the target shares a page); external target → external URL; unknown →
+  null.
 - `XmlDocSourceLinks.TryCreate`: reads SourceLink JSON + sequence points from the example assemblies'
   PDBs and produces correct source URLs; missing-PDB and unresolvable-member cases return null.
 
