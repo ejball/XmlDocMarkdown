@@ -19,6 +19,7 @@ public class ExampleModernSyntax
 | [op_Addition](./ExampleModernSyntax/op_Addition.md) | operator | Checked addition. |
 | [op_CheckedAddition](./ExampleModernSyntax/op_CheckedAddition.md) | operator | Checked addition. |
 | [op_UnsignedRightShift](./ExampleModernSyntax/op_UnsignedRightShift.md) | operator | Unsigned right shift. |
+| [ReadRefReadonly](./ExampleModernSyntax/ReadRefReadonly.md) | method | Reads a ref readonly parameter. |
 | [RefReadonlyValue](./ExampleModernSyntax/RefReadonlyValue.md) | property | Gets a ref readonly value. |
 | [TupleNames](./ExampleModernSyntax/TupleNames.md) | method | Gets tuple names and native integers. |
 | [UpdateScoped](./ExampleModernSyntax/UpdateScoped.md) | method | Updates a scoped reference. |

@@ -1,6 +1,6 @@
 sample: Samples.DocusaurusUrls
-files: 206
-sha256: 2e41366cc693eb224e5c826a00df45cf21e0d113e293464b34290d0fb96dfd3f
+files: 207
+sha256: ce608d95423d2dc8f9c19bbcbc1840f202531de437ef6c8e205093e842eb3ee8
 preview:
 - ExampleAssembly.md
 - ExampleAssembly/ExampleAssembly.InnerNamespace.md

@@ -55,6 +55,7 @@ internal sealed class CSharpLayerTests
 		Assert.That(GetSignature(tree, modernType.GetProperty(nameof(ExampleModernSyntax.RefReadonlyValue))!), Is.EqualTo("public ref readonly int RefReadonlyValue { get; }"));
 		Assert.That(GetSignature(tree, modernType.GetMethod(nameof(ExampleModernSyntax.GetFunctionPointer))!), Is.EqualTo("public delegate*<int, int> GetFunctionPointer(delegate*<int, int> callback)"));
 		Assert.That(GetSignature(tree, modernType.GetMethod(nameof(ExampleModernSyntax.UpdateScoped))!), Is.EqualTo("public void UpdateScoped(scoped ref int value)"));
+		Assert.That(GetSignature(tree, modernType.GetMethod(nameof(ExampleModernSyntax.ReadRefReadonly))!), Is.EqualTo("public void ReadRefReadonly(ref readonly int value)"));
 		Assert.That(GetSignature(tree, modernType.GetMethod(nameof(ExampleModernSyntax.TupleNames))!), Is.EqualTo("public (int Count, string? Name) TupleNames((nint Index, nuint Length) input)"));
 		Assert.That(GetSignature(tree, modernType.GetMethod(nameof(ExampleModernSyntax.Constrained))!), Does.Contain("where TNotNull : notnull where TUnmanaged : unmanaged where TClass : class?"));
 		Assert.That(GetSignature(tree, modernType.GetMethods().Single(x => x.Name == "op_CheckedAddition")), Does.Contain("operator checked +"));

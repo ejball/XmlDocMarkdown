@@ -1,6 +1,6 @@
 sample: Samples.ExternalLinks
-files: 206
-sha256: 61942713c1bab96ba83f6937aaff2733ed7c0cb76913ade9a6a1d7cba1035f86
+files: 207
+sha256: 98919cdfec69e031b4f53be9d903cc409fd2eb1b1e8da401fddfc8989aeaf21c
 preview:
 - ExampleAssembly.md
 - ExampleAssembly/ExampleAssembly.InnerNamespace.md

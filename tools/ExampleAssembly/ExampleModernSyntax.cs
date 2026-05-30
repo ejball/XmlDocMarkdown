@@ -23,6 +23,12 @@ public unsafe class ExampleModernSyntax(string name)
 	/// <param name="value">The value.</param>
 	public void UpdateScoped(scoped ref int value) => value++;
 
+	/// <summary>Reads a ref readonly parameter.</summary>
+	/// <param name="value">The value.</param>
+	public void ReadRefReadonly(ref readonly int value)
+	{
+	}
+
 	/// <summary>Gets tuple names and native integers.</summary>
 	/// <param name="input">The input.</param>
 	public (int Count, string? Name) TupleNames((nint Index, nuint Length) input) => ((int) input.Length, Name);

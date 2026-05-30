@@ -386,6 +386,8 @@ internal static class CSharpSignatureRendering
 	{
 		if (parameter.IsOut)
 			return "out";
+		if (IsRefReadOnlyParameter(parameter))
+			return "ref readonly";
 		if (parameter.IsIn)
 			return "in";
 		if (IsReadOnlyRef(parameter))
@@ -618,6 +620,8 @@ internal static class CSharpSignatureRendering
 	private static bool IsVirtualAccessor(MethodInfo? method) => method is { IsVirtual: true, IsFinal: false, IsAbstract: false };
 
 	private static bool IsReadOnlyRef(ParameterInfo parameter) => parameter.GetRequiredCustomModifiers().Contains(typeof(IsReadOnlyAttribute)) || HasAttribute(parameter, "System.Runtime.CompilerServices.IsReadOnlyAttribute");
+
+	private static bool IsRefReadOnlyParameter(ParameterInfo parameter) => parameter.IsIn && HasAttribute(parameter, "System.Runtime.CompilerServices.RequiresLocationAttribute");
 
 	private static bool IsScoped(ParameterInfo parameter) => parameter.GetCustomAttributes().Any(static x => x.GetType().FullName == "System.Runtime.CompilerServices.ScopedRefAttribute");
 
