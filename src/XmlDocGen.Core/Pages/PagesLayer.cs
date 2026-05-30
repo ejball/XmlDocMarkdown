@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Text.Json;
 using XmlDocGen.Core.Nodes;
@@ -329,11 +330,42 @@ public sealed class XmlDocSourceLinks
 
 		var pdbPath = Path.ChangeExtension(assembly.Location, ".pdb");
 		if (!File.Exists(pdbPath))
-			return null;
+			return TryCreateFromEmbeddedPdb(assembly);
 
 		using var stream = File.OpenRead(pdbPath);
 		using var provider = MetadataReaderProvider.FromPortablePdbStream(stream);
-		var reader = provider.GetMetadataReader();
+		return TryCreateFromReader(assembly, provider.GetMetadataReader());
+	}
+
+	/// <summary>Attempts to get a source URL for a member.</summary>
+	public string? TryGetUrl(MemberInfo member)
+	{
+		if (member is TypeInfo type)
+			member = type.DeclaredConstructors.FirstOrDefault(x => !x.IsStatic) ?? type.DeclaredMethods.FirstOrDefault() ?? member;
+		if (member is PropertyInfo property)
+			member = property.GetMethod ?? property.SetMethod ?? member;
+		if (member is EventInfo @event)
+			member = @event.AddMethod ?? @event.RemoveMethod ?? member;
+		return m_urlsByMetadataToken.GetValueOrDefault(member.MetadataToken);
+	}
+
+	private static XmlDocSourceLinks? TryCreateFromEmbeddedPdb(Assembly assembly)
+	{
+		using var stream = File.OpenRead(assembly.Location);
+		using var peReader = new PEReader(stream);
+		foreach (var entry in peReader.ReadDebugDirectory())
+		{
+			if (entry.Type != DebugDirectoryEntryType.EmbeddedPortablePdb)
+				continue;
+
+			using var provider = peReader.ReadEmbeddedPortablePdbDebugDirectoryData(entry);
+			return TryCreateFromReader(assembly, provider.GetMetadataReader());
+		}
+		return null;
+	}
+
+	private static XmlDocSourceLinks? TryCreateFromReader(Assembly assembly, MetadataReader reader)
+	{
 		var documents = ReadSourceLinkDocuments(reader);
 		if (documents.Count == 0)
 			return null;
@@ -358,18 +390,6 @@ public sealed class XmlDocSourceLinks
 		}
 
 		return urlsByMetadataToken.Count == 0 ? null : new XmlDocSourceLinks(assembly, urlsByMetadataToken);
-	}
-
-	/// <summary>Attempts to get a source URL for a member.</summary>
-	public string? TryGetUrl(MemberInfo member)
-	{
-		if (member is TypeInfo type)
-			member = type.DeclaredConstructors.FirstOrDefault(x => !x.IsStatic) ?? type.DeclaredMethods.FirstOrDefault() ?? member;
-		if (member is PropertyInfo property)
-			member = property.GetMethod ?? property.SetMethod ?? member;
-		if (member is EventInfo @event)
-			member = @event.AddMethod ?? @event.RemoveMethod ?? member;
-		return m_urlsByMetadataToken.GetValueOrDefault(member.MetadataToken);
 	}
 
 	private static IReadOnlyDictionary<string, string> ReadSourceLinkDocuments(MetadataReader reader)

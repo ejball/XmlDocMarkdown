@@ -139,6 +139,32 @@ internal sealed class MarkdownGeneratorTests
 		Assert.That(propertyFile.Text, Does.Contain("The ID."));
 	}
 
+	[Test]
+	public void XmlFileLoadExpandsIncludes()
+	{
+		var directory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+		Directory.CreateDirectory(directory);
+		try
+		{
+			File.WriteAllText(Path.Combine(directory, "include.xml"), "<docs><summary>Included summary.</summary></docs>");
+			File.WriteAllText(Path.Combine(directory, "main.xml"), "<doc><members><member name=\"T:Example.Widget\"><include file=\"include.xml\" path=\"/docs/summary\" /></member></members></doc>");
+
+			var file = XmlDocXmlFile.Load(Path.Combine(directory, "main.xml"));
+
+			Assert.That(file.FindMember(new XmlDocRef("T:Example.Widget"))?.Summary.Single().Inlines.Single().Text, Is.EqualTo("Included summary."));
+		}
+		finally
+		{
+			Directory.Delete(directory, recursive: true);
+		}
+	}
+
+	[Test]
+	public void SourceLinksCanProbeAssemblyWithoutThrowing()
+	{
+		Assert.DoesNotThrow(() => XmlDocSourceLinks.TryCreate(typeof(ExampleClass).GetTypeInfo().Assembly));
+	}
+
 	private static XmlDocTree CreateExampleTree()
 	{
 		var assembly = typeof(ExampleClass).GetTypeInfo().Assembly;

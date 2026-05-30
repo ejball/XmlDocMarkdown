@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace XmlDocGen.Core.Xml;
 
@@ -70,7 +71,7 @@ public sealed class XmlDocXmlFile
 	}
 
 	/// <summary>Loads XML documentation from a file path.</summary>
-	public static XmlDocXmlFile Load(string path) => new(XDocument.Load(path));
+	public static XmlDocXmlFile Load(string path) => new(LoadDocument(path));
 
 	/// <summary>Loads XML documentation from a stream.</summary>
 	public static XmlDocXmlFile Load(Stream stream) => new(XDocument.Load(stream));
@@ -86,6 +87,30 @@ public sealed class XmlDocXmlFile
 
 	/// <summary>Finds documentation for the given reference.</summary>
 	public XmlDocXmlMember? FindMember(XmlDocRef reference) => m_membersByRef.GetValueOrDefault(reference);
+
+	private static XDocument LoadDocument(string path)
+	{
+		var document = XDocument.Load(path);
+		ResolveIncludes(document, Path.GetDirectoryName(Path.GetFullPath(path)) ?? "");
+		return document;
+	}
+
+	private static void ResolveIncludes(XDocument document, string basePath)
+	{
+		foreach (var include in document.Descendants("include").ToList())
+		{
+			var file = include.Attribute("file")?.Value;
+			var path = include.Attribute("path")?.Value;
+			if (string.IsNullOrWhiteSpace(file) || string.IsNullOrWhiteSpace(path))
+				continue;
+
+			var includePath = Path.GetFullPath(Path.Combine(basePath, file));
+			var includeDocument = XDocument.Load(includePath);
+			include.ReplaceWith(includeDocument.XPathSelectElements(path).Select(CloneElement));
+		}
+	}
+
+	private static XElement CloneElement(XElement element) => new(element);
 
 	private readonly IReadOnlyDictionary<XmlDocRef, XmlDocXmlMember> m_membersByRef;
 }
