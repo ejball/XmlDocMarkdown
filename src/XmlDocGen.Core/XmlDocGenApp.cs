@@ -9,20 +9,19 @@ using XmlDocGen.Core.Xml;
 namespace XmlDocGen.Core;
 
 /// <summary>Command-line entry point for documentation generation.</summary>
-public static class XmlDocGenApp
+public sealed class XmlDocGenApp
 {
+	private XmlDocGenApp()
+	{
+	}
+
 	/// <summary>Runs the command-line application.</summary>
 	public static int Run(IReadOnlyList<string> args, Action<XmlDocGenAppContext>? configure = null)
 	{
 		try
 		{
 			var reader = new XmlDocArgsReader(args);
-			if (reader.ReadFlag("help|h|?"))
-			{
-				WriteUsage(Console.Out, []);
-				return 0;
-			}
-
+			var isHelp = reader.ReadFlag("help|h|?");
 			var isVerify = reader.ReadFlag("verify");
 			var writerSettings = new XmlDocSiteWriterSettings
 			{
@@ -30,6 +29,13 @@ public static class XmlDocGenApp
 				IsQuiet = reader.ReadFlag("quiet"),
 				IsDryRun = isVerify || reader.ReadFlag("dryrun"),
 			};
+			if (isHelp)
+			{
+				var helpContext = new XmlDocGenAppContext([], "", reader, writerSettings);
+				configure?.Invoke(helpContext);
+				WriteUsage(Console.Out, helpContext.HelpLines);
+				return 0;
+			}
 
 			var positionals = reader.ReadRemainingArguments();
 			if (positionals.Count < 2)

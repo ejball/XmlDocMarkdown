@@ -34,16 +34,16 @@ public sealed class XmlDocSiteWriter
 				var oldText = fileSystem.ReadAllText(path);
 				if (!SameText(oldText, file.Text))
 				{
-					result.Changed.Add(file.Path);
-					result.Messages.Add("changed " + file.Path);
+					result.AddChanged(file.Path);
+					result.AddMessage("changed " + file.Path);
 					if (!Settings.IsDryRun)
 						fileSystem.WriteAllText(path, file.Text);
 				}
 			}
 			else
 			{
-				result.Added.Add(file.Path);
-				result.Messages.Add("added " + file.Path);
+				result.AddAdded(file.Path);
+				result.AddMessage("added " + file.Path);
 				if (!Settings.IsDryRun)
 					fileSystem.WriteAllText(path, file.Text);
 			}
@@ -53,8 +53,8 @@ public sealed class XmlDocSiteWriter
 		{
 			foreach (var removed in previous.Except(current, StringComparer.OrdinalIgnoreCase))
 			{
-				result.Removed.Add(removed);
-				result.Messages.Add("removed " + removed);
+				result.AddRemoved(removed);
+				result.AddMessage("removed " + removed);
 				if (!Settings.IsDryRun)
 					fileSystem.DeleteFile(Path.Combine(outputPath, removed.Replace('/', Path.DirectorySeparatorChar)));
 			}
@@ -63,7 +63,7 @@ public sealed class XmlDocSiteWriter
 		}
 
 		if (Settings.IsQuiet)
-			result.Messages.Clear();
+			result.ClearMessages();
 
 		return result;
 	}
@@ -122,19 +122,34 @@ public interface IXmlDocFileSystem
 public sealed class XmlDocSiteWriteResult
 {
 	/// <summary>Gets added files.</summary>
-	public List<string> Added { get; } = [];
+	public IReadOnlyList<string> Added => m_added;
 
 	/// <summary>Gets changed files.</summary>
-	public List<string> Changed { get; } = [];
+	public IReadOnlyList<string> Changed => m_changed;
 
 	/// <summary>Gets removed files.</summary>
-	public List<string> Removed { get; } = [];
+	public IReadOnlyList<string> Removed => m_removed;
 
 	/// <summary>Gets informational messages.</summary>
-	public List<string> Messages { get; } = [];
+	public IReadOnlyList<string> Messages => m_messages;
 
 	/// <summary>Gets a value indicating whether the write would change files.</summary>
 	public bool HasChanges => Added.Count + Changed.Count + Removed.Count != 0;
+
+	internal void AddAdded(string path) => m_added.Add(path);
+
+	internal void AddChanged(string path) => m_changed.Add(path);
+
+	internal void AddRemoved(string path) => m_removed.Add(path);
+
+	internal void AddMessage(string message) => m_messages.Add(message);
+
+	internal void ClearMessages() => m_messages.Clear();
+
+	private readonly List<string> m_added = [];
+	private readonly List<string> m_changed = [];
+	private readonly List<string> m_removed = [];
+	private readonly List<string> m_messages = [];
 }
 
 internal sealed class RealXmlDocFileSystem : IXmlDocFileSystem

@@ -1,4 +1,8 @@
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
+using System.Text;
+using System.Text.Json;
 using XmlDocGen.Core.Nodes;
 using XmlDocGen.Core.Xml;
 
@@ -46,7 +50,7 @@ public abstract class XmlDocPageMap
 	public static string GetSafeName(XmlDocNode node) => GetSafeName(node.Name);
 
 	/// <summary>Returns a URL-safe file-name component.</summary>
-	public static string GetSafeName(string name) => name.Replace('<', '-').Replace('>', '-').Replace('`', '-').Replace(' ', '-');
+	public static string GetSafeName(string name) => string.Concat(name.Select(ch => char.IsLetterOrDigit(ch) || ch is '.' or '-' or '_' ? ch : '-')).Trim('-');
 
 	private static string GetPerMemberPath(XmlDocNode node)
 	{
@@ -55,7 +59,7 @@ public abstract class XmlDocPageMap
 			XmlDocAssemblyNode assembly => GetAssemblyPath(assembly),
 			XmlDocNamespaceNode namespaceNode => GetNamespacePath(namespaceNode),
 			XmlDocTypeNode typeNode => GetTypePath(typeNode),
-			XmlDocMemberNode memberNode => GetTypePath((XmlDocTypeNode) memberNode.Parent!) + "/" + GetSafeName(memberNode),
+			XmlDocMemberNode memberNode => GetTypePath((XmlDocTypeNode) memberNode.Parent!) + "/" + GetMemberSafeName(memberNode),
 			_ => GetSafeName(node),
 		};
 	}
@@ -78,6 +82,12 @@ public abstract class XmlDocPageMap
 
 	private static string GetTypePath(XmlDocTypeNode type) => GetNamespacePath(GetNamespace(type)) + "/" + GetSafeName(type);
 
+	private static string GetMemberSafeName(XmlDocMemberNode member)
+	{
+		var sameNameCount = member.Parent?.Children.OfType<XmlDocMemberNode>().Count(x => x.Name == member.Name) ?? 0;
+		return sameNameCount <= 1 ? GetSafeName(member.Name) : GetSafeName(XmlDocPageHeadings.GetHeadingText(member));
+	}
+
 	private static XmlDocNamespaceNode GetNamespace(XmlDocNode node)
 	{
 		var current = node;
@@ -93,26 +103,12 @@ public abstract class XmlDocPageMap
 }
 
 /// <summary>Builds pages from a tree and page map.</summary>
-public sealed class XmlDocPageBuilder
+public static class XmlDocPageBuilder
 {
-	/// <summary>Initializes a new instance of the <see cref="XmlDocPageBuilder"/> class.</summary>
-	public XmlDocPageBuilder(XmlDocPageMap? pageMap = null, XmlDocNodeVisibility? visibility = null)
-	{
-		PageMap = pageMap ?? XmlDocPageMap.PerMember;
-		Visibility = visibility ?? XmlDocNodeVisibility.Protected;
-	}
-
-	/// <summary>Gets the page map.</summary>
-	public XmlDocPageMap PageMap { get; }
-
-	/// <summary>Gets the visibility filter.</summary>
-	public XmlDocNodeVisibility Visibility { get; }
-
-	/// <summary>Builds pages from a tree.</summary>
-	public IReadOnlyList<XmlDocPage> Build(XmlDocTree tree) =>
-		[.. tree.DescendantsAndSelf()
-			.Where(Visibility.Includes)
-			.GroupBy(PageMap.GetPagePath)
+	/// <summary>Groups visible nodes into logical pages.</summary>
+	public static IReadOnlyList<XmlDocPage> CreatePages(XmlDocTree tree, XmlDocNodeVisibility visibility, XmlDocPageMap map) =>
+		[.. tree.DescendantsAndSelf(visibility)
+			.GroupBy(map.GetPagePath)
 			.OrderBy(x => x.Key, StringComparer.OrdinalIgnoreCase)
 			.Select(x => new XmlDocPage(x.Key, x))];
 }
@@ -135,7 +131,7 @@ public sealed class XmlDocPageContext
 	{
 		Tree = tree;
 		Pages = pages;
-		CurrentPage = currentPage;
+		Page = currentPage;
 		UrlMapper = urlMapper;
 		ExternalLinks = externalLinks;
 		SourceLinks = sourceLinks;
@@ -149,7 +145,10 @@ public sealed class XmlDocPageContext
 	public IReadOnlyList<XmlDocPage> Pages { get; }
 
 	/// <summary>Gets the page currently being rendered.</summary>
-	public XmlDocPage CurrentPage { get; }
+	public XmlDocPage Page { get; }
+
+	/// <summary>Gets the page currently being rendered.</summary>
+	public XmlDocPage CurrentPage => Page;
 
 	/// <summary>Gets the URL mapper.</summary>
 	public XmlDocUrlMapper UrlMapper { get; }
@@ -161,17 +160,34 @@ public sealed class XmlDocPageContext
 	public XmlDocSourceLinks? SourceLinks { get; }
 
 	/// <summary>Gets a URL for a reflected member.</summary>
-	public string? GetLinkUrl(MemberInfo member) => GetLinkUrl(XmlDocRef.ForMember(member));
+	public string? GetLinkUrl(MemberInfo member)
+	{
+		var reference = XmlDocRef.ForMember(member);
+		var targetNode = Tree.FindNode(reference);
+		if (targetNode is not null && m_pagesByNode.TryGetValue(targetNode, out var targetPage))
+			return UrlMapper.GetUrl(Page, targetPage, targetNode);
+
+		return ExternalLinks.TryGetUrl(reference, member);
+	}
+
+	/// <summary>Finds the page containing a node.</summary>
+	public XmlDocPage? FindPage(XmlDocNode node) => m_pagesByNode.GetValueOrDefault(node);
+
+	/// <summary>Finds the page containing a reference.</summary>
+	public XmlDocPage? FindPage(XmlDocRef reference) => Tree.FindNode(reference) is { } node ? FindPage(node) : null;
 
 	/// <summary>Gets a URL for an XML documentation reference.</summary>
 	public string? GetLinkUrl(XmlDocRef reference)
 	{
 		var targetNode = Tree.FindNode(reference);
 		if (targetNode is not null && m_pagesByNode.TryGetValue(targetNode, out var targetPage))
-			return UrlMapper.GetUrl(CurrentPage, targetPage, targetNode);
+			return UrlMapper.GetUrl(Page, targetPage, targetNode);
 
 		return ExternalLinks.TryGetUrl(reference, null);
 	}
+
+	/// <summary>Gets a source URL for a reflected member.</summary>
+	public string? GetSourceUrl(MemberInfo member) => SourceLinks?.TryGetUrl(member);
 
 	private readonly IReadOnlyDictionary<XmlDocNode, XmlDocPage> m_pagesByNode;
 }
@@ -193,7 +209,7 @@ public abstract class XmlDocUrlMapper
 		public override string GetUrl(XmlDocPage fromPage, XmlDocPage targetPage, XmlDocNode targetNode)
 		{
 			var relative = MakeRelative(fromPage.Path + extension, targetPage.Path + extension);
-			var fragment = targetPage.Nodes.Count > 1 ? "#" + Slug(targetNode.Name) : "";
+			var fragment = targetNode == targetPage.Nodes[0] ? "" : "#" + Slug(XmlDocPageHeadings.GetHeadingText(targetPage, targetNode));
 			return relative + fragment;
 		}
 
@@ -209,11 +225,53 @@ public abstract class XmlDocUrlMapper
 	}
 }
 
+internal static class XmlDocPageHeadings
+{
+	public static string GetHeadingText(XmlDocPage page, XmlDocNode node)
+	{
+		return page.Nodes.Count(x => x.Name == node.Name) <= 1 ? node.Name : GetHeadingText(node);
+	}
+
+	public static string GetHeadingText(XmlDocNode node)
+	{
+		return node is XmlDocMemberNode member ? member.Name + GetMemberSuffix(member.Member) : node.Name;
+	}
+
+	private static string GetMemberSuffix(MemberInfo member)
+	{
+		var parameters = member switch
+		{
+			ConstructorInfo constructor => constructor.GetParameters(),
+			MethodInfo method => method.GetParameters(),
+			PropertyInfo property => property.GetIndexParameters(),
+			_ => [],
+		};
+		return parameters.Length == 0 ? "()" : "(" + string.Join(", ", parameters.Select(x => GetShortTypeName(x.ParameterType))) + ")";
+	}
+
+	private static string GetShortTypeName(Type type)
+	{
+		if (type.IsByRef)
+			return GetShortTypeName(type.GetElementType()!) + "&";
+		if (type.IsArray)
+			return GetShortTypeName(type.GetElementType()!) + "[]";
+		if (!type.IsGenericType)
+			return type.Name;
+		return type.Name[..type.Name.IndexOf('`', StringComparison.Ordinal)] + "<" + string.Join(", ", type.GetGenericArguments().Select(GetShortTypeName)) + ">";
+	}
+}
+
 /// <summary>Resolves links to documentation outside the current tree.</summary>
 public abstract class XmlDocExternalLinkResolver
 {
 	/// <summary>Gets a resolver for Microsoft Learn .NET API documentation.</summary>
 	public static XmlDocExternalLinkResolver DotNetApi { get; } = new DotNetApiResolver();
+
+	/// <summary>Creates a resolver from a URL format where <c>{ref}</c> is the XML documentation reference.</summary>
+	public static XmlDocExternalLinkResolver UrlPattern(string urlFormat) => new PatternResolver(urlFormat);
+
+	/// <summary>Combines resolvers, using the first non-null URL.</summary>
+	public static XmlDocExternalLinkResolver Combine(params XmlDocExternalLinkResolver[] resolvers) => new CombinedResolver(resolvers);
 
 	/// <summary>Tries to resolve a URL for an external reference.</summary>
 	public abstract string? TryGetUrl(XmlDocRef reference, MemberInfo? member);
@@ -230,22 +288,134 @@ public abstract class XmlDocExternalLinkResolver
 			return member?.DeclaringType?.Namespace?.StartsWith("System", StringComparison.Ordinal) == true ? "https://learn.microsoft.com/dotnet/api/" + member.DeclaringType.FullName?.ToLowerInvariant() : null;
 		}
 	}
+
+	private sealed class PatternResolver(string urlFormat) : XmlDocExternalLinkResolver
+	{
+		public override string TryGetUrl(XmlDocRef reference, MemberInfo? member) => urlFormat.Replace("{ref}", Uri.EscapeDataString(reference.Value), StringComparison.Ordinal).Replace("{name}", Uri.EscapeDataString(reference.Value[2..]), StringComparison.Ordinal);
+	}
+
+	private sealed class CombinedResolver(IReadOnlyList<XmlDocExternalLinkResolver> resolvers) : XmlDocExternalLinkResolver
+	{
+		public override string? TryGetUrl(XmlDocRef reference, MemberInfo? member)
+		{
+			foreach (var resolver in resolvers)
+			{
+				if (resolver.TryGetUrl(reference, member) is { } url)
+					return url;
+			}
+			return null;
+		}
+	}
 }
 
 /// <summary>Provides source-link URLs for reflected members.</summary>
 public sealed class XmlDocSourceLinks
 {
-	private XmlDocSourceLinks(Assembly assembly)
+	private XmlDocSourceLinks(Assembly assembly, IReadOnlyDictionary<int, string> urlsByMetadataToken)
 	{
 		Assembly = assembly;
+		m_urlsByMetadataToken = urlsByMetadataToken;
 	}
 
 	/// <summary>Gets the assembly this source-link resolver was created for.</summary>
 	public Assembly Assembly { get; }
 
 	/// <summary>Attempts to create source links for an assembly.</summary>
-	public static XmlDocSourceLinks? TryCreate(Assembly assembly) => string.IsNullOrEmpty(assembly.Location) ? null : new XmlDocSourceLinks(assembly);
+	public static XmlDocSourceLinks? TryCreate(Assembly assembly)
+	{
+		ArgumentNullException.ThrowIfNull(assembly);
+		if (string.IsNullOrEmpty(assembly.Location))
+			return null;
+
+		var pdbPath = Path.ChangeExtension(assembly.Location, ".pdb");
+		if (!File.Exists(pdbPath))
+			return null;
+
+		using var stream = File.OpenRead(pdbPath);
+		using var provider = MetadataReaderProvider.FromPortablePdbStream(stream);
+		var reader = provider.GetMetadataReader();
+		var documents = ReadSourceLinkDocuments(reader);
+		if (documents.Count == 0)
+			return null;
+
+		var urlsByMetadataToken = new Dictionary<int, string>();
+		foreach (var handle in reader.MethodDebugInformation)
+		{
+			var methodDebugInfo = reader.GetMethodDebugInformation(handle);
+			if (methodDebugInfo.Document.IsNil)
+				continue;
+
+			var firstSequencePoint = methodDebugInfo.GetSequencePoints().FirstOrDefault(x => !x.IsHidden);
+			if (firstSequencePoint.Equals(default(SequencePoint)))
+				continue;
+
+			var documentName = reader.GetString(reader.GetDocument(methodDebugInfo.Document).Name);
+			if (TryGetSourceUrl(documents, documentName, firstSequencePoint.StartLine) is { } sourceUrl)
+			{
+				var rowNumber = MetadataTokens.GetRowNumber(handle);
+				urlsByMetadataToken[MetadataTokens.GetToken(MetadataTokens.MethodDefinitionHandle(rowNumber))] = sourceUrl;
+			}
+		}
+
+		return urlsByMetadataToken.Count == 0 ? null : new XmlDocSourceLinks(assembly, urlsByMetadataToken);
+	}
 
 	/// <summary>Attempts to get a source URL for a member.</summary>
-	public string? TryGetUrl(MemberInfo member) => null;
+	public string? TryGetUrl(MemberInfo member)
+	{
+		if (member is TypeInfo type)
+			member = type.DeclaredConstructors.FirstOrDefault(x => !x.IsStatic) ?? type.DeclaredMethods.FirstOrDefault() ?? member;
+		if (member is PropertyInfo property)
+			member = property.GetMethod ?? property.SetMethod ?? member;
+		if (member is EventInfo @event)
+			member = @event.AddMethod ?? @event.RemoveMethod ?? member;
+		return m_urlsByMetadataToken.GetValueOrDefault(member.MetadataToken);
+	}
+
+	private static IReadOnlyDictionary<string, string> ReadSourceLinkDocuments(MetadataReader reader)
+	{
+		foreach (var handle in reader.CustomDebugInformation)
+		{
+			var customDebugInformation = reader.GetCustomDebugInformation(handle);
+			if (reader.GetGuid(customDebugInformation.Kind) != s_sourceLinkId)
+				continue;
+
+			var bytes = reader.GetBlobBytes(customDebugInformation.Value);
+			using var document = JsonDocument.Parse(Encoding.UTF8.GetString(bytes));
+			if (!document.RootElement.TryGetProperty("documents", out var documentsElement))
+				return new Dictionary<string, string>();
+
+			return documentsElement.EnumerateObject().ToDictionary(x => NormalizePath(x.Name), x => x.Value.GetString() ?? "", StringComparer.OrdinalIgnoreCase);
+		}
+		return new Dictionary<string, string>();
+	}
+
+	private static string? TryGetSourceUrl(IReadOnlyDictionary<string, string> documents, string documentName, int line)
+	{
+		var normalizedDocumentName = NormalizePath(documentName);
+		foreach (var (pattern, urlPattern) in documents)
+		{
+			var starIndex = pattern.IndexOf('*', StringComparison.Ordinal);
+			if (starIndex == -1)
+			{
+				if (string.Equals(pattern, normalizedDocumentName, StringComparison.OrdinalIgnoreCase))
+					return urlPattern + "#L" + line;
+				continue;
+			}
+
+			var prefix = pattern[..starIndex];
+			var suffix = pattern[(starIndex + 1)..];
+			if (normalizedDocumentName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && normalizedDocumentName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+			{
+				var wildcard = normalizedDocumentName[prefix.Length..^suffix.Length];
+				return urlPattern.Replace("*", wildcard, StringComparison.Ordinal) + "#L" + line;
+			}
+		}
+		return null;
+	}
+
+	private static string NormalizePath(string path) => path.Replace('\\', '/');
+
+	private static readonly Guid s_sourceLinkId = new("CC110556-A091-4D38-9FEC-25AB9A351A6A");
+	private readonly IReadOnlyDictionary<int, string> m_urlsByMetadataToken;
 }

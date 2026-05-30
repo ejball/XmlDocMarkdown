@@ -44,8 +44,7 @@ public sealed class XmlDocSiteBuilder
 	/// <summary>Builds a site from a tree.</summary>
 	public XmlDocSite Build(XmlDocTree tree)
 	{
-		var pageBuilder = new XmlDocPageBuilder(Settings.PageMap, Settings.Visibility);
-		var pages = pageBuilder.Build(tree);
+		var pages = XmlDocPageBuilder.CreatePages(tree, Settings.Visibility ?? XmlDocNodeVisibility.Protected, Settings.PageMap ?? XmlDocPageMap.PerMember);
 		var files = new List<XmlDocSiteFile>();
 		foreach (var page in pages)
 		{

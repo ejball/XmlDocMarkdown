@@ -53,24 +53,24 @@ public class MarkdownRenderer
 	}
 
 	/// <summary>Writes a summary section.</summary>
-	public virtual void WriteSummary(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context) => WriteBlocks(writer, node.Xml?.Summary, context);
+	public virtual void WriteSummary(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context) => WriteBlocks(writer, node.XmlMember?.Summary, context);
 
 	/// <summary>Writes a remarks section.</summary>
 	public virtual void WriteRemarks(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context)
 	{
-		if (node.Xml?.Remarks.Count > 0)
+		if (node.XmlMember?.Remarks.Count > 0)
 		{
 			writer.WriteLine();
 			writer.WriteHeading(2, "Remarks");
-			WriteBlocks(writer, node.Xml.Remarks, context);
+			WriteBlocks(writer, node.XmlMember.Remarks, context);
 		}
 	}
 
 	/// <summary>Writes a parameter section.</summary>
 	public virtual void WriteParameters(MarkdownWriter writer, XmlDocMemberNode member, XmlDocPageContext context)
 	{
-		var typeParameters = member.Xml?.TypeParameters ?? [];
-		var parameters = member.Xml?.Parameters ?? [];
+		var typeParameters = member.XmlMember?.TypeParameters ?? [];
+		var parameters = member.XmlMember?.Parameters ?? [];
 		if (typeParameters.Count + parameters.Count == 0)
 			return;
 
@@ -81,14 +81,85 @@ public class MarkdownRenderer
 			writer.WriteTableRow(parameter.Name, RenderBlocksInline(parameter.Description, context));
 	}
 
+	/// <summary>Writes a return-value section.</summary>
+	public virtual void WriteReturnValue(MarkdownWriter writer, XmlDocMemberNode member, XmlDocPageContext context)
+	{
+		if (member.XmlMember?.ReturnValue.Count > 0)
+		{
+			writer.WriteLine();
+			writer.WriteHeading(2, "Returns");
+			WriteBlocks(writer, member.XmlMember.ReturnValue, context);
+		}
+	}
+
+	/// <summary>Writes a property-value section.</summary>
+	public virtual void WritePropertyValue(MarkdownWriter writer, XmlDocMemberNode member, XmlDocPageContext context)
+	{
+		if (member.XmlMember?.PropertyValue.Count > 0)
+		{
+			writer.WriteLine();
+			writer.WriteHeading(2, "Property Value");
+			WriteBlocks(writer, member.XmlMember.PropertyValue, context);
+		}
+	}
+
+	/// <summary>Writes an exception section.</summary>
+	public virtual void WriteExceptions(MarkdownWriter writer, XmlDocMemberNode member, XmlDocPageContext context)
+	{
+		if (member.XmlMember?.Exceptions.Count > 0)
+		{
+			writer.WriteLine();
+			writer.WriteHeading(2, "Exceptions");
+			writer.WriteTableRow("exception", "condition");
+			writer.WriteLine("| --- | --- |");
+			foreach (var exception in member.XmlMember.Exceptions)
+			{
+				var name = exception.ExceptionTypeRef is null ? "" : XmlDocRefUtility.GetShortNameForXmlDocRef(exception.ExceptionTypeRef.Value);
+				if (exception.ExceptionTypeRef is { } reference && context.GetLinkUrl(reference) is { } url)
+					name = $"[{name}]({url})";
+				writer.WriteTableRow(name, RenderBlocksInline(exception.Condition, context));
+			}
+		}
+	}
+
+	/// <summary>Writes an examples section.</summary>
+	public virtual void WriteExamples(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context)
+	{
+		if (node.XmlMember?.Examples.Count > 0)
+		{
+			writer.WriteLine();
+			writer.WriteHeading(2, "Examples");
+			WriteBlocks(writer, node.XmlMember.Examples, context);
+		}
+	}
+
+	/// <summary>Writes a child-node overview section.</summary>
+	public virtual void WriteChildren(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context)
+	{
+		var children = node.Children.Where(x => context.FindPage(x) is not null).OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
+		if (children.Count == 0)
+			return;
+
+		writer.WriteLine();
+		writer.WriteHeading(2, GetChildrenHeading(node));
+		writer.WriteTableRow("name", "kind", "summary");
+		writer.WriteLine("| --- | --- | --- |");
+		foreach (var child in children)
+		{
+			var page = context.FindPage(child)!;
+			var url = context.UrlMapper.GetUrl(context.Page, page, child);
+			writer.WriteTableRow($"[{child.Name}]({url})", GetKindName(child), RenderBlocksInline(child.XmlMember?.Summary ?? [], context));
+		}
+	}
+
 	/// <summary>Writes a see-also section.</summary>
 	public virtual void WriteSeeAlso(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context)
 	{
-		if (node.Xml?.SeeAlso.Count > 0)
+		if (node.XmlMember?.SeeAlso.Count > 0)
 		{
 			writer.WriteLine();
 			writer.WriteHeading(2, "See Also");
-			foreach (var seeAlso in node.Xml.SeeAlso)
+			foreach (var seeAlso in node.XmlMember.SeeAlso)
 			{
 				var text = seeAlso.Text;
 				var url = seeAlso.Href;
@@ -138,6 +209,23 @@ public class MarkdownRenderer
 	}
 
 	private string RenderBlocksInline(IEnumerable<XmlDocXmlBlock> blocks, XmlDocPageContext context) => string.Join(" ", blocks.Select(x => RenderInlines(x.Inlines, context)));
+
+	private static string GetChildrenHeading(XmlDocNode node) => node switch
+	{
+		XmlDocAssemblyNode => "Namespaces",
+		XmlDocNamespaceNode => "Types",
+		XmlDocTypeNode => "Members",
+		_ => "Children",
+	};
+
+	private static string GetKindName(XmlDocNode node) => node switch
+	{
+		XmlDocAssemblyNode => "assembly",
+		XmlDocNamespaceNode => "namespace",
+		XmlDocTypeNode type => type.Kind.ToString().ToLowerInvariant(),
+		XmlDocMemberNode member => member.MemberKind.ToString().ToLowerInvariant(),
+		_ => "node",
+	};
 
 	private string RenderInlines(IEnumerable<XmlDocXmlInline> inlines, XmlDocPageContext context) => Regex.Replace(string.Concat(inlines.Select(x => RenderInline(x, context))), @"\s+", " ").Trim();
 
@@ -202,6 +290,7 @@ public class MarkdownPageRenderer : XmlDocPageRenderer
 	protected virtual void WriteHeader(MarkdownWriter writer, XmlDocPage page, XmlDocPageContext context)
 	{
 		writer.WriteHeading(1, page.Nodes[0].Name);
+		WriteSourceLink(writer, page.Nodes[0], context);
 	}
 
 	/// <summary>Writes the page body.</summary>
@@ -212,18 +301,36 @@ public class MarkdownPageRenderer : XmlDocPageRenderer
 			if (index != 0)
 			{
 				writer.WriteLine();
-				writer.WriteHeading(2, node.Name);
+				writer.WriteHeading(2, XmlDocPageHeadings.GetHeadingText(page, node));
+				WriteSourceLink(writer, node, context);
 			}
 
 			writer.WriteLine();
 			Renderer.WriteSummary(writer, node, context);
-			writer.WriteLine();
-			Renderer.WriteSignature(writer, node, context);
+			if (node is XmlDocTypeNode or XmlDocMemberNode)
+			{
+				writer.WriteLine();
+				Renderer.WriteSignature(writer, node, context);
+			}
+			Renderer.WriteChildren(writer, node, context);
 			if (node is XmlDocMemberNode member)
+			{
 				Renderer.WriteParameters(writer, member, context);
+				Renderer.WriteReturnValue(writer, member, context);
+				Renderer.WritePropertyValue(writer, member, context);
+				Renderer.WriteExceptions(writer, member, context);
+			}
 			Renderer.WriteRemarks(writer, node, context);
+			Renderer.WriteExamples(writer, node, context);
 			Renderer.WriteSeeAlso(writer, node, context);
 		}
+	}
+
+	private static void WriteSourceLink(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context)
+	{
+		var member = node.MemberInfo;
+		if (member is not null && context.GetSourceUrl(member) is { } sourceUrl)
+			writer.WriteLine($"[source]({sourceUrl})");
 	}
 }
 

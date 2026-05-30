@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using XmlDocGen.Core.Xml;
@@ -34,6 +35,9 @@ public sealed class XmlDocTree
 	/// <summary>Enumerates every node in the tree.</summary>
 	public IEnumerable<XmlDocNode> DescendantsAndSelf() => Assemblies.SelectMany(x => x.DescendantsAndSelf());
 
+	/// <summary>Enumerates every visible node in the tree.</summary>
+	public IEnumerable<XmlDocNode> DescendantsAndSelf(XmlDocNodeVisibility visibility) => Assemblies.SelectMany(x => x.DescendantsAndSelf(visibility));
+
 	private readonly IReadOnlyDictionary<XmlDocRef, XmlDocNode> m_nodesByRef;
 	private readonly IReadOnlyDictionary<MemberInfo, XmlDocNode> m_nodesByMember;
 }
@@ -44,7 +48,7 @@ public abstract class XmlDocNode
 	private protected XmlDocNode(XmlDocNode? parent, XmlDocXmlMember? xml)
 	{
 		Parent = parent;
-		Xml = xml;
+		XmlMember = xml;
 		if (parent is null && this is XmlDocAssemblyNode assembly)
 			Assembly = assembly;
 		else
@@ -64,16 +68,28 @@ public abstract class XmlDocNode
 	public XmlDocAssemblyNode Assembly { get; }
 
 	/// <summary>Gets child nodes.</summary>
-	public Collection<XmlDocNode> Children { get; } = [];
+	public IReadOnlyList<XmlDocNode> Children => m_children;
 
 	/// <summary>Gets the associated XML documentation, if any.</summary>
-	public XmlDocXmlMember? Xml { get; }
+	public XmlDocXmlMember? XmlMember { get; }
+
+	/// <summary>Gets a value indicating whether this node is obsolete.</summary>
+	public bool IsObsolete => MemberInfo?.GetCustomAttributes<ObsoleteAttribute>().Any() == true;
+
+	/// <summary>Gets a value indicating whether this node is browsable.</summary>
+	public bool IsBrowsable => MemberInfo?.GetCustomAttributes<EditorBrowsableAttribute>().Any(x => x.State == EditorBrowsableState.Never) != true;
+
+	/// <summary>Gets a value indicating whether this node is compiler-generated.</summary>
+	public bool IsCompilerGenerated => MemberInfo?.GetCustomAttributes<CompilerGeneratedAttribute>().Any() == true;
 
 	/// <summary>Gets the exact visibility of this node.</summary>
 	public abstract XmlDocVisibility Visibility { get; }
 
 	/// <summary>Gets the reflected member associated with this node.</summary>
 	public virtual MemberInfo? MemberInfo => null;
+
+	/// <summary>Gets visible immediate children.</summary>
+	public IEnumerable<XmlDocNode> GetChildren(XmlDocNodeVisibility visibility) => Children.Where(visibility.IsVisible);
 
 	/// <summary>Enumerates this node and every descendant.</summary>
 	public IEnumerable<XmlDocNode> DescendantsAndSelf()
@@ -82,6 +98,27 @@ public abstract class XmlDocNode
 		foreach (var child in Children.SelectMany(x => x.DescendantsAndSelf()))
 			yield return child;
 	}
+
+	/// <summary>Enumerates this node and visible descendants.</summary>
+	public IEnumerable<XmlDocNode> DescendantsAndSelf(XmlDocNodeVisibility visibility)
+	{
+		if (visibility.IsVisible(this))
+			yield return this;
+		foreach (var child in Children.SelectMany(x => x.DescendantsAndSelf(visibility)))
+			yield return child;
+	}
+
+	/// <summary>Surfaces an attribute applied to this node, if present.</summary>
+	public bool TryGetAttribute<T>([NotNullWhen(true)] out T? attribute)
+		where T : Attribute
+	{
+		attribute = MemberInfo?.GetCustomAttributes<T>().FirstOrDefault();
+		return attribute is not null;
+	}
+
+	private protected void AddChild(XmlDocNode child) => m_children.Add(child);
+
+	private readonly Collection<XmlDocNode> m_children = [];
 }
 
 /// <summary>An assembly documentation node.</summary>
@@ -91,13 +128,14 @@ public sealed class XmlDocAssemblyNode : XmlDocNode
 		: base(null, null)
 	{
 		ReflectionAssembly = assembly;
-		XmlFile = xml;
+		Xml = xml;
 		Name = assembly.GetName().Name ?? assembly.FullName ?? "Assembly";
 		Ref = new XmlDocRef("A:" + Name);
 
 		var namespaces = assembly.DefinedTypes.Where(IsDocumentableType).GroupBy(x => x.Namespace ?? "global").OrderBy(x => x.Key, StringComparer.OrdinalIgnoreCase);
 		foreach (var group in namespaces)
-			Children.Add(new XmlDocNamespaceNode(this, group.Key, [.. group.OrderBy(x => x.FullName, StringComparer.OrdinalIgnoreCase)]));
+			AddChild(new XmlDocNamespaceNode(this, group.Key, [.. group.OrderBy(x => x.FullName, StringComparer.OrdinalIgnoreCase)]));
+		Namespaces = [.. Children.OfType<XmlDocNamespaceNode>()];
 	}
 
 	/// <summary>Creates an assembly node.</summary>
@@ -113,7 +151,13 @@ public sealed class XmlDocAssemblyNode : XmlDocNode
 	public Assembly ReflectionAssembly { get; }
 
 	/// <summary>Gets the XML documentation file associated with the assembly.</summary>
-	public XmlDocXmlFile XmlFile { get; }
+	public XmlDocXmlFile Xml { get; }
+
+	/// <summary>Gets the XML documentation file associated with the assembly.</summary>
+	public XmlDocXmlFile XmlFile => Xml;
+
+	/// <summary>Gets namespace nodes in this assembly.</summary>
+	public IReadOnlyList<XmlDocNamespaceNode> Namespaces { get; }
 
 	/// <inheritdoc />
 	public override XmlDocVisibility Visibility => XmlDocVisibility.Public;
@@ -130,7 +174,8 @@ public sealed class XmlDocNamespaceNode : XmlDocNode
 		Name = name;
 		Ref = XmlDocRef.ForNamespace(name);
 		foreach (var type in types)
-			Children.Add(new XmlDocTypeNode(this, type));
+			AddChild(new XmlDocTypeNode(this, type));
+		Types = [.. Children.OfType<XmlDocTypeNode>()];
 	}
 
 	/// <inheritdoc />
@@ -141,13 +186,16 @@ public sealed class XmlDocNamespaceNode : XmlDocNode
 
 	/// <inheritdoc />
 	public override XmlDocVisibility Visibility => XmlDocVisibility.Public;
+
+	/// <summary>Gets top-level types in this namespace.</summary>
+	public IReadOnlyList<XmlDocTypeNode> Types { get; }
 }
 
 /// <summary>A type documentation node.</summary>
 public sealed class XmlDocTypeNode : XmlDocNode
 {
 	internal XmlDocTypeNode(XmlDocNode parent, TypeInfo type)
-		: base(parent, parent.Assembly.XmlFile.FindMember(XmlDocRef.ForType(type)))
+		: base(parent, ReflectionFacts.ResolveXmlMember(parent.Assembly.Xml, type))
 	{
 		Type = type;
 		Name = ReflectionFacts.GetShortName(type);
@@ -156,10 +204,12 @@ public sealed class XmlDocTypeNode : XmlDocNode
 		Visibility = ReflectionFacts.GetVisibility(type);
 
 		foreach (var nestedType in type.DeclaredNestedTypes.Where(x => x.Name.Length != 0 && x.Name[0] != '<').OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
-			Children.Add(new XmlDocTypeNode(this, nestedType));
+			AddChild(new XmlDocTypeNode(this, nestedType));
 
 		foreach (var member in ReflectionFacts.GetDocumentableMembers(type))
-			Children.Add(new XmlDocMemberNode(this, member));
+			AddChild(new XmlDocMemberNode(this, member));
+		NestedTypes = [.. Children.OfType<XmlDocTypeNode>()];
+		Members = [.. Children.OfType<XmlDocMemberNode>()];
 	}
 
 	/// <inheritdoc />
@@ -169,34 +219,44 @@ public sealed class XmlDocTypeNode : XmlDocNode
 	public override XmlDocRef Ref { get; }
 
 	/// <summary>Gets the reflected type.</summary>
-	public TypeInfo Type { get; }
+	public Type Type { get; }
+
+	/// <summary>Gets the reflected type info.</summary>
+	public TypeInfo TypeInfo => (TypeInfo) Type;
 
 	/// <summary>Gets the type kind.</summary>
 	public XmlDocTypeKind Kind { get; }
 
 	/// <summary>Gets a value indicating whether the type is readonly.</summary>
-	public bool IsReadOnly => Type.GetCustomAttributes().Any(x => x.GetType().FullName == "System.Runtime.CompilerServices.IsReadOnlyAttribute");
+	public bool IsReadOnly => TypeInfo.GetCustomAttributes().Any(x => x.GetType().FullName == "System.Runtime.CompilerServices.IsReadOnlyAttribute");
 
 	/// <summary>Gets a value indicating whether the type is a ref struct.</summary>
-	public bool IsRefStruct => Type.GetCustomAttributes().Any(x => x.GetType().FullName == "System.Runtime.CompilerServices.IsByRefLikeAttribute");
+	public bool IsRefStruct => TypeInfo.GetCustomAttributes().Any(x => x.GetType().FullName == "System.Runtime.CompilerServices.IsByRefLikeAttribute");
+
+	/// <summary>Gets nested types.</summary>
+	public IReadOnlyList<XmlDocTypeNode> NestedTypes { get; }
+
+	/// <summary>Gets members.</summary>
+	public IReadOnlyList<XmlDocMemberNode> Members { get; }
 
 	/// <inheritdoc />
 	public override XmlDocVisibility Visibility { get; }
 
 	/// <inheritdoc />
-	public override MemberInfo MemberInfo => Type;
+	public override MemberInfo MemberInfo => TypeInfo;
 }
 
 /// <summary>A member documentation node.</summary>
 public sealed class XmlDocMemberNode : XmlDocNode
 {
 	internal XmlDocMemberNode(XmlDocTypeNode parent, MemberInfo member)
-		: base(parent, parent.Assembly.XmlFile.FindMember(XmlDocRef.ForMember(member)))
+		: base(parent, ReflectionFacts.ResolveXmlMember(parent.Assembly.Xml, member))
 	{
 		Member = member;
 		Name = ReflectionFacts.GetShortName(member);
 		Ref = XmlDocRef.ForMember(member);
 		Visibility = ReflectionFacts.GetVisibility(member);
+		MemberKind = ReflectionFacts.GetMemberKind(member);
 	}
 
 	/// <inheritdoc />
@@ -213,6 +273,9 @@ public sealed class XmlDocMemberNode : XmlDocNode
 
 	/// <inheritdoc />
 	public override MemberInfo MemberInfo => Member;
+
+	/// <summary>Gets the member kind.</summary>
+	public XmlDocMemberKind MemberKind { get; }
 
 	/// <summary>Gets a value indicating whether the member is static.</summary>
 	public bool IsStatic => ReflectionFacts.IsStatic(Member);
@@ -264,14 +327,26 @@ public enum XmlDocTypeKind
 	RecordStruct,
 }
 
-/// <summary>A composable node-visibility filter.</summary>
-public sealed class XmlDocNodeVisibility
+/// <summary>Kinds of documented members.</summary>
+public enum XmlDocMemberKind
 {
-	private XmlDocNodeVisibility(Func<XmlDocNode, bool> predicate)
-	{
-		m_predicate = predicate;
-	}
+	/// <summary>A constructor.</summary>
+	Constructor,
+	/// <summary>A method.</summary>
+	Method,
+	/// <summary>A property.</summary>
+	Property,
+	/// <summary>A field.</summary>
+	Field,
+	/// <summary>An event.</summary>
+	Event,
+	/// <summary>An operator.</summary>
+	Operator,
+}
 
+/// <summary>A composable node-visibility filter.</summary>
+public abstract class XmlDocNodeVisibility
+{
 	/// <summary>Gets a filter that includes public nodes.</summary>
 	public static XmlDocNodeVisibility Public { get; } = Create(XmlDocVisibility.Public);
 
@@ -285,27 +360,36 @@ public sealed class XmlDocNodeVisibility
 	public static XmlDocNodeVisibility Private { get; } = Create(XmlDocVisibility.Private);
 
 	/// <summary>Creates a minimum-visibility filter.</summary>
-	public static XmlDocNodeVisibility Create(XmlDocVisibility minimum) => new(node => node is XmlDocAssemblyNode or XmlDocNamespaceNode || (int) node.Visibility >= (int) minimum);
+	public static XmlDocNodeVisibility Create(XmlDocVisibility minimum) => new PredicateVisibility(node => node is XmlDocAssemblyNode or XmlDocNamespaceNode || (int) node.Visibility >= (int) minimum);
 
 	/// <summary>Creates a custom predicate filter.</summary>
-	public static XmlDocNodeVisibility Create(Func<XmlDocNode, bool> predicate) => new(predicate);
+	public static XmlDocNodeVisibility Create(Func<XmlDocNode, bool> predicate) => new PredicateVisibility(predicate);
 
 	/// <summary>Combines this filter with another filter.</summary>
-	public XmlDocNodeVisibility And(XmlDocNodeVisibility other) => new(node => Includes(node) && other.Includes(node));
+	public XmlDocNodeVisibility And(XmlDocNodeVisibility other) => new PredicateVisibility(node => IsVisible(node) && other.IsVisible(node));
 
 	/// <summary>Excludes obsolete nodes.</summary>
-	public XmlDocNodeVisibility ExcludeObsolete() => new(node => Includes(node) && node.MemberInfo?.GetCustomAttributes<ObsoleteAttribute>().Any() != true);
+	public XmlDocNodeVisibility ExcludeObsolete() => Exclude(node => node.IsObsolete);
 
 	/// <summary>Excludes nodes marked with <see cref="EditorBrowsableState.Never"/>.</summary>
-	public XmlDocNodeVisibility ExcludeUnbrowsable() => new(node => Includes(node) && node.MemberInfo?.GetCustomAttributes<EditorBrowsableAttribute>().Any(x => x.State == EditorBrowsableState.Never) != true);
+	public XmlDocNodeVisibility ExcludeUnbrowsable() => Exclude(node => !node.IsBrowsable);
 
 	/// <summary>Excludes compiler-generated nodes.</summary>
-	public XmlDocNodeVisibility ExcludeCompilerGenerated() => new(node => Includes(node) && node.MemberInfo?.GetCustomAttributes<CompilerGeneratedAttribute>().Any() != true);
+	public XmlDocNodeVisibility ExcludeCompilerGenerated() => Exclude(node => node.IsCompilerGenerated);
+
+	/// <summary>Excludes nodes matching a predicate.</summary>
+	public XmlDocNodeVisibility Exclude(Func<XmlDocNode, bool> shouldExclude) => new PredicateVisibility(node => IsVisible(node) && !shouldExclude(node));
 
 	/// <summary>Returns true if the node is included.</summary>
-	public bool Includes(XmlDocNode node) => m_predicate(node);
+	public abstract bool IsVisible(XmlDocNode node);
 
-	private readonly Func<XmlDocNode, bool> m_predicate;
+	/// <summary>Returns true if the node is included.</summary>
+	public bool Includes(XmlDocNode node) => IsVisible(node);
+
+	private sealed class PredicateVisibility(Func<XmlDocNode, bool> predicate) : XmlDocNodeVisibility
+	{
+		public override bool IsVisible(XmlDocNode node) => predicate(node);
+	}
 }
 
 /// <summary>Shared reflection helpers for node construction and rendering.</summary>
@@ -313,6 +397,35 @@ public static class ReflectionFacts
 {
 	/// <summary>Gets documentable members declared by the type.</summary>
 	public static IEnumerable<MemberInfo> GetDocumentableMembers(TypeInfo type) => type.DeclaredMembers.Where(x => x is not TypeInfo && IsDocumentableMember(x)).OrderBy(GetMemberOrder).ThenBy(GetShortName, StringComparer.OrdinalIgnoreCase);
+
+	/// <summary>Gets the member kind.</summary>
+	public static XmlDocMemberKind GetMemberKind(MemberInfo member) => member switch
+	{
+		ConstructorInfo => XmlDocMemberKind.Constructor,
+		MethodInfo method when method.Name.StartsWith("op_", StringComparison.Ordinal) => XmlDocMemberKind.Operator,
+		MethodInfo => XmlDocMemberKind.Method,
+		PropertyInfo => XmlDocMemberKind.Property,
+		FieldInfo => XmlDocMemberKind.Field,
+		EventInfo => XmlDocMemberKind.Event,
+		_ => XmlDocMemberKind.Method,
+	};
+
+	/// <summary>Gets XML documentation for a member, resolving simple inheritdoc directives.</summary>
+	public static XmlDocXmlMember? ResolveXmlMember(XmlDocXmlFile xml, MemberInfo member)
+	{
+		var own = xml.FindMember(member is TypeInfo type ? XmlDocRef.ForType(type) : XmlDocRef.ForMember(member));
+		if (own?.InheritDoc is not { } inheritDoc)
+			return own;
+
+		if (inheritDoc.Cref is { } inheritedReference)
+			return xml.FindMember(inheritedReference) ?? own;
+
+		var inheritedMember = FindInheritedMember(member);
+		if (inheritedMember is null)
+			return own;
+
+		return xml.FindMember(inheritedMember is TypeInfo inheritedType ? XmlDocRef.ForType(inheritedType) : XmlDocRef.ForMember(inheritedMember)) ?? own;
+	}
 
 	/// <summary>Gets a C#-style short name.</summary>
 	public static string GetShortName(MemberInfo member)
@@ -397,6 +510,60 @@ public static class ReflectionFacts
 		if (member is MethodBase { IsSpecialName: true } method && member is not ConstructorInfo && !method.Name.StartsWith("op_", StringComparison.Ordinal))
 			return false;
 		return true;
+	}
+
+	private static MemberInfo? FindInheritedMember(MemberInfo member)
+	{
+		if (member is TypeInfo type)
+			return type.BaseType?.GetTypeInfo();
+
+		if (member is MethodInfo method)
+		{
+			var baseDefinition = method.GetBaseDefinition();
+			if (baseDefinition != method)
+				return baseDefinition;
+			return FindInterfaceMethod(method);
+		}
+
+		if (member is PropertyInfo property)
+		{
+			var accessor = property.GetMethod ?? property.SetMethod;
+			return accessor is null ? null : FindInheritedAccessorOwner(accessor, x => x.GetProperties(), (propertyInfo, inheritedAccessor) => propertyInfo.GetMethod == inheritedAccessor || propertyInfo.SetMethod == inheritedAccessor);
+		}
+
+		if (member is EventInfo @event)
+		{
+			var accessor = @event.AddMethod ?? @event.RemoveMethod;
+			return accessor is null ? null : FindInheritedAccessorOwner(accessor, x => x.GetEvents(), (eventInfo, inheritedAccessor) => eventInfo.AddMethod == inheritedAccessor || eventInfo.RemoveMethod == inheritedAccessor);
+		}
+
+		return null;
+	}
+
+	private static MethodInfo? FindInterfaceMethod(MethodInfo method)
+	{
+		var declaringType = method.DeclaringType;
+		if (declaringType is null)
+			return null;
+
+		foreach (var interfaceType in declaringType.GetInterfaces())
+		{
+			var map = declaringType.GetInterfaceMap(interfaceType);
+			for (var index = 0; index < map.TargetMethods.Length; index++)
+			{
+				if (map.TargetMethods[index] == method)
+					return map.InterfaceMethods[index];
+			}
+		}
+		return null;
+	}
+
+	private static MemberInfo? FindInheritedAccessorOwner<T>(MethodInfo accessor, Func<Type, IEnumerable<T>> getMembers, Func<T, MethodInfo, bool> isOwner)
+		where T : MemberInfo
+	{
+		if (FindInheritedMember(accessor) is not MethodInfo inheritedAccessor)
+			return null;
+		return getMembers(inheritedAccessor.DeclaringType!).FirstOrDefault(member => isOwner(member, inheritedAccessor));
 	}
 
 	private static XmlDocVisibility GetVisibility(MemberInfo member, XmlDocVisibility protectedInternal)

@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using XmlDocGen.Core.Nodes;
 
 namespace XmlDocGen.Core.CSharp;
@@ -38,7 +39,7 @@ public sealed class CSharpSignature
 }
 
 /// <summary>A token in a C# signature.</summary>
-public sealed record CSharpToken(CSharpTokenKind Kind, string Text, MemberInfo? Target = null);
+public sealed record CSharpToken(CSharpTokenKind Kind, string Text, MemberInfo? LinkTarget = null);
 
 /// <summary>Kinds of C# signature tokens.</summary>
 public enum CSharpTokenKind
@@ -49,6 +50,8 @@ public enum CSharpTokenKind
 	Identifier,
 	/// <summary>A type name.</summary>
 	TypeName,
+	/// <summary>An operator.</summary>
+	Operator,
 	/// <summary>Punctuation.</summary>
 	Punctuation,
 	/// <summary>Whitespace.</summary>
@@ -87,7 +90,7 @@ internal static class CSharpSignatureRendering
 		{
 			yield return Keyword(GetAccessModifier(node.Visibility));
 			yield return Space();
-			if (node.Type is { IsClass: true, IsSealed: true, IsAbstract: false })
+			if (node.TypeInfo is { IsClass: true, IsSealed: true, IsAbstract: false })
 			{
 				yield return Keyword("sealed");
 				yield return Space();
@@ -97,7 +100,7 @@ internal static class CSharpSignatureRendering
 				yield return Keyword("static");
 				yield return Space();
 			}
-			else if (node.Type is { IsClass: true, IsAbstract: true, IsSealed: false })
+			else if (node.TypeInfo is { IsClass: true, IsAbstract: true, IsSealed: false })
 			{
 				yield return Keyword("abstract");
 				yield return Space();
@@ -108,8 +111,15 @@ internal static class CSharpSignatureRendering
 			yield return token;
 		yield return Space();
 		yield return Identifier(ReflectionFacts.GetShortName(node.Type));
-		foreach (var token in RenderGenericParameters(node.Type.GenericTypeParameters, includeVariance: full))
+		foreach (var token in RenderGenericParameters(node.TypeInfo.GenericTypeParameters, includeVariance: full))
 			yield return token;
+		if (full)
+		{
+			foreach (var token in RenderTypeBases(node.TypeInfo))
+				yield return token;
+			foreach (var token in RenderGenericConstraints(node.TypeInfo.GenericTypeParameters))
+				yield return token;
+		}
 	}
 
 	private static IEnumerable<CSharpToken> RenderMember(XmlDocMemberNode node, bool full)
@@ -149,15 +159,22 @@ internal static class CSharpSignatureRendering
 					yield return TypeName(RenderTypeName(method.ReturnType.GetTypeInfo()), method.ReturnType.GetTypeInfo());
 					yield return Space();
 				}
-				yield return Identifier(GetOperatorKeywordName(ReflectionFacts.GetShortName(method)));
+				yield return method.Name.StartsWith("op_", StringComparison.Ordinal) ? Operator(GetOperatorKeywordName(ReflectionFacts.GetShortName(method))) : Identifier(GetOperatorKeywordName(ReflectionFacts.GetShortName(method)));
 				foreach (var token in RenderGenericParameters(method.GetGenericArguments(), includeVariance: false))
 					yield return token;
-				foreach (var token in RenderParameters(method.GetParameters()))
+				foreach (var token in RenderParameters(method.GetParameters(), method.IsDefined(typeof(ExtensionAttribute))))
+					yield return token;
+				foreach (var token in RenderGenericConstraints(method.GetGenericArguments()))
 					yield return token;
 				break;
 			case PropertyInfo property:
 				if (full)
 				{
+					if (node.IsRequired)
+					{
+						yield return Keyword("required");
+						yield return Space();
+					}
 					yield return TypeName(RenderTypeName(property.PropertyType.GetTypeInfo()), property.PropertyType.GetTypeInfo());
 					yield return Space();
 				}
@@ -188,6 +205,11 @@ internal static class CSharpSignatureRendering
 			case FieldInfo field:
 				if (full)
 				{
+					if (node.IsRequired)
+					{
+						yield return Keyword("required");
+						yield return Space();
+					}
 					if (field.IsLiteral)
 					{
 						yield return Keyword("const");
@@ -202,6 +224,13 @@ internal static class CSharpSignatureRendering
 					yield return Space();
 				}
 				yield return Identifier(field.Name);
+				if (full && field.IsLiteral)
+				{
+					yield return Space();
+					yield return Operator("=");
+					yield return Space();
+					yield return Literal(RenderLiteral(field.GetRawConstantValue()));
+				}
 				break;
 		}
 	}
@@ -221,9 +250,32 @@ internal static class CSharpSignatureRendering
 		};
 		foreach (var part in parts)
 		{
-			if (part != "record")
+			if (part != parts[0])
 				yield return Space();
 			yield return Keyword(part);
+		}
+	}
+
+	private static IEnumerable<CSharpToken> RenderTypeBases(TypeInfo type)
+	{
+		var bases = new List<Type>();
+		if (type.BaseType is { } baseType && baseType != typeof(object) && baseType != typeof(ValueType) && baseType != typeof(Enum) && baseType != typeof(MulticastDelegate))
+			bases.Add(baseType);
+		bases.AddRange(type.ImplementedInterfaces.OrderBy(x => x.FullName, StringComparer.Ordinal));
+		if (bases.Count == 0)
+			yield break;
+
+		yield return Space();
+		yield return Punctuation(":");
+		yield return Space();
+		for (var index = 0; index < bases.Count; index++)
+		{
+			if (index != 0)
+			{
+				yield return Punctuation(",");
+				yield return Space();
+			}
+			yield return TypeName(RenderTypeName(bases[index].GetTypeInfo()), bases[index].GetTypeInfo());
 		}
 	}
 
@@ -254,15 +306,58 @@ internal static class CSharpSignatureRendering
 		yield return Punctuation(">");
 	}
 
-	private static IEnumerable<CSharpToken> RenderParameters(ParameterInfo[] parameters)
+	private static IEnumerable<CSharpToken> RenderGenericConstraints(Type[] parameters)
+	{
+		foreach (var parameter in parameters.Where(x => x.IsGenericParameter))
+		{
+			var constraints = GetGenericConstraints(parameter).ToList();
+			if (constraints.Count == 0)
+				continue;
+
+			yield return Space();
+			yield return Keyword("where");
+			yield return Space();
+			yield return Identifier(parameter.Name);
+			yield return Space();
+			yield return Punctuation(":");
+			yield return Space();
+			for (var index = 0; index < constraints.Count; index++)
+			{
+				if (index != 0)
+				{
+					yield return Punctuation(",");
+					yield return Space();
+				}
+				foreach (var token in constraints[index])
+					yield return token;
+			}
+		}
+	}
+
+	private static IEnumerable<IReadOnlyList<CSharpToken>> GetGenericConstraints(Type parameter)
+	{
+		var attributes = parameter.GetTypeInfo().GenericParameterAttributes;
+		if (attributes.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint))
+			yield return [Keyword("struct")];
+		else if (attributes.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
+			yield return [Keyword("class")];
+
+		foreach (var constraint in parameter.GetGenericParameterConstraints().Where(x => x != typeof(ValueType)))
+			yield return [TypeName(RenderTypeName(constraint.GetTypeInfo()), constraint.GetTypeInfo())];
+
+		if (attributes.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint) && !attributes.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint))
+			yield return [Keyword("new"), Punctuation("("), Punctuation(")")];
+	}
+
+	private static IEnumerable<CSharpToken> RenderParameters(ParameterInfo[] parameters, bool isExtensionMethod = false)
 	{
 		yield return Punctuation("(");
-		foreach (var token in RenderParameterList(parameters))
+		foreach (var token in RenderParameterList(parameters, isExtensionMethod))
 			yield return token;
 		yield return Punctuation(")");
 	}
 
-	private static IEnumerable<CSharpToken> RenderParameterList(ParameterInfo[] parameters)
+	private static IEnumerable<CSharpToken> RenderParameterList(ParameterInfo[] parameters, bool isExtensionMethod = false)
 	{
 		for (var index = 0; index < parameters.Length; index++)
 		{
@@ -274,7 +369,12 @@ internal static class CSharpSignatureRendering
 			}
 			if (parameter.ParameterType.IsByRef)
 			{
-				yield return Keyword(parameter.IsOut ? "out" : "ref");
+				yield return Keyword(parameter.IsOut ? "out" : parameter.IsIn ? "in" : "ref");
+				yield return Space();
+			}
+			if (index == 0 && isExtensionMethod)
+			{
+				yield return Keyword("this");
 				yield return Space();
 			}
 			if (parameter.GetCustomAttributes<ParamArrayAttribute>().Any())
@@ -285,6 +385,13 @@ internal static class CSharpSignatureRendering
 			yield return TypeName(RenderTypeName(parameter.ParameterType.GetTypeInfo()), parameter.ParameterType.GetTypeInfo());
 			yield return Space();
 			yield return Identifier(parameter.Name ?? "P_" + index.ToString(CultureInfo.InvariantCulture));
+			if (parameter.HasDefaultValue)
+			{
+				yield return Space();
+				yield return Operator("=");
+				yield return Space();
+				yield return Literal(RenderLiteral(parameter.DefaultValue));
+			}
 		}
 	}
 
@@ -309,12 +416,67 @@ internal static class CSharpSignatureRendering
 	{
 		var get = property.GetMethod is not null;
 		var set = property.SetMethod is not null;
+		var setName = IsInitOnly(property) ? "init" : "set";
 		return (get, set) switch
 		{
-			(true, true) => "{ get; set; }",
+			(true, true) => "{ get; " + setName + "; }",
 			(true, false) => "{ get; }",
-			(false, true) => "{ set; }",
+			(false, true) => "{ " + setName + "; }",
 			_ => "{ }",
+		};
+	}
+
+	private static bool IsInitOnly(PropertyInfo property) => property.SetMethod?.ReturnParameter.GetRequiredCustomModifiers().Contains(typeof(IsExternalInit)) == true;
+
+	private static string RenderLiteral(object? value)
+	{
+		return value switch
+		{
+			null => "null",
+			string text => "\"" + EscapeString(text) + "\"",
+			char ch => "'" + EscapeChar(ch) + "'",
+			bool flag => flag ? "true" : "false",
+			float number when float.IsNaN(number) => "float.NaN",
+			float number when float.IsPositiveInfinity(number) => "float.PositiveInfinity",
+			float number when float.IsNegativeInfinity(number) => "float.NegativeInfinity",
+			float number => number.ToString(CultureInfo.InvariantCulture) + "F",
+			double number when double.IsNaN(number) => "double.NaN",
+			double number when double.IsPositiveInfinity(number) => "double.PositiveInfinity",
+			double number when double.IsNegativeInfinity(number) => "double.NegativeInfinity",
+			double number => number.ToString(CultureInfo.InvariantCulture) + "D",
+			decimal number => number.ToString(CultureInfo.InvariantCulture) + "M",
+			Enum enumValue => RenderEnumLiteral(enumValue),
+			DateTime => "default",
+			_ => Convert.ToString(value, CultureInfo.InvariantCulture) ?? "default",
+		};
+	}
+
+	private static string RenderEnumLiteral(Enum value)
+	{
+		var typeName = value.GetType().Name;
+		var text = value.ToString();
+		return text.Contains(',', StringComparison.Ordinal) ? string.Join(" | ", text.Split(',').Select(x => typeName + "." + x.Trim())) : typeName + "." + text;
+	}
+
+	private static string EscapeString(string text) => string.Concat(text.Select(EscapeChar));
+
+	private static string EscapeChar(char ch)
+	{
+		return ch switch
+		{
+			'\0' => "\\0",
+			'\a' => "\\a",
+			'\b' => "\\b",
+			'\f' => "\\f",
+			'\n' => "\\n",
+			'\r' => "\\r",
+			'\t' => "\\t",
+			'\v' => "\\v",
+			'\\' => "\\\\",
+			'\'' => "\\'",
+			'\"' => "\\\"",
+			< ' ' or > '~' => "\\u" + ((int) ch).ToString("X4", CultureInfo.InvariantCulture),
+			_ => ch.ToString(),
 		};
 	}
 
@@ -362,13 +524,16 @@ internal static class CSharpSignatureRendering
 	}
 
 	private static CSharpToken Keyword(string text) => new(CSharpTokenKind.Keyword, text);
-	private static CSharpToken Identifier(string text) => new(CSharpTokenKind.Identifier, text);
+	private static CSharpToken Identifier(string text) => new(CSharpTokenKind.Identifier, s_keywords.Contains(text) ? "@" + text : text);
 	private static CSharpToken TypeName(string text, MemberInfo target) => new(CSharpTokenKind.TypeName, text, target);
+	private static CSharpToken Operator(string text) => new(CSharpTokenKind.Operator, text);
 	private static CSharpToken Punctuation(string text) => new(CSharpTokenKind.Punctuation, text);
 	private static CSharpToken Space() => new(CSharpTokenKind.Whitespace, " ");
 	private static CSharpToken Text(string text) => new(CSharpTokenKind.Text, text);
-}
+	private static CSharpToken Literal(string text) => new(CSharpTokenKind.Literal, text);
 
-internal sealed class FullCSharpSignatureBuilderPlaceholder
-{
+	private static readonly HashSet<string> s_keywords =
+	[
+		"abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else", "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for", "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock", "long", "namespace", "new", "null", "object", "operator", "out", "override", "params", "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "virtual", "void", "volatile", "while",
+	];
 }
