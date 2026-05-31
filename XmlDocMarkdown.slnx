@@ -16,6 +16,8 @@
   <Project Path="samples/Samples.SourceLinks/Samples.SourceLinks.csproj" />
   <Project Path="src/XmlDocGen.Core/XmlDocGen.Core.csproj" />
   <Project Path="tools/ExampleAssembly/ExampleAssembly.csproj" />
+  <Project Path="tools/SampleAssembly/SampleAssembly.csproj" />
+  <Project Path="tools/SampleExtraAssembly/SampleExtraAssembly.csproj" />
   <Project Path="tests/XmlDocGen.Tests/XmlDocGen.Tests.csproj" />
   <Project Path="tools/XmlDocGen/XmlDocGen.csproj" />
   <Project Path="tools/Build/Build.csproj" />

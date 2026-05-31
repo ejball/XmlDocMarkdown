@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Reflection;
 using ExampleAssembly;
 using NUnit.Framework;
 using XmlDocGen.Core.Nodes;
@@ -28,8 +29,8 @@ internal sealed class NodesLayerTests
 		var tree = TestSupport.CreateExampleTree();
 		var visibility = new NoMemberVisibility().ExcludeObsolete().ExcludeUnbrowsable();
 
-		Assert.That(tree.DescendantsAndSelf(visibility), Has.Some.InstanceOf<XmlDocTypeNode>());
-		Assert.That(tree.DescendantsAndSelf(visibility), Has.None.InstanceOf<XmlDocMemberNode>());
+		Assert.That(tree.EnumerateNodes(visibility), Has.Some.InstanceOf<XmlDocTypeNode>());
+		Assert.That(tree.EnumerateNodes(visibility), Has.None.InstanceOf<XmlDocMemberNode>());
 	}
 
 	[Test]
@@ -39,8 +40,7 @@ internal sealed class NodesLayerTests
 		var obsoleteType = typeof(ExampleClass).Assembly.GetType("ExampleAssembly.ExampleObsoleteClass")!;
 		var obsoleteNode = tree.FindNode(XmlDocRef.ForType(obsoleteType))!;
 
-		Assert.That(obsoleteNode.TryGetAttribute<ObsoleteAttribute>(out var obsolete), Is.True);
-		Assert.That(obsolete, Is.Not.Null);
+		Assert.That(obsoleteNode.MemberInfo?.GetCustomAttributes<ObsoleteAttribute>().FirstOrDefault(), Is.Not.Null);
 	}
 
 	[Test]
@@ -49,7 +49,7 @@ internal sealed class NodesLayerTests
 		var tree = TestSupport.CreateExampleTree();
 		var unbrowsable = tree.FindNode(XmlDocRef.ForType(typeof(ExampleUnbrowsableClass)))!;
 
-		Assert.That(unbrowsable.TryGetAttribute<EditorBrowsableAttribute>(out _), Is.True);
+		Assert.That(unbrowsable.MemberInfo?.GetCustomAttributes<EditorBrowsableAttribute>().FirstOrDefault(), Is.Not.Null);
 		Assert.That(XmlDocNodeVisibility.Public.IsVisible(unbrowsable), Is.True);
 		Assert.That(XmlDocNodeVisibility.Public.ExcludeUnbrowsable().IsVisible(unbrowsable), Is.False);
 	}

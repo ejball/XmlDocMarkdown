@@ -1,0 +1,12 @@
+SampleAssembly.html
+SampleAssembly.Stores/IWidgetStore.html
+SampleAssembly.Stores/IWidgetStore/Get.html
+SampleAssembly/Widget.html
+SampleAssembly/Widget/Create.html
+SampleAssembly/Widget/Format.html
+SampleAssembly/Widget/Name.html
+SampleAssembly/Widget/Widget.html
+SampleAssembly/WidgetKind.html
+SampleAssembly/WidgetKind/Advanced.html
+SampleAssembly/WidgetKind/Basic.html
+SampleAssembly/WidgetKind/value__.html

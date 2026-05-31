@@ -14,7 +14,7 @@ if (args.Length != 2)
 
 var assembly = Assembly.Load(args[0]);
 var xml = new XmlDocXmlFile(XDocument.Load(Path.ChangeExtension(assembly.Location, ".xml")));
-var tree = XmlDocTree.Create([(assembly, xml)]);
+var tree = new XmlDocTree([(assembly, xml)]);
 var site = new MarkdownSiteBuilder(new XmlDocSiteBuilderSettings { NewLine = "\n" }).Build(tree);
 new XmlDocSiteWriter(new XmlDocSiteWriterSettings { ShouldClean = true }).Write(site, args[1]);
 return 0;

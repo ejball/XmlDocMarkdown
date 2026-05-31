@@ -8,14 +8,6 @@ namespace XmlDocGen.Core;
 /// <summary>Configuration context passed to host tools.</summary>
 public sealed class XmlDocGenAppContext
 {
-	internal XmlDocGenAppContext(IReadOnlyList<string> assemblyNames, string outputPath, XmlDocArgsReader args, XmlDocSiteWriterSettings writerSettings)
-	{
-		AssemblyNames = assemblyNames;
-		OutputPath = outputPath;
-		Args = args;
-		WriterSettings = writerSettings;
-	}
-
 	/// <summary>Gets the assembly names to document.</summary>
 	public IReadOnlyList<string> AssemblyNames { get; }
 
@@ -51,4 +43,12 @@ public sealed class XmlDocGenAppContext
 
 	/// <summary>Gets extra usage lines for host-tool options.</summary>
 	public IList<string> HelpLines { get; } = [];
+
+	internal XmlDocGenAppContext(IReadOnlyList<string> assemblyNames, string outputPath, XmlDocArgsReader args, XmlDocSiteWriterSettings writerSettings)
+	{
+		AssemblyNames = assemblyNames;
+		OutputPath = outputPath;
+		Args = args;
+		WriterSettings = writerSettings;
+	}
 }

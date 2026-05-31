@@ -1,0 +1,15 @@
+SampleAssembly.md
+SampleAssembly.Stores/IWidgetStore.md
+SampleAssembly.Stores/IWidgetStore/Get.md
+SampleAssembly/Widget.md
+SampleAssembly/Widget/Create.md
+SampleAssembly/Widget/Format.md
+SampleAssembly/Widget/Name.md
+SampleAssembly/Widget/Widget.md
+SampleAssembly/WidgetKind.md
+SampleAssembly/WidgetKind/Advanced.md
+SampleAssembly/WidgetKind/Basic.md
+SampleAssembly/WidgetKind/value__.md
+SampleExtraAssembly.md
+SampleExtraAssembly/ExtraWidget.md
+SampleExtraAssembly/ExtraWidget/CreateAdvanced.md

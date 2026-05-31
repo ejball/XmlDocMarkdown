@@ -10,10 +10,6 @@ namespace XmlDocGen.Core;
 /// <summary>Command-line entry point for documentation generation.</summary>
 public sealed class XmlDocGenApp
 {
-	private XmlDocGenApp()
-	{
-	}
-
 	/// <summary>Runs the command-line application.</summary>
 	public static int Run(IReadOnlyList<string> args, Action<XmlDocGenAppContext>? configure = null)
 	{
@@ -45,7 +41,7 @@ public sealed class XmlDocGenApp
 			reader.VerifyComplete();
 
 			var inputs = context.AssemblyNames.Select(LoadInput);
-			var tree = XmlDocTree.Create(inputs);
+			var tree = new XmlDocTree(inputs);
 			var siteSettings = new XmlDocSiteBuilderSettings
 			{
 				Visibility = context.Visibility,
@@ -96,5 +92,9 @@ public sealed class XmlDocGenApp
 		writer.WriteLine("  --help, -h, -?");
 		foreach (var line in extraLines)
 			writer.WriteLine(line);
+	}
+
+	private XmlDocGenApp()
+	{
 	}
 }

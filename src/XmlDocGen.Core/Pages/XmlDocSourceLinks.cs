@@ -10,12 +10,6 @@ namespace XmlDocGen.Core.Pages;
 /// <summary>Provides source-link URLs for reflected members.</summary>
 public sealed class XmlDocSourceLinks
 {
-	private XmlDocSourceLinks(Assembly assembly, IReadOnlyDictionary<int, string> urlsByMetadataToken)
-	{
-		Assembly = assembly;
-		m_urlsByMetadataToken = urlsByMetadataToken;
-	}
-
 	/// <summary>Gets the assembly this source-link resolver was created for.</summary>
 	public Assembly Assembly { get; }
 
@@ -45,6 +39,12 @@ public sealed class XmlDocSourceLinks
 		if (member is EventInfo @event)
 			member = @event.AddMethod ?? @event.RemoveMethod ?? member;
 		return m_urlsByMetadataToken.GetValueOrDefault(member.MetadataToken);
+	}
+
+	private XmlDocSourceLinks(Assembly assembly, IReadOnlyDictionary<int, string> urlsByMetadataToken)
+	{
+		Assembly = assembly;
+		m_urlsByMetadataToken = urlsByMetadataToken;
 	}
 
 	private static XmlDocSourceLinks? TryCreateFromEmbeddedPdb(Assembly assembly)

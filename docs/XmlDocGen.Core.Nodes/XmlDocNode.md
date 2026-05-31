@@ -13,13 +13,10 @@ public abstract class XmlDocNode
 | --- | --- |
 | [Assembly](./XmlDocNode/Assembly.md) { get; } | Gets the owning assembly node. |
 | [Children](./XmlDocNode/Children.md) { get; } | Gets child nodes. |
-| [DescendantsAndSelf](./XmlDocNode/DescendantsAndSelf.md)() | Enumerates this node and every descendant. (2 methods) |
-| [GetChildren](./XmlDocNode/GetChildren.md)(...) | Gets visible immediate children. |
 | [IsBrowsable](./XmlDocNode/IsBrowsable.md) { get; } | Gets a value indicating whether this node is browsable. |
 | [IsCompilerGenerated](./XmlDocNode/IsCompilerGenerated.md) { get; } | Gets a value indicating whether this node is compiler-generated. |
 | [IsObsolete](./XmlDocNode/IsObsolete.md) { get; } | Gets a value indicating whether this node is obsolete. |
 | [Parent](./XmlDocNode/Parent.md) { get; } | Gets the parent node, or null for an assembly root. |
-| [TryGetAttribute&lt;T&gt;](./XmlDocNode/TryGetAttribute.md)(...) | Surfaces an attribute applied to this node, if present. |
 | virtual [MemberInfo](./XmlDocNode/MemberInfo.md) { get; } | Gets the reflected member associated with this node. |
 | virtual [Name](./XmlDocNode/Name.md) { get; } | Gets the simple display name. |
 | virtual [Ref](./XmlDocNode/Ref.md) { get; } | Gets this node&#39;s XML documentation reference. |

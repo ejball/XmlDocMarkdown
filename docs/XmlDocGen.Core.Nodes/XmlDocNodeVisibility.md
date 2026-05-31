@@ -11,12 +11,10 @@ public abstract class XmlDocNodeVisibility
 
 | name | description |
 | --- | --- |
-| [And](./XmlDocNodeVisibility/And.md)(...) | Combines this filter with another filter. |
 | [Exclude](./XmlDocNodeVisibility/Exclude.md)(...) | Excludes nodes matching a predicate. |
 | [ExcludeCompilerGenerated](./XmlDocNodeVisibility/ExcludeCompilerGenerated.md)() | Excludes compiler-generated nodes. |
 | [ExcludeObsolete](./XmlDocNodeVisibility/ExcludeObsolete.md)() | Excludes obsolete nodes. |
 | [ExcludeUnbrowsable](./XmlDocNodeVisibility/ExcludeUnbrowsable.md)() | Excludes nodes marked with `Never`. |
-| [Includes](./XmlDocNodeVisibility/Includes.md)(...) | Returns true if the node is included. |
 | static [Create](./XmlDocNodeVisibility/Create.md)(...) | Creates a minimum-visibility filter. (2 methods) |
 | static [Internal](./XmlDocNodeVisibility/Internal.md) { get; } | Gets a filter that includes public, protected, and internal nodes. |
 | static [Private](./XmlDocNodeVisibility/Private.md) { get; } | Gets a filter that includes all nodes. |

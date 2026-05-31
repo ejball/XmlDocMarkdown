@@ -16,8 +16,8 @@ public sealed class XmlDocAssemblyNode : XmlDocNode
 | override [Ref](./XmlDocAssemblyNode/Ref.md) { get; } | Gets this node&#39;s XML documentation reference. |
 | override [Visibility](./XmlDocAssemblyNode/Visibility.md) { get; } | Gets the exact visibility of this node. |
 | [ReflectionAssembly](./XmlDocAssemblyNode/ReflectionAssembly.md) { get; } | Gets the reflected assembly. |
-| static [Create](./XmlDocAssemblyNode/Create.md)(...) | Creates an assembly node. |
 | [Xml](./XmlDocAssemblyNode/Xml.md) { get; } | Gets the XML documentation file associated with the assembly. |
+| [XmlDocAssemblyNode](./XmlDocAssemblyNode/XmlDocAssemblyNode.md)(...) | Initializes a new instance of the [`XmlDocAssemblyNode`](./XmlDocAssemblyNode.md) class. |
 | [XmlFile](./XmlDocAssemblyNode/XmlFile.md) { get; } | Gets the XML documentation file associated with the assembly. |
 
 ## See Also

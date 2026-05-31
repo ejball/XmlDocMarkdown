@@ -13,6 +13,8 @@ public sealed class CSharpSignature
 | --- | --- |
 | [CSharpSignature](./CSharpSignature/CSharpSignature.md)(...) | Initializes a new instance of the [`CSharpSignature`](./CSharpSignature.md) class. |
 | override [ToString](./CSharpSignature/ToString.md)() |  |
+| static [CreateFull](./CSharpSignature/CreateFull.md)(...) | Creates a full C# signature for a node. |
+| static [CreateShort](./CSharpSignature/CreateShort.md)(...) | Creates a short C# signature for a node. |
 | [Text](./CSharpSignature/Text.md) { get; } | Gets the rendered signature text. |
 | [Tokens](./CSharpSignature/Tokens.md) { get; } | Gets the signature tokens. |
 

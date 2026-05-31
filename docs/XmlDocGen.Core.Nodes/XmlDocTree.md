@@ -12,9 +12,9 @@ public sealed class XmlDocTree
 | name | description |
 | --- | --- |
 | [Assemblies](./XmlDocTree/Assemblies.md) { get; } | Gets the assembly roots. |
-| [DescendantsAndSelf](./XmlDocTree/DescendantsAndSelf.md)() | Enumerates every node in the tree. (2 methods) |
+| [EnumerateNodes](./XmlDocTree/EnumerateNodes.md)(...) | Enumerates every visible node in the tree. |
 | [FindNode](./XmlDocTree/FindNode.md)(...) | Finds any node in the tree by reference. (2 methods) |
-| static [Create](./XmlDocTree/Create.md)(...) | Creates a tree from assembly nodes. (2 methods) |
+| [XmlDocTree](./XmlDocTree/XmlDocTree.md)(...) | Creates a tree from assembly nodes. (2 constructors) |
 
 ## See Also
 

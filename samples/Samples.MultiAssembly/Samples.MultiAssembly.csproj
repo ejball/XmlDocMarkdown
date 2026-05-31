@@ -1,4 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><NoWarn>$(NoWarn);SA1402;SA1649</NoWarn></PropertyGroup>
-  <ItemGroup><ProjectReference Include="..\..\src\XmlDocGen.Core\XmlDocGen.Core.csproj" /><ProjectReference Include="..\..\tools\ExampleAssembly\ExampleAssembly.csproj" /></ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <NoWarn>$(NoWarn);SA1402;SA1649</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\XmlDocGen.Core\XmlDocGen.Core.csproj" />
+    <ProjectReference Include="..\..\tools\SampleAssembly\SampleAssembly.csproj" />
+    <ProjectReference Include="..\..\tools\SampleExtraAssembly\SampleExtraAssembly.csproj" />
+  </ItemGroup>
+
 </Project>

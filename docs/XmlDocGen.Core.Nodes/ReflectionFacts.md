@@ -11,15 +11,10 @@ public static class ReflectionFacts
 
 | name | description |
 | --- | --- |
-| static [GetDocumentableMembers](./ReflectionFacts/GetDocumentableMembers.md)(...) | Gets documentable members declared by the type. |
-| static [GetMemberKind](./ReflectionFacts/GetMemberKind.md)(...) | Gets the member kind. |
 | static [GetShortName](./ReflectionFacts/GetShortName.md)(...) | Gets a C#-style short name. |
-| static [GetTypeKind](./ReflectionFacts/GetTypeKind.md)(...) | Gets the type kind. |
-| static [GetVisibility](./ReflectionFacts/GetVisibility.md)(...) | Gets the exact visibility of a reflected member. |
 | static [IsAbstract](./ReflectionFacts/IsAbstract.md)(...) | Returns true when the member is abstract. |
 | static [IsStatic](./ReflectionFacts/IsStatic.md)(...) | Returns true when the member is static. |
 | static [IsVirtual](./ReflectionFacts/IsVirtual.md)(...) | Returns true when the member is virtual. |
-| static [ResolveXmlMember](./ReflectionFacts/ResolveXmlMember.md)(...) | Gets XML documentation for a member, resolving simple inheritdoc directives. |
 
 ## See Also
 

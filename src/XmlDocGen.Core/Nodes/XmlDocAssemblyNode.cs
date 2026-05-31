@@ -7,7 +7,8 @@ namespace XmlDocGen.Core.Nodes;
 /// <summary>An assembly documentation node.</summary>
 public sealed class XmlDocAssemblyNode : XmlDocNode
 {
-	private XmlDocAssemblyNode(Assembly assembly, XmlDocXmlFile xml)
+	/// <summary>Initializes a new instance of the <see cref="XmlDocAssemblyNode"/> class.</summary>
+	public XmlDocAssemblyNode(Assembly assembly, XmlDocXmlFile xml)
 		: base(null, null)
 	{
 		ReflectionAssembly = assembly;
@@ -20,9 +21,6 @@ public sealed class XmlDocAssemblyNode : XmlDocNode
 			AddChild(new XmlDocNamespaceNode(this, group.Key, [.. group.OrderBy(x => x.FullName, StringComparer.OrdinalIgnoreCase)]));
 		Namespaces = [.. Children.OfType<XmlDocNamespaceNode>()];
 	}
-
-	/// <summary>Creates an assembly node.</summary>
-	public static XmlDocAssemblyNode Create(Assembly assembly, XmlDocXmlFile xml) => new(assembly, xml);
 
 	/// <inheritdoc />
 	public override string Name { get; }

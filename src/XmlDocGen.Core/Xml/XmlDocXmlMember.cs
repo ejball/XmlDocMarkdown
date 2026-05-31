@@ -7,6 +7,39 @@ namespace XmlDocGen.Core.Xml;
 /// <summary>The parsed XML documentation for a single member.</summary>
 public sealed class XmlDocXmlMember
 {
+	/// <summary>Gets this member's XML documentation reference.</summary>
+	public XmlDocRef Ref { get; }
+
+	/// <summary>Gets the summary blocks.</summary>
+	public Collection<XmlDocXmlBlock> Summary { get; } = [];
+
+	/// <summary>Gets the type parameter documentation.</summary>
+	public Collection<XmlDocXmlParameter> TypeParameters { get; } = [];
+
+	/// <summary>Gets the parameter documentation.</summary>
+	public Collection<XmlDocXmlParameter> Parameters { get; } = [];
+
+	/// <summary>Gets the return-value documentation.</summary>
+	public Collection<XmlDocXmlBlock> ReturnValue { get; } = [];
+
+	/// <summary>Gets the property-value documentation.</summary>
+	public Collection<XmlDocXmlBlock> PropertyValue { get; } = [];
+
+	/// <summary>Gets the exception documentation.</summary>
+	public Collection<XmlDocXmlException> Exceptions { get; } = [];
+
+	/// <summary>Gets the remarks documentation.</summary>
+	public Collection<XmlDocXmlBlock> Remarks { get; } = [];
+
+	/// <summary>Gets the example documentation.</summary>
+	public Collection<XmlDocXmlBlock> Examples { get; } = [];
+
+	/// <summary>Gets the see-also documentation.</summary>
+	public Collection<XmlDocXmlSeeAlso> SeeAlso { get; } = [];
+
+	/// <summary>Gets the raw inheritdoc directive, if present.</summary>
+	public XmlDocXmlInheritDoc? InheritDoc { get; }
+
 	internal XmlDocXmlMember(XElement element)
 	{
 		m_element = new XElement(element);
@@ -49,39 +82,6 @@ public sealed class XmlDocXmlMember
 			}
 		}
 	}
-
-	/// <summary>Gets this member's XML documentation reference.</summary>
-	public XmlDocRef Ref { get; }
-
-	/// <summary>Gets the summary blocks.</summary>
-	public Collection<XmlDocXmlBlock> Summary { get; } = [];
-
-	/// <summary>Gets the type parameter documentation.</summary>
-	public Collection<XmlDocXmlParameter> TypeParameters { get; } = [];
-
-	/// <summary>Gets the parameter documentation.</summary>
-	public Collection<XmlDocXmlParameter> Parameters { get; } = [];
-
-	/// <summary>Gets the return-value documentation.</summary>
-	public Collection<XmlDocXmlBlock> ReturnValue { get; } = [];
-
-	/// <summary>Gets the property-value documentation.</summary>
-	public Collection<XmlDocXmlBlock> PropertyValue { get; } = [];
-
-	/// <summary>Gets the exception documentation.</summary>
-	public Collection<XmlDocXmlException> Exceptions { get; } = [];
-
-	/// <summary>Gets the remarks documentation.</summary>
-	public Collection<XmlDocXmlBlock> Remarks { get; } = [];
-
-	/// <summary>Gets the example documentation.</summary>
-	public Collection<XmlDocXmlBlock> Examples { get; } = [];
-
-	/// <summary>Gets the see-also documentation.</summary>
-	public Collection<XmlDocXmlSeeAlso> SeeAlso { get; } = [];
-
-	/// <summary>Gets the raw inheritdoc directive, if present.</summary>
-	public XmlDocXmlInheritDoc? InheritDoc { get; }
 
 	internal XmlDocXmlMember ApplyInheritDocPath(string? path)
 	{

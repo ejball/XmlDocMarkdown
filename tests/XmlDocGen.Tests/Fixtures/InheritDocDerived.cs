@@ -1,6 +1,6 @@
 namespace XmlDocGen.Tests.Fixtures;
 
-/// <inheritdoc />
+/// <inheritdoc cref="InheritDocBase" />
 internal sealed class InheritDocDerived : InheritDocBase, IInheritDocFixture
 {
 	/// <inheritdoc cref="InheritDocBase.BaseMethod" />

@@ -23,9 +23,6 @@ public abstract class XmlDocNodeVisibility
 	/// <summary>Creates a custom predicate filter.</summary>
 	public static XmlDocNodeVisibility Create(Func<XmlDocNode, bool> predicate) => new PredicateVisibility(predicate);
 
-	/// <summary>Combines this filter with another filter.</summary>
-	public XmlDocNodeVisibility And(XmlDocNodeVisibility other) => new PredicateVisibility(node => IsVisible(node) && other.IsVisible(node));
-
 	/// <summary>Excludes obsolete nodes.</summary>
 	public XmlDocNodeVisibility ExcludeObsolete() => Exclude(node => node.IsObsolete);
 
@@ -40,9 +37,6 @@ public abstract class XmlDocNodeVisibility
 
 	/// <summary>Returns true if the node is included.</summary>
 	public abstract bool IsVisible(XmlDocNode node);
-
-	/// <summary>Returns true if the node is included.</summary>
-	public bool Includes(XmlDocNode node) => IsVisible(node);
 
 	private sealed class PredicateVisibility(Func<XmlDocNode, bool> predicate) : XmlDocNodeVisibility
 	{

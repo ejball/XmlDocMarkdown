@@ -15,7 +15,7 @@ public class MarkdownRenderer
 	public virtual void WriteSignature(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context)
 	{
 		writer.WriteLine("```csharp");
-		writer.WriteLine(CSharpSignatureBuilder.Full.GetSignature(node).Text);
+		writer.WriteLine(CSharpSignature.CreateFull(node).Text);
 		writer.WriteLine("```");
 	}
 
@@ -306,7 +306,7 @@ public class MarkdownRenderer
 		_ => "items",
 	};
 
-	private static string GetOverviewText(XmlDocNode node) => node is XmlDocMemberNode memberNode ? GetMemberOverviewText(memberNode) : CSharpSignatureBuilder.Short.GetSignature(node).Text;
+	private static string GetOverviewText(XmlDocNode node) => node is XmlDocMemberNode memberNode ? GetMemberOverviewText(memberNode) : CSharpSignature.CreateShort(node).Text;
 
 	private static string RenderOverviewLink(XmlDocNode node, string url)
 	{
@@ -374,7 +374,7 @@ public class MarkdownRenderer
 
 	private static (string Name, string Suffix) GetMethodNameAndSuffix(XmlDocMemberNode node, MethodInfo method)
 	{
-		var signature = CSharpSignatureBuilder.Short.GetSignature(node).Text;
+		var signature = CSharpSignature.CreateShort(node).Text;
 		var parameterIndex = signature.IndexOf('(', StringComparison.Ordinal);
 		if (parameterIndex != -1)
 			return (signature[..parameterIndex], GetParameterSuffix(method.GetParameters()));
@@ -486,7 +486,20 @@ public class MarkdownRenderer
 
 	private static Type GetLinkableType(Type type) => type is { IsGenericType: true, IsGenericTypeDefinition: false } ? type.GetGenericTypeDefinition() : type;
 
-	private static string GetTypeLabel(TypeInfo type) => (type.IsInterface ? "interface " : ReflectionFacts.GetTypeKind(type).ToString().ToLowerInvariant() + " ") + ReflectionFacts.GetShortName(type);
+	private static string GetTypeLabel(TypeInfo type) => GetTypeLabelKind(type) + " " + ReflectionFacts.GetShortName(type);
+
+	private static string GetTypeLabelKind(TypeInfo type)
+	{
+		if (typeof(Delegate).GetTypeInfo().IsAssignableFrom(type))
+			return "delegate";
+		if (type.IsInterface)
+			return "interface";
+		if (type.IsEnum)
+			return "enum";
+		if (type.IsValueType)
+			return "struct";
+		return "class";
+	}
 
 	private static string RenderInlines(IEnumerable<XmlDocXmlInline> inlines, XmlDocPageContext context, XmlDocNode? currentNode) => Regex.Replace(string.Concat(inlines.Select(x => RenderInline(x, context, currentNode))), @"\s+", " ").Trim();
 

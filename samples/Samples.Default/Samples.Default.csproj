@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\XmlDocGen.Core\XmlDocGen.Core.csproj" />
-    <ProjectReference Include="..\..\tools\ExampleAssembly\ExampleAssembly.csproj" />
+    <ProjectReference Include="..\..\tools\SampleAssembly\SampleAssembly.csproj" />
   </ItemGroup>
+
 </Project>

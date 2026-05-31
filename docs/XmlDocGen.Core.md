@@ -18,7 +18,6 @@
 | public type | description |
 | --- | --- |
 | class [CSharpSignature](./XmlDocGen.Core.CSharp/CSharpSignature.md) | A C# signature and its token stream. |
-| abstract class [CSharpSignatureBuilder](./XmlDocGen.Core.CSharp/CSharpSignatureBuilder.md) | Builds structured C# signatures from documentation nodes. |
 | enum [CSharpTokenKind](./XmlDocGen.Core.CSharp/CSharpTokenKind.md) | Kinds of C# signature tokens. |
 | record [CSharpToken](./XmlDocGen.Core.CSharp/CSharpToken.md) | A token in a C# signature. |
 

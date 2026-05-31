@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 
 return BuildRunner.Execute(args, build =>
@@ -71,19 +69,13 @@ return BuildRunner.Execute(args, build =>
 		foreach (var sampleName in sampleNames)
 		{
 			var samplePath = FindFiles($"artifacts/bin/{sampleName}/{configuration}/{sampleName}.dll").First();
-			var outputPath = Path.Combine("artifacts", "samples", sampleName);
+			var expectedPath = Path.Combine("samples", sampleName, "output");
+			var outputPath = verify ? Path.Combine("artifacts", "samples", sampleName) : expectedPath;
 			if (Directory.Exists(outputPath))
 				Directory.Delete(outputPath, recursive: true);
 
 			RunDotNet([samplePath, .. GetSampleArgs(sampleName, outputPath)]);
-
-			var actual = CreateSampleSnapshot(sampleName, outputPath);
-			var expectedPath = Path.Combine("samples", sampleName, "expected-output.txt");
-			if (!verify)
-			{
-				File.WriteAllText(expectedPath, actual);
-			}
-			else if (!File.Exists(expectedPath) || File.ReadAllText(expectedPath) != actual)
+			if (verify && !SampleOutputMatches(sampleName, outputPath, expectedPath))
 			{
 				throw new InvalidOperationException($"Sample output is out of date: {sampleName}. Run './build.ps1 generate-samples'.");
 			}
@@ -94,37 +86,39 @@ return BuildRunner.Execute(args, build =>
 	{
 		return sampleName switch
 		{
-			"Samples.LibraryApi" => ["ExampleAssembly", outputPath],
-			"Samples.MultiAssembly" => ["ExampleAssembly", "XmlDocGen.Core", outputPath, "--clean", "--quiet"],
-			"Samples.CustomCliOptions" => ["ExampleAssembly", outputPath, "--clean", "--quiet", "--public-only"],
-			_ => ["ExampleAssembly", outputPath, "--clean", "--quiet"],
+			"Samples.LibraryApi" => ["SampleAssembly", outputPath],
+			"Samples.MultiAssembly" => ["SampleAssembly", "SampleExtraAssembly", outputPath, "--clean", "--quiet"],
+			"Samples.CustomCliOptions" => ["SampleAssembly", outputPath, "--clean", "--quiet", "--public-only"],
+			_ => ["SampleAssembly", outputPath, "--clean", "--quiet"],
 		};
 	}
 
-	static string CreateSampleSnapshot(string sampleName, string outputPath)
+	static bool SampleOutputMatches(string sampleName, string actualPath, string expectedPath)
 	{
-		var files = Directory.EnumerateFiles(outputPath, "*", SearchOption.AllDirectories)
+		if (!Directory.Exists(expectedPath))
+			return false;
+
+		var actualFiles = GetSampleFiles(actualPath);
+		var expectedFiles = GetSampleFiles(expectedPath);
+		if (!actualFiles.SequenceEqual(expectedFiles, StringComparer.Ordinal))
+			return false;
+
+		foreach (var file in actualFiles)
+		{
+			var actual = NormalizeSampleText(sampleName, File.ReadAllText(Path.Combine(actualPath, file.Replace('/', Path.DirectorySeparatorChar))).ReplaceLineEndings("\n"));
+			var expected = NormalizeSampleText(sampleName, File.ReadAllText(Path.Combine(expectedPath, file.Replace('/', Path.DirectorySeparatorChar))).ReplaceLineEndings("\n"));
+			if (actual != expected)
+				return false;
+		}
+		return true;
+	}
+
+	static List<string> GetSampleFiles(string outputPath)
+	{
+		return Directory.EnumerateFiles(outputPath, "*", SearchOption.AllDirectories)
 			.Select(path => Path.GetRelativePath(outputPath, path).Replace('\\', '/'))
-			.Where(path => path != ".xmldocgen-manifest")
 			.Order(StringComparer.Ordinal)
 			.ToList();
-		using var sha256 = SHA256.Create();
-		foreach (var file in files)
-		{
-			var text = NormalizeSampleText(sampleName, File.ReadAllText(Path.Combine(outputPath, file.Replace('/', Path.DirectorySeparatorChar))).ReplaceLineEndings("\n"));
-			var bytes = Encoding.UTF8.GetBytes(file + "\n" + text + "\n");
-			sha256.TransformBlock(bytes, 0, bytes.Length, null, 0);
-		}
-		sha256.TransformFinalBlock([], 0, 0);
-
-		var builder = new StringBuilder();
-		builder.AppendLine("sample: " + sampleName);
-		builder.AppendLine("files: " + files.Count);
-		builder.AppendLine("sha256: " + Convert.ToHexString(sha256.Hash!).ToLowerInvariant());
-		builder.AppendLine("preview:");
-		foreach (var file in files.Take(12))
-			builder.AppendLine("- " + file);
-		return builder.ToString();
 	}
 
 	static string NormalizeSampleText(string sampleName, string text) => sampleName == "Samples.SourceLinks" ? Regex.Replace(text, "(XmlDocMarkdown/)[0-9a-f]{40}/", "$1{commit}/", RegexOptions.IgnoreCase) : text;

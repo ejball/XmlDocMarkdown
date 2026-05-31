@@ -12,7 +12,7 @@ internal sealed class CSharpLayerTests
 	public void FullTypeSignatureRendersBaseInterfacesWithoutExtraSpaces()
 	{
 		var tree = TestSupport.CreateExampleTree();
-		var signature = CSharpSignatureBuilder.Full.GetSignature(tree.FindNode(XmlDocRef.ForType(typeof(ExampleClass)))!).Text;
+		var signature = CSharpSignature.CreateFull(tree.FindNode(XmlDocRef.ForType(typeof(ExampleClass)))!).Text;
 
 		Assert.That(signature, Does.StartWith("public class ExampleClass : IExampleContravariantInterface<ExampleClass>, IExampleCovariantInterface<string>"));
 		Assert.That(signature, Does.Not.Contain("public  class"));
@@ -26,10 +26,10 @@ internal sealed class CSharpLayerTests
 		var defaultParameters = typeof(ExampleClass).GetMethod(nameof(ExampleClass.DefaultParameters))!;
 		var tryGetValue = typeof(ExampleClass).GetMethods().Single(x => x.Name == nameof(ExampleClass.TryGetValue) && !x.IsGenericMethod);
 
-		Assert.That(CSharpSignatureBuilder.Full.GetSignature(tree.FindNode(XmlDocRef.ForMember(overloaded))!).Text, Does.Contain("where T : class where U : struct"));
-		Assert.That(CSharpSignatureBuilder.Full.GetSignature(tree.FindNode(XmlDocRef.ForMember(defaultParameters))!).Text, Does.Contain("double @double = double.NaN"));
-		Assert.That(CSharpSignatureBuilder.Full.GetSignature(tree.FindNode(XmlDocRef.ForMember(defaultParameters))!).Text, Does.Contain("ExampleFlagsEnum flags = ExampleFlagsEnum.Second | ExampleFlagsEnum.Third"));
-		Assert.That(CSharpSignatureBuilder.Full.GetSignature(tree.FindNode(XmlDocRef.ForMember(tryGetValue))!).Text, Does.Contain("out object value"));
+		Assert.That(CSharpSignature.CreateFull(tree.FindNode(XmlDocRef.ForMember(overloaded))!).Text, Does.Contain("where T : class where U : struct"));
+		Assert.That(CSharpSignature.CreateFull(tree.FindNode(XmlDocRef.ForMember(defaultParameters))!).Text, Does.Contain("double @double = double.NaN"));
+		Assert.That(CSharpSignature.CreateFull(tree.FindNode(XmlDocRef.ForMember(defaultParameters))!).Text, Does.Contain("ExampleFlagsEnum flags = ExampleFlagsEnum.Second | ExampleFlagsEnum.Third"));
+		Assert.That(CSharpSignature.CreateFull(tree.FindNode(XmlDocRef.ForMember(tryGetValue))!).Text, Does.Contain("out object value"));
 	}
 
 	[Test]
@@ -37,7 +37,7 @@ internal sealed class CSharpLayerTests
 	{
 		var tree = TestSupport.CreateExampleTree();
 		var method = typeof(ExampleClass).GetMethod(nameof(ExampleClass.Create), Type.EmptyTypes)!;
-		var signature = CSharpSignatureBuilder.Full.GetSignature(tree.FindNode(XmlDocRef.ForMember(method))!);
+		var signature = CSharpSignature.CreateFull(tree.FindNode(XmlDocRef.ForMember(method))!);
 
 		Assert.That(signature.Tokens, Has.Some.Matches<CSharpToken>(x => x.Kind == CSharpTokenKind.TypeName && x.LinkTarget == typeof(ExampleClass).GetTypeInfo()));
 	}
@@ -62,5 +62,5 @@ internal sealed class CSharpLayerTests
 		Assert.That(GetSignature(tree, modernType.GetMethods().Single(x => x.Name == "op_UnsignedRightShift")), Does.Contain("operator >>>"));
 	}
 
-	private static string GetSignature(Core.Nodes.XmlDocTree tree, MemberInfo member) => CSharpSignatureBuilder.Full.GetSignature(tree.FindNode(member)!).Text;
+	private static string GetSignature(Core.Nodes.XmlDocTree tree, MemberInfo member) => CSharpSignature.CreateFull(tree.FindNode(member)!).Text;
 }

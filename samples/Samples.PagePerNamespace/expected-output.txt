@@ -1,6 +1,0 @@
-sample: Samples.PagePerNamespace
-files: 2
-sha256: f91417c1e4adff867d4cd374bf24e19ddf80310e439271b9b9b4476172f4b963
-preview:
-- ExampleAssembly.InnerNamespace.md
-- ExampleAssembly.md
