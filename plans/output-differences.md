@@ -21,12 +21,8 @@ Snapshot: May 30, 2026, comparing the current regenerated `docs` output with `ma
 
 ## Plan
 
-- Build a repeatable comparison harness that generates current output into a clean temporary directory and reads master output from `git show` or a temporary master worktree. [not necessary]
-- Normalize expected intentional differences before comparison: generated comment text, line endings, SourceLink commit IDs, and source-assembly additions/removals. [not necessary]
-- Decide whether the default page map should preserve master-compatible paths or whether the old layout should become an explicit compatibility page map. [defaults should mimic the master paths]
-- Add tests for page paths, overload disambiguation, and stale-file cleanup so the checked-in `docs` tree cannot retain old generator output. [not necessary; once we delete the old generator output, it isn't coming back]
-- Decide whether overview tables should restore master-style member display text or expose it as a renderer option separate from the current lint-ready table shape. [restore master-style display text]
-- Add a member display-text API if restoring master-style tables, so Markdown rendering does not reconstruct C# fragments independently from the C# signature layer. [restore master-style tables]
-- Decide whether default output should restore See Also backlinks for namespace/type/source-file links, or whether source links should remain opt-in through `XmlDocSourceLinks`. [restore See Also backlinks, but source-file links should use XmlDocSourceLinks when enabled]
-- Add targeted golden tests for headings, overview rows, overload pages, See Also output, parameter-reference rendering, and generated comments. [okay]
-- Regenerate `docs` and all sample snapshots after each accepted compatibility change, then rerun the normalized comparison until only source-assembly differences remain. [doesn't need to be byte-for-byte, it just needs to be semantically the same]
+- Make the default page map mimic master paths for assemblies, namespaces, types, and member groups.
+- Restore master-style overview tables with C#-style display text and grouped overload rows.
+- Restore default See Also backlinks for namespaces, containing types, base/interface types, and source links when `XmlDocSourceLinks` is enabled.
+- Add targeted golden tests for headings, overview rows, overload pages, See Also output, parameter-reference rendering, and generated comments.
+- Regenerate `docs` and all sample snapshots, accepting semantic equivalence rather than byte-for-byte parity with master.
