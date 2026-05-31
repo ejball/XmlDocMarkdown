@@ -21,6 +21,11 @@ internal static class CSharpSignatureRendering
 	{
 		if (full)
 		{
+			if (node.TypeInfo.GetCustomAttribute<FlagsAttribute>() is not null)
+			{
+				yield return Text("[Flags]");
+				yield return Text("\n");
+			}
 			yield return Keyword(GetAccessModifier(node.Visibility));
 			yield return Space();
 			if (node.TypeInfo is { IsClass: true, IsSealed: true, IsAbstract: false })

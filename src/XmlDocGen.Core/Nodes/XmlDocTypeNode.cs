@@ -78,6 +78,8 @@ public sealed class XmlDocTypeNode : XmlDocNode
 
 	private static bool IsDocumentableMember(MemberInfo member)
 	{
+		if (member.DeclaringType?.IsEnum == true && member.Name == "value__")
+			return false;
 		if (IsBuiltInRecordMember(member))
 			return false;
 		if (member.Name.Length == 0 || member.Name[0] == '<')

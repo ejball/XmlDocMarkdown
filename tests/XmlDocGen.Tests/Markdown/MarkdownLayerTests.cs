@@ -40,8 +40,27 @@ internal sealed class MarkdownLayerTests
 		Assert.That(site.FindFile("ExampleAssembly/ExampleClass/HasHyperlinks.md")?.Text, Does.Contain("[more info](https://ejball.com/)"));
 		Assert.That(site.FindFile("ExampleAssembly/ExampleClass/ParameterReference.md")?.Text, Does.Contain("[`value`](#parameter-value)"));
 		Assert.That(site.FindFile("ExampleAssembly/ExampleDerivedClass/SeeAlso.md")?.Text, Does.Contain("## See Also"));
-		Assert.That(site.FindFile("ExampleAssembly/ExampleClass.md")?.Text, Does.Contain("[namespace ExampleAssembly](../ExampleAssembly.md#exampleassembly)"));
-		Assert.That(site.FindFile("ExampleAssembly/ExampleClass.md")?.Text, Does.Contain("[interface IExampleContravariantInterface](./IExampleContravariantInterface-1.md)"));
+		Assert.That(site.FindFile("ExampleAssembly/ExampleClass.md")?.Text, Does.Contain("namespace [ExampleAssembly](../ExampleAssembly.md#exampleassembly)"));
+		Assert.That(site.FindFile("ExampleAssembly/ExampleClass.md")?.Text, Does.Contain("interface [IExampleContravariantInterface](./IExampleContravariantInterface-1.md)"));
+	}
+
+	[Test]
+	public void MarkdownRendersEnumValuesOnEnumPage()
+	{
+		var site = new MarkdownSiteBuilder(new XmlDocSiteBuilderSettings { PageMap = XmlDocPageMap.PerMember }).Build(TestSupport.CreateExampleTree());
+		var enumPage = site.FindFile("ExampleAssembly/ExampleEnum.md")?.Text;
+		var flagsPage = site.FindFile("ExampleAssembly/ExampleFlagsEnum.md")?.Text;
+
+		Assert.That(enumPage, Does.Contain("# ExampleEnum enumeration"));
+		Assert.That(enumPage, Does.Contain("## Values"));
+		Assert.That(enumPage, Does.Contain("| name | value | description |"));
+		Assert.That(enumPage, Does.Contain("| Zero | `0` | Zero! |"));
+		Assert.That(enumPage, Does.Not.Contain("## Zero field"));
+		Assert.That(enumPage, Does.Not.Contain("value__"));
+		Assert.That(site.FindFile("ExampleAssembly/ExampleEnum/value__.md"), Is.Null);
+		Assert.That(site.FindFile("ExampleAssembly/ExampleEnum/Zero.md"), Is.Null);
+		Assert.That(flagsPage, Does.Contain("[Flags]\npublic enum ExampleFlagsEnum"));
+		Assert.That(flagsPage, Does.Contain("| All | `0xF` | All bits. |"));
 	}
 
 	[Test]

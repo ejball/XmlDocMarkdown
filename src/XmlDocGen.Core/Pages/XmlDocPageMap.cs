@@ -37,6 +37,7 @@ public abstract class XmlDocPageMap
 			XmlDocAssemblyNode assembly => GetAssemblyPath(assembly),
 			XmlDocNamespaceNode namespaceNode => GetAssemblyPath(namespaceNode.Assembly),
 			XmlDocTypeNode typeNode => GetTypePath(typeNode),
+			XmlDocMemberNode { Parent: XmlDocTypeNode { Kind: XmlDocTypeKind.Enum } enumType } => GetTypePath(enumType),
 			XmlDocMemberNode memberNode => GetTypePath((XmlDocTypeNode) memberNode.Parent!) + "/" + GetMemberSafeName(memberNode),
 			_ => GetSafeName(node),
 		};

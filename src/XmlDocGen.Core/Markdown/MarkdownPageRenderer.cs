@@ -88,6 +88,7 @@ public class MarkdownPageRenderer : XmlDocPageRenderer
 		{
 			XmlDocAssemblyNode => "assembly",
 			XmlDocNamespaceNode => "namespace",
+			XmlDocTypeNode { Kind: XmlDocTypeKind.Enum } => "enumeration",
 			XmlDocTypeNode { Kind: XmlDocTypeKind.Struct } => "structure",
 			XmlDocTypeNode type => type.Kind.ToString().ToLowerInvariant(),
 			XmlDocMemberNode member => member.MemberKind.ToString().ToLowerInvariant(),

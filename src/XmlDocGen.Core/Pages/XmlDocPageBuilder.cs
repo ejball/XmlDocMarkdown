@@ -8,7 +8,11 @@ public static class XmlDocPageBuilder
 	/// <summary>Groups visible nodes into logical pages.</summary>
 	public static IReadOnlyList<XmlDocPage> CreatePages(XmlDocTree tree, XmlDocNodeVisibility visibility, XmlDocPageMap map) =>
 		[.. tree.EnumerateNodes(visibility)
+			.Where(node => !IsFoldedEnumValue(node, map))
 			.GroupBy(map.GetPagePath)
 			.OrderBy(x => x.Key, StringComparer.OrdinalIgnoreCase)
 			.Select(x => new XmlDocPage(x.Key, x))];
+
+	private static bool IsFoldedEnumValue(XmlDocNode node, XmlDocPageMap map) =>
+		node is XmlDocMemberNode { Parent: XmlDocTypeNode { Kind: XmlDocTypeKind.Enum } enumType } && map.GetPagePath(node) == map.GetPagePath(enumType);
 }
