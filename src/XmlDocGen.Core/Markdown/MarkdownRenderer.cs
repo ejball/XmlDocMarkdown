@@ -1,4 +1,5 @@
 using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using XmlDocGen.Core.CSharp;
 using XmlDocGen.Core.Nodes;
@@ -106,42 +107,38 @@ public class MarkdownRenderer
 	/// <summary>Writes a child-node overview section.</summary>
 	public virtual void WriteChildren(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context)
 	{
-		var children = node.Children.Where(x => context.FindPage(x) is not null).OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
+		var children = node.Children.Where(x => context.FindPage(x) is not null).OrderBy(GetOverviewText, StringComparer.OrdinalIgnoreCase).ToList();
 		if (children.Count == 0)
 			return;
 
 		writer.WriteLine();
 		writer.WriteHeading(2, GetChildrenHeading(node));
 		writer.WriteLine();
-		writer.WriteTableRow("name", "kind", "summary");
-		writer.WriteLine("| --- | --- | --- |");
-		foreach (var child in children)
+		writer.WriteTableRow("name", "description");
+		writer.WriteLine("| --- | --- |");
+		foreach (var group in children.GroupBy(x => context.FindPage(x)!))
 		{
-			var page = context.FindPage(child)!;
+			var child = group.First();
+			var page = group.Key;
 			var url = context.UrlMapper.GetUrl(context.Page, page, child);
-			writer.WriteMarkdownTableRow($"[{child.Name}]({url})", GetKindName(child), RenderBlocksInline(child.XmlMember?.Summary ?? [], context, child));
+			var summary = RenderBlocksInline(child.XmlMember?.Summary ?? [], context, child);
+			if (group.Count() > 1)
+				summary += $" ({group.Count()} {GetPluralKindName(child)})";
+			writer.WriteMarkdownTableRow($"[{Escape(GetOverviewText(child))}]({url})", summary);
 		}
 	}
 
 	/// <summary>Writes a see-also section.</summary>
 	public virtual void WriteSeeAlso(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context)
 	{
-		if (node.XmlMember?.SeeAlso.Count > 0)
+		var links = GetSeeAlsoLinks(node, context).ToList();
+		if (links.Count > 0)
 		{
 			writer.WriteLine();
 			writer.WriteHeading(2, "See Also");
 			writer.WriteLine();
-			foreach (var seeAlso in node.XmlMember.SeeAlso)
-			{
-				var text = seeAlso.Text;
-				var url = seeAlso.Href;
-				if (seeAlso.Ref is { } reference)
-				{
-					text = string.IsNullOrWhiteSpace(text) ? reference.ShortName : text;
-					url = context.GetLinkUrl(reference);
-				}
-				writer.WriteLine(url is null ? "* " + text : $"* [{Escape(text ?? url)}]({url})");
-			}
+			foreach (var (text, url) in links)
+				writer.WriteLine(url is null ? "* " + Escape(text) : $"* [{Escape(text)}]({url})");
 		}
 	}
 
@@ -290,18 +287,116 @@ public class MarkdownRenderer
 	{
 		XmlDocAssemblyNode => "Namespaces",
 		XmlDocNamespaceNode => "Types",
-		XmlDocTypeNode => "Members",
+		XmlDocTypeNode => "Public Members",
 		_ => "Children",
 	};
 
-	private static string GetKindName(XmlDocNode node) => node switch
+	private static string GetPluralKindName(XmlDocNode node) => node switch
 	{
-		XmlDocAssemblyNode => "assembly",
-		XmlDocNamespaceNode => "namespace",
-		XmlDocTypeNode type => type.Kind.ToString().ToLowerInvariant(),
-		XmlDocMemberNode member => member.MemberKind.ToString().ToLowerInvariant(),
-		_ => "node",
+		XmlDocMemberNode { MemberKind: XmlDocMemberKind.Property } => "properties",
+		XmlDocMemberNode { MemberKind: XmlDocMemberKind.Constructor } => "constructors",
+		XmlDocMemberNode member => member.MemberKind.ToString().ToLowerInvariant() + "s",
+		XmlDocTypeNode type => type.Kind.ToString().ToLowerInvariant() + "s",
+		_ => "items",
 	};
+
+	private static string GetOverviewText(XmlDocNode node) => node is XmlDocMemberNode memberNode ? GetMemberOverviewText(memberNode) : CSharpSignatureBuilder.Short.GetSignature(node).Text;
+
+	private static string GetMemberOverviewText(XmlDocMemberNode node)
+	{
+		var prefix = GetMemberPrefix(node);
+		var text = CSharpSignatureBuilder.Short.GetSignature(node).Text;
+		return string.IsNullOrEmpty(prefix) ? text : prefix + text;
+	}
+
+	private static string GetMemberPrefix(XmlDocMemberNode node)
+	{
+		var parts = new List<string>();
+		if (IsOverride(node.Member))
+			parts.Add("override");
+		else if (ReflectionFacts.IsStatic(node.Member))
+			parts.Add("static");
+		else if (ReflectionFacts.IsVirtual(node.Member))
+			parts.Add("virtual");
+
+		if (node.Member is FieldInfo { IsLiteral: true })
+			parts.Add("const");
+		else if (node.Member is FieldInfo { IsInitOnly: true })
+			parts.Add("readonly");
+		else if (node.Member is EventInfo)
+			parts.Add("event");
+
+		return parts.Count == 0 ? "" : string.Join(" ", parts) + " ";
+	}
+
+	private static bool IsOverride(MemberInfo member) => member switch
+	{
+		MethodInfo method => method.GetBaseDefinition() != method && method.GetBaseDefinition().DeclaringType != method.DeclaringType,
+		PropertyInfo property => IsOverride(property.GetMethod) || IsOverride(property.SetMethod),
+		EventInfo @event => IsOverride(@event.AddMethod) || IsOverride(@event.RemoveMethod),
+		_ => false,
+	};
+
+	private static bool IsOverride(MethodInfo? method) => method is not null && method.GetBaseDefinition() != method && method.GetBaseDefinition().DeclaringType != method.DeclaringType;
+
+	private static IEnumerable<(string Text, string? Url)> GetSeeAlsoLinks(XmlDocNode node, XmlDocPageContext context)
+	{
+		var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (var link in GetExplicitSeeAlsoLinks(node, context).Concat(GetAutomaticSeeAlsoLinks(node, context)))
+		{
+			var key = link.Text + "\n" + link.Url;
+			if (seen.Add(key))
+				yield return link;
+		}
+	}
+
+	private static IEnumerable<(string Text, string? Url)> GetExplicitSeeAlsoLinks(XmlDocNode node, XmlDocPageContext context)
+	{
+		foreach (var seeAlso in node.XmlMember?.SeeAlso ?? [])
+		{
+			var text = seeAlso.Text;
+			var url = seeAlso.Href;
+			if (seeAlso.Ref is { } reference)
+			{
+				text = string.IsNullOrWhiteSpace(text) ? reference.ShortName : text;
+				url = context.GetLinkUrl(reference);
+			}
+			if (!string.IsNullOrWhiteSpace(text) || url is not null)
+				yield return (text ?? url!, url);
+		}
+	}
+
+	private static IEnumerable<(string Text, string? Url)> GetAutomaticSeeAlsoLinks(XmlDocNode node, XmlDocPageContext context)
+	{
+		if (node.Parent is XmlDocNamespaceNode namespaceNode && context.FindPage(namespaceNode) is { } namespacePage)
+			yield return ("namespace " + namespaceNode.Name, context.UrlMapper.GetUrl(context.Page, namespacePage, namespaceNode));
+		else if (node.Parent is XmlDocTypeNode typeNode && context.FindPage(typeNode) is { } typePage)
+			yield return (GetTypeLabel(typeNode.TypeInfo), context.UrlMapper.GetUrl(context.Page, typePage, typeNode));
+
+		if (node is XmlDocTypeNode type)
+		{
+			foreach (var baseType in GetRelatedTypes(type.TypeInfo))
+			{
+				if (context.GetLinkUrl(baseType.GetTypeInfo()) is { } url)
+					yield return (GetTypeLabel(baseType.GetTypeInfo()), url);
+			}
+		}
+
+		if (node.MemberInfo is { } member && context.GetSourceUrl(member) is { } sourceUrl)
+			yield return ("source", sourceUrl);
+	}
+
+	private static IEnumerable<Type> GetRelatedTypes(TypeInfo type)
+	{
+		if (type.BaseType is { } baseType && baseType != typeof(object) && baseType != typeof(ValueType) && baseType != typeof(Enum) && baseType != typeof(MulticastDelegate))
+			yield return GetLinkableType(baseType);
+		foreach (var interfaceType in type.ImplementedInterfaces.OrderBy(x => x.FullName, StringComparer.Ordinal))
+			yield return GetLinkableType(interfaceType);
+	}
+
+	private static Type GetLinkableType(Type type) => type is { IsGenericType: true, IsGenericTypeDefinition: false } ? type.GetGenericTypeDefinition() : type;
+
+	private static string GetTypeLabel(TypeInfo type) => (type.IsInterface ? "interface " : ReflectionFacts.GetTypeKind(type).ToString().ToLowerInvariant() + " ") + ReflectionFacts.GetShortName(type);
 
 	private static string RenderInlines(IEnumerable<XmlDocXmlInline> inlines, XmlDocPageContext context, XmlDocNode? currentNode) => Regex.Replace(string.Concat(inlines.Select(x => RenderInline(x, context, currentNode))), @"\s+", " ").Trim();
 

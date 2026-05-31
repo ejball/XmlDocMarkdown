@@ -62,15 +62,24 @@ public abstract class XmlDocPageMap
 
 	private static string GetAssemblyPath(XmlDocAssemblyNode assembly) => GetSafeName(assembly.Name);
 
-	private static string GetNamespacePath(XmlDocNode node) => GetAssemblyPath(node.Assembly) + "/" + GetSafeName(node.Name);
+	private static string GetNamespacePath(XmlDocNode node) => GetSafeName(node.Name);
 
-	private static string GetTypePath(XmlDocTypeNode type) => GetNamespacePath(GetNamespace(type)) + "/" + GetSafeName(type);
+	private static string GetTypePath(XmlDocTypeNode type) => GetNamespacePath(GetNamespace(type)) + "/" + GetTypeSafeName(type.TypeInfo);
 
 	private static string GetMemberSafeName(XmlDocMemberNode member)
 	{
-		var sameNameCount = member.Parent?.Children.OfType<XmlDocMemberNode>().Count(x => x.Name == member.Name) ?? 0;
-		return sameNameCount <= 1 ? GetSafeName(member.Name) : GetSafeName(XmlDocPageHeadings.GetHeadingText(member));
+		return GetSafeName(ReflectionFacts.GetShortName(member.Member));
 	}
+
+	private static string GetTypeSafeName(TypeInfo type)
+	{
+		var parts = new Stack<string>();
+		for (var current = type; current is not null; current = current.DeclaringType?.GetTypeInfo())
+			parts.Push(GetSafeGenericName(current.Name));
+		return string.Join('.', parts);
+	}
+
+	private static string GetSafeGenericName(string name) => GetSafeName(name.Replace('`', '-'));
 
 	private static XmlDocNamespaceNode GetNamespace(XmlDocNode node)
 	{

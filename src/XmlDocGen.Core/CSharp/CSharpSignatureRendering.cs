@@ -135,11 +135,8 @@ internal static class CSharpSignatureRendering
 						yield return token;
 					yield return Punctuation("]");
 				}
-				if (full)
-				{
-					yield return Space();
-					yield return Text(GetPropertyAccessors(property));
-				}
+				yield return Space();
+				yield return Text(GetPropertyAccessors(property));
 				break;
 			case EventInfo @event:
 				if (full)

@@ -26,8 +26,8 @@ internal sealed class PagesLayerTests
 		var tree = TestSupport.CreateExampleTree();
 		var pages = XmlDocPageBuilder.CreatePages(tree, XmlDocNodeVisibility.Public, XmlDocPageMap.PerMember);
 
-		Assert.That(pages.Select(x => x.Path), Does.Contain("ExampleAssembly/ExampleAssembly/ExampleClass/Create"));
-		Assert.That(pages.Select(x => x.Path), Does.Contain("ExampleAssembly/ExampleAssembly/ExampleClass/Create-String"));
+		Assert.That(pages.Select(x => x.Path), Does.Contain("ExampleAssembly/ExampleClass/Create"));
+		Assert.That(pages.Single(x => x.Path == "ExampleAssembly/ExampleClass/Create").Nodes, Has.Count.EqualTo(2));
 	}
 
 	[Test]
