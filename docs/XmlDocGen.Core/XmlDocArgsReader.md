@@ -11,12 +11,12 @@ public sealed class XmlDocArgsReader
 
 | name | description |
 | --- | --- |
-| [ReadArgument()](./XmlDocArgsReader/ReadArgument.md) | Reads one positional argument. |
-| [ReadFlag(string name)](./XmlDocArgsReader/ReadFlag.md) | Reads a flag by long or short name. |
-| [ReadOption(string name)](./XmlDocArgsReader/ReadOption.md) | Reads an option value by long or short name. |
-| [ReadRemainingArguments()](./XmlDocArgsReader/ReadRemainingArguments.md) | Reads remaining positional arguments. |
-| [VerifyComplete()](./XmlDocArgsReader/VerifyComplete.md) | Verifies that no unread arguments remain. |
-| [XmlDocArgsReader(IEnumerable&lt;string&gt; args)](./XmlDocArgsReader/XmlDocArgsReader.md) | Initializes a new instance of the [`XmlDocArgsReader`](./XmlDocArgsReader.md) class. |
+| [ReadArgument](./XmlDocArgsReader/ReadArgument.md)() | Reads one positional argument. |
+| [ReadFlag](./XmlDocArgsReader/ReadFlag.md)(...) | Reads a flag by long or short name. |
+| [ReadOption](./XmlDocArgsReader/ReadOption.md)(...) | Reads an option value by long or short name. |
+| [ReadRemainingArguments](./XmlDocArgsReader/ReadRemainingArguments.md)() | Reads remaining positional arguments. |
+| [VerifyComplete](./XmlDocArgsReader/VerifyComplete.md)() | Verifies that no unread arguments remain. |
+| [XmlDocArgsReader](./XmlDocArgsReader/XmlDocArgsReader.md)(...) | Initializes a new instance of the [`XmlDocArgsReader`](./XmlDocArgsReader.md) class. |
 
 ## See Also
 

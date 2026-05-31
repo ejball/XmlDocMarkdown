@@ -11,16 +11,16 @@ public enum XmlDocVisibility : IComparable, IConvertible, IFormattable, ISpanFor
 
 | name | description |
 | --- | --- |
-| [const Internal](./XmlDocVisibility/Internal.md) | Internal. |
-| [const Private](./XmlDocVisibility/Private.md) | Private. |
-| [const Protected](./XmlDocVisibility/Protected.md) | Protected. |
-| [const ProtectedInternal](./XmlDocVisibility/ProtectedInternal.md) | Protected internal. |
-| [const Public](./XmlDocVisibility/Public.md) | Public. |
+| const [Internal](./XmlDocVisibility/Internal.md) | Internal. |
+| const [Private](./XmlDocVisibility/Private.md) | Private. |
+| const [Protected](./XmlDocVisibility/Protected.md) | Protected. |
+| const [ProtectedInternal](./XmlDocVisibility/ProtectedInternal.md) | Protected internal. |
+| const [Public](./XmlDocVisibility/Public.md) | Public. |
 | [value__](./XmlDocVisibility/value__.md) |  |
 
 ## See Also
 
-* [namespace XmlDocGen.Core.Nodes](../XmlDocGen.Core.Nodes.md)
+* [namespace XmlDocGen.Core.Nodes](../XmlDocGen.Core.md#xmldocgen-core-nodes)
 * [interface IComparable](https://learn.microsoft.com/dotnet/api/system.icomparable)
 * [interface IConvertible](https://learn.microsoft.com/dotnet/api/system.iconvertible)
 * [interface IFormattable](https://learn.microsoft.com/dotnet/api/system.iformattable)

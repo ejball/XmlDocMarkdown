@@ -1,8 +1,7 @@
 sample: Samples.CustomUrlMapper
-files: 197
-sha256: a4eb41734e95b1d2d5ec97aed61e8c660d6a0bd8e63c4d462a651057f19eb43c
+files: 196
+sha256: 6a20f267cd5af28c730dff99d92e56c4051da045c53fe7d6121f3bfc58cde5ce
 preview:
-- ExampleAssembly.InnerNamespace.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md
 - ExampleAssembly.md
@@ -14,3 +13,4 @@ preview:
 - ExampleAssembly/ExampleAbstractClass/PublicMethod.md
 - ExampleAssembly/ExampleAbstractClass/PublicProperty.md
 - ExampleAssembly/ExampleAbstractClass/PublicProtectedProperty.md
+- ExampleAssembly/ExampleAttribute.md

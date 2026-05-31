@@ -11,7 +11,7 @@ public sealed class ExampleSealedClass
 
 | name | description |
 | --- | --- |
-| [ExampleSealedClass()](./ExampleSealedClass/ExampleSealedClass.md) |  |
+| [ExampleSealedClass](./ExampleSealedClass/ExampleSealedClass.md)() |  |
 
 ## See Also
 

@@ -11,13 +11,13 @@ public abstract class ExampleAbstractClass
 
 | name | description |
 | --- | --- |
-| [ExampleAbstractClass()](./ExampleAbstractClass/ExampleAbstractClass.md) |  |
-| [virtual ProtectedMethodCore()](./ExampleAbstractClass/ProtectedMethodCore.md) | A protected abstract method. |
-| [virtual ProtectedPrivateProperty { get; set; }](./ExampleAbstractClass/ProtectedPrivateProperty.md) | A protected and private virtual property. |
-| [virtual ProtectedPropertyCore { get; set; }](./ExampleAbstractClass/ProtectedPropertyCore.md) | A protected abstract property. |
-| [virtual PublicMethod()](./ExampleAbstractClass/PublicMethod.md) | A public abstract method. |
-| [virtual PublicProperty { get; }](./ExampleAbstractClass/PublicProperty.md) | A public abstract read-only property. |
-| [virtual PublicProtectedProperty { get; set; }](./ExampleAbstractClass/PublicProtectedProperty.md) | A public and protected virtual property. |
+| [ExampleAbstractClass](./ExampleAbstractClass/ExampleAbstractClass.md)() |  |
+| virtual [ProtectedMethodCore](./ExampleAbstractClass/ProtectedMethodCore.md)() | A protected abstract method. |
+| virtual [ProtectedPrivateProperty](./ExampleAbstractClass/ProtectedPrivateProperty.md) { get; set; } | A protected and private virtual property. |
+| virtual [ProtectedPropertyCore](./ExampleAbstractClass/ProtectedPropertyCore.md) { get; set; } | A protected abstract property. |
+| virtual [PublicMethod](./ExampleAbstractClass/PublicMethod.md)() | A public abstract method. |
+| virtual [PublicProperty](./ExampleAbstractClass/PublicProperty.md) { get; } | A public abstract read-only property. |
+| virtual [PublicProtectedProperty](./ExampleAbstractClass/PublicProtectedProperty.md) { get; set; } | A public and protected virtual property. |
 
 ## See Also
 

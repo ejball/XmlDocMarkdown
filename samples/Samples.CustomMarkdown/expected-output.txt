@@ -1,8 +1,7 @@
 sample: Samples.CustomMarkdown
-files: 197
-sha256: 2ad16252feeb681dba0442024ffd32cb337f87e5dd8e4423a697e9cb10ec6b96
+files: 196
+sha256: a4cbe66e101d528c4f045390326eea19e8ef6583570e3edc42f43767e492ff18
 preview:
-- ExampleAssembly.InnerNamespace.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md
 - ExampleAssembly.md
@@ -14,3 +13,4 @@ preview:
 - ExampleAssembly/ExampleAbstractClass/PublicMethod.md
 - ExampleAssembly/ExampleAbstractClass/PublicProperty.md
 - ExampleAssembly/ExampleAbstractClass/PublicProtectedProperty.md
+- ExampleAssembly/ExampleAttribute.md

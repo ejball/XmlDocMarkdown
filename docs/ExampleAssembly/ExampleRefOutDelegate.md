@@ -11,10 +11,10 @@ public sealed delegate ExampleRefOutDelegate : ICloneable, ISerializable
 
 | name | description |
 | --- | --- |
-| [ExampleRefOutDelegate(object @object, nint method)](./ExampleRefOutDelegate/ExampleRefOutDelegate.md) |  |
-| [virtual BeginInvoke(ref bool isRef, out bool isOut, bool isIn, AsyncCallback callback, object @object)](./ExampleRefOutDelegate/BeginInvoke.md) |  |
-| [virtual EndInvoke(ref bool isRef, out bool isOut, IAsyncResult result)](./ExampleRefOutDelegate/EndInvoke.md) |  |
-| [virtual Invoke(ref bool isRef, out bool isOut, bool isIn = true)](./ExampleRefOutDelegate/Invoke.md) |  |
+| [ExampleRefOutDelegate](./ExampleRefOutDelegate/ExampleRefOutDelegate.md)(...) |  |
+| virtual [BeginInvoke](./ExampleRefOutDelegate/BeginInvoke.md)(...) |  |
+| virtual [EndInvoke](./ExampleRefOutDelegate/EndInvoke.md)(...) |  |
+| virtual [Invoke](./ExampleRefOutDelegate/Invoke.md)(...) |  |
 
 ## See Also
 

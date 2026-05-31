@@ -1,8 +1,7 @@
 sample: Samples.PagePerType
-files: 47
-sha256: 3f9ceac7b00006f63f9e966fa340ca1e5ef8cafc6d4b83fd495b3d9179958229
+files: 46
+sha256: 7906d525d167c0c563ddee8e20e2255bec2861669a021c328758f838b38fb99b
 preview:
-- ExampleAssembly.InnerNamespace.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass.md
 - ExampleAssembly.md
 - ExampleAssembly/ExampleAbstractClass.md
@@ -14,3 +13,4 @@ preview:
 - ExampleAssembly/ExampleDeepClass.NestedClass.md
 - ExampleAssembly/ExampleDeepClass.NestedDelegate.md
 - ExampleAssembly/ExampleDeepClass.PrivateNestedClass.md
+- ExampleAssembly/ExampleDeepClass.ProtectedInternalNestedClass.md

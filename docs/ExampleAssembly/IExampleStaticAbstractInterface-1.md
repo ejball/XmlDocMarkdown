@@ -11,8 +11,8 @@ public interface IExampleStaticAbstractInterface<TSelf> where TSelf : IExampleSt
 
 | name | description |
 | --- | --- |
-| [static Create()](./IExampleStaticAbstractInterface-1/Create.md) | Creates a value. |
-| [static Identity(TSelf value)](./IExampleStaticAbstractInterface-1/Identity.md) | Returns the value. |
+| static [Create](./IExampleStaticAbstractInterface-1/Create.md)() | Creates a value. |
+| static [Identity](./IExampleStaticAbstractInterface-1/Identity.md)(...) | Returns the value. |
 
 ## See Also
 

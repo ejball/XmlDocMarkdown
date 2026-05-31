@@ -11,18 +11,18 @@ public enum XmlDocTypeKind : IComparable, IConvertible, IFormattable, ISpanForma
 
 | name | description |
 | --- | --- |
-| [const Class](./XmlDocTypeKind/Class.md) | A class. |
-| [const Delegate](./XmlDocTypeKind/Delegate.md) | A delegate. |
-| [const Enum](./XmlDocTypeKind/Enum.md) | An enum. |
-| [const Interface](./XmlDocTypeKind/Interface.md) | An interface. |
-| [const Record](./XmlDocTypeKind/Record.md) | A record class. |
-| [const RecordStruct](./XmlDocTypeKind/RecordStruct.md) | A record struct. |
-| [const Struct](./XmlDocTypeKind/Struct.md) | A struct. |
+| const [Class](./XmlDocTypeKind/Class.md) | A class. |
+| const [Delegate](./XmlDocTypeKind/Delegate.md) | A delegate. |
+| const [Enum](./XmlDocTypeKind/Enum.md) | An enum. |
+| const [Interface](./XmlDocTypeKind/Interface.md) | An interface. |
+| const [Record](./XmlDocTypeKind/Record.md) | A record class. |
+| const [RecordStruct](./XmlDocTypeKind/RecordStruct.md) | A record struct. |
+| const [Struct](./XmlDocTypeKind/Struct.md) | A struct. |
 | [value__](./XmlDocTypeKind/value__.md) |  |
 
 ## See Also
 
-* [namespace XmlDocGen.Core.Nodes](../XmlDocGen.Core.Nodes.md)
+* [namespace XmlDocGen.Core.Nodes](../XmlDocGen.Core.md#xmldocgen-core-nodes)
 * [interface IComparable](https://learn.microsoft.com/dotnet/api/system.icomparable)
 * [interface IConvertible](https://learn.microsoft.com/dotnet/api/system.iconvertible)
 * [interface IFormattable](https://learn.microsoft.com/dotnet/api/system.iformattable)

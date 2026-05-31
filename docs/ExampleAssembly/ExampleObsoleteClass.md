@@ -11,7 +11,7 @@ public class ExampleObsoleteClass
 
 | name | description |
 | --- | --- |
-| [ExampleObsoleteClass()](./ExampleObsoleteClass/ExampleObsoleteClass.md) |  |
+| [ExampleObsoleteClass](./ExampleObsoleteClass/ExampleObsoleteClass.md)() |  |
 
 ## See Also
 

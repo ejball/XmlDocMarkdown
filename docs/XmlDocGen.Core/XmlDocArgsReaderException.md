@@ -11,7 +11,7 @@ public sealed class XmlDocArgsReaderException : Exception, ISerializable
 
 | name | description |
 | --- | --- |
-| [XmlDocArgsReaderException(string message)](./XmlDocArgsReaderException/XmlDocArgsReaderException.md) | An exception thrown for invalid command-line arguments. |
+| [XmlDocArgsReaderException](./XmlDocArgsReaderException/XmlDocArgsReaderException.md)(...) | An exception thrown for invalid command-line arguments. |
 
 ## See Also
 

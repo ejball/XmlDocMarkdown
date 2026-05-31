@@ -1,8 +1,7 @@
 sample: Samples.DocusaurusUrls
-files: 197
-sha256: 7cb34ad31a6bb6a842f12ca368d6a940b2faa2c97e37450663a957cceabecdf0
+files: 196
+sha256: 93d04752ce0c489f6e376333461cb9267793679c4945da9d2cc0322826bdae8e
 preview:
-- ExampleAssembly.InnerNamespace.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md
 - ExampleAssembly.md
@@ -14,3 +13,4 @@ preview:
 - ExampleAssembly/ExampleAbstractClass/PublicMethod.md
 - ExampleAssembly/ExampleAbstractClass/PublicProperty.md
 - ExampleAssembly/ExampleAbstractClass/PublicProtectedProperty.md
+- ExampleAssembly/ExampleAttribute.md

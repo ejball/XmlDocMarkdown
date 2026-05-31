@@ -11,15 +11,15 @@ public enum XmlDocXmlListKind : IComparable, IConvertible, IFormattable, ISpanFo
 
 | name | description |
 | --- | --- |
-| [const Bullet](./XmlDocXmlListKind/Bullet.md) | A bullet list. |
-| [const Definition](./XmlDocXmlListKind/Definition.md) | A definition list. |
-| [const Number](./XmlDocXmlListKind/Number.md) | A numbered list. |
-| [const Table](./XmlDocXmlListKind/Table.md) | A table. |
+| const [Bullet](./XmlDocXmlListKind/Bullet.md) | A bullet list. |
+| const [Definition](./XmlDocXmlListKind/Definition.md) | A definition list. |
+| const [Number](./XmlDocXmlListKind/Number.md) | A numbered list. |
+| const [Table](./XmlDocXmlListKind/Table.md) | A table. |
 | [value__](./XmlDocXmlListKind/value__.md) |  |
 
 ## See Also
 
-* [namespace XmlDocGen.Core.Xml](../XmlDocGen.Core.Xml.md)
+* [namespace XmlDocGen.Core.Xml](../XmlDocGen.Core.md#xmldocgen-core-xml)
 * [interface IComparable](https://learn.microsoft.com/dotnet/api/system.icomparable)
 * [interface IConvertible](https://learn.microsoft.com/dotnet/api/system.iconvertible)
 * [interface IFormattable](https://learn.microsoft.com/dotnet/api/system.iformattable)

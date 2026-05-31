@@ -11,10 +11,10 @@ public class ExampleDeepClass
 
 | name | description |
 | --- | --- |
-| [class NestedClass](./ExampleDeepClass.NestedClass.md) | A nested class. |
-| [class ProtectedNestedClass](./ExampleDeepClass.ProtectedNestedClass.md) | A protected nested class. |
-| [delegate NestedDelegate](./ExampleDeepClass.NestedDelegate.md) | A nested delegate. |
-| [ExampleDeepClass()](./ExampleDeepClass/ExampleDeepClass.md) |  |
+| class [NestedClass](./ExampleDeepClass.NestedClass.md) | A nested class. |
+| class [ProtectedNestedClass](./ExampleDeepClass.ProtectedNestedClass.md) | A protected nested class. |
+| delegate [NestedDelegate](./ExampleDeepClass.NestedDelegate.md) | A nested delegate. |
+| [ExampleDeepClass](./ExampleDeepClass/ExampleDeepClass.md)() |  |
 
 ## Remarks
 

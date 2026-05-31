@@ -11,11 +11,11 @@ public class ExampleGenericClass<T>
 
 | name | description |
 | --- | --- |
-| [AddTuples(IEnumerable&lt;ValueTuple&lt;T?, object?&gt;&gt; values)](./ExampleGenericClass-1/AddTuples.md) | Adds values. |
-| [AddValues(IEnumerable&lt;T?&gt; values)](./ExampleGenericClass-1/AddValues.md) | Adds values. |
-| [ExampleGenericClass(T? value)](./ExampleGenericClass-1/ExampleGenericClass.md) | Creates an instance. |
-| [GetTuple()](./ExampleGenericClass-1/GetTuple.md) | Gets an example tuple. |
-| [Value { get; set; }](./ExampleGenericClass-1/Value.md) | The value. |
+| [AddTuples](./ExampleGenericClass-1/AddTuples.md)(...) | Adds values. |
+| [AddValues](./ExampleGenericClass-1/AddValues.md)(...) | Adds values. |
+| [ExampleGenericClass](./ExampleGenericClass-1/ExampleGenericClass.md)(...) | Creates an instance. |
+| [GetTuple](./ExampleGenericClass-1/GetTuple.md)() | Gets an example tuple. |
+| [Value](./ExampleGenericClass-1/Value.md) { get; set; } | The value. |
 
 ## See Also
 

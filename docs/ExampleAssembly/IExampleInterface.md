@@ -11,7 +11,7 @@ public interface IExampleInterface
 
 | name | description |
 | --- | --- |
-| [ExampleMethod(string value)](./IExampleInterface/ExampleMethod.md) | An interface method. |
+| [ExampleMethod](./IExampleInterface/ExampleMethod.md)(...) | An interface method. |
 
 ## See Also
 

@@ -11,35 +11,35 @@ public struct ExampleStruct
 
 | name | description |
 | --- | --- |
-| [@this[int index] { get; }](./ExampleStruct/Item.md) | Integer indexer. (2 properties) |
-| [override Equals(object? obj)](./ExampleStruct/Equals.md) | Check for equality. |
-| [override GetHashCode()](./ExampleStruct/GetHashCode.md) | Check for equality. |
-| [static explicit operator(ExampleStruct value)](./ExampleStruct/op_Explicit.md#op-explicit-examplestruct) | Explicit cast to integer. (2 operators) |
-| [static implicit operator(ExampleStruct value)](./ExampleStruct/op_Implicit.md#op-implicit-examplestruct) | Implicit cast to string. (2 operators) |
-| [static operator !(ExampleStruct value)](./ExampleStruct/op_LogicalNot.md) | Not. |
-| [static operator !=(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_Inequality.md) | Not equal. |
-| [static operator %(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_Modulus.md) | Modulus. |
-| [static operator &amp;(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_BitwiseAnd.md) | And. |
-| [static operator *(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_Multiply.md) | Multiply. |
-| [static operator +(ExampleStruct value)](./ExampleStruct/op_UnaryPlus.md) | Unary plus. |
-| [static operator +(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_Addition.md) | Add. |
-| [static operator ++(ExampleStruct value)](./ExampleStruct/op_Increment.md) | Increment. |
-| [static operator -(ExampleStruct value)](./ExampleStruct/op_UnaryNegation.md) | Unary minus. |
-| [static operator -(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_Subtraction.md) | Subtract. |
-| [static operator --(ExampleStruct value)](./ExampleStruct/op_Decrement.md) | Decrement. |
-| [static operator /(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_Division.md) | Divide. |
-| [static operator &lt;(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_LessThan.md) | Less than. |
-| [static operator &lt;&lt;(ExampleStruct value1, int value2)](./ExampleStruct/op_LeftShift.md) | Left shift. |
-| [static operator &lt;=(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_LessThanOrEqual.md) | Less than or equal to. |
-| [static operator ==(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_Equality.md) | Equal. |
-| [static operator &gt;(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_GreaterThan.md) | Greater than. |
-| [static operator &gt;=(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_GreaterThanOrEqual.md) | Greater than or equal to. |
-| [static operator &gt;&gt;(ExampleStruct value1, int value2)](./ExampleStruct/op_RightShift.md) | Right shift. |
-| [static operator false(ExampleStruct value)](./ExampleStruct/op_False.md) | False. |
-| [static operator true(ExampleStruct value)](./ExampleStruct/op_True.md) | True. |
-| [static operator ^(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_ExclusiveOr.md) | Exclusive or. |
-| [static operator &#x7C;(ExampleStruct value1, ExampleStruct value2)](./ExampleStruct/op_BitwiseOr.md) | Or. |
-| [static operator ~(ExampleStruct value)](./ExampleStruct/op_OnesComplement.md) | Bitwise complement. |
+| [Item](./ExampleStruct/Item.md) { get; } | Integer indexer. (2 properties) |
+| override [Equals](./ExampleStruct/Equals.md)(...) | Check for equality. |
+| override [GetHashCode](./ExampleStruct/GetHashCode.md)() | Check for equality. |
+| static [explicit operator](./ExampleStruct/op_Explicit.md)(...) | Explicit cast from integer. (2 operators) |
+| static [implicit operator](./ExampleStruct/op_Implicit.md)(...) | Implicit cast from string. (2 operators) |
+| static [operator !](./ExampleStruct/op_LogicalNot.md)(...) | Not. |
+| static [operator !=](./ExampleStruct/op_Inequality.md)(...) | Not equal. |
+| static [operator %](./ExampleStruct/op_Modulus.md)(...) | Modulus. |
+| static [operator &amp;](./ExampleStruct/op_BitwiseAnd.md)(...) | And. |
+| static [operator *](./ExampleStruct/op_Multiply.md)(...) | Multiply. |
+| static [operator +](./ExampleStruct/op_Addition.md)(...) | Add. |
+| static [operator +](./ExampleStruct/op_UnaryPlus.md)(...) | Unary plus. |
+| static [operator ++](./ExampleStruct/op_Increment.md)(...) | Increment. |
+| static [operator -](./ExampleStruct/op_Subtraction.md)(...) | Subtract. |
+| static [operator -](./ExampleStruct/op_UnaryNegation.md)(...) | Unary minus. |
+| static [operator --](./ExampleStruct/op_Decrement.md)(...) | Decrement. |
+| static [operator /](./ExampleStruct/op_Division.md)(...) | Divide. |
+| static [operator &lt;](./ExampleStruct/op_LessThan.md)(...) | Less than. |
+| static [operator &lt;&lt;](./ExampleStruct/op_LeftShift.md)(...) | Left shift. |
+| static [operator &lt;=](./ExampleStruct/op_LessThanOrEqual.md)(...) | Less than or equal to. |
+| static [operator ==](./ExampleStruct/op_Equality.md)(...) | Equal. |
+| static [operator &gt;](./ExampleStruct/op_GreaterThan.md)(...) | Greater than. |
+| static [operator &gt;=](./ExampleStruct/op_GreaterThanOrEqual.md)(...) | Greater than or equal to. |
+| static [operator &gt;&gt;](./ExampleStruct/op_RightShift.md)(...) | Right shift. |
+| static [operator false](./ExampleStruct/op_False.md)(...) | False. |
+| static [operator true](./ExampleStruct/op_True.md)(...) | True. |
+| static [operator ^](./ExampleStruct/op_ExclusiveOr.md)(...) | Exclusive or. |
+| static [operator &#x7C;](./ExampleStruct/op_BitwiseOr.md)(...) | Or. |
+| static [operator ~](./ExampleStruct/op_OnesComplement.md)(...) | Bitwise complement. |
 
 ## See Also
 

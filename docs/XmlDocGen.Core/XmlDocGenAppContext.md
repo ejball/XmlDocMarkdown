@@ -11,18 +11,18 @@ public sealed class XmlDocGenAppContext
 
 | name | description |
 | --- | --- |
-| [Args { get; }](./XmlDocGenAppContext/Args.md) | Gets the argument reader for host-tool options. |
-| [AssemblyNames { get; }](./XmlDocGenAppContext/AssemblyNames.md) | Gets the assembly names to document. |
-| [ExternalLinks { get; set; }](./XmlDocGenAppContext/ExternalLinks.md) | Gets or sets the external-link resolver. |
-| [HelpLines { get; }](./XmlDocGenAppContext/HelpLines.md) | Gets extra usage lines for host-tool options. |
-| [NewLine { get; set; }](./XmlDocGenAppContext/NewLine.md) | Gets or sets the generated newline sequence. |
-| [OutputPath { get; }](./XmlDocGenAppContext/OutputPath.md) | Gets the output path. |
-| [PageMap { get; set; }](./XmlDocGenAppContext/PageMap.md) | Gets or sets the page map. |
-| [Renderer { get; set; }](./XmlDocGenAppContext/Renderer.md) | Gets or sets the page renderer. |
-| [SourceLinks { get; set; }](./XmlDocGenAppContext/SourceLinks.md) | Gets or sets the source-link resolver. |
-| [UrlMapper { get; set; }](./XmlDocGenAppContext/UrlMapper.md) | Gets or sets the URL mapper. |
-| [Visibility { get; set; }](./XmlDocGenAppContext/Visibility.md) | Gets or sets the visibility filter. |
-| [WriterSettings { get; }](./XmlDocGenAppContext/WriterSettings.md) | Gets writer settings. |
+| [Args](./XmlDocGenAppContext/Args.md) { get; } | Gets the argument reader for host-tool options. |
+| [AssemblyNames](./XmlDocGenAppContext/AssemblyNames.md) { get; } | Gets the assembly names to document. |
+| [ExternalLinks](./XmlDocGenAppContext/ExternalLinks.md) { get; set; } | Gets or sets the external-link resolver. |
+| [HelpLines](./XmlDocGenAppContext/HelpLines.md) { get; } | Gets extra usage lines for host-tool options. |
+| [NewLine](./XmlDocGenAppContext/NewLine.md) { get; set; } | Gets or sets the generated newline sequence. |
+| [OutputPath](./XmlDocGenAppContext/OutputPath.md) { get; } | Gets the output path. |
+| [PageMap](./XmlDocGenAppContext/PageMap.md) { get; set; } | Gets or sets the page map. |
+| [Renderer](./XmlDocGenAppContext/Renderer.md) { get; set; } | Gets or sets the page renderer. |
+| [SourceLinks](./XmlDocGenAppContext/SourceLinks.md) { get; set; } | Gets or sets the source-link resolver. |
+| [UrlMapper](./XmlDocGenAppContext/UrlMapper.md) { get; set; } | Gets or sets the URL mapper. |
+| [Visibility](./XmlDocGenAppContext/Visibility.md) { get; set; } | Gets or sets the visibility filter. |
+| [WriterSettings](./XmlDocGenAppContext/WriterSettings.md) { get; } | Gets writer settings. |
 
 ## See Also
 

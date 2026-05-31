@@ -11,38 +11,38 @@ public class ExampleClass : IExampleContravariantInterface<ExampleClass>, IExamp
 
 | name | description |
 | --- | --- |
-| [const BlankId](./ExampleClass/BlankId.md) | A constant field. |
-| [DefaultParameters&lt;T&gt;(bool @bool = true, bool? no = false, bool? maybe = null, byte @byte = 255, sbyte @sbyte = 127, char @char = &#39;\u1234&#39;, decimal @decimal = 3.14M, double @double = double.NaN, float @float = float.NegativeInfinity, int @int = -42, uint @uint = 42, long @long = -9223372036854775808, ulong @ulong = 9223372036854775807, object? @object = null, short @short = -32768, ushort @ushort = 65535, string @string = &quot;hi\0\&#39;\&quot;\\\a\b\f\n\r\t\v\u0001\uABCD&quot;, T? t = null, DateTime @virtual = null, ExampleEnum @enum = ExampleEnum.One, ExampleFlagsEnum flags = ExampleFlagsEnum.Second &#x7C; ExampleFlagsEnum.Third)](./ExampleClass/DefaultParameters.md) | A method with default parameters. |
-| [EditValue(ref object value)](./ExampleClass/EditValue.md) | A method that edits a value. (2 methods) |
-| [EightTuple()](./ExampleClass/EightTuple.md) | A method with a long tuple. |
-| [event WeightChanged](./ExampleClass/WeightChanged.md) | An event. |
-| [ExampleClass()](./ExampleClass/ExampleClass.md) | A no-arg constructor. (2 constructors) |
-| [HasHyperlinks()](./ExampleClass/HasHyperlinks.md) | A method whose docs have [hyperlinks](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a). |
-| [HasParams(params string[] parameters)](./ExampleClass/HasParams.md) | A method with parameters. |
-| [Id { get; }](./ExampleClass/Id.md) | A read-only property. |
+| const [BlankId](./ExampleClass/BlankId.md) | A constant field. |
+| [DefaultParameters&lt;T&gt;](./ExampleClass/DefaultParameters.md)(...) | A method with default parameters. |
+| [EditValue](./ExampleClass/EditValue.md)(...) | A method that edits a value. (2 methods) |
+| [EightTuple](./ExampleClass/EightTuple.md)() | A method with a long tuple. |
+| event [WeightChanged](./ExampleClass/WeightChanged.md) | An event. |
+| [ExampleClass](./ExampleClass/ExampleClass.md)() | A no-arg constructor. (2 constructors) |
+| [HasHyperlinks](./ExampleClass/HasHyperlinks.md)() | A method whose docs have [hyperlinks](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a). |
+| [HasParams](./ExampleClass/HasParams.md)(...) | A method with parameters. |
+| [Id](./ExampleClass/Id.md) { get; } | A read-only property. |
 | [IsBadIdea](./ExampleClass/IsBadIdea.md) | A public field. |
-| [LongMethodNameWithTemplateParametersAndMethodParameters&lt;T&gt;(T? t)](./ExampleClass/LongMethodNameWithTemplateParametersAndMethodParameters.md) | A method with a really long name. |
-| [NestedTuple(Dictionary&lt;((int, int), IList&lt;(int, int)&gt;), (int, int)&gt; dictionary)](./ExampleClass/NestedTuple.md) | A method with a nested tuple. |
-| [NullableReferences&lt;T&gt;(string? a, (string B1, string? B2, string B3) b, Dictionary&lt;string, string?&gt; c, string[]? d, string?[] e, ValueTuple&lt;T, T?&gt; f)](./ExampleClass/NullableReferences.md) | A method with nullable references. |
-| [OldAndBusted()](./ExampleClass/OldAndBusted.md) | An obsolete method. |
-| [Overloaded()](./ExampleClass/Overloaded.md#overloaded) | An overloaded method. (7 methods) |
-| [ParameterReference(int value)](./ExampleClass/ParameterReference.md) | A method whose summary references [`value`](./ExampleClass/ParameterReference.md#parameter-value). |
-| [static Create()](./ExampleClass/Create.md) | A static lifetime method. (2 methods) |
-| [static event MaxWeightChanged](./ExampleClass/MaxWeightChanged.md) | A static event. |
-| [static GlobalVariable](./ExampleClass/GlobalVariable.md) | A static field. |
-| [static Instance { get; }](./ExampleClass/Instance.md) | A static lifetime property. |
-| [static JumpAll()](./ExampleClass/JumpAll.md) | A boring static method. It has a really long summary because things get interesting when table cells have to wrap. Also, we should probably cut the summary off at some point, since some documenters tend to put way more in the summary than would generally be expected. |
-| [static MaxWeight { get; set; }](./ExampleClass/MaxWeight.md) | A static read-write property. |
-| [static MinWeight { get; }](./ExampleClass/MinWeight.md) | A static read-only property. |
-| [static readonly Default](./ExampleClass/Default.md) | A static lifetime field. |
-| [static readonly DefaultWeight](./ExampleClass/DefaultWeight.md) | A static read-only field. |
-| [TryGetValue(out object value)](./ExampleClass/TryGetValue.md) | A method that tries to get a value. (2 methods) |
-| [Tuples(params (string, object?)[] tuples)](./ExampleClass/Tuples.md) | A method with tuples. |
-| [TypeParameterReference&lt;T&gt;(T? value)](./ExampleClass/TypeParameterReference.md) | A method whose summary references [`T`](./ExampleClass/TypeParameterReference.md#type-parameter-t). |
-| [UnbrowsableMethod()](./ExampleClass/UnbrowsableMethod.md) | An unbrowsable method. |
-| [UsesCallerInfo(string memberName = &quot;&quot;, string sourceFilePath = &quot;&quot;, int sourceLineNumber = 0)](./ExampleClass/UsesCallerInfo.md) | A method that uses caller info. |
-| [virtual Jump()](./ExampleClass/Jump.md) | A virtual method. |
-| [Weight { get; set; }](./ExampleClass/Weight.md) | A read-write property with a much-longer than expected summary to see if there is any word wrapping in the member name. |
+| [LongMethodNameWithTemplateParametersAndMethodParameters&lt;T&gt;](./ExampleClass/LongMethodNameWithTemplateParametersAndMethodParameters.md)(...) | A method with a really long name. |
+| [NestedTuple](./ExampleClass/NestedTuple.md)(...) | A method with a nested tuple. |
+| [NullableReferences&lt;T&gt;](./ExampleClass/NullableReferences.md)(...) | A method with nullable references. |
+| [OldAndBusted](./ExampleClass/OldAndBusted.md)() | An obsolete method. |
+| [Overloaded](./ExampleClass/Overloaded.md#overloaded)() | An overloaded method. (7 methods) |
+| [ParameterReference](./ExampleClass/ParameterReference.md)(...) | A method whose summary references [`value`](./ExampleClass/ParameterReference.md#parameter-value). |
+| static [Create](./ExampleClass/Create.md)() | A static lifetime method. (2 methods) |
+| static event [MaxWeightChanged](./ExampleClass/MaxWeightChanged.md) | A static event. |
+| static [GlobalVariable](./ExampleClass/GlobalVariable.md) | A static field. |
+| static [Instance](./ExampleClass/Instance.md) { get; } | A static lifetime property. |
+| static [JumpAll](./ExampleClass/JumpAll.md)() | A boring static method. It has a really long summary because things get interesting when table cells have to wrap. Also, we should probably cut the summary off at some point, since some documenters tend to put way more in the summary than would generally be expected. |
+| static [MaxWeight](./ExampleClass/MaxWeight.md) { get; set; } | A static read-write property. |
+| static [MinWeight](./ExampleClass/MinWeight.md) { get; } | A static read-only property. |
+| static readonly [Default](./ExampleClass/Default.md) | A static lifetime field. |
+| static readonly [DefaultWeight](./ExampleClass/DefaultWeight.md) | A static read-only field. |
+| [TryGetValue](./ExampleClass/TryGetValue.md)(...) | A method that tries to get a value. (2 methods) |
+| [Tuples](./ExampleClass/Tuples.md)(...) | A method with tuples. |
+| [TypeParameterReference&lt;T&gt;](./ExampleClass/TypeParameterReference.md)(...) | A method whose summary references [`T`](./ExampleClass/TypeParameterReference.md#type-parameter-t). |
+| [UnbrowsableMethod](./ExampleClass/UnbrowsableMethod.md)() | An unbrowsable method. |
+| [UsesCallerInfo](./ExampleClass/UsesCallerInfo.md)(...) | A method that uses caller info. |
+| virtual [Jump](./ExampleClass/Jump.md)() | A virtual method. |
+| [Weight](./ExampleClass/Weight.md) { get; set; } | A read-write property with a much-longer than expected summary to see if there is any word wrapping in the member name. |
 
 ## See Also
 

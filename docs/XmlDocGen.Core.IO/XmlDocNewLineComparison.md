@@ -11,13 +11,13 @@ public enum XmlDocNewLineComparison : IComparable, IConvertible, IFormattable, I
 
 | name | description |
 | --- | --- |
-| [const Exact](./XmlDocNewLineComparison/Exact.md) | Compare line endings exactly. |
-| [const Ignore](./XmlDocNewLineComparison/Ignore.md) | Normalize line endings before comparing. |
+| const [Exact](./XmlDocNewLineComparison/Exact.md) | Compare line endings exactly. |
+| const [Ignore](./XmlDocNewLineComparison/Ignore.md) | Normalize line endings before comparing. |
 | [value__](./XmlDocNewLineComparison/value__.md) |  |
 
 ## See Also
 
-* [namespace XmlDocGen.Core.IO](../XmlDocGen.Core.IO.md)
+* [namespace XmlDocGen.Core.IO](../XmlDocGen.Core.md#xmldocgen-core-io)
 * [interface IComparable](https://learn.microsoft.com/dotnet/api/system.icomparable)
 * [interface IConvertible](https://learn.microsoft.com/dotnet/api/system.iconvertible)
 * [interface IFormattable](https://learn.microsoft.com/dotnet/api/system.iformattable)

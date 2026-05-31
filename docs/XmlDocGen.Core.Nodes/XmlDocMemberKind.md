@@ -11,17 +11,17 @@ public enum XmlDocMemberKind : IComparable, IConvertible, IFormattable, ISpanFor
 
 | name | description |
 | --- | --- |
-| [const Constructor](./XmlDocMemberKind/Constructor.md) | A constructor. |
-| [const Event](./XmlDocMemberKind/Event.md) | An event. |
-| [const Field](./XmlDocMemberKind/Field.md) | A field. |
-| [const Method](./XmlDocMemberKind/Method.md) | A method. |
-| [const Operator](./XmlDocMemberKind/Operator.md) | An operator. |
-| [const Property](./XmlDocMemberKind/Property.md) | A property. |
+| const [Constructor](./XmlDocMemberKind/Constructor.md) | A constructor. |
+| const [Event](./XmlDocMemberKind/Event.md) | An event. |
+| const [Field](./XmlDocMemberKind/Field.md) | A field. |
+| const [Method](./XmlDocMemberKind/Method.md) | A method. |
+| const [Operator](./XmlDocMemberKind/Operator.md) | An operator. |
+| const [Property](./XmlDocMemberKind/Property.md) | A property. |
 | [value__](./XmlDocMemberKind/value__.md) |  |
 
 ## See Also
 
-* [namespace XmlDocGen.Core.Nodes](../XmlDocGen.Core.Nodes.md)
+* [namespace XmlDocGen.Core.Nodes](../XmlDocGen.Core.md#xmldocgen-core-nodes)
 * [interface IComparable](https://learn.microsoft.com/dotnet/api/system.icomparable)
 * [interface IConvertible](https://learn.microsoft.com/dotnet/api/system.iconvertible)
 * [interface IFormattable](https://learn.microsoft.com/dotnet/api/system.iformattable)

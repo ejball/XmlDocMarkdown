@@ -11,7 +11,7 @@ public sealed class ExampleAttribute : Attribute
 
 | name | description |
 | --- | --- |
-| [ExampleAttribute()](./ExampleAttribute/ExampleAttribute.md) |  |
+| [ExampleAttribute](./ExampleAttribute/ExampleAttribute.md)() |  |
 
 ## See Also
 

@@ -11,7 +11,7 @@ public class ExampleException : Exception, ISerializable
 
 | name | description |
 | --- | --- |
-| [ExampleException(string message, Exception? innerException = null)](./ExampleException/ExampleException.md) | Creates an instance. |
+| [ExampleException](./ExampleException/ExampleException.md)(...) | Creates an instance. |
 
 ## See Also
 

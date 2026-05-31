@@ -11,12 +11,12 @@ public record ExampleRecord<T> : IEquatable<ExampleRecord>
 
 | name | description |
 | --- | --- |
-| [Age { get; init; }](./ExampleRecord-1/Age.md) | An integer. |
-| [Days { get; init; }](./ExampleRecord-1/Days.md) | A hash set. |
-| [ExampleRecord(string Name, int Age, HashSet&lt;DayOfWeek&gt; Days, T? GenericType, Action&lt;T?&gt; GenericLambda)](./ExampleRecord-1/ExampleRecord.md) | A C# 9 generic record. |
-| [GenericLambda { get; init; }](./ExampleRecord-1/GenericLambda.md) | An lambda parameter. |
-| [GenericType { get; init; }](./ExampleRecord-1/GenericType.md) | A generic type parameter. |
-| [Name { get; init; }](./ExampleRecord-1/Name.md) | A string. |
+| [Age](./ExampleRecord-1/Age.md) { get; init; } | An integer. |
+| [Days](./ExampleRecord-1/Days.md) { get; init; } | A hash set. |
+| [ExampleRecord](./ExampleRecord-1/ExampleRecord.md)(...) | A C# 9 generic record. |
+| [GenericLambda](./ExampleRecord-1/GenericLambda.md) { get; init; } | An lambda parameter. |
+| [GenericType](./ExampleRecord-1/GenericType.md) { get; init; } | A generic type parameter. |
+| [Name](./ExampleRecord-1/Name.md) { get; init; } | A string. |
 
 ## See Also
 

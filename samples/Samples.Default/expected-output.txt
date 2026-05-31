@@ -1,8 +1,7 @@
 sample: Samples.Default
-files: 197
-sha256: 1d4b4e3d154b91f6aab567841dff4d7f19da36a31d630859020cf857eef887ff
+files: 196
+sha256: bd13dd9964b54d580757eb24476a0107b05822c4f61c41b25268c1e1e822c5bc
 preview:
-- ExampleAssembly.InnerNamespace.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md
 - ExampleAssembly.md
@@ -14,3 +13,4 @@ preview:
 - ExampleAssembly/ExampleAbstractClass/PublicMethod.md
 - ExampleAssembly/ExampleAbstractClass/PublicProperty.md
 - ExampleAssembly/ExampleAbstractClass/PublicProtectedProperty.md
+- ExampleAssembly/ExampleAttribute.md

@@ -11,10 +11,10 @@ public sealed delegate NestedDelegate : ICloneable, ISerializable
 
 | name | description |
 | --- | --- |
-| [NestedDelegate(object @object, nint method)](./ExampleDeepClass.NestedDelegate/NestedDelegate.md) |  |
-| [virtual BeginInvoke(AsyncCallback callback, object @object)](./ExampleDeepClass.NestedDelegate/BeginInvoke.md) |  |
-| [virtual EndInvoke(IAsyncResult result)](./ExampleDeepClass.NestedDelegate/EndInvoke.md) |  |
-| [virtual Invoke()](./ExampleDeepClass.NestedDelegate/Invoke.md) |  |
+| [NestedDelegate](./ExampleDeepClass.NestedDelegate/NestedDelegate.md)(...) |  |
+| virtual [BeginInvoke](./ExampleDeepClass.NestedDelegate/BeginInvoke.md)(...) |  |
+| virtual [EndInvoke](./ExampleDeepClass.NestedDelegate/EndInvoke.md)(...) |  |
+| virtual [Invoke](./ExampleDeepClass.NestedDelegate/Invoke.md)() |  |
 
 ## Remarks
 

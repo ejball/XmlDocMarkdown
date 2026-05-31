@@ -11,11 +11,11 @@ public class ExampleDerivedClass : ExampleClass, IExampleContravariantInterface<
 
 | name | description |
 | --- | --- |
-| [ExampleDerivedClass()](./ExampleDerivedClass/ExampleDerivedClass.md) |  |
-| [ExampleMethod(string value)](./ExampleDerivedClass/ExampleMethod.md) | An implicitly implemented interface method. |
-| [GetEnumerator()](./ExampleDerivedClass/GetEnumerator.md) | The enumerator. |
-| [override Jump()](./ExampleDerivedClass/Jump.md) | An overridden method. |
-| [SeeAlso()](./ExampleDerivedClass/SeeAlso.md) | A method with lots of see alsos. |
+| [ExampleDerivedClass](./ExampleDerivedClass/ExampleDerivedClass.md)() |  |
+| [ExampleMethod](./ExampleDerivedClass/ExampleMethod.md)(...) | An implicitly implemented interface method. |
+| [GetEnumerator](./ExampleDerivedClass/GetEnumerator.md)() | The enumerator. |
+| override [Jump](./ExampleDerivedClass/Jump.md)() | An overridden method. |
+| [SeeAlso](./ExampleDerivedClass/SeeAlso.md)() | A method with lots of see alsos. |
 
 ## See Also
 

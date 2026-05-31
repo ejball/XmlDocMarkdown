@@ -11,18 +11,18 @@ public enum XmlDocXmlInlineKind : IComparable, IConvertible, IFormattable, ISpan
 
 | name | description |
 | --- | --- |
-| [const Code](./XmlDocXmlInlineKind/Code.md) | Inline code. |
-| [const ParamRef](./XmlDocXmlInlineKind/ParamRef.md) | A parameter reference. |
-| [const SeeCref](./XmlDocXmlInlineKind/SeeCref.md) | A `see cref` link. |
-| [const SeeHref](./XmlDocXmlInlineKind/SeeHref.md) | A `see href` link. |
-| [const SeeLangword](./XmlDocXmlInlineKind/SeeLangword.md) | A `see langword` value. |
-| [const Text](./XmlDocXmlInlineKind/Text.md) | Plain text. |
-| [const TypeParamRef](./XmlDocXmlInlineKind/TypeParamRef.md) | A type parameter reference. |
+| const [Code](./XmlDocXmlInlineKind/Code.md) | Inline code. |
+| const [ParamRef](./XmlDocXmlInlineKind/ParamRef.md) | A parameter reference. |
+| const [SeeCref](./XmlDocXmlInlineKind/SeeCref.md) | A `see cref` link. |
+| const [SeeHref](./XmlDocXmlInlineKind/SeeHref.md) | A `see href` link. |
+| const [SeeLangword](./XmlDocXmlInlineKind/SeeLangword.md) | A `see langword` value. |
+| const [Text](./XmlDocXmlInlineKind/Text.md) | Plain text. |
+| const [TypeParamRef](./XmlDocXmlInlineKind/TypeParamRef.md) | A type parameter reference. |
 | [value__](./XmlDocXmlInlineKind/value__.md) |  |
 
 ## See Also
 
-* [namespace XmlDocGen.Core.Xml](../XmlDocGen.Core.Xml.md)
+* [namespace XmlDocGen.Core.Xml](../XmlDocGen.Core.md#xmldocgen-core-xml)
 * [interface IComparable](https://learn.microsoft.com/dotnet/api/system.icomparable)
 * [interface IConvertible](https://learn.microsoft.com/dotnet/api/system.iconvertible)
 * [interface IFormattable](https://learn.microsoft.com/dotnet/api/system.iformattable)

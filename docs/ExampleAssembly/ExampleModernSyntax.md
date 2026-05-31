@@ -11,18 +11,18 @@ public class ExampleModernSyntax
 
 | name | description |
 | --- | --- |
-| [Constrained&lt;TNotNull, TUnmanaged, TClass&gt;() where TNotNull : notnull where TUnmanaged : unmanaged where TClass : class?](./ExampleModernSyntax/Constrained.md) | Shows modern constraints. |
-| [ExampleModernSyntax(string name)](./ExampleModernSyntax/ExampleModernSyntax.md) | Modern C# signature syntax. |
-| [GetFunctionPointer(delegate*&lt;int, int&gt; callback)](./ExampleModernSyntax/GetFunctionPointer.md) | Gets a function pointer. |
-| [Name { get; }](./ExampleModernSyntax/Name.md) | Gets the primary-constructor name. |
-| [NullableText { get; set; }](./ExampleModernSyntax/NullableText.md) | Gets or sets nullable text. |
-| [ReadRefReadonly(ref readonly int value)](./ExampleModernSyntax/ReadRefReadonly.md) | Reads a ref readonly parameter. |
-| [RefReadonlyValue { get; }](./ExampleModernSyntax/RefReadonlyValue.md) | Gets a ref readonly value. |
-| [static operator +(ExampleModernSyntax left, ExampleModernSyntax right)](./ExampleModernSyntax/op_Addition.md) | Checked addition. |
-| [static operator &gt;&gt;&gt;(ExampleModernSyntax value, int shift)](./ExampleModernSyntax/op_UnsignedRightShift.md) | Unsigned right shift. |
-| [static operator checked +(ExampleModernSyntax left, ExampleModernSyntax right)](./ExampleModernSyntax/op_CheckedAddition.md) | Checked addition. |
-| [TupleNames((nint Index, nuint Length) input)](./ExampleModernSyntax/TupleNames.md) | Gets tuple names and native integers. |
-| [UpdateScoped(scoped ref int value)](./ExampleModernSyntax/UpdateScoped.md) | Updates a scoped reference. |
+| [Constrained&lt;TNotNull, TUnmanaged, TClass&gt;](./ExampleModernSyntax/Constrained.md)() | Shows modern constraints. |
+| [ExampleModernSyntax](./ExampleModernSyntax/ExampleModernSyntax.md)(...) | Modern C# signature syntax. |
+| [GetFunctionPointer](./ExampleModernSyntax/GetFunctionPointer.md)(...) | Gets a function pointer. |
+| [Name](./ExampleModernSyntax/Name.md) { get; } | Gets the primary-constructor name. |
+| [NullableText](./ExampleModernSyntax/NullableText.md) { get; set; } | Gets or sets nullable text. |
+| [ReadRefReadonly](./ExampleModernSyntax/ReadRefReadonly.md)(...) | Reads a ref readonly parameter. |
+| [RefReadonlyValue](./ExampleModernSyntax/RefReadonlyValue.md) { get; } | Gets a ref readonly value. |
+| static [operator +](./ExampleModernSyntax/op_Addition.md)(...) | Checked addition. |
+| static [operator &gt;&gt;&gt;](./ExampleModernSyntax/op_UnsignedRightShift.md)(...) | Unsigned right shift. |
+| static [operator checked +](./ExampleModernSyntax/op_CheckedAddition.md)(...) | Checked addition. |
+| [TupleNames](./ExampleModernSyntax/TupleNames.md)(...) | Gets tuple names and native integers. |
+| [UpdateScoped](./ExampleModernSyntax/UpdateScoped.md)(...) | Updates a scoped reference. |
 
 ## See Also
 

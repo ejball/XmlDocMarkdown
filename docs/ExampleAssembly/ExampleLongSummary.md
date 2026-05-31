@@ -20,7 +20,7 @@ public class ExampleLongSummary
 
 | name | description |
 | --- | --- |
-| [ExampleLongSummary()](./ExampleLongSummary/ExampleLongSummary.md) |  |
+| [ExampleLongSummary](./ExampleLongSummary/ExampleLongSummary.md)() |  |
 
 ## Remarks
 

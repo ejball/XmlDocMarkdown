@@ -11,7 +11,7 @@ public sealed class XmlDocGenApp
 
 | name | description |
 | --- | --- |
-| [static Run(IReadOnlyList&lt;string&gt; args, Action&lt;XmlDocGenAppContext&gt;? configure = null)](./XmlDocGenApp/Run.md) | Runs the command-line application. |
+| static [Run](./XmlDocGenApp/Run.md)(...) | Runs the command-line application. |
 
 ## See Also
 

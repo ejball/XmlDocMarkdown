@@ -11,8 +11,8 @@ public enum ExampleLongEnum : IComparable, IConvertible, IFormattable, ISpanForm
 
 | name | description |
 | --- | --- |
-| [const Backward](./ExampleLongEnum/Backward.md) | Backward. |
-| [const Forward](./ExampleLongEnum/Forward.md) | Forward. |
+| const [Backward](./ExampleLongEnum/Backward.md) | Backward. |
+| const [Forward](./ExampleLongEnum/Forward.md) | Forward. |
 | [value__](./ExampleLongEnum/value__.md) |  |
 
 ## See Also

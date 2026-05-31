@@ -11,10 +11,10 @@ public sealed delegate ExampleGenericDelegate<in T1, in T2, out TResult> : IClon
 
 | name | description |
 | --- | --- |
-| [ExampleGenericDelegate(object @object, nint method)](./ExampleGenericDelegate-3/ExampleGenericDelegate.md) |  |
-| [virtual BeginInvoke(T1 arg1, T2 arg2, AsyncCallback callback, object @object)](./ExampleGenericDelegate-3/BeginInvoke.md) |  |
-| [virtual EndInvoke(IAsyncResult result)](./ExampleGenericDelegate-3/EndInvoke.md) |  |
-| [virtual Invoke(T1 arg1, T2 arg2)](./ExampleGenericDelegate-3/Invoke.md) |  |
+| [ExampleGenericDelegate](./ExampleGenericDelegate-3/ExampleGenericDelegate.md)(...) |  |
+| virtual [BeginInvoke](./ExampleGenericDelegate-3/BeginInvoke.md)(...) |  |
+| virtual [EndInvoke](./ExampleGenericDelegate-3/EndInvoke.md)(...) |  |
+| virtual [Invoke](./ExampleGenericDelegate-3/Invoke.md)(...) |  |
 
 ## See Also
 

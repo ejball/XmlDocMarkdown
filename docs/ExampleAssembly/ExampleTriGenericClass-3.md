@@ -11,7 +11,7 @@ public class ExampleTriGenericClass<TOne, TTwo, TThree> where TTwo : struct, IEn
 
 | name | description |
 | --- | --- |
-| [ExampleTriGenericClass()](./ExampleTriGenericClass-3/ExampleTriGenericClass.md) |  |
+| [ExampleTriGenericClass](./ExampleTriGenericClass-3/ExampleTriGenericClass.md)() |  |
 
 ## See Also
 

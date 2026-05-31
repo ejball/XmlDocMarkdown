@@ -11,19 +11,19 @@ public enum CSharpTokenKind : IComparable, IConvertible, IFormattable, ISpanForm
 
 | name | description |
 | --- | --- |
-| [const Identifier](./CSharpTokenKind/Identifier.md) | An identifier. |
-| [const Keyword](./CSharpTokenKind/Keyword.md) | A keyword. |
-| [const Literal](./CSharpTokenKind/Literal.md) | A literal value. |
-| [const Operator](./CSharpTokenKind/Operator.md) | An operator. |
-| [const Punctuation](./CSharpTokenKind/Punctuation.md) | Punctuation. |
-| [const Text](./CSharpTokenKind/Text.md) | Plain text. |
-| [const TypeName](./CSharpTokenKind/TypeName.md) | A type name. |
-| [const Whitespace](./CSharpTokenKind/Whitespace.md) | Whitespace. |
+| const [Identifier](./CSharpTokenKind/Identifier.md) | An identifier. |
+| const [Keyword](./CSharpTokenKind/Keyword.md) | A keyword. |
+| const [Literal](./CSharpTokenKind/Literal.md) | A literal value. |
+| const [Operator](./CSharpTokenKind/Operator.md) | An operator. |
+| const [Punctuation](./CSharpTokenKind/Punctuation.md) | Punctuation. |
+| const [Text](./CSharpTokenKind/Text.md) | Plain text. |
+| const [TypeName](./CSharpTokenKind/TypeName.md) | A type name. |
+| const [Whitespace](./CSharpTokenKind/Whitespace.md) | Whitespace. |
 | [value__](./CSharpTokenKind/value__.md) |  |
 
 ## See Also
 
-* [namespace XmlDocGen.Core.CSharp](../XmlDocGen.Core.CSharp.md)
+* [namespace XmlDocGen.Core.CSharp](../XmlDocGen.Core.md#xmldocgen-core-csharp)
 * [interface IComparable](https://learn.microsoft.com/dotnet/api/system.icomparable)
 * [interface IConvertible](https://learn.microsoft.com/dotnet/api/system.iconvertible)
 * [interface IFormattable](https://learn.microsoft.com/dotnet/api/system.iformattable)

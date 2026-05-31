@@ -11,8 +11,8 @@ public readonly ref struct ExampleReadOnlyRefStruct
 
 | name | description |
 | --- | --- |
-| [ExampleReadOnlyRefStruct(int value)](./ExampleReadOnlyRefStruct/ExampleReadOnlyRefStruct.md) | Initializes a new instance of the [`ExampleReadOnlyRefStruct`](./ExampleReadOnlyRefStruct.md) struct. |
-| [Value { get; }](./ExampleReadOnlyRefStruct/Value.md) | Gets the value. |
+| [ExampleReadOnlyRefStruct](./ExampleReadOnlyRefStruct/ExampleReadOnlyRefStruct.md)(...) | Initializes a new instance of the [`ExampleReadOnlyRefStruct`](./ExampleReadOnlyRefStruct.md) struct. |
+| [Value](./ExampleReadOnlyRefStruct/Value.md) { get; } | Gets the value. |
 
 ## See Also
 

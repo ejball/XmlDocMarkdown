@@ -11,13 +11,13 @@ public enum ExampleFlagsEnum : IComparable, IConvertible, IFormattable, ISpanFor
 
 | name | description |
 | --- | --- |
-| [const All](./ExampleFlagsEnum/All.md) | All bits. |
-| [const First](./ExampleFlagsEnum/First.md) | First bit. |
-| [const Fourth](./ExampleFlagsEnum/Fourth.md) | Fourth bit. |
-| [const Insanity](./ExampleFlagsEnum/Insanity.md) | Insanity. |
-| [const None](./ExampleFlagsEnum/None.md) | No bits. |
-| [const Second](./ExampleFlagsEnum/Second.md) | Second bit. |
-| [const Third](./ExampleFlagsEnum/Third.md) | Third bit. |
+| const [All](./ExampleFlagsEnum/All.md) | All bits. |
+| const [First](./ExampleFlagsEnum/First.md) | First bit. |
+| const [Fourth](./ExampleFlagsEnum/Fourth.md) | Fourth bit. |
+| const [Insanity](./ExampleFlagsEnum/Insanity.md) | Insanity. |
+| const [None](./ExampleFlagsEnum/None.md) | No bits. |
+| const [Second](./ExampleFlagsEnum/Second.md) | Second bit. |
+| const [Third](./ExampleFlagsEnum/Third.md) | Third bit. |
 | [value__](./ExampleFlagsEnum/value__.md) |  |
 
 ## See Also

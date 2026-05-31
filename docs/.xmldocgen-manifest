@@ -1,4 +1,3 @@
-ExampleAssembly.InnerNamespace.md
 ExampleAssembly.InnerNamespace/ExampleInnerClass.md
 ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md
 ExampleAssembly.md
@@ -195,7 +194,6 @@ ExampleAssembly/IExampleInterface/ExampleMethod.md
 ExampleAssembly/IExampleStaticAbstractInterface-1.md
 ExampleAssembly/IExampleStaticAbstractInterface-1/Create.md
 ExampleAssembly/IExampleStaticAbstractInterface-1/Identity.md
-XmlDocGen.Core.CSharp.md
 XmlDocGen.Core.CSharp/CSharpSignature.md
 XmlDocGen.Core.CSharp/CSharpSignature/CSharpSignature.md
 XmlDocGen.Core.CSharp/CSharpSignature/Text.md
@@ -226,7 +224,6 @@ XmlDocGen.Core.CSharp/FullCSharpSignatureBuilder/FullCSharpSignatureBuilder.md
 XmlDocGen.Core.CSharp/FullCSharpSignatureBuilder/GetSignature.md
 XmlDocGen.Core.CSharp/ShortCSharpSignatureBuilder/GetSignature.md
 XmlDocGen.Core.CSharp/ShortCSharpSignatureBuilder/ShortCSharpSignatureBuilder.md
-XmlDocGen.Core.IO.md
 XmlDocGen.Core.IO/IXmlDocFileSystem.md
 XmlDocGen.Core.IO/IXmlDocFileSystem/DeleteFile.md
 XmlDocGen.Core.IO/IXmlDocFileSystem/EnumerateFiles.md
@@ -261,7 +258,6 @@ XmlDocGen.Core.IO/XmlDocSiteWriterSettings/IsQuiet.md
 XmlDocGen.Core.IO/XmlDocSiteWriterSettings/NewLineComparison.md
 XmlDocGen.Core.IO/XmlDocSiteWriterSettings/ShouldClean.md
 XmlDocGen.Core.IO/XmlDocSiteWriterSettings/XmlDocSiteWriterSettings.md
-XmlDocGen.Core.Markdown.md
 XmlDocGen.Core.Markdown/MarkdownPageRenderer.md
 XmlDocGen.Core.Markdown/MarkdownPageRenderer/MarkdownPageRenderer.md
 XmlDocGen.Core.Markdown/MarkdownPageRenderer/Renderer.md
@@ -302,7 +298,6 @@ XmlDocGen.Core.Markdown/MarkdownWriter/WriteMarkdownTableRow.md
 XmlDocGen.Core.Markdown/MarkdownWriter/Writer.md
 XmlDocGen.Core.Markdown/MarkdownWriter/WriteTableRow.md
 XmlDocGen.Core.md
-XmlDocGen.Core.Nodes.md
 XmlDocGen.Core.Nodes/ReflectionFacts.md
 XmlDocGen.Core.Nodes/ReflectionFacts/GetDocumentableMembers.md
 XmlDocGen.Core.Nodes/ReflectionFacts/GetMemberKind.md
@@ -411,7 +406,6 @@ XmlDocGen.Core.Nodes/XmlDocVisibility/Protected.md
 XmlDocGen.Core.Nodes/XmlDocVisibility/ProtectedInternal.md
 XmlDocGen.Core.Nodes/XmlDocVisibility/Public.md
 XmlDocGen.Core.Nodes/XmlDocVisibility/value__.md
-XmlDocGen.Core.Pages.md
 XmlDocGen.Core.Pages/XmlDocExternalLinkResolver.CombinedResolver/CombinedResolver.md
 XmlDocGen.Core.Pages/XmlDocExternalLinkResolver.CombinedResolver/TryGetUrl.md
 XmlDocGen.Core.Pages/XmlDocExternalLinkResolver.DotNetApiResolver/DotNetApiResolver.md
@@ -472,7 +466,6 @@ XmlDocGen.Core.Pages/XmlDocUrlMapper/Docusaurus.md
 XmlDocGen.Core.Pages/XmlDocUrlMapper/GetUrl.md
 XmlDocGen.Core.Pages/XmlDocUrlMapper/GitHub.md
 XmlDocGen.Core.Pages/XmlDocUrlMapper/XmlDocUrlMapper.md
-XmlDocGen.Core.Sites.md
 XmlDocGen.Core.Sites/XmlDocSite.md
 XmlDocGen.Core.Sites/XmlDocSite/Files.md
 XmlDocGen.Core.Sites/XmlDocSite/FindFile.md
@@ -494,7 +487,6 @@ XmlDocGen.Core.Sites/XmlDocSiteFile.md
 XmlDocGen.Core.Sites/XmlDocSiteFile/Path.md
 XmlDocGen.Core.Sites/XmlDocSiteFile/Text.md
 XmlDocGen.Core.Sites/XmlDocSiteFile/XmlDocSiteFile.md
-XmlDocGen.Core.Xml.md
 XmlDocGen.Core.Xml/XmlDocRef.md
 XmlDocGen.Core.Xml/XmlDocRef/Equals.md
 XmlDocGen.Core.Xml/XmlDocRef/ForMember.md

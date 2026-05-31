@@ -1,8 +1,7 @@
 sample: Samples.FrontMatter
-files: 197
-sha256: 41c353a8fbe0248d4e508c1ccdbc01fea961aefaf404120cc16a9d1b458fa20f
+files: 196
+sha256: 3085a9f6e48b5eb6cb3235b182ab79ebc1b4a567935f448a937b64e668c96f04
 preview:
-- ExampleAssembly.InnerNamespace.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md
 - ExampleAssembly.md
@@ -14,3 +13,4 @@ preview:
 - ExampleAssembly/ExampleAbstractClass/PublicMethod.md
 - ExampleAssembly/ExampleAbstractClass/PublicProperty.md
 - ExampleAssembly/ExampleAbstractClass/PublicProtectedProperty.md
+- ExampleAssembly/ExampleAttribute.md

@@ -11,8 +11,8 @@ public sealed record ExampleSealedRecord : IEquatable<ExampleSealedRecord>
 
 | name | description |
 | --- | --- |
-| [ExampleSealedRecord(string value)](./ExampleSealedRecord/ExampleSealedRecord.md) | Constructs an instance. |
-| [Value { get; }](./ExampleSealedRecord/Value.md) | The value. |
+| [ExampleSealedRecord](./ExampleSealedRecord/ExampleSealedRecord.md)(...) | Constructs an instance. |
+| [Value](./ExampleSealedRecord/Value.md) { get; } | The value. |
 
 ## See Also
 

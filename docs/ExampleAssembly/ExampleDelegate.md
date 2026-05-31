@@ -11,10 +11,10 @@ public sealed delegate ExampleDelegate : ICloneable, ISerializable
 
 | name | description |
 | --- | --- |
-| [ExampleDelegate(object @object, nint method)](./ExampleDelegate/ExampleDelegate.md) |  |
-| [virtual BeginInvoke(AsyncCallback callback, object @object)](./ExampleDelegate/BeginInvoke.md) |  |
-| [virtual EndInvoke(IAsyncResult result)](./ExampleDelegate/EndInvoke.md) |  |
-| [virtual Invoke()](./ExampleDelegate/Invoke.md) |  |
+| [ExampleDelegate](./ExampleDelegate/ExampleDelegate.md)(...) |  |
+| virtual [BeginInvoke](./ExampleDelegate/BeginInvoke.md)(...) |  |
+| virtual [EndInvoke](./ExampleDelegate/EndInvoke.md)(...) |  |
+| virtual [Invoke](./ExampleDelegate/Invoke.md)() |  |
 
 ## See Also
 

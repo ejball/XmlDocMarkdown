@@ -11,8 +11,8 @@ public struct VeryNestedStruct
 
 | name | description |
 | --- | --- |
-| [interface VeryVeryNestedInterface](./ExampleDeepClass.NestedClass.VeryNestedStruct.VeryVeryNestedInterface.md) | A very, very nested interface. |
-| [IsDeep { get; set; }](./ExampleDeepClass.NestedClass.VeryNestedStruct/IsDeep.md) | A very nested property. |
+| interface [VeryVeryNestedInterface](./ExampleDeepClass.NestedClass.VeryNestedStruct.VeryVeryNestedInterface.md) | A very, very nested interface. |
+| [IsDeep](./ExampleDeepClass.NestedClass.VeryNestedStruct/IsDeep.md) { get; set; } | A very nested property. |
 
 ## Remarks
 

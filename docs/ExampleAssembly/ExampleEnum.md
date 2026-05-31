@@ -11,11 +11,11 @@ public enum ExampleEnum : IComparable, IConvertible, IFormattable, ISpanFormatta
 
 | name | description |
 | --- | --- |
-| [const Max](./ExampleEnum/Max.md) | Very positive! |
-| [const Min](./ExampleEnum/Min.md) | Very negative! |
-| [const One](./ExampleEnum/One.md) | One! |
-| [const Two](./ExampleEnum/Two.md) | Two! |
-| [const Zero](./ExampleEnum/Zero.md) | Zero! |
+| const [Max](./ExampleEnum/Max.md) | Very positive! |
+| const [Min](./ExampleEnum/Min.md) | Very negative! |
+| const [One](./ExampleEnum/One.md) | One! |
+| const [Two](./ExampleEnum/Two.md) | Two! |
+| const [Zero](./ExampleEnum/Zero.md) | Zero! |
 | [value__](./ExampleEnum/value__.md) |  |
 
 ## See Also

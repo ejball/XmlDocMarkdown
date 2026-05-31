@@ -11,7 +11,7 @@ protected class ProtectedNestedClass
 
 | name | description |
 | --- | --- |
-| [ProtectedNestedClass()](./ExampleDeepClass.ProtectedNestedClass/ProtectedNestedClass.md) |  |
+| [ProtectedNestedClass](./ExampleDeepClass.ProtectedNestedClass/ProtectedNestedClass.md)() |  |
 
 ## See Also
 

@@ -11,7 +11,7 @@ public class ExampleUnbrowsableClass
 
 | name | description |
 | --- | --- |
-| [ExampleUnbrowsableClass()](./ExampleUnbrowsableClass/ExampleUnbrowsableClass.md) |  |
+| [ExampleUnbrowsableClass](./ExampleUnbrowsableClass/ExampleUnbrowsableClass.md)() |  |
 
 ## See Also
 

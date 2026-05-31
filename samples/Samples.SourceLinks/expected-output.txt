@@ -1,8 +1,7 @@
 sample: Samples.SourceLinks
-files: 197
-sha256: ac68578a529361f59cfc005bdafe70c3e38f4864cca7b588ffb202137f5d2272
+files: 196
+sha256: de07ded7d7b72ace5d500d51fc4d140200c8bfc3a351b32553d71d145535e4bf
 preview:
-- ExampleAssembly.InnerNamespace.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass.md
 - ExampleAssembly.InnerNamespace/ExampleInnerClass/ExampleInnerClass.md
 - ExampleAssembly.md
@@ -14,3 +13,4 @@ preview:
 - ExampleAssembly/ExampleAbstractClass/PublicMethod.md
 - ExampleAssembly/ExampleAbstractClass/PublicProperty.md
 - ExampleAssembly/ExampleAbstractClass/PublicProtectedProperty.md
+- ExampleAssembly/ExampleAttribute.md
