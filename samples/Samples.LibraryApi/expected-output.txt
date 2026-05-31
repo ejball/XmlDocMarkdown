@@ -1,6 +1,6 @@
 sample: Samples.LibraryApi
 files: 207
-sha256: bc116d2e22c5ce5ae55a29621b8295d073a393227b2be887a83ba6f65df85f5b
+sha256: 08109947539a8fbf392a4c70007c1c3341a758d015f4d70c688be26219ac0961
 preview:
 - ExampleAssembly.md
 - ExampleAssembly/ExampleAssembly.InnerNamespace.md

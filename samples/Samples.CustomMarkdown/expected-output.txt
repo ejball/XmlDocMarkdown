@@ -1,6 +1,6 @@
 sample: Samples.CustomMarkdown
 files: 207
-sha256: 91b39b5c53a02c4caa685d5d98ac099a618314445c44b06f89b6ef45281a0399
+sha256: dbd348f4bca63aabf4373996ff449a191f3578a5fcfaf665f892053eb9c50759
 preview:
 - ExampleAssembly.md
 - ExampleAssembly/ExampleAssembly.InnerNamespace.md

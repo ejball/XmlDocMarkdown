@@ -1,6 +1,6 @@
 sample: Samples.FrontMatter
 files: 207
-sha256: 00f319fd347e6b677c47bb94fafb7f60a6220da0e5303dc34194e4303ed39998
+sha256: 3c38336e8ee99afc6f30a0a15ddbc75f34f29068eff5deb9b0eb6266411135d7
 preview:
 - ExampleAssembly.md
 - ExampleAssembly/ExampleAssembly.InnerNamespace.md

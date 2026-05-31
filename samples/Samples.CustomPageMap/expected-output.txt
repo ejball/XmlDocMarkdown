@@ -1,6 +1,6 @@
 sample: Samples.CustomPageMap
 files: 44
-sha256: 9e58e345fb634d39f0e93eddfcd00eab7adfde9d718a05143c16f2cab85df710
+sha256: 304bba5f7b2b2c2bddbf5061c0aee68ae05bf2083913dd8432506988ad8ebc5d
 preview:
 - api/index.md
 - api/namespaces/ExampleAssembly.InnerNamespace.md

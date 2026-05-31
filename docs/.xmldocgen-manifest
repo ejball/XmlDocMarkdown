@@ -529,11 +529,10 @@ XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocRef/ForType.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocRef/GetHashCode.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocRef/op_Equality.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocRef/op_Inequality.md
+XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocRef/ShortName.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocRef/ToString.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocRef/Value.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocRef/XmlDocRef.md
-XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocRefUtility/GetShortNameForXmlDocRef.md
-XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocRefUtility/GetXmlDocRef.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlBlock.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlBlock/Inlines.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlBlock/IsCode.md
@@ -550,10 +549,7 @@ XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlException/XmlDocXmlException.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlFile.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlFile/AssemblyName.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlFile/FindMember.md
-XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlFile/Load-Stream.md
-XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlFile/Load-String.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlFile/Members.md
-XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlFile/Parse.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlFile/XmlDocXmlFile-XDocument.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlFile/XmlDocXmlFile.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlInheritDoc.md
@@ -564,7 +560,6 @@ XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlInline.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlInline/Href.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlInline/Kind.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlInline/Langword.md
-XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlInline/Name.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlInline/Ref.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlInline/Text.md
 XmlDocGen.Core/XmlDocGen.Core.Xml/XmlDocXmlInline/XmlDocXmlInline.md

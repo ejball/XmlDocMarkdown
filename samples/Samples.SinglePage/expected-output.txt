@@ -1,5 +1,5 @@
 sample: Samples.SinglePage
 files: 1
-sha256: 0f33fdd09f405d89d298566e95443c7baa351216588fa12b11fa36555f50fbd6
+sha256: 2f8a82eab629b17b6145c1f39ef4c5b3b4d9f052ec433672aac8920531707a0e
 preview:
 - index.md
