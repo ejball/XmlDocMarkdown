@@ -1,5 +1,3 @@
-using XmlDocGen.Core.Sites;
-
 namespace XmlDocGen.Core.IO;
 
 /// <summary>Abstracts file-system operations.</summary>

@@ -4,8 +4,6 @@ using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Text.Json;
-using XmlDocGen.Core.Nodes;
-using XmlDocGen.Core.Xml;
 
 namespace XmlDocGen.Core.Pages;
 
@@ -92,7 +90,7 @@ public sealed class XmlDocSourceLinks
 		return urlsByMetadataToken.Count == 0 ? null : new XmlDocSourceLinks(assembly, urlsByMetadataToken);
 	}
 
-	private static IReadOnlyDictionary<string, string> ReadSourceLinkDocuments(MetadataReader reader)
+	private static Dictionary<string, string> ReadSourceLinkDocuments(MetadataReader reader)
 	{
 		foreach (var handle in reader.CustomDebugInformation)
 		{

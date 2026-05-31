@@ -1,6 +1,3 @@
-using XmlDocGen.Core.Nodes;
-using XmlDocGen.Core.Pages;
-
 namespace XmlDocGen.Core.Sites;
 
 /// <summary>A generated documentation site.</summary>

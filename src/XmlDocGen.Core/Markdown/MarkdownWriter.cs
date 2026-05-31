@@ -1,10 +1,4 @@
 using System.Net;
-using System.Text.RegularExpressions;
-using XmlDocGen.Core.CSharp;
-using XmlDocGen.Core.Nodes;
-using XmlDocGen.Core.Pages;
-using XmlDocGen.Core.Sites;
-using XmlDocGen.Core.Xml;
 
 namespace XmlDocGen.Core.Markdown;
 

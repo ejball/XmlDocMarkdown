@@ -70,6 +70,6 @@ internal sealed class NodesLayerTests
 
 	private sealed class NoMemberVisibility : XmlDocNodeVisibility
 	{
-		public override bool IsVisible(XmlDocNode node) => XmlDocNodeVisibility.Public.IsVisible(node) && node is not XmlDocMemberNode;
+		public override bool IsVisible(XmlDocNode node) => Public.IsVisible(node) && node is not XmlDocMemberNode;
 	}
 }

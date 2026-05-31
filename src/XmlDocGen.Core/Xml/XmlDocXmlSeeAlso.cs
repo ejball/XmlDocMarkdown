@@ -1,10 +1,3 @@
-using System.Collections.ObjectModel;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
-using System.Xml.XPath;
-
 namespace XmlDocGen.Core.Xml;
 
 /// <summary>Parsed XML documentation for a see-also item.</summary>

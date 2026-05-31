@@ -1,6 +1,3 @@
-using System.Globalization;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using XmlDocGen.Core.Nodes;
 
 namespace XmlDocGen.Core.CSharp;

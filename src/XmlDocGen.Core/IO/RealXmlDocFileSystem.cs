@@ -1,5 +1,3 @@
-using XmlDocGen.Core.Sites;
-
 namespace XmlDocGen.Core.IO;
 
 internal sealed class RealXmlDocFileSystem : IXmlDocFileSystem

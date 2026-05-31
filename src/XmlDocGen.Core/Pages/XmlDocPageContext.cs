@@ -1,9 +1,4 @@
 using System.Reflection;
-using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Text.Json;
 using XmlDocGen.Core.Nodes;
 using XmlDocGen.Core.Xml;
 
@@ -75,5 +70,5 @@ public sealed class XmlDocPageContext
 	/// <summary>Gets a source URL for a reflected member.</summary>
 	public string? GetSourceUrl(MemberInfo member) => SourceLinks?.TryGetUrl(member);
 
-	private readonly IReadOnlyDictionary<XmlDocNode, XmlDocPage> m_pagesByNode;
+	private readonly Dictionary<XmlDocNode, XmlDocPage> m_pagesByNode;
 }

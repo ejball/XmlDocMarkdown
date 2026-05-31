@@ -1,13 +1,10 @@
 using System.Collections.ObjectModel;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
-using System.Xml.XPath;
+using System.Diagnostics.CodeAnalysis;
 
 namespace XmlDocGen.Core.Xml;
 
 /// <summary>Parsed XML documentation for an exception.</summary>
+[SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "Consistency.")]
 public sealed class XmlDocXmlException(XmlDocRef? exceptionTypeRef)
 {
 	/// <summary>Gets the exception type reference.</summary>

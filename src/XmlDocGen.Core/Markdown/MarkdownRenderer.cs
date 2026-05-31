@@ -208,7 +208,7 @@ public class MarkdownRenderer
 		}
 	}
 
-	private static int WriteTableList(MarkdownWriter writer, IReadOnlyList<XmlDocXmlBlock> blocks, int startIndex, XmlDocPageContext context, XmlDocNode? currentNode)
+	private static int WriteTableList(MarkdownWriter writer, List<XmlDocXmlBlock> blocks, int startIndex, XmlDocPageContext context, XmlDocNode? currentNode)
 	{
 		var depth = blocks[startIndex].ListDepth;
 		var tableBlocks = ReadListBlocks(blocks, startIndex, XmlDocXmlListKind.Table, depth, out var endIndex);
@@ -224,7 +224,7 @@ public class MarkdownRenderer
 		return endIndex;
 	}
 
-	private static IReadOnlyList<XmlDocXmlBlock> ReadListBlocks(IReadOnlyList<XmlDocXmlBlock> blocks, int startIndex, XmlDocXmlListKind listKind, int depth, out int endIndex)
+	private static List<XmlDocXmlBlock> ReadListBlocks(List<XmlDocXmlBlock> blocks, int startIndex, XmlDocXmlListKind listKind, int depth, out int endIndex)
 	{
 		var listBlocks = new List<XmlDocXmlBlock>();
 		endIndex = startIndex;
@@ -240,7 +240,7 @@ public class MarkdownRenderer
 		return listBlocks;
 	}
 
-	private static int WriteDefinitionList(MarkdownWriter writer, IReadOnlyList<XmlDocXmlBlock> blocks, int startIndex, XmlDocPageContext context, XmlDocNode? currentNode)
+	private static int WriteDefinitionList(MarkdownWriter writer, List<XmlDocXmlBlock> blocks, int startIndex, XmlDocPageContext context, XmlDocNode? currentNode)
 	{
 		var depth = blocks[startIndex].ListDepth;
 		var rows = ReadListRows(blocks, startIndex, XmlDocXmlListKind.Definition, depth, context, currentNode, out var endIndex).Where(static x => !x.IsHeader).ToList();
@@ -255,7 +255,7 @@ public class MarkdownRenderer
 		return endIndex;
 	}
 
-	private static IReadOnlyList<XmlDocListRow> ReadListRows(IReadOnlyList<XmlDocXmlBlock> blocks, int startIndex, XmlDocXmlListKind listKind, int depth, XmlDocPageContext context, XmlDocNode? currentNode, out int endIndex)
+	private static List<XmlDocListRow> ReadListRows(List<XmlDocXmlBlock> blocks, int startIndex, XmlDocXmlListKind listKind, int depth, XmlDocPageContext context, XmlDocNode? currentNode, out int endIndex)
 	{
 		var rows = new List<XmlDocListRow>();
 		var cells = new List<string>();
@@ -281,7 +281,7 @@ public class MarkdownRenderer
 		return rows;
 	}
 
-	private static IEnumerable<string> PadCells(IReadOnlyList<string> cells, int count)
+	private static IEnumerable<string> PadCells(List<string> cells, int count)
 	{
 		for (var index = 0; index < count; index++)
 			yield return index < cells.Count ? cells[index] : "";

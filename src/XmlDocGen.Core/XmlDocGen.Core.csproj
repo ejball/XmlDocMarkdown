@@ -8,7 +8,6 @@
     <EnablePackageValidation>true</EnablePackageValidation>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RewritePackageReadmeLinks>true</RewritePackageReadmeLinks>
-    <NoWarn>$(NoWarn);IDE0005;IDE0055;SA1514;SA1518;CA1002;CA1711;CA1721;CA1859</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

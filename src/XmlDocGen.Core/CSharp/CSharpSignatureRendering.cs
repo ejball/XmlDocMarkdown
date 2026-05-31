@@ -413,7 +413,7 @@ internal static class CSharpSignatureRendering
 		return ReflectionFacts.GetShortName(type.GetTypeInfo()) + RenderGenericArguments(type.GenericTypeArguments, nullability?.GenericTypeArguments.ToList() ?? []) + GetNullableReferenceSuffix(type, nullability);
 	}
 
-	private static string RenderGenericArguments(Type[] arguments, IReadOnlyList<NullabilityInfo> nullability) => arguments.Length == 0 ? "" : "<" + string.Join(", ", arguments.Select((x, index) => RenderTypeName(x, index < nullability.Count ? nullability[index] : null, []))) + ">";
+	private static string RenderGenericArguments(Type[] arguments, List<NullabilityInfo> nullability) => arguments.Length == 0 ? "" : "<" + string.Join(", ", arguments.Select((x, index) => RenderTypeName(x, index < nullability.Count ? nullability[index] : null, []))) + ">";
 
 	private static string RenderFunctionPointerTypeName(Type type)
 	{
@@ -596,7 +596,7 @@ internal static class CSharpSignatureRendering
 		return null;
 	}
 
-	private static IReadOnlyList<string?> GetTupleElementNames(ICustomAttributeProvider provider) => provider.GetCustomAttributes(typeof(TupleElementNamesAttribute), inherit: false).OfType<TupleElementNamesAttribute>().FirstOrDefault()?.TransformNames.ToList() ?? [];
+	private static List<string?> GetTupleElementNames(ICustomAttributeProvider provider) => provider.GetCustomAttributes(typeof(TupleElementNamesAttribute), inherit: false).OfType<TupleElementNamesAttribute>().FirstOrDefault()?.TransformNames.ToList() ?? [];
 
 	private static bool IsAbstractForSignature(MemberInfo member) => ReflectionFacts.IsAbstract(member) || member switch
 	{

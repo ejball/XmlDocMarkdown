@@ -62,5 +62,5 @@ internal sealed class CSharpLayerTests
 		Assert.That(GetSignature(tree, modernType.GetMethods().Single(x => x.Name == "op_UnsignedRightShift")), Does.Contain("operator >>>"));
 	}
 
-	private static string GetSignature(XmlDocGen.Core.Nodes.XmlDocTree tree, MemberInfo member) => CSharpSignatureBuilder.Full.GetSignature(tree.FindNode(member)!).Text;
+	private static string GetSignature(Core.Nodes.XmlDocTree tree, MemberInfo member) => CSharpSignatureBuilder.Full.GetSignature(tree.FindNode(member)!).Text;
 }

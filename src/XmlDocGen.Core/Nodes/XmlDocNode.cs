@@ -53,17 +53,6 @@ public abstract class XmlDocNode
 	/// <summary>Gets the reflected member associated with this node.</summary>
 	public virtual MemberInfo? MemberInfo => null;
 
-	/// <summary>Gets visible immediate children.</summary>
-	public IEnumerable<XmlDocNode> GetChildren(XmlDocNodeVisibility visibility) => Children.Where(visibility.IsVisible);
-
-	/// <summary>Enumerates this node and every descendant.</summary>
-	public IEnumerable<XmlDocNode> DescendantsAndSelf()
-	{
-		yield return this;
-		foreach (var child in Children.SelectMany(x => x.DescendantsAndSelf()))
-			yield return child;
-	}
-
 	/// <summary>Enumerates this node and visible descendants.</summary>
 	public IEnumerable<XmlDocNode> DescendantsAndSelf(XmlDocNodeVisibility visibility)
 	{
@@ -79,6 +68,13 @@ public abstract class XmlDocNode
 	{
 		attribute = MemberInfo?.GetCustomAttributes<T>().FirstOrDefault();
 		return attribute is not null;
+	}
+
+	internal IEnumerable<XmlDocNode> DescendantsAndSelf()
+	{
+		yield return this;
+		foreach (var child in Children.SelectMany(x => x.DescendantsAndSelf()))
+			yield return child;
 	}
 
 	private protected void AddChild(XmlDocNode child) => m_children.Add(child);

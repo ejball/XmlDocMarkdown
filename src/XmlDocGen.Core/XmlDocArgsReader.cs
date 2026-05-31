@@ -1,11 +1,3 @@
-using System.Reflection;
-using XmlDocGen.Core.IO;
-using XmlDocGen.Core.Markdown;
-using XmlDocGen.Core.Nodes;
-using XmlDocGen.Core.Pages;
-using XmlDocGen.Core.Sites;
-using XmlDocGen.Core.Xml;
-
 namespace XmlDocGen.Core;
 
 /// <summary>Reads command-line arguments.</summary>

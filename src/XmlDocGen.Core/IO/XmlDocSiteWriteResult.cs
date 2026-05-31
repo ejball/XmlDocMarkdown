@@ -1,5 +1,3 @@
-using XmlDocGen.Core.Sites;
-
 namespace XmlDocGen.Core.IO;
 
 /// <summary>The result of writing a generated site.</summary>
