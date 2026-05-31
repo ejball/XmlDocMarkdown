@@ -107,14 +107,20 @@ public class MarkdownRenderer
 	/// <summary>Writes a child-node overview section.</summary>
 	public virtual void WriteChildren(MarkdownWriter writer, XmlDocNode node, XmlDocPageContext context)
 	{
+		if (node is XmlDocAssemblyNode)
+			return;
+
 		var children = node.Children.Where(x => context.FindPage(x) is not null).OrderBy(GetOverviewText, StringComparer.OrdinalIgnoreCase).ToList();
 		if (children.Count == 0)
 			return;
 
 		writer.WriteLine();
-		writer.WriteHeading(2, GetChildrenHeading(node));
-		writer.WriteLine();
-		writer.WriteTableRow("name", "description");
+		if (node is not XmlDocNamespaceNode)
+		{
+			writer.WriteHeading(2, GetChildrenHeading(node));
+			writer.WriteLine();
+		}
+		writer.WriteTableRow(GetChildrenNameHeader(node), "description");
 		writer.WriteLine("| --- | --- |");
 		foreach (var group in children.GroupBy(x => context.FindPage(x)!))
 		{
@@ -124,7 +130,7 @@ public class MarkdownRenderer
 			var summary = RenderBlocksInline(child.XmlMember?.Summary ?? [], context, child);
 			if (group.Count() > 1)
 				summary += $" ({group.Count()} {GetPluralKindName(child)})";
-			writer.WriteMarkdownTableRow($"[{Escape(GetOverviewText(child))}]({url})", summary);
+			writer.WriteMarkdownTableRow(RenderOverviewLink(child, url), summary);
 		}
 	}
 
@@ -285,11 +291,11 @@ public class MarkdownRenderer
 
 	private static string GetChildrenHeading(XmlDocNode node) => node switch
 	{
-		XmlDocAssemblyNode => "Namespaces",
-		XmlDocNamespaceNode => "Types",
 		XmlDocTypeNode => "Public Members",
 		_ => "Children",
 	};
+
+	private static string GetChildrenNameHeader(XmlDocNode node) => node is XmlDocNamespaceNode ? "public type" : "name";
 
 	private static string GetPluralKindName(XmlDocNode node) => node switch
 	{
@@ -302,11 +308,95 @@ public class MarkdownRenderer
 
 	private static string GetOverviewText(XmlDocNode node) => node is XmlDocMemberNode memberNode ? GetMemberOverviewText(memberNode) : CSharpSignatureBuilder.Short.GetSignature(node).Text;
 
+	private static string RenderOverviewLink(XmlDocNode node, string url)
+	{
+		return node switch
+		{
+			XmlDocTypeNode type => GetTypePrefix(type) + Link(GetTypeDisplayName(type.TypeInfo), url),
+			XmlDocMemberNode member => RenderMemberOverviewLink(member, url),
+			_ => Link(GetOverviewText(node), url),
+		};
+	}
+
+	private static string RenderMemberOverviewLink(XmlDocMemberNode node, string url)
+	{
+		var (name, suffix) = GetMemberNameAndSuffix(node);
+		return GetMemberPrefix(node) + Link(name, url) + suffix;
+	}
+
+	private static string Link(string text, string url) => $"[{Escape(text)}]({url})";
+
+	private static string GetTypePrefix(XmlDocTypeNode node)
+	{
+		var parts = new List<string>();
+		if (node.TypeInfo.GetCustomAttribute<FlagsAttribute>() is not null)
+			parts.Add("[Flags]");
+		if (ReflectionFacts.IsStatic(node.TypeInfo))
+			parts.Add("static");
+		else if (node.TypeInfo is { IsClass: true, IsAbstract: true })
+			parts.Add("abstract");
+		if (node.IsReadOnly)
+			parts.Add("readonly");
+		if (node.IsRefStruct)
+			parts.Add("ref");
+		parts.Add(GetTypeKindText(node.Kind));
+		return string.Join(" ", parts) + " ";
+	}
+
+	private static string GetTypeKindText(XmlDocTypeKind kind) => kind switch
+	{
+		XmlDocTypeKind.RecordStruct => "record struct",
+		_ => kind.ToString().ToLowerInvariant(),
+	};
+
+	private static string GetTypeDisplayName(TypeInfo type)
+	{
+		var name = ReflectionFacts.GetShortName(type);
+		return type.GenericTypeParameters.Length == 0 ? name : name + "<" + string.Join(',', type.GenericTypeParameters.Select(x => x.Name)) + ">";
+	}
+
 	private static string GetMemberOverviewText(XmlDocMemberNode node)
 	{
-		var prefix = GetMemberPrefix(node);
-		var text = CSharpSignatureBuilder.Short.GetSignature(node).Text;
-		return string.IsNullOrEmpty(prefix) ? text : prefix + text;
+		var (name, suffix) = GetMemberNameAndSuffix(node);
+		return GetMemberPrefix(node) + name + suffix;
+	}
+
+	private static (string Name, string Suffix) GetMemberNameAndSuffix(XmlDocMemberNode node)
+	{
+		return node.Member switch
+		{
+			ConstructorInfo constructor => (node.Name, GetParameterSuffix(constructor.GetParameters())),
+			MethodInfo method => GetMethodNameAndSuffix(node, method),
+			PropertyInfo property => (node.Name, GetPropertySuffix(property)),
+			_ => (node.Name, ""),
+		};
+	}
+
+	private static (string Name, string Suffix) GetMethodNameAndSuffix(XmlDocMemberNode node, MethodInfo method)
+	{
+		var signature = CSharpSignatureBuilder.Short.GetSignature(node).Text;
+		var parameterIndex = signature.IndexOf('(', StringComparison.Ordinal);
+		if (parameterIndex != -1)
+			return (signature[..parameterIndex], GetParameterSuffix(method.GetParameters()));
+		return (signature, "");
+	}
+
+	private static string GetPropertySuffix(PropertyInfo property) => " " + GetPropertyAccessors(property);
+
+	private static string GetParameterSuffix(ParameterInfo[] parameters) => parameters.Length == 0 ? "()" : "(...)";
+
+	private static string GetPropertyAccessors(PropertyInfo property)
+	{
+		var get = property.GetMethod is not null;
+		var set = property.SetMethod is not null;
+		var setName = property.SetMethod?.ReturnParameter.GetRequiredCustomModifiers().Any(x => x.FullName == "System.Runtime.CompilerServices.IsExternalInit") == true ? "init" : "set";
+		return (get, set) switch
+		{
+			(true, true) => "{ get; " + setName + "; }",
+			(true, false) => "{ get; }",
+			(false, true) => "{ " + setName + "; }",
+			_ => "{ }",
+		};
 	}
 
 	private static string GetMemberPrefix(XmlDocMemberNode node)

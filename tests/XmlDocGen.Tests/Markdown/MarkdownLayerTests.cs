@@ -13,9 +13,23 @@ internal sealed class MarkdownLayerTests
 		var site = new MarkdownSiteBuilder(new XmlDocSiteBuilderSettings { PageMap = XmlDocPageMap.PerMember }).Build(TestSupport.CreateExampleTree());
 
 		Assert.That(site.FindFile("ExampleAssembly/ExampleClass.md")?.Text, Does.Contain("## Public Members"));
-		Assert.That(site.FindFile("ExampleAssembly/ExampleClass.md")?.Text, Does.Contain("[Id { get; }](./ExampleClass/Id.md)"));
+		Assert.That(site.FindFile("ExampleAssembly/ExampleClass.md")?.Text, Does.Contain("[Id](./ExampleClass/Id.md) { get; }"));
 		Assert.That(site.FindFile("ExampleAssembly/ExampleClass/Id.md")?.Text, Does.Contain("## Property Value"));
 		Assert.That(site.FindFile("ExampleAssembly/ExampleClass/Id.md")?.Text, Does.Contain("The ID."));
+	}
+
+	[Test]
+	public void MarkdownFoldsNamespacesOntoAssemblyPage()
+	{
+		var site = new MarkdownSiteBuilder(new XmlDocSiteBuilderSettings { PageMap = XmlDocPageMap.PerMember }).Build(TestSupport.CreateExampleTree());
+		var assembly = site.FindFile("ExampleAssembly.md")?.Text;
+
+		Assert.That(site.FindFile("ExampleAssembly/ExampleAssembly.md"), Is.Null);
+		Assert.That(assembly, Does.Not.Contain("## Namespaces"));
+		Assert.That(assembly, Does.Not.Contain("## Types"));
+		Assert.That(assembly, Does.Contain("## ExampleAssembly namespace"));
+		Assert.That(assembly, Does.Contain("| public type | description |"));
+		Assert.That(assembly, Does.Contain("class [ExampleClass](./ExampleAssembly/ExampleClass.md)"));
 	}
 
 	[Test]

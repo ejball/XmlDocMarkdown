@@ -1,11 +1,5 @@
 using System.Reflection;
-using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Text.Json;
 using XmlDocGen.Core.Nodes;
-using XmlDocGen.Core.Xml;
 
 namespace XmlDocGen.Core.Pages;
 
@@ -41,7 +35,7 @@ public abstract class XmlDocPageMap
 		return node switch
 		{
 			XmlDocAssemblyNode assembly => GetAssemblyPath(assembly),
-			XmlDocNamespaceNode namespaceNode => GetNamespacePath(namespaceNode),
+			XmlDocNamespaceNode namespaceNode => GetAssemblyPath(namespaceNode.Assembly),
 			XmlDocTypeNode typeNode => GetTypePath(typeNode),
 			XmlDocMemberNode memberNode => GetTypePath((XmlDocTypeNode) memberNode.Parent!) + "/" + GetMemberSafeName(memberNode),
 			_ => GetSafeName(node),
@@ -53,7 +47,7 @@ public abstract class XmlDocPageMap
 		return node switch
 		{
 			XmlDocAssemblyNode assembly => GetAssemblyPath(assembly),
-			XmlDocNamespaceNode namespaceNode => GetNamespacePath(namespaceNode),
+			XmlDocNamespaceNode namespaceNode => GetAssemblyPath(namespaceNode.Assembly),
 			XmlDocMemberNode memberNode => GetTypePath((XmlDocTypeNode) memberNode.Parent!),
 			XmlDocTypeNode typeNode => GetTypePath(typeNode),
 			_ => GetSafeName(node),
