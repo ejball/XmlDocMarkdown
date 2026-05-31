@@ -57,7 +57,11 @@ public sealed class XmlDocTypeNode : XmlDocNode
 		Members = [.. Children.OfType<XmlDocMemberNode>()];
 	}
 
-	private static IEnumerable<MemberInfo> GetDocumentableMembers(TypeInfo type) => type.DeclaredMembers.Where(x => x is not System.Reflection.TypeInfo && IsDocumentableMember(x)).OrderBy(GetMemberOrder).ThenBy(ReflectionFacts.GetShortName, StringComparer.OrdinalIgnoreCase);
+	private static IEnumerable<MemberInfo> GetDocumentableMembers(TypeInfo type)
+	{
+		var members = type.DeclaredMembers.Where(x => x is not System.Reflection.TypeInfo && IsDocumentableMember(x));
+		return type.IsEnum ? members.OfType<FieldInfo>().Where(x => x.IsLiteral).OrderBy(x => x.MetadataToken) : members.OrderBy(GetMemberOrder).ThenBy(ReflectionFacts.GetShortName, StringComparer.OrdinalIgnoreCase);
+	}
 
 	private static XmlDocTypeKind GetTypeKind(TypeInfo type)
 	{

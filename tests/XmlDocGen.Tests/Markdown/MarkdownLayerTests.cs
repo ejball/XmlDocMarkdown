@@ -48,18 +48,21 @@ internal sealed class MarkdownLayerTests
 	public void MarkdownRendersEnumValuesOnEnumPage()
 	{
 		var site = new MarkdownSiteBuilder(new XmlDocSiteBuilderSettings { PageMap = XmlDocPageMap.PerMember }).Build(TestSupport.CreateExampleTree());
-		var enumPage = site.FindFile("ExampleAssembly/ExampleEnum.md")?.Text;
-		var flagsPage = site.FindFile("ExampleAssembly/ExampleFlagsEnum.md")?.Text;
+		var enumPage = site.FindFile("ExampleAssembly/ExampleEnum.md")?.Text.ReplaceLineEndings("\n");
+		var flagsPage = site.FindFile("ExampleAssembly/ExampleFlagsEnum.md")?.Text.ReplaceLineEndings("\n");
 
 		Assert.That(enumPage, Does.Contain("# ExampleEnum enumeration"));
+		Assert.That(enumPage, Does.Contain("public enum ExampleEnum\n"));
+		Assert.That(enumPage, Does.Not.Contain("IComparable"));
 		Assert.That(enumPage, Does.Contain("## Values"));
 		Assert.That(enumPage, Does.Contain("| name | value | description |"));
-		Assert.That(enumPage, Does.Contain("| Zero | `0` | Zero! |"));
+		Assert.That(enumPage, Does.Contain("| Zero | `0` | Zero! |\n| One | `1` | One! |\n| Two | `2` | Two! |\n| Min | `-2147483648` | Very negative! |\n| Max | `2147483647` | Very positive! |"));
 		Assert.That(enumPage, Does.Not.Contain("## Zero field"));
 		Assert.That(enumPage, Does.Not.Contain("value__"));
 		Assert.That(site.FindFile("ExampleAssembly/ExampleEnum/value__.md"), Is.Null);
 		Assert.That(site.FindFile("ExampleAssembly/ExampleEnum/Zero.md"), Is.Null);
-		Assert.That(flagsPage, Does.Contain("[Flags]\npublic enum ExampleFlagsEnum"));
+		Assert.That(flagsPage, Does.Contain("[Flags]\npublic enum ExampleFlagsEnum\n"));
+		Assert.That(flagsPage, Does.Not.Contain("IComparable"));
 		Assert.That(flagsPage, Does.Contain("| All | `0xF` | All bits. |"));
 	}
 

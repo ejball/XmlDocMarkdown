@@ -92,22 +92,15 @@ A formatted widget name.
 Widget categories.
 
 ```csharp
-public enum WidgetKind : IComparable, IConvertible, IFormattable, ISpanFormattable
+public enum WidgetKind
 ```
 
 ## Values
 
 | name | value | description |
 | --- | --- | --- |
-| Advanced | `1` | An advanced widget. |
 | Basic | `0` | A basic widget. |
-
-## See Also
-
-* interface [IComparable](https://learn.microsoft.com/dotnet/api/system.icomparable)
-* interface [IConvertible](https://learn.microsoft.com/dotnet/api/system.iconvertible)
-* interface [IFormattable](https://learn.microsoft.com/dotnet/api/system.iformattable)
-* interface [ISpanFormattable](https://learn.microsoft.com/dotnet/api/system.ispanformattable)
+| Advanced | `1` | An advanced widget. |
 
 ## SampleAssembly.Stores namespace
 

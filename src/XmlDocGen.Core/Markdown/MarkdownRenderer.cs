@@ -531,7 +531,7 @@ public class MarkdownRenderer
 			}
 		}
 
-		if (node is XmlDocTypeNode type)
+		if (node is XmlDocTypeNode { Kind: not XmlDocTypeKind.Enum } type)
 		{
 			foreach (var baseType in GetRelatedTypes(type.TypeInfo))
 			{

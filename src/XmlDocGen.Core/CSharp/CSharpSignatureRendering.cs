@@ -63,7 +63,7 @@ internal static class CSharpSignatureRendering
 		yield return Identifier(ReflectionFacts.GetShortName(node.Type));
 		foreach (var token in RenderGenericParameters(node.TypeInfo.GenericTypeParameters, includeVariance: full))
 			yield return token;
-		if (full)
+		if (full && node.Kind != XmlDocTypeKind.Enum)
 		{
 			foreach (var token in RenderTypeBases(node.TypeInfo))
 				yield return token;
