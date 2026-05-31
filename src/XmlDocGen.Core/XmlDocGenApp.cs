@@ -1,8 +1,7 @@
 using System.Reflection;
+using System.Xml.Linq;
 using XmlDocGen.Core.IO;
-using XmlDocGen.Core.Markdown;
 using XmlDocGen.Core.Nodes;
-using XmlDocGen.Core.Pages;
 using XmlDocGen.Core.Sites;
 using XmlDocGen.Core.Xml;
 
@@ -82,7 +81,7 @@ public sealed class XmlDocGenApp
 			else
 				throw new ApplicationException($"Missing XML file: {xmlPath}");
 		}
-		return (assembly, XmlDocXmlFile.Load(xmlPath));
+		return (assembly, new XmlDocXmlFile(XDocument.Load(xmlPath)));
 	}
 
 	private static void WriteUsage(TextWriter writer, IEnumerable<string> extraLines)

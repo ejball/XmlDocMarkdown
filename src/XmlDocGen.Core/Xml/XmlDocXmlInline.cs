@@ -1,10 +1,3 @@
-using System.Collections.ObjectModel;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
-using System.Xml.XPath;
-
 namespace XmlDocGen.Core.Xml;
 
 /// <summary>Parsed inline XML documentation content.</summary>
@@ -31,7 +24,4 @@ public sealed class XmlDocXmlInline
 
 	/// <summary>Gets the language keyword.</summary>
 	public string? Langword { get; init; }
-
-	/// <summary>Gets the referenced parameter or type parameter name.</summary>
-	public string? Name => Text;
 }

@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Xml.Linq;
 using ExampleAssembly;
 using XmlDocGen.Core.Nodes;
 using XmlDocGen.Core.Xml;
@@ -11,12 +12,12 @@ internal static class TestSupport
 	public static XmlDocTree CreateExampleTree()
 	{
 		var assembly = typeof(ExampleClass).GetTypeInfo().Assembly;
-		return XmlDocTree.Create([(assembly, XmlDocXmlFile.Load(Path.ChangeExtension(assembly.Location, ".xml")))]);
+		return XmlDocTree.Create([(assembly, new XmlDocXmlFile(XDocument.Load(Path.ChangeExtension(assembly.Location, ".xml"))))]);
 	}
 
 	public static XmlDocTree CreateTestTree()
 	{
 		var assembly = typeof(InheritDocDerived).GetTypeInfo().Assembly;
-		return XmlDocTree.Create([(assembly, XmlDocXmlFile.Load(Path.ChangeExtension(assembly.Location, ".xml")))]);
+		return XmlDocTree.Create([(assembly, new XmlDocXmlFile(XDocument.Load(Path.ChangeExtension(assembly.Location, ".xml"))))]);
 	}
 }

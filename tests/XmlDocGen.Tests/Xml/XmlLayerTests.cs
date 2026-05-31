@@ -1,3 +1,4 @@
+using System.Xml.Linq;
 using NUnit.Framework;
 using XmlDocGen.Core.Xml;
 
@@ -15,12 +16,12 @@ internal sealed class XmlLayerTests
 	[Test]
 	public void ParsesInlineKinds()
 	{
-		var file = XmlDocXmlFile.Parse("""
+		var file = new XmlDocXmlFile(XDocument.Parse("""
 			<doc><members><member name="M:Example.Widget.Run``1(System.String)">
 			<summary>Use <c>code</c>, <see cref="T:System.String" />, <see href="https://example.test/">site</see>, <see langword="null" />, <paramref name="value" />, and <typeparamref name="T" />.</summary>
 			<typeparam name="T">The type.</typeparam><param name="value">The value.</param>
 			</member></members></doc>
-			""");
+			"""));
 
 		var member = file.FindMember(new XmlDocRef("M:Example.Widget.Run``1(System.String)"))!;
 
@@ -35,14 +36,14 @@ internal sealed class XmlLayerTests
 	[Test]
 	public void ParsesBlocksListsAndSections()
 	{
-		var file = XmlDocXmlFile.Parse("""
+		var file = new XmlDocXmlFile(XDocument.Parse("""
 			<doc><members><member name="M:Example.Widget.Run">
 			<summary><para>First.</para><para>Second.</para></summary>
 			<remarks><list type="bullet"><item><description>Item.</description></item></list></remarks>
 			<example><code lang="csharp">Console.WriteLine();</code></example>
 			<returns>The result.</returns><value>The value.</value><exception cref="T:System.InvalidOperationException">Bad state.</exception>
 			</member></members></doc>
-			""");
+			"""));
 
 		var member = file.FindMember(new XmlDocRef("M:Example.Widget.Run"))!;
 
@@ -56,22 +57,12 @@ internal sealed class XmlLayerTests
 	}
 
 	[Test]
-	public void LoadExpandsIncludes()
+	public void FileIgnoresIncludes()
 	{
-		var directory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-		Directory.CreateDirectory(directory);
-		try
-		{
-			File.WriteAllText(Path.Combine(directory, "include.xml"), "<docs><summary>Included summary.</summary></docs>");
-			File.WriteAllText(Path.Combine(directory, "main.xml"), "<doc><members><member name=\"T:Example.Widget\"><include file=\"include.xml\" path=\"/docs/summary\" /></member></members></doc>");
+		var file = new XmlDocXmlFile(XDocument.Parse("""
+			<doc><members><member name="T:Example.Widget"><include file="include.xml" path="/docs/summary" /></member></members></doc>
+			"""));
 
-			var file = XmlDocXmlFile.Load(Path.Combine(directory, "main.xml"));
-
-			Assert.That(file.FindMember(new XmlDocRef("T:Example.Widget"))?.Summary.Single().Inlines.Single().Text, Is.EqualTo("Included summary."));
-		}
-		finally
-		{
-			Directory.Delete(directory, recursive: true);
-		}
+		Assert.That(file.FindMember(new XmlDocRef("T:Example.Widget"))?.Summary, Is.Empty);
 	}
 }

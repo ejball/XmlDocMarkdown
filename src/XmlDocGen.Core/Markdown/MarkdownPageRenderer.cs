@@ -1,10 +1,5 @@
-using System.Net;
-using System.Text.RegularExpressions;
-using XmlDocGen.Core.CSharp;
 using XmlDocGen.Core.Nodes;
 using XmlDocGen.Core.Pages;
-using XmlDocGen.Core.Sites;
-using XmlDocGen.Core.Xml;
 
 namespace XmlDocGen.Core.Markdown;
 
@@ -92,5 +87,5 @@ public class MarkdownPageRenderer : XmlDocPageRenderer
 			writer.WriteLine($"[source]({sourceUrl})");
 	}
 
-	private static string GetGeneratedAssemblyList(XmlDocPage page) => string.Join(", ", page.Nodes.Select(x => x.Assembly.ReflectionAssembly.GetName().Name + ".dll").Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase));
+	private static string GetGeneratedAssemblyList(XmlDocPage page) => string.Join(", ", page.Nodes.Select(x => x.Assembly.ReflectionAssembly.GetName().Name).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase));
 }

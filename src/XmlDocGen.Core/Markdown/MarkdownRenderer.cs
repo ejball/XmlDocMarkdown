@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using XmlDocGen.Core.CSharp;
 using XmlDocGen.Core.Nodes;
 using XmlDocGen.Core.Pages;
-using XmlDocGen.Core.Sites;
 using XmlDocGen.Core.Xml;
 
 namespace XmlDocGen.Core.Markdown;
@@ -84,7 +83,7 @@ public class MarkdownRenderer
 			writer.WriteLine("| --- | --- |");
 			foreach (var exception in member.XmlMember.Exceptions)
 			{
-				var name = exception.ExceptionTypeRef is null ? "" : XmlDocRefUtility.GetShortNameForXmlDocRef(exception.ExceptionTypeRef.Value);
+				var name = exception.ExceptionTypeRef is null ? "" : exception.ExceptionTypeRef.Value.ShortName;
 				if (exception.ExceptionTypeRef is { } reference && context.GetLinkUrl(reference) is { } url)
 					name = $"[{name}]({url})";
 				writer.WriteMarkdownTableRow(name, RenderBlocksInline(exception.Condition, context, member));
@@ -138,7 +137,7 @@ public class MarkdownRenderer
 				var url = seeAlso.Href;
 				if (seeAlso.Ref is { } reference)
 				{
-					text = string.IsNullOrWhiteSpace(text) ? XmlDocRefUtility.GetShortNameForXmlDocRef(reference) : text;
+					text = string.IsNullOrWhiteSpace(text) ? reference.ShortName : text;
 					url = context.GetLinkUrl(reference);
 				}
 				writer.WriteLine(url is null ? "* " + text : $"* [{Escape(text ?? url)}]({url})");
@@ -311,7 +310,7 @@ public class MarkdownRenderer
 		var text = inline.Text ?? "";
 		if (inline.Kind == XmlDocXmlInlineKind.SeeCref && inline.Ref is { } reference)
 		{
-			text = string.IsNullOrWhiteSpace(text) ? XmlDocRefUtility.GetShortNameForXmlDocRef(reference) : text;
+			text = string.IsNullOrWhiteSpace(text) ? reference.ShortName : text;
 			var url = context.GetLinkUrl(reference);
 			return url is null ? Code(text) : $"[{Code(text)}]({url})";
 		}
